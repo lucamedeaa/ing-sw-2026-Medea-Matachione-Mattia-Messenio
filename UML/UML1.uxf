@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>217</x>
+      <y>98</y>
+      <w>238</w>
+      <h>175</h>
+    </coordinates>
+    <panel_attributes>Game
+--
+-board
+-players: List
+-players_size
+-currentRound: int
+-currentEra: int
+-currentState
+--
++changeState
++start
++placeTotem(Player:Player, tile:int)
++takeCards(player:Player, card: Card, row:int)
++determineWinner(): Player
++incrementRound</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>854</x>
+      <y>98</y>
+      <w>112</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>abstract GameState
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>770</x>
+      <y>280</y>
+      <w>119</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>RoundEndState
+--
++eventi()
++toteminordineturno()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>119</x>
+      <y>420</y>
+      <w>280</w>
+      <h>189</h>
+    </coordinates>
+    <panel_attributes>Board
+--
+-upperRow: List
+-lowerRow: List
+-offerTrack: List offerTile
+-turnOrderTile
+-tribeDeck:Deck
+-buildingDeck: Deck
+-currentEra: int
+--
++refreshBoard(playerCount: int)
++checkandhandleeratransition(DrawnEra: int)
++resolveEvents(players:List)
++areAllTotemsPlaced: boolean
++refillTopRow
++moveToBottom
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>847</x>
+      <y>196</y>
+      <w>119</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>PlacementState
+--
++spostamentototem()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>987</x>
+      <y>196</y>
+      <w>119</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>ActionState
+--
++sceltacartetribu()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>280</y>
+      <w>119</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>ScoringState
+--
++ricalcolopunti()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>700</x>
+      <y>196</y>
+      <w>105</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>SetupState
+--
++init()
++gestionenextround()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>476</x>
+      <y>427</y>
+      <w>168</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>TurnOrderTile
+--
+-totemSpaces: List di Player
+-config: TurnOrderConfig ENUM
+--
++returnTotem(player:Player)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>469</x>
+      <y>518</y>
+      <w>175</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>OfferTile
+--
+-letterID: char
+-upperRowPicks: int
+-lowerRowPicks: int
+-occupyingPlayer: Play
+--
++isFree(): boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>770</x>
+      <y>602</y>
+      <w>147</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>CharacterCard
+--
++stats: ENUM</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>910</x>
+      <y>448</y>
+      <w>182</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>abstract Card
+--
+-name: char[]
+-era: int
+-basePoints: int
+--
++abstract getFinalPoints(tribe: List)
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>952</x>
+      <y>602</y>
+      <w>147</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>BuildingCard
+--
+-foodCost: int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1141</x>
+      <y>609</y>
+      <w>161</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>EventCard
+--
++resolve(players: List of Player)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>168</x>
+      <y>700</y>
+      <w>161</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>Deck
+--
+-cards: List of Card
+--
++shuffle()
++draw(): Card
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>399</x>
+      <y>693</y>
+      <w>182</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>Player
+--
+-name: char[]
+-food: int
+prestigePoints: int
+-tribe: Deck
+--
++calculateTotalScore()
++getBuilderDiscount(): int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>644</x>
+      <y>91</y>
+      <w>623</w>
+      <h>266</h>
+    </coordinates>
+    <panel_attributes>GameState</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>98</x>
+      <y>378</y>
+      <w>588</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>BOARD</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLFrame</id>
+    <coordinates>
+      <x>721</x>
+      <y>392</y>
+      <w>616</w>
+      <h>392</h>
+    </coordinates>
+    <panel_attributes>CARDS</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
