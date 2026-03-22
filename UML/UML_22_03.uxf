@@ -448,23 +448,6 @@ InventorIcon
     <additional_attributes/>
   </element>
   <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>1771</x>
-      <y>98</y>
-      <w>84</w>
-      <h>84</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
-Sex
---
-/FEMALE/
-/MALE/
-
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <id>Relation</id>
     <coordinates>
       <x>427</x>
@@ -1247,17 +1230,6 @@ TotemColor
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>900.0;1350.0;900.0;1400.0;10.0;1400.0;10.0;10.0;2380.0;10.0;2380.0;140.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1736</x>
-      <y>175</y>
-      <w>91</w>
-      <h>546</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>80.0;760.0;10.0;760.0;10.0;70.0;110.0;70.0;110.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
