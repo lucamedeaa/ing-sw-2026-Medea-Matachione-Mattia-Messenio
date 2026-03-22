@@ -201,7 +201,11 @@
 +getArtistNumber(): Int
 +getInventorsNumber(): Int
 +getInventorIconsNumber(Set&lt;InventorIcons&gt;): Int
-+addCard(card: DrawableCard)</panel_attributes>
++addCard(card: DrawableCard)
++addFood(amount: Int)
++payFood(amount: Int)
++addPrestige(amount: Int)
++payPrestige(amount: Int)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -229,9 +233,9 @@
   <element>
     <id>UMLFrame</id>
     <coordinates>
-      <x>1036</x>
-      <y>476</y>
-      <w>3045</w>
+      <x>980</x>
+      <y>462</y>
+      <w>3178</w>
       <h>672</h>
     </coordinates>
     <panel_attributes>CARDS</panel_attributes>
@@ -243,7 +247,7 @@
       <x>1554</x>
       <y>1022</y>
       <w>259</w>
-      <h>63</h>
+      <h>56</h>
     </coordinates>
     <panel_attributes>Inventor
 --
@@ -395,7 +399,7 @@
     <coordinates>
       <x>1568</x>
       <y>49</y>
-      <w>392</w>
+      <w>644</w>
       <h>238</h>
     </coordinates>
     <panel_attributes>ENUMS</panel_attributes>
@@ -422,8 +426,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1785</x>
-      <y>84</y>
+      <x>1918</x>
+      <y>105</y>
       <w>126</w>
       <h>154</h>
     </coordinates>
@@ -440,6 +444,23 @@ InventorIcon
 /FLUTE/
 /LEATHER/
 /BREAD/
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1771</x>
+      <y>98</y>
+      <w>84</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Sex
+--
+/FEMALE/
+/MALE/
+
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -558,7 +579,7 @@ r2=0..5</panel_attributes>
     <coordinates>
       <x>637</x>
       <y>630</y>
-      <w>35</w>
+      <w>42</w>
       <h>126</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
@@ -1230,13 +1251,24 @@ TotemColor
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1617</x>
-      <y>231</y>
-      <w>231</w>
-      <h>805</h>
+      <x>1736</x>
+      <y>175</y>
+      <w>91</w>
+      <h>546</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;1130.0;10.0;100.0;310.0;100.0;310.0;10.0</additional_attributes>
+    <additional_attributes>80.0;760.0;10.0;760.0;10.0;70.0;110.0;70.0;110.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1617</x>
+      <y>252</y>
+      <w>364</w>
+      <h>784</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;1100.0;10.0;70.0;500.0;70.0;500.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
