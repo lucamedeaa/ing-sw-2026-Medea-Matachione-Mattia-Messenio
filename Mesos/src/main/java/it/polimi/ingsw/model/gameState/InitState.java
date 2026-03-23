@@ -1,0 +1,4 @@
+package it.polimi.ingsw.model.gameState;
+
+public class InitState extends GameState {
+}
