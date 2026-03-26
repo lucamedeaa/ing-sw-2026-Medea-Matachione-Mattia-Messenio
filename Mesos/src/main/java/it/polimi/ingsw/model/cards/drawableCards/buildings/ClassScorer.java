@@ -5,5 +5,5 @@ import java.util.List;
 public class ClassScorer extends Building{
     public ClassScorer() {}
     @Override
-    public int getFinalPoints(List<DrawableCard> cards){return 0;}
+    public int getFinalPoints(List<DrawableCard> tribe){return 0;}
 }
