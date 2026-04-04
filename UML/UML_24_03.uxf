@@ -57,7 +57,7 @@
 +refreshBoard(playerCount: int)
 +resolveEvents(players : List&lt;Player&gt;)
 +allTotemsPlaced(): Boolean
-+refillTopRow()
++refillTopRow(playerCount: int)
 +moveToBottom()
 +removeBottomRow()
 +shiftBuildingsToLow()
