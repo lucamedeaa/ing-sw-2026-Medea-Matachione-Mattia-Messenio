@@ -27,7 +27,12 @@ public class Player {
     public void payFood(int amount){}
     public void addPrestige(int amount){}
     public void payPrestige(int amount){}
+    public List<DrawableCard> getTribe() { return tribe; }
 
-
-
+    public int getFood() {
+        return food;
+    }
+    public int getPrestigePoints() {
+        return prestigePoints;
+    }
 }

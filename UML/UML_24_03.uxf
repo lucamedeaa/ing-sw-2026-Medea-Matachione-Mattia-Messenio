@@ -40,7 +40,7 @@
       <x>256</x>
       <y>488</y>
       <w>320</w>
-      <h>256</h>
+      <h>240</h>
     </coordinates>
     <panel_attributes>Board
 --
@@ -51,8 +51,6 @@
 -tribeDeck: Deck
 -buildingDeck: Deck
 -currentEra: Int
--totemSpaces: List&lt;Optional&lt;Player&gt;&gt;
--foodBonuses: List&lt;Int&gt;
 --
 +refreshBoard(playerCount: int)
 +resolveEvents(players : List&lt;Player&gt;)
@@ -62,8 +60,6 @@
 +removeBottomRow()
 +shiftBuildingsToLow()
 +clearBuildingsLow()
-+returnTotem(player:Player): Int
-+getNextTurnOrder(): List&lt;Player&gt;
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -126,6 +122,24 @@
     <id>UMLClass</id>
     <coordinates>
       <x>672</x>
+      <y>496</y>
+      <w>192</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>TurnOrderTile
+--
+-totemSpaces: List&lt;Player&gt;
+-foodBonus: List&lt;Int&gt;
+--
++returnTotem(player:Player)
++manageBonus()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>672</x>
       <y>600</y>
       <w>200</w>
       <h>112</h>
@@ -144,10 +158,27 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
+      <x>312</x>
+      <y>816</y>
+      <w>184</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Deck
+--
+-cards: List&lt;Card&gt;
+--
++draw(): Card
++randomPick(): Card
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
       <x>576</x>
       <y>848</y>
       <w>288</w>
-      <h>272</h>
+      <h>312</h>
     </coordinates>
     <panel_attributes>Player
 --
@@ -171,7 +202,9 @@
 +payFood(amount: Int)
 +addPrestige(amount: Int)
 +payPrestige(amount: Int)
-+returnTotem(bonus: Int)</panel_attributes>
++getFood(): Int
++getPrestigePoints(): Int
++getTribe(): List&lt;DrawableCard&gt;</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -199,8 +232,8 @@
   <element>
     <id>UMLFrame</id>
     <coordinates>
-      <x>1152</x>
-      <y>528</y>
+      <x>1224</x>
+      <y>552</y>
       <w>3632</w>
       <h>768</h>
     </coordinates>
@@ -220,7 +253,8 @@
 -inventorIcon: InventorIcon
 --
 +getInventorsNumber(): Int
-+getInventorIconsNumber(Set&lt;InventorIcons&gt;): Int</panel_attributes>
++getInventorIconsNumber(Set&lt;InventorIcons&gt;): Int
++getInventorIcon(): InventorIcon</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -251,7 +285,9 @@
 -foodDiscount: Int
 -endGamePrestigePoints: Int
 --
-+getBuilderNumber(): Int</panel_attributes>
++getBuilderNumber(): Int
++getFoodDiscount(): Int
++getEndGamePrestigePoints(): Int</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -289,14 +325,15 @@
       <x>1936</x>
       <y>1080</y>
       <w>288</w>
-      <h>64</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Hunter
 --
 -hasIcon: Boolean
 --
 +getHunterNumber(): Int
-+onCardAddedToTribe(tribe: List&lt;DrawableCard&gt;)</panel_attributes>
++onCardAddedToTribe(tribe: List&lt;DrawableCard&gt;)
++getHasIcon(): Boolean</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -309,10 +346,10 @@
     </coordinates>
     <panel_attributes>Collector
 --
--discount: int
+-discount: Int
 --
-+getCollectorNumber: Int
-</panel_attributes>
++getCollectorNumber(): Int
++getDiscount(): Int</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
@@ -380,11 +417,13 @@
       <w>208</w>
       <h>64</h>
     </coordinates>
-    <panel_attributes>Card
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Card
 --
 -era: Int
 --
 +addCard(player: Player)
++getEra(): Int
 
 
 </panel_attributes>
@@ -444,6 +483,23 @@ r2=1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
+      <x>632</x>
+      <y>232</y>
+      <w>160</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+r1=1
+r2=1
+
+
+
+</panel_attributes>
+    <additional_attributes>10.0;20.0;170.0;20.0;170.0;330.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
       <x>568</x>
       <y>632</y>
       <w>120</w>
@@ -493,6 +549,19 @@ r1=1</panel_attributes>
 r1=1
 r2=2..5</panel_attributes>
     <additional_attributes>290.0;20.0;10.0;20.0;10.0;810.0;550.0;810.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>856</x>
+      <y>504</y>
+      <w>80</w>
+      <h>400</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+r1=1
+r2=0..5</panel_attributes>
+    <additional_attributes>10.0;20.0;80.0;20.0;80.0;480.0;10.0;480.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -719,7 +788,8 @@ r2=0..*</panel_attributes>
       <w>328</w>
       <h>168</h>
     </coordinates>
-    <panel_attributes>DrawableCard
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+DrawableCard
 --
 -foodcost: Int
 --
@@ -989,7 +1059,8 @@ TotemColor
       <w>208</w>
       <h>64</h>
     </coordinates>
-    <panel_attributes>Event
+    <panel_attributes>&lt;&lt;abstract&gt;&gt;
+Event
 --
 +execute(players: List&lt;Player&gt;)
 </panel_attributes>
@@ -1169,7 +1240,7 @@ TotemColor
       <h>1184</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>900.0;1400.0;900.0;1460.0;10.0;1460.0;10.0;10.0;2380.0;10.0;2380.0;140.0</additional_attributes>
+    <additional_attributes>900.0;1450.0;900.0;1460.0;10.0;1460.0;10.0;10.0;2380.0;10.0;2380.0;140.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -1194,22 +1265,5 @@ TotemColor
 r1=1
 r2=1</panel_attributes>
     <additional_attributes>10.0;20.0;650.0;20.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>312</x>
-      <y>816</y>
-      <w>184</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>Deck
---
--cards: List&lt;Card&gt;
---
-+draw(): Card
-+randomPick(): Card
-</panel_attributes>
-    <additional_attributes/>
   </element>
 </diagram>
