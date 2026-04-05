@@ -182,7 +182,7 @@ public void clearTotemSpaces(){
         totemSpaces.replaceAll(space -> Optional.empty());
 }
 
-//getter
+//getters
 public List<OfferTile> getOfferTrack()  {return offerTrack;}
 public List<Card> getUpperRow()  {return upperRow;}
 public List<Card> getLowerRow()  {return lowerRow;}
