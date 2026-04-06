@@ -1,4 +1,5 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Builder;
 
@@ -11,13 +12,13 @@ public class BuilderMastery extends Building {
     }
 
     @Override
-    public int getFinalPoints(List<DrawableCard> tribe){
+    public int getFinalPoints(Player owner){
         int finalPoint = 0;
-        for (DrawableCard card : tribe){
+        for (DrawableCard card : owner.getTribe()){
             if(card instanceof Builder){
-                card.doubling(); // doubles prestige points of builders NOTE: needs to be executed before counting Builder points
+                finalPoint += card.getFinalPoints(owner); // owner useless
             }
         }
-        return prestigePoints;
+        return finalPoint + prestigePoints; //instead of doubling builder points, it counts them here a second time
     }
 }

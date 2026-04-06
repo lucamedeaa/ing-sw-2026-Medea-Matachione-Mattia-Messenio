@@ -11,4 +11,6 @@ public class Inventor extends DrawableCard {
     public int getInventorsNumber(){return 1;}
     @Override
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){return 0;}
+
+    public InventorIcon getInventorIcon(){return inventorIcon;}
 }

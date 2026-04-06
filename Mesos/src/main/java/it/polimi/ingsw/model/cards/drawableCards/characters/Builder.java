@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
 public class Builder extends DrawableCard {
@@ -10,7 +11,7 @@ public class Builder extends DrawableCard {
     public int getBuilderNumber(){return 1;}
 
     @Override
-    public void doubling(){
-        this.endGamePrestigePoints += endGamePrestigePoints;
+    public int getFinalPoints(Player owner){
+        return endGamePrestigePoints;
     }
 }

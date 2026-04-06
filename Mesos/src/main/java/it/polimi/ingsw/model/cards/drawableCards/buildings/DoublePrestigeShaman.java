@@ -9,5 +9,10 @@ public class DoublePrestigeShaman extends Building {
         this.prestigePoints = 0; // TODO: check points
     }
     @Override
-    public void onShamanicRitualEvent(Player owner) {}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        if(increment != 0){
+            owner.addPrestige(increment); //doubles the increment
+        }
+        return 0;
+    }
 }

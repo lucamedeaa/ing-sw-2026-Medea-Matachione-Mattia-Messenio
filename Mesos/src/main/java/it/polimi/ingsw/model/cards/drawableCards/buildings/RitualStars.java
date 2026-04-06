@@ -9,5 +9,7 @@ public class RitualStars extends Building {
         this.prestigePoints = 0; // TODO: check points
     }
     @Override
-    public void onShamanicRitualEvent(Player owner) {}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        return 3;
+    }
 }

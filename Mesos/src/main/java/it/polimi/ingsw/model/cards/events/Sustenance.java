@@ -21,9 +21,13 @@ public class Sustenance extends Event {
             //TODO:execute() when the card is final
         }
         for (Player player : players) {
-            int discount=player.getCollectorNumber()*3;
+            int discount = player.getCollectorNumber()*3;
+
+            for (DrawableCard card : player.getTribe()) {
+                discount += card.onSustenanceEvent(player);
+            }
             int total=0;
-            int playerFood=player.getFood();
+            int playerFood = player.getFood();
             for(DrawableCard card : player.getTribe()){
                 if(!(card instanceof Building)){
                     total+=1;
@@ -36,9 +40,6 @@ public class Sustenance extends Event {
                 player.payFood(total-discount);
             }
 
-            for (DrawableCard card : player.getTribe()) {
-                card.onSustenanceEvent(player);
-            }
         }
     }
 

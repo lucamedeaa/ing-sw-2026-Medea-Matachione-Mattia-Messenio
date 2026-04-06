@@ -16,13 +16,13 @@ public class DrawableCard extends Card {
     public int getArtistNumber(){return 0;}
     public int getInventorsNumber(){return 0;}
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){return 0;}
-    public int getFinalPoints(List<DrawableCard> tribe){return 0;}
-    public void onCardAddedToTribe(List<DrawableCard> tribe){}
+    public int getFinalPoints(Player owner){return 0;}
+    public void onCardAddedToTribe(Player owner, DrawableCard newcard){}
 
     public void onCavePaintingsEvent(Player owner) {}
-    public void onSustenanceEvent(Player owner) {}
+    public int onSustenanceEvent(Player owner) {return 0;}
     public void onHuntEvent(Player owner) {}
-    public void onShamanicRitualEvent(Player owner) {}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {return 0;}
 
-    public void doubling() {}
+
 }

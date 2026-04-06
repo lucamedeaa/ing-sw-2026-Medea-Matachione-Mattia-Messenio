@@ -8,5 +8,7 @@ public class LatePurchase extends Building{
         this.prestigePoints = 0; // TODO: check points
     }
     @Override
-    public void onTurnEnded(Player owner, Board board){}
+    public void onTurnEnded(Player owner, Board board){
+        //TODO
+    }
 }

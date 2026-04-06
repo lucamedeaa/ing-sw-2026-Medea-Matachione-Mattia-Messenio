@@ -12,10 +12,7 @@ public class ArtistFood extends Building {
 
     @Override
     public void onCavePaintingsEvent(Player owner) {
-        int tot = 0;
-        for(DrawableCard card : owner.getTribe()) {
-            tot += getArtistNumber();
-        }
+        int tot = owner.getArtistNumber();
         owner.addFood(tot);
     }
 }

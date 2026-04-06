@@ -9,5 +9,10 @@ public class RitualShield extends Building {
         this.prestigePoints = 0; // TODO: check points
     }
     @Override
-    public void onShamanicRitualEvent(Player owner) {}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        if(decrement != 0){
+            owner.addPrestige(-decrement); //nullifies the effect of the decrement
+        }
+        return 0;
+    }
 }

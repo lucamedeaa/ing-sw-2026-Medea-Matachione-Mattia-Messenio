@@ -10,9 +10,10 @@ public class Hunt extends Event {
     private final int prestigeGiven;
     public Hunt(int era, int foodGiven, int prestigeGiven) {
         this.era = era;
-        this.foodGiven = foodGiven;
+        this.foodGiven = foodGiven; //teoricamente inutile visto che è sempre 1
         this.prestigeGiven = prestigeGiven;
     }
+
     @Override
     public void execute(List<Player> players) {
         int num;

@@ -9,5 +9,9 @@ public class HunterBonus extends Building {
         this.prestigePoints = 0; // TODO: check points
     }
     @Override
-    public void onHuntEvent(Player owner) {}
+    public void onHuntEvent(Player owner) {
+        int num = owner.getHunterNumber();
+        owner.addFood(num);
+        owner.addPrestige(num);
+    }
 }
