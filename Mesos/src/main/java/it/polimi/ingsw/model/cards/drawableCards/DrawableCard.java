@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 public class DrawableCard extends Card {
+    protected int foodCost;
     public DrawableCard() {};
     public int getCollectorNumber(){return 0;}
     public int getHunterNumber(){return 0;}
@@ -17,6 +18,11 @@ public class DrawableCard extends Card {
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){return 0;}
     public int getFinalPoints(List<DrawableCard> tribe){return 0;}
     public void onCardAddedToTribe(List<DrawableCard> tribe){}
-    public void eventPerks(List<DrawableCard> tribe){}
 
+    public void onCavePaintingsEvent(Player owner) {}
+    public void onSustenanceEvent(Player owner) {}
+    public void onHuntEvent(Player owner) {}
+    public void onShamanicRitualEvent(Player owner) {}
+
+    public void doubling() {}
 }

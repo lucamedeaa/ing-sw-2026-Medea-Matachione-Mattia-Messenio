@@ -5,9 +5,9 @@ import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
 public abstract class Building extends DrawableCard {
-    private int foodCost;
-    private int prestigePoints;
-    public int getFinalPoints(List <DrawableCard> cards){return 0;}
+    protected int foodCost;
+    protected int prestigePoints;
+    public int getFinalPoints(List <DrawableCard> cards){return prestigePoints;}
     public void onCardAddedToTribe(List<DrawableCard> tribe){}
     public void onTurnEnded(Player owner, Board board){}
 }

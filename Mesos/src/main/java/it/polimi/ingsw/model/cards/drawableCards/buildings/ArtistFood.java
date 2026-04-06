@@ -1,10 +1,21 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
 import java.util.List;
 
 public class ArtistFood extends Building {
-    public ArtistFood() {}
+    public ArtistFood() {
+        this.foodCost= 0; // TODO: check price
+        this.prestigePoints = 0; // TODO: check points
+    }
+
     @Override
-    public void eventPerks(List<DrawableCard> tribe){}
+    public void onCavePaintingsEvent(Player owner) {
+        int tot = 0;
+        for(DrawableCard card : owner.getTribe()) {
+            tot += getArtistNumber();
+        }
+        owner.addFood(tot);
+    }
 }
