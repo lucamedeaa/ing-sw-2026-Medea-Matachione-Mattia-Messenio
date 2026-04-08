@@ -4,16 +4,18 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
 public class Hunter extends DrawableCard {
-    private final boolean hasIcon;
-
-    public Hunter(Boolean hasIcon) {
+    private final Boolean hasIcon;
+    public Hunter(int era,Boolean hasIcon) {
+        this.foodCost=0;
+        this.era=era;
         this.hasIcon = hasIcon;
     }
     @Override
     public int getHunterNumber(){return 1;}
 
-    public boolean getHasIcon() {return this.hasIcon;}
-
+    public Boolean getHasIcon() {
+        return hasIcon;
+    }
     @Override
     public void onCardAddedToTribe(Player owner, DrawableCard newcard){
         if(newcard instanceof Hunter && ((Hunter) newcard).getHasIcon()){
