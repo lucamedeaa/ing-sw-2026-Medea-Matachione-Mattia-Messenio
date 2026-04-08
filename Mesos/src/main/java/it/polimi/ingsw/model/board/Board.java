@@ -7,6 +7,8 @@ import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.model.cards.events.Event;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.Building;
 import it.polimi.ingsw.model.cards.events.Sustenance;
+
+import java.util.Map;
 import java.util.stream.IntStream;
 
 
@@ -24,6 +26,7 @@ public class Board {
     //Every space has the player who placed the totem or is empty if the space is free
     private List<Optional<Player>> totemSpaces;
     private Deck tribeDeck;
+    private Map<Integer, Deck> buildingDecks;
     private Deck buildingDeck;
     private int currentEra;
     private List<SpaceBonus> foodBonuses;
@@ -42,6 +45,7 @@ public class Board {
         refreshBoard(playerCount);
     }
 
+    private void initDecks(){/*TODO: tribe and building*/}
     //Initialises/resets the board
     public void refreshBoard(int playerCount){
         setupOfferTrack(playerCount);
@@ -103,6 +107,37 @@ public class Board {
         }
     }
 
+    private void setupInitialRows(int playerCount) {
+
+        int lowerRowTot = playerCount + 1;
+
+        while (lowerRow.size() < lowerRowTot) {
+            Card drawnCard = tribeDeck.draw();
+            if (drawnCard instanceof Event) {
+                upperRow.add(drawnCard);
+            } else {
+                lowerRow.add(drawnCard);
+            }
+        }
+
+        int upperRowTarget = playerCount + 4;
+        while (upperRow.size() < upperRowTarget) {
+            Card drawnCard = tribeDeck.draw();
+            if (drawnCard != null) {
+                upperRow.add(drawnCard);
+            }
+        }
+
+        Deck buildingDeckEra1 = buildingDecks.get(1);
+        if (buildingDeckEra1 != null) {
+            Card drawnBuilding = buildingDeckEra1.draw();
+            while (drawnBuilding != null) {
+                upperRow.add(drawnBuilding);
+                drawnBuilding = buildingDeckEra1.draw();
+            }
+        }
+    }
+
     //Resolves all event cards currently in the lower row
     //Sustenance is always resolved last
     public void resolveEvents(List<Player> players){
@@ -139,7 +174,7 @@ public class Board {
                 .toList();
 
         upperRow.removeAll(toMove);
-        lowerRow.removeAll(toMove);
+        lowerRow.addAll(toMove);
     }
     public void removeBottomRow(){
         lowerRow.removeIf(card -> !(card instanceof Building));
