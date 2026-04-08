@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.cards;
 import it.polimi.ingsw.model.Player;
 
 public abstract class Card {
-    private int era;
+    protected int era;
     public void addCard(Player player) {};
+    public int getEra() {return era;}
 }
-

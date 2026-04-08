@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.cards.events.Event;
 
 import java.util.List;
 

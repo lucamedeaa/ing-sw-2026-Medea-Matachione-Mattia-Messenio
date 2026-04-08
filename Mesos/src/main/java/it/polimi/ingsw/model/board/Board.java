@@ -2,7 +2,17 @@ package it.polimi.ingsw.model.board;
 import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.enums.SpaceBonus;
+import it.polimi.ingsw.model.board.OfferTile;
+import it.polimi.ingsw.model.cards.events.Event;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.Building;
+import it.polimi.ingsw.model.cards.events.Sustenance;
+import java.util.stream.IntStream;
+
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Board {
     private List<Card> upperRow;
@@ -16,19 +26,18 @@ public class Board {
     private Deck tribeDeck;
     private Deck buildingDeck;
     private int currentEra;
-    private List<spaceBonus> foodBonuses;
+    private List<SpaceBonus> foodBonuses;
+    private List<Integer> foodAmounts;
 
-    //index 0 = Era 1, 1 = era 2, 2 = era 3
-    //When a counter reaches 0 -> transition to the next era
-    private List<Integer> counterCardEra;
+
 
     public Board(int playerCount){
         this.upperRow = new ArrayList<>();
         this.lowerRow = new ArrayList<>();
         this.offerTrack = new ArrayList<>();
         this.totemSpaces = new ArrayList<>();
-        this.counterCardEra = new ArrayList<>();
         this.foodBonuses = new ArrayList<>();
+        this.foodAmounts = new ArrayList<>();
         this.currentEra = 1;
         refreshBoard(playerCount);
     }
@@ -37,7 +46,6 @@ public class Board {
     public void refreshBoard(int playerCount){
         setupOfferTrack(playerCount);
         setupTotemSpaces(playerCount);
-        setupCounterCardEra(playerCount);
     }
 
     private void setupOfferTrack(int playerCount){
@@ -54,38 +62,45 @@ public class Board {
         setupFoodBonuses(playerCount);
     }
 
-    //TODO check real cards to see if it's right
 
     private void setupFoodBonuses(int playerCount){
         switch(playerCount){
-            case 2 -> foodBonuses.addAll(List.of(
+            case 2 -> {
+                foodBonuses.addAll(List.of(
                     SpaceBonus.GAIN_FOOD,
                     SpaceBonus.PAY_FOOD
             ));
-            case 3 -> foodBonuses.addAll(List.of(
-                    SpaceBonus.GAIN_FOOD,
-                    SpaceBonus.NONE,
-                    SpaceBonus.PAY_FOOD
-            ));
-            case 4 -> foodBonuses.addAll(List.of(
-                    SpaceBonus.GAIN_FOOD,
-                    SpaceBonus.GAIN_FOOD,
-                    SpaceBonus.NONE,
-                    SpaceBonus.PAY_FOOD
-            ));
-            case 5 -> foodBonuses.addAll(List.of(
-                    SpaceBonus.GAIN_FOOD,
-                    SpaceBonus.GAIN_FOOD,
-                    SpaceBonus.NONE,
-                    SpaceBonus.NONE,
-                    SpaceBonus.PAY_FOOD
-            ));
-        }
-    }
+                foodAmounts.addAll(List.of(1 , 1));
+            }
 
-    //Check the rulebook
-    private void setupCounterCardEra(int playerCount){
-        //to do
+            case 3 -> {
+                foodBonuses.addAll(List.of(
+                    SpaceBonus.GAIN_FOOD,
+                    SpaceBonus.NONE,
+                    SpaceBonus.PAY_FOOD
+            ));
+                foodAmounts.addAll(List.of(1 , 0 , 1));
+            }
+            case 4 -> {
+                foodBonuses.addAll(List.of(
+                    SpaceBonus.GAIN_FOOD,
+                    SpaceBonus.GAIN_FOOD,
+                    SpaceBonus.NONE,
+                    SpaceBonus.PAY_FOOD
+            ));
+                foodAmounts.addAll(List.of(2, 1 , 0 , 1));
+            }
+            case 5 -> {
+                foodBonuses.addAll(List.of(
+                    SpaceBonus.GAIN_FOOD,
+                    SpaceBonus.GAIN_FOOD,
+                    SpaceBonus.NONE,
+                    SpaceBonus.NONE,
+                    SpaceBonus.PAY_FOOD
+            ));
+                foodAmounts.addAll(List.of(3, 1, 0 , 0 , 1));
+            }
+        }
     }
 
     //Resolves all event cards currently in the lower row
@@ -97,7 +112,7 @@ public class Board {
                 .toList();
 
         events.stream()
-                .filter(event ->> !(event instanceof Sustenance)) //resolve everything except Sustenance
+                .filter(event -> !(event instanceof Sustenance)) //resolve everything except Sustenance
                 .forEach(event -> event.execute(players));
 
         events.stream()
@@ -114,21 +129,10 @@ public class Board {
             Card card = tribeDeck.draw();
             if(card != null){
                 upperRow.add(card);
-                updateCounterCardEra(card);
             }
         }
     }
-    //Decrements the era counter for the drawn card's era.
-    //When the counter for the current era reaches 0, advances currentEra by 1
-    private void updateCounterCardEra(Card card){
-        int eraIndex = card.getEra() - 1; //because era 1 = index 0, era 2 = index 1, era 3 = index 2
-        int remaining = counterCardEra.get(eraIndex);
-        counterCardEra.set(eraIndex, remaining - 1);
 
-        if(counterCardEra.get(eraIndex) == 0 && card.getEra() == currentEra){
-            currentEra++;
-        }
-    }
     public void moveToBottom(){
         List<Card> toMove = upperRow.stream()
                 .filter(card -> !(card instanceof Building)) //select cards != buildings
@@ -157,9 +161,10 @@ public class Board {
 
     //Places the player's totem in the first free slot on the turn order tile and returns the spaceBonus associated
 public SpaceBonus returnTotem(Player player){
-        int firstFreeBox = intStream.range(0, totemSpaces.size()) //stream of ints. range: size -1
+        int firstFreeBox = IntStream.range(0, totemSpaces.size()) //stream of ints. range: size -1
                 .filter(i -> totemSpaces.get(i).isEmpty())//keeps only the indices where the slot is empty
                 .findFirst() //returns an OptionalInt with the first matching index/empty if no free slot
+                //orElseThrow extract the value: if the value exists then orElseThrow extracts it and assign it to firstFreeBox, else throw the exception
                 .orElseThrow(() -> new IllegalStateException( //called only if no free slot
                         "No free space in the turn order tile"
                 ));
@@ -167,6 +172,20 @@ public SpaceBonus returnTotem(Player player){
         //Optional.of(player) should "wrap" the player into an Optional -> slot occupied
         totemSpaces.set(firstFreeBox, Optional.of(player)); //!!!CHECK IF IT IS RIGHT!!!
         return foodBonuses.get(firstFreeBox);
+}
+
+public int getLastTotemAmount() {
+    int lastOccupied = IntStream.range(0, totemSpaces.size())
+            .filter(i -> totemSpaces.get(i).isPresent())
+            .reduce((first, second) -> second)//keeps only the last index that passed the filter
+            .orElseThrow(() -> new IllegalStateException(
+                    "No occupied space found in turn order tile"
+            ));
+    return foodAmounts.get(lastOccupied);
+}
+
+public int getFoodAmount(int index) {
+    return foodAmounts.get(index);
 }
 
 //returns the list of players in the order they placed their totems. => turn order for the next round
@@ -186,5 +205,4 @@ public void clearTotemSpaces(){
 public List<OfferTile> getOfferTrack()  {return offerTrack;}
 public List<Card> getUpperRow()  {return upperRow;}
 public List<Card> getLowerRow()  {return lowerRow;}
-public int getCurrentEra()  {return currentEra;}
 }
