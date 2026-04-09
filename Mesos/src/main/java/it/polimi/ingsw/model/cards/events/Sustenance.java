@@ -11,5 +11,9 @@ public class Sustenance extends Event {
     public void execute(List<Player> players) {
         super.execute(players);
     }
+    @Override
+    public int getResolutionPriority() {
+        return 1;
+    }
     public Sustenance(int numPrestRem, Boolean isFinal) {}
 }

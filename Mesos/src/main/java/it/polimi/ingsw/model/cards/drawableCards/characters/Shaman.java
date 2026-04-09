@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 
-public class Shaman extends DrawableCard {
+public class Shaman extends Character {
     private int starsCount;
     public Shaman(int starsCount){}
     @Override

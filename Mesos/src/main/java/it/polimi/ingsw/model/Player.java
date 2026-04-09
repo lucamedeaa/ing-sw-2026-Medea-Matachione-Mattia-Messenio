@@ -24,6 +24,10 @@ public class Player {
         this.totemColor = totemColor;
     }
 
+    public int getFoodDiscount(){
+
+    }
+
     //ToIntFunction<DrawableCard> is a Java functional interface that represents a function that takes a DrawableCard and returns an int
     private int sumFromTribe(ToIntFunction<DrawableCard> extract){
         return tribe.stream()
@@ -31,21 +35,15 @@ public class Player {
                 .sum();
     }
 
-    // Handles the consequence of the totem landing on a turn order space. Called by Game after Board.returnTotem() identifies which space was taken.
-    public void handleTotemReturn(SpaceBonus bonus, int amount) {
-        switch (bonus) {
-            case GAIN_FOOD -> addFood(amount);
-            case PAY_FOOD -> {
-                if (food >= amount) {
-                    //enough food => pay normally
-                    payFood(1);
-                } else {
-                    //not enough food => pay PP
-                    payPrestige(2);
-                }
-            }
-            case NONE -> {/*nothing happens*/}
+    public void addFood(int amount) {
+        this.food += amount;
+        if (this.food < 0){
+            addPrestige(2*this.food);
+            this.food = 0;
         }
+    }
+    public void addPrestige(int amount) {
+        this.prestigePoints += amount;
     }
 
     public int calculateTotalScore(){
@@ -65,28 +63,13 @@ public class Player {
         return food;
     }
 
-    public void addCard(Player owner, DrawableCard newCard) {
+    public void addCard(DrawableCard newCard) {
         tribe.add(newCard);
-        for(DrawableCard card : owner.getTribe()) {
-            card.onCardAddedToTribe(owner, newCard);
+        for(DrawableCard card : this.tribe) {
+            card.onCardAddedToTribe(this, newCard);
         }
     }
 
-    public void addFood(int amount) {
-        this.food += amount;
-    }
-
-    public void payFood(int amount) {
-        this.food -= amount;
-    }
-
-    public void addPrestige(int amount) {
-        this.prestigePoints += amount;
-    }
-
-    public void payPrestige(int amount) {
-        this.prestigePoints -= amount;
-    }
 
     public List<DrawableCard> getTribe() {
         return tribe;

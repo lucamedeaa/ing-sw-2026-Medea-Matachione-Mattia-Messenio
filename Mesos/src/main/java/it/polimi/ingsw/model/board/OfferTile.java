@@ -7,9 +7,9 @@ public class OfferTile {
     private Optional<Player> occupyingPlayer;
     private final int upperRowPicks;
     private final int lowerRowPicks;
-    private Boolean foodBonus;
+    private final int foodBonus;
 
-    public OfferTile(char letterId, int upperRowPicks, int lowerRowPicks, boolean foodBonus) {
+    public OfferTile(char letterId, int upperRowPicks, int lowerRowPicks, int foodBonus) {
         this.letterId = letterId;
         this.upperRowPicks = upperRowPicks;
         this.lowerRowPicks = lowerRowPicks;
@@ -21,12 +21,14 @@ public class OfferTile {
     public Boolean isFree(){
         return occupyingPlayer.isEmpty(); //true if no player
     }
+    public void setOccupyingPlayer(Player player) { this.occupyingPlayer = Optional.ofNullable(player); }
+    public void clearOccupyingPlayer() { this.occupyingPlayer = Optional.empty(); }
 
     public Optional<Player> getOccupyingPlayer() {return occupyingPlayer;}
     public int getUpperRowPicks() {return upperRowPicks;}
     public int getLowerRowPicks() {return lowerRowPicks;}
     public char getLetterId() {return letterId;}
-    public boolean getFoodBonus() {return foodBonus;}
+    public int getFoodBonus() {return foodBonus;}
 
 }
 

@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.enums.InventorIcon;
 import java.util.List;
 import java.util.Set;
 
-public class DrawableCard extends Card {
+public abstract class DrawableCard extends Card {
     public DrawableCard() {};
     public int getCollectorNumber(){return 0;}
     public int getHunterNumber(){return 0;}

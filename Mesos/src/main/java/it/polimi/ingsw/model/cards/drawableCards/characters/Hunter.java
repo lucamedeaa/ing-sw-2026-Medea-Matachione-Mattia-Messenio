@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 
-public class Hunter extends DrawableCard {
+public class Hunter extends Character{
     private Boolean hasIcon;
     public Hunter(Boolean hasIcon) {}
     @Override
