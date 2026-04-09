@@ -15,4 +15,12 @@ public class Inventor extends DrawableCard {
     @Override
     public int getInventorsNumber(){return 1;}
     public InventorIcon getInventorIcon(){return inventorIcon;}
+    @Override
+    public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){
+        if(inventorIcons.contains(inventorIcon)){
+            return 0;
+        }
+        inventorIcons.add(inventorIcon);
+        return 1;
+    }
 }

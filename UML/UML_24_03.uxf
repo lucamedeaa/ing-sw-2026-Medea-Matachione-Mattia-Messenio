@@ -246,14 +246,15 @@
       <x>1776</x>
       <y>1168</y>
       <w>296</w>
-      <h>72</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>Inventor
 --
 -inventorIcon: InventorIcon
 --
 +getInventorsNumber(): Int
-+getInventorIcon(): InventorIcon</panel_attributes>
++getInventorIcon(): InventorIcon
++getInventorIconsNumber(Set&lt;InventorIcon&gt; inventorIcons): Int</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
