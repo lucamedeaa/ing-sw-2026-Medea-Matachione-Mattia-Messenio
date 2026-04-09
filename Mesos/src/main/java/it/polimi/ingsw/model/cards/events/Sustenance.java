@@ -16,10 +16,6 @@ public class Sustenance extends Event {
     }
     @Override
     public void execute(List<Player> players) {
-        if(isFinal) {
-            return;
-            //TODO:execute() when the card is final
-        }
         for (Player player : players) {
             int discount=player.getCollectorNumber()*3;
             int total=0;

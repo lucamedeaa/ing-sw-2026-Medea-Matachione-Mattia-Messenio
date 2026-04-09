@@ -253,7 +253,6 @@
 -inventorIcon: InventorIcon
 --
 +getInventorsNumber(): Int
-+getInventorIconsNumber(Set&lt;InventorIcons&gt;): Int
 +getInventorIcon(): InventorIcon</panel_attributes>
     <additional_attributes/>
   </element>

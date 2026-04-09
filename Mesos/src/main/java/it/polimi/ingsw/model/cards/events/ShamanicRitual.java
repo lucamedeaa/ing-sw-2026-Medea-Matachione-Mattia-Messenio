@@ -17,10 +17,6 @@ public class ShamanicRitual extends Event {
     }
     @Override
     public void execute(List<Player> players){
-        if(isFinal){
-            //TODO: execute() when the card is Final
-            return;
-        }
             int max=0;
             int cnt;
             for(Player player : players){
