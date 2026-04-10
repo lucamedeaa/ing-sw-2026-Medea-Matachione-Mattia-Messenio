@@ -12,7 +12,7 @@ public class Collector extends Character {
     @Override
     public int getCollectorNumber(){return 1;}
 
-    public int getDiscount(){return discount;}
+    public int getFoodDiscount(){return discount;}
 
         @Override
     public CharacterType getCharacter() {

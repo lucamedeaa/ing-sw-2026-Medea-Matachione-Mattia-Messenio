@@ -29,4 +29,5 @@ public abstract class Card {
     public int getFoodBonus() {
         return 0;
     }
+    public int getFoodDiscount(){return 0;}
 }

@@ -1,4 +1,5 @@
 package it.polimi.ingsw.model;
+import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.model.enums.TotemColor;
@@ -25,7 +26,7 @@ public class Player {
     }
 
     public int getFoodDiscount(){
-        return sumFromTribe(card -> card.getFoodDiscount()); //This method should be implemented in card, so that 0 is always returned except by collectors returning 3
+        return sumFromTribe(Card::getFoodDiscount);
     }
 
     //ToIntFunction<DrawableCard> is a Java functional interface that represents a function that takes a DrawableCard and returns an int
@@ -80,13 +81,14 @@ public class Player {
 
 
 
-    public int getHunterNumber(){return sumFromTribe(card -> card.getHunterNumber());}
+    public int getHunterNumber()    {return sumFromTribe(card -> card.getHunterNumber());}
     public int getCollectorNumber() { return sumFromTribe(card -> card.getCollectorNumber()); }
     public int getShamanNumber()    { return sumFromTribe(card -> card.getStarsNumber()); }
     public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
     public int getArtistNumber()    { return sumFromTribe(card -> card.getArtistNumber()); }
     public int getInventorsNumber() { return sumFromTribe(card -> card.getInventorsNumber()); }
-    public int getBuilderDiscount() { return sumFromTribe(card -> card.getBuilderNumber()); }
+    public int getBuilderNumber()   { return sumFromTribe(card -> card.getBuilderNumber()); }
+    public int getBuilderDiscount() { return sumFromTribe(card -> card.getFoodDiscount());}
 
 
 }
