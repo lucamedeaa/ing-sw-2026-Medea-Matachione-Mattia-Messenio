@@ -1,9 +1,7 @@
 package it.polimi.ingsw.model.cards.events;
-import java.util.Arrays;
 import java.util.List;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Shaman;
 
 public class ShamanicRitual extends Event {
     private final int incrPrestigePoints;

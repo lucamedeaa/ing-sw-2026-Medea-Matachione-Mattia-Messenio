@@ -9,17 +9,4 @@ public abstract class FoodDiscount extends Building {
         super(foodCost, prestigePoints, era);
         this.CharType = CharType;
     }
-    @Override
-    public int onSustenanceEvent(Player owner) {
-        int tot = 0;
-        switch (CharType){
-            case ARTIST:
-                tot = owner.getArtistNumber();
-            case COLLECTOR:
-                tot = owner.getCollectorNumber();
-            case INVENTOR:
-                tot = owner.getInventorsNumber();
-        }
-        return tot;
-    }
 }

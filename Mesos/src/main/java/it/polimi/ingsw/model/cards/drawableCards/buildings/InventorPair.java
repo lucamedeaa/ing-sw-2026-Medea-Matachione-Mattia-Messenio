@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.cards.drawableCards.buildings;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Inventor;
+import it.polimi.ingsw.model.enums.CharacterType;
 import it.polimi.ingsw.model.enums.InventorIcon;
 
 import java.util.EnumMap;
@@ -24,16 +25,16 @@ public class InventorPair extends Building {
     public void onCardAddedToTribe(Player owner, DrawableCard newcard){
         InventorIcon icon;
         if(!init){
-            for(DrawableCard Card : owner.getTribe()){
-                if(Card instanceof Inventor){
-                    icon = ((Inventor) Card).getInventorIcon();
+            for(DrawableCard card : owner.getTribe()){
+                if(card.getCharacter().equals(CharacterType.INVENTOR)){
+                    icon = ((Inventor) card).getInventorIcon();
                     iconCount.put(icon, (iconCount.get(icon) + 1) % 2); //mod 2, in order to ignore previous pairs
                 }
             }
             init = true;
             return; //newcard already taken in consideration
         }
-        if(newcard instanceof Inventor){
+        if(newcard.getCharacter().equals(CharacterType.INVENTOR)){
             icon = ((Inventor)newcard).getInventorIcon();
             iconCount.put(icon, (iconCount.get(icon) + 1) % 2);
 
