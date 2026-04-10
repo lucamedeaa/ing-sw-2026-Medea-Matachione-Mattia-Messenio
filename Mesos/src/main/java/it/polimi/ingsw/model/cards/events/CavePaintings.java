@@ -23,7 +23,7 @@ public class CavePaintings extends Event {
     public void execute(List<Player> players) {
         for (Player player : players) {
             if(player.getArtistNumber() == upperNumArtists){
-                player.payPrestige(decrPrestigePoints);
+                player.addPrestige(decrPrestigePoints);
 
             }else if(player.getArtistNumber() >= lowerNumArtists && player.getArtistNumber() >= minArtists){
                 player.addPrestige(incrPrestigePoints*player.getArtistNumber());

@@ -6,9 +6,10 @@ import it.polimi.ingsw.model.cards.drawableCards.characters.Builder;
 import java.util.List;
 
 public class BuilderMastery extends Building {
-    public BuilderMastery() {
-        this.foodCost= 0; // TODO: check price
-        this.prestigePoints = 0; // TODO: check points
+    public BuilderMastery(int foodCost, int prestigePoints, int era) {
+        this.foodCost= foodCost;
+        this.prestigePoints = prestigePoints;
+        this.era=era;
     }
 
     @Override

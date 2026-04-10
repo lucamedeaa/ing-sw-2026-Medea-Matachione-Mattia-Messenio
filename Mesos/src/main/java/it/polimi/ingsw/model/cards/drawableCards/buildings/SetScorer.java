@@ -6,9 +6,10 @@ import java.util.List;
 import static java.lang.Math.min;
 
 public class SetScorer extends Building{
-    public SetScorer() {
-        this.foodCost= 0; // TODO: check price
-        this.prestigePoints = 0; // TODO: check points
+    public SetScorer(int foodCost, int prestigePoints, int era) {
+        this.foodCost= foodCost;
+        this.prestigePoints = prestigePoints;
+        this.era=era;
     }
     @Override
     public int getFinalPoints(Player owner){

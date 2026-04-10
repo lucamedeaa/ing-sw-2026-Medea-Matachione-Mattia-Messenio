@@ -5,9 +5,10 @@ import java.util.List;
 
 public class FoodDiscount extends Building {
     private final String CharType;
-    public FoodDiscount(String CharType) {
-        this.foodCost= 0; // TODO: check price
-        this.prestigePoints = 0; // TODO: check points
+    public FoodDiscount(int foodCost, int prestigePoints, int era, String CharType) {
+        this.foodCost= foodCost;
+        this.prestigePoints = prestigePoints;
+        this.era=era;
         this.CharType = CharType;
     }
     @Override

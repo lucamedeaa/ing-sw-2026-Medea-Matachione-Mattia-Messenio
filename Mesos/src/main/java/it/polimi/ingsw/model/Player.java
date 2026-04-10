@@ -25,7 +25,7 @@ public class Player {
     }
 
     public int getFoodDiscount(){
-
+        return 0;
     }
 
     //ToIntFunction<DrawableCard> is a Java functional interface that represents a function that takes a DrawableCard and returns an int
@@ -47,7 +47,7 @@ public class Player {
     }
 
     public int calculateTotalScore(){
-        return prestigePoints + sumFromTribe(card -> card.getFinalPoints(tribe));
+        return prestigePoints + sumFromTribe(card -> card.getFinalPoints(this));
     }
 
     public int getInventorIconsNumber(Set<InventorIcon> icons) {
@@ -85,7 +85,5 @@ public class Player {
     public int getInventorsNumber() { return sumFromTribe(card -> card.getInventorsNumber()); }
     public int getBuilderDiscount() { return sumFromTribe(card -> card.getBuilderNumber()); }
 
-    public List<DrawableCard> getTribe() {return tribe;}
 
-    public int getFood() { return food; }
 }

@@ -11,4 +11,8 @@ public abstract class Character extends DrawableCard{
     public void placeDuringSetupBottom(Board board) {
         board.addBottomRow(this);
     }
+    @Override
+    public boolean countsForDiverseSet(){
+        return true;
+    }
 }

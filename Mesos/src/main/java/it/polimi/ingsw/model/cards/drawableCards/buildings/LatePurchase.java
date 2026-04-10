@@ -3,9 +3,10 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 
 public class LatePurchase extends Building{
-    public LatePurchase() {
-        this.foodCost= 0; // TODO: check price
-        this.prestigePoints = 0; // TODO: check points
+    public LatePurchase(int foodCost, int prestigePoints, int era) {
+        this.foodCost= foodCost;
+        this.prestigePoints = prestigePoints;
+        this.era=era;
     }
     @Override
     public void onTurnEnded(Player owner, Board board){

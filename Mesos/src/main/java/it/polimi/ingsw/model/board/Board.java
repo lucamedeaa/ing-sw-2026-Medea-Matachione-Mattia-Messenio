@@ -51,8 +51,8 @@ public class Board {
         /*TODO: tribe (punto 3 introduzione) and building decks returnati da una funzione, definita in base a numero di players, (per building vedi PREPARAZIONE 6)
          *  potrebbe avere senso definire 3 building deck diversi, uno per era (vedi segnale sotto). Lo farei fuori da questa classe. Poi va sistemata la funzione che
          *  pesca dai deck building, con tre decks sarebbe risolto (vedi problema sotto)*/
-        this.tribeDeck = getTribeDeck(this.playerCount), //qualcosa che returna un deck di personaggi ed eventi divisi per era
-        this.buildingDeck = getBuildingDeck(this.playerCount), //qualcosa che returna un deck di personaggi ed eventi divisi per era
+        this.tribeDeck = getTribeDeck(this.playerCount); //qualcosa che returna un deck di personaggi ed eventi divisi per era
+        this.buildingDeck = getBuildingDeck(this.playerCount); //qualcosa che returna un deck di personaggi ed eventi divisi per era
     }
 
     private void initBottomRow(){

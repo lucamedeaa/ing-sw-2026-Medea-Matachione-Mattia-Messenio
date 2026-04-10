@@ -8,21 +8,15 @@ import it.polimi.ingsw.model.cards.drawableCards.characters.Shaman;
 public class ShamanicRitual extends Event {
     private final int incrPrestigePoints;
     private final int decrPrestigePoints; //negative number
-    private final Boolean isFinal;
 
-    public ShamanicRitual(int era, int incrPrestigePoints, int decrPrestigePoints, Boolean isFinal) {
+    public ShamanicRitual(int era, int incrPrestigePoints, int decrPrestigePoints) {
         this.era = era;
         this.incrPrestigePoints = incrPrestigePoints;
         this.decrPrestigePoints = decrPrestigePoints;
-        this.isFinal = isFinal;
     }
 
     @Override
     public void execute(List<Player> players) {
-        if (isFinal) {
-            //TODO: execute() when the card is Final
-            return;
-        }
 
         int[] stars = new int[players.size()];
 
