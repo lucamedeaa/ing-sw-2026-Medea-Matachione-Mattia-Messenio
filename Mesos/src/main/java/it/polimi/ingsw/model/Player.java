@@ -90,5 +90,10 @@ public class Player {
     public int getBuilderNumber()   { return sumFromTribe(card -> card.getBuilderNumber()); }
     public int getBuilderDiscount() { return sumFromTribe(card -> card.getFoodDiscount());}
 
+    public int getTopRowBonus() {
+        int bonus = 0;
+        for(Card card : this.tribe){ bonus += card.TopRowBonus();}
+        return bonus;
+    }
 
 }
