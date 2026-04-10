@@ -7,9 +7,7 @@ import static java.lang.Math.min;
 
 public class SetScorer extends Building{
     public SetScorer(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
     }
     @Override
     public int getFinalPoints(Player owner){

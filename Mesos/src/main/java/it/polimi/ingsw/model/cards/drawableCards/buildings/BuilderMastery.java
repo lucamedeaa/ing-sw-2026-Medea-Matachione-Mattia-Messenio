@@ -7,9 +7,7 @@ import java.util.List;
 
 public class BuilderMastery extends Building {
     public BuilderMastery(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
     }
 
     @Override

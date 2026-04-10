@@ -12,9 +12,7 @@ public class InventorPair extends Building {
     private EnumMap<InventorIcon, Integer> iconCount;
 
     public InventorPair(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
         init = false;
         iconCount = new EnumMap<>(InventorIcon.class);
         for (InventorIcon icon : InventorIcon.values()) {

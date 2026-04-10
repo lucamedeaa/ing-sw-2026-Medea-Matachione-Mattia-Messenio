@@ -5,9 +5,7 @@ import java.util.List;
 
 public class RitualShield extends Building {
     public RitualShield(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
     }
     @Override
     public int onShamanicRitualEvent(Player owner, int increment, int decrement) {

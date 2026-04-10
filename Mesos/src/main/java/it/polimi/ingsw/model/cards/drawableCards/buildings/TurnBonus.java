@@ -4,12 +4,10 @@ import it.polimi.ingsw.model.board.Board;
 
 public class TurnBonus extends Building{
     public TurnBonus(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
     }
     @Override
-    public void onTurnEnded(Player owner, Board board){
-        //TODO: in board
+    public int getFoodBonus() {
+        return 1;
     }
 }

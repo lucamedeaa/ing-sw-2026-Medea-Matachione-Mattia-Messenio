@@ -21,4 +21,11 @@ public abstract class Card {
     }
     public void addCard(Player player) {};
     public int getEra() {return era;}
+
+    public int TopRowBonus(){
+        return 0;
+    }
+    public int getFoodBonus() {
+        return 0;
+    }
 }

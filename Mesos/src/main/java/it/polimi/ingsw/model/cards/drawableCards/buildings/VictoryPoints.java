@@ -5,9 +5,7 @@ import java.util.List;
 
 public class VictoryPoints extends Building{
     public VictoryPoints(int foodCost, int prestigePoints, int era) {
-        this.foodCost= foodCost;
-        this.prestigePoints = prestigePoints;
-        this.era=era;
+        super(foodCost, prestigePoints, era);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 public class Hunter extends Character{
     private final Boolean hasIcon;
@@ -22,5 +22,10 @@ public class Hunter extends Character{
         if(newcard instanceof Hunter && ((Hunter) newcard).getHasIcon()){
             owner.addFood(owner.getHunterNumber());
         }
+    }
+
+    @Override
+    public CharacterType getCharacter() {
+        return CharacterType.HUNTER;
     }
 }

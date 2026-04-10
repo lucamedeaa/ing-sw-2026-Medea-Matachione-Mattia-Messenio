@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 public class Collector extends Character {
     private final int discount;
@@ -13,4 +13,9 @@ public class Collector extends Character {
     public int getCollectorNumber(){return 1;}
 
     public int getDiscount(){return discount;}
+
+        @Override
+    public CharacterType getCharacter() {
+        return CharacterType.COLLECTOR;
+    }
 }
