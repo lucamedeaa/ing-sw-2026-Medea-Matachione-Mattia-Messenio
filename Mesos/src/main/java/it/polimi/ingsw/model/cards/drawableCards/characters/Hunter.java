@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
+import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
-public class Hunter extends DrawableCard {
+public class Hunter extends Character{
     private final Boolean hasIcon;
     public Hunter(int era,Boolean hasIcon) {
         this.foodCost=0;

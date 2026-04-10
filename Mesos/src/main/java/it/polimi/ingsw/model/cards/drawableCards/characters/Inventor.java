@@ -1,10 +1,10 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 import it.polimi.ingsw.model.enums.InventorIcon;
 
 import java.util.Set;
 
-public class Inventor extends DrawableCard {
+public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
     public Inventor(int era, InventorIcon inventorIcon){

@@ -1,10 +1,10 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 
-public class Collector extends DrawableCard {
-    private final int discount;
+public class Collector extends Character {
     public Collector(int era, int discount) {
+    private final int discount;
         this.foodCost=0;
         this.era=era;
         this.discount = discount;
