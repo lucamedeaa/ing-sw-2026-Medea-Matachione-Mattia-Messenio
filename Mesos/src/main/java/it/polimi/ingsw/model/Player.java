@@ -25,7 +25,7 @@ public class Player {
     }
 
     public int getFoodDiscount(){
-        return 0;
+        return sumFromTribe(card -> card.getFoodDiscount()); //This method should be implemented in card, so that 0 is always returned except by collectors returning 3
     }
 
     //ToIntFunction<DrawableCard> is a Java functional interface that represents a function that takes a DrawableCard and returns an int
@@ -35,6 +35,9 @@ public class Player {
                 .sum();
     }
 
+    /* TODO: From the rules: if you can't pay for food you lose PP, but the logic depends on the context — during Sustenance you lose X PP for each unfeeded character, not generically 2 for each missing food.
+    Wouldn't it be better to leave it as this.food += amount and have the caller handle the case?
+     */
     public void addFood(int amount) {
         this.food += amount;
         if (this.food < 0){

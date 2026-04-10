@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.board;
 import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.Factory.DeckFactory;
 
 import java.util.Map;
 import java.util.Collections;
@@ -43,16 +44,15 @@ public class Board {
     }
 
     public void setupBoard(List<Player> players) {
-        this.initBottomRow();
-        this.initTopRow();
+        this.tribeDeck = DeckFactory.buildTribeDeck(this.playerCount);
+        this.buildingDecks = DeckFactory.buildBuildingDecks(this.playerCount);
+
         setupOfferTrack();
         setupInitialTurnOrder(players);
         setupFoodBonuses();
-        /*TODO: tribe (punto 3 introduzione) and building decks returnati da una funzione, definita in base a numero di players, (per building vedi PREPARAZIONE 6)
-         *  potrebbe avere senso definire 3 building deck diversi, uno per era (vedi segnale sotto). Lo farei fuori da questa classe. Poi va sistemata la funzione che
-         *  pesca dai deck building, con tre decks sarebbe risolto (vedi problema sotto)*/
-        this.tribeDeck = getTribeDeck(this.playerCount); //qualcosa che returna un deck di personaggi ed eventi divisi per era
-        this.buildingDeck = getBuildingDeck(this.playerCount); //qualcosa che returna un deck di personaggi ed eventi divisi per era
+
+        this.initBottomRow();
+        this.initTopRow();
     }
 
     private void initBottomRow(){
@@ -220,8 +220,6 @@ public class Board {
             currentTotemOrder.remove(0);
         }
     }
-
-
 
     public boolean allTotemsPlaced() {
         return currentTotemOrder.isEmpty();

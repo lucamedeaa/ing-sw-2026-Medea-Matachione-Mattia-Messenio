@@ -9,6 +9,7 @@ public abstract class Card {
     public abstract boolean isPersistent();
     public void execute(List<Player> players) {
     }
+
     public int getResolutionPriority() {
         return 0;
     }

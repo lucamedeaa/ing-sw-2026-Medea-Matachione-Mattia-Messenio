@@ -14,6 +14,8 @@ public class Game {
     private int currentRound;
     private GameState currentState;
 
+
+
     public Game(List<Player> players) {
         if (players == null || players.size() < 2 || players.size() > 5) {
             throw new IllegalArgumentException("Invalid number of players. Must be between 2 and 5.");
