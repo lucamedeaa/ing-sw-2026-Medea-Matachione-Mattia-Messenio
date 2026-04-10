@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Inventor extends Character {
     private InventorIcon inventorIcon;
-    public Inventor(InventorIcon inventorIcon){}
+    public Inventor(int era, InventorIcon inventorIcon){}
     @Override
     public int getInventorsNumber(){return 1;}
     @Override

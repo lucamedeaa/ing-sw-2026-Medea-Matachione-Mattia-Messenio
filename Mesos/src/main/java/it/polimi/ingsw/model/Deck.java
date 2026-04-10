@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.cards.Card;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Deck {
@@ -7,7 +10,16 @@ public class Deck {
     public boolean isEmpty(){
         return cards.isEmpty();
     }
-    public Deck() {}
-    public Card draw(){return null;}
-    public Card randomPick(){return null;}
+    public int size(){return cards.size();}
+    public Deck(List<Card> cards) {
+        this.cards = new ArrayList<>(cards);
+        Collections.shuffle(cards);
+    }
+    public Card draw(){
+        if(isEmpty()){
+            return null;
+        }
+        return cards.remove(0);
+    }
+
 }

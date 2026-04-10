@@ -4,7 +4,9 @@ import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import java.util.List;
 
 public class HunterBonus extends Building {
-    public HunterBonus() {}
+    public HunterBonus(int foodCost, int prestigePoints, int era) {
+
+    }
     @Override
     public void eventPerks(List<DrawableCard> tribe){}
 }

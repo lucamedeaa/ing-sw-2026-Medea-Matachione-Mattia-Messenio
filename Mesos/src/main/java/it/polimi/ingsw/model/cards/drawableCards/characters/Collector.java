@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 
 public class Collector extends Character {
     private int discount;
-    public Collector(int discount) {
+    public Collector(int era,int discount) {
         this.discount = discount;
     }
     @Override

@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.cards.drawableCards.characters.Character;
 
 public class Hunter extends Character{
     private Boolean hasIcon;
-    public Hunter(Boolean hasIcon) {}
+    public Hunter(int era, Boolean hasIcon) {}
     @Override
     public int getHunterNumber(){return 1;}
 }

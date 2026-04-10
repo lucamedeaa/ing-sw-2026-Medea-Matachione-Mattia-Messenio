@@ -15,5 +15,7 @@ public class Sustenance extends Event {
     public int getResolutionPriority() {
         return 1;
     }
-    public Sustenance(int numPrestRem, Boolean isFinal) {}
+    public Sustenance(int era, int numPrestRem) {
+
+    }
 }
