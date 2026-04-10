@@ -55,7 +55,7 @@ public class Player {
 
     public int getInventorIconsNumber(Set<InventorIcon> icons) {
         return sumFromTribe(card -> card.getInventorIconsNumber(icons));
-    }1
+    }
 
 
     public int getPrestigePoints() {
@@ -82,7 +82,6 @@ public class Player {
 
     public int getHunterNumber(){return sumFromTribe(card -> card.getHunterNumber());}
     public int getCollectorNumber() { return sumFromTribe(card -> card.getCollectorNumber()); }
-    public int getShamanNumber()    { return sumFromTribe(card -> card.getStarsNumber()); }
     public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
     public int getArtistNumber()    { return sumFromTribe(card -> card.getArtistNumber()); }
     public int getInventorsNumber() { return sumFromTribe(card -> card.getInventorsNumber()); }

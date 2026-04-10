@@ -100,8 +100,8 @@ public class DeckFactory {
             cards.add(new Inventor(2,  InventorIcon.NECKLACE));
             cards.add(new Inventor(2,  InventorIcon.BREAD));
 
-            cards.add(new CavePaintings(1,))//TODO
-            cards.add(new CavePaintings(2,))//TODO
+            cards.add(new CavePaintings(1, 1, 0, 2, 1));
+            cards.add(new CavePaintings(2, 2, 0, 2, 2));
 
             cards.add(new Hunt(1, 1, 1));
             cards.add(new Hunt(2, 1, 2));
