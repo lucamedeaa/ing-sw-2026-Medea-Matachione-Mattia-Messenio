@@ -26,9 +26,8 @@ public class Board {
     private List<Player> nextTotemOrder;
     private int playerCount;
     private Deck tribeDeck;
-    private Deck buildingDeck;
+    private Deck[] buildingDecks;
     private int currentEra;
-
 
 
     public Board(int playerCount){
@@ -39,8 +38,11 @@ public class Board {
         this.currentEra = 1;
     }
 
+    private Deck getCurrentBuildingDeck() {
+        return buildingDecks[currentEra - 1];
+    }
 
-    public void setupBoard(List<Player> players){
+    public void setupBoard(List<Player> players) {
         this.initBottomRow();
         this.initTopRow();
         setupOfferTrack();
@@ -49,8 +51,8 @@ public class Board {
         /*TODO: tribe (punto 3 introduzione) and building decks returnati da una funzione, definita in base a numero di players, (per building vedi PREPARAZIONE 6)
          *  potrebbe avere senso definire 3 building deck diversi, uno per era (vedi segnale sotto). Lo farei fuori da questa classe. Poi va sistemata la funzione che
          *  pesca dai deck building, con tre decks sarebbe risolto (vedi problema sotto)*/
-        //this.tribeDeck = getTribeDeck(this.playerCount), qualcosa che returna un deck di personaggi ed eventi divisi per era
-        //this.buildingDeck = getBuildingDeck(this.playerCount), qualcosa che returna un deck di personaggi ed eventi divisi per era
+        this.tribeDeck = getTribeDeck(this.playerCount), //qualcosa che returna un deck di personaggi ed eventi divisi per era
+        this.buildingDeck = getBuildingDeck(this.playerCount), //qualcosa che returna un deck di personaggi ed eventi divisi per era
     }
 
     private void initBottomRow(){
@@ -143,12 +145,11 @@ public class Board {
     }
 
     private void setupNewEraBuildings() {
-        Card buildingCard = buildingDeck.draw();
-        while (buildingCard.getEra() == currentEra){
-            addTopRow(buildingCard);
-            /* TODO: gestire sta cosa meglio. se pesco e la carta non è piu nel deck l'ho persa. imo ha senso fare una lista con 3 deck e appena è vuoto finisco" */
-            buildingCard = buildingDeck.draw();
 
+        Deck currentDeck = getCurrentBuildingDeck();
+        while (!currentDeck.isEmpty()) {
+            Card buildingCard = currentDeck.draw();
+            addTopRow(buildingCard);
         }
     }
 
@@ -220,6 +221,8 @@ public class Board {
         }
     }
 
+
+
     public boolean allTotemsPlaced() {
         return currentTotemOrder.isEmpty();
     }
@@ -229,6 +232,17 @@ public class Board {
         int currentIndex = this.nextTotemOrder.size() - 1;
         int bonus = foodTurnOrderBonus.get(currentIndex);
         player.addFood(bonus);
+        //TODO: Conidering what I said about addFood in Player, I'd do this way here
+        /*if (bonus > 0) {
+        player.addFood(bonus);
+    } else if (bonus < 0) {
+        int cost = Math.abs(bonus);
+        if (player.getFood() >= cost) {
+            player.addFood(-cost);
+        } else {
+            player.payPrestige(2);
+        }
+    }*/
     }
 
     public Card peekCard(int rowIndex, int colIndex) {
@@ -259,4 +273,7 @@ public class Board {
     public List<OfferTile> getOfferTrack(){
         return this.offerTrack;
     }
+
+
 }
+
