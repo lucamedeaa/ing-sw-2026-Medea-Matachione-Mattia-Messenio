@@ -13,4 +13,4 @@ public class InitState extends GameState {
         game.getBoard().setupBoard(game.getPlayers());
         this.transition(new PlacementState(this.game));
     }
-}D
+}

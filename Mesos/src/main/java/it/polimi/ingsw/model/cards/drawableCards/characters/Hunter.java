@@ -11,8 +11,6 @@ public class Hunter extends Character{
         this.era=era;
         this.hasIcon = hasIcon;
     }
-    @Override
-    public int getHunterNumber(){return 1;}
 
     public Boolean getHasIcon() {
         return hasIcon;
@@ -20,7 +18,7 @@ public class Hunter extends Character{
     @Override
     public void onCardAddedToTribe(Player owner, DrawableCard newcard){
         if(newcard instanceof Hunter && ((Hunter) newcard).getHasIcon()){
-            owner.addFood(owner.getHunterNumber());
+            owner.addFood(owner.countCharactersOfType(CharacterType.HUNTER));
         }
     }
 

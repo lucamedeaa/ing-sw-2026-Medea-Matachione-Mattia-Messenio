@@ -9,8 +9,6 @@ public class Collector extends Character {
         this.era=era;
         this.discount = discount;
     }
-    @Override
-    public int getCollectorNumber(){return 1;}
 
     public int getFoodDiscount(){return discount;}
 

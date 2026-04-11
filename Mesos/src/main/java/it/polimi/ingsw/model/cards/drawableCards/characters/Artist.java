@@ -7,8 +7,6 @@ public class Artist extends Character {
        this.foodCost=0;
        this.era=era;
     }
-    @Override
-    public int getArtistNumber(){return 1;}
 
     @Override
     public CharacterType getCharacter() {

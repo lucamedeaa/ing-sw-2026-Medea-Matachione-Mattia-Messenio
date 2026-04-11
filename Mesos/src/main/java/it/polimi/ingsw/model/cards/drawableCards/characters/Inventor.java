@@ -12,8 +12,7 @@ public class Inventor extends Character {
         this.foodCost=0;
         this.inventorIcon = inventorIcon;
     }
-    @Override
-    public int getInventorsNumber(){return 1;}
+
     @Override
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){
         //TODO: Find the purpose of this method :)

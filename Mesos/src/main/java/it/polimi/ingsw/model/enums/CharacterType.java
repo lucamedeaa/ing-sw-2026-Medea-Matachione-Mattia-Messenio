@@ -6,5 +6,6 @@ public enum CharacterType {
     COLLECTOR,
     HUNTER,
     INVENTOR,
-    SHAMAN
+    SHAMAN,
+    BUILDING
 }

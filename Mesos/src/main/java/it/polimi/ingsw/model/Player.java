@@ -3,7 +3,8 @@ import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.model.enums.TotemColor;
-import it.polimi.ingsw.model.enums.SpaceBonus;
+import it.polimi.ingsw.model.enums.CharacterType;
+
 import java.util.function.ToIntFunction;
 
 import java.util.List;
@@ -17,11 +18,11 @@ public class Player {
     private int prestigePoints;
     private TotemColor totemColor;
 
-    public Player(String name, List<DrawableCard> tribe, TotemColor totemColor) {
+    public Player(String name, TotemColor totemColor) {
         this.name = name;
         this.food = 0;
         this.prestigePoints = 0;
-        this.tribe = new ArrayList<>(tribe);
+        this.tribe = new ArrayList<>();
         this.totemColor = totemColor;
     }
 
@@ -79,21 +80,13 @@ public class Player {
         return tribe;
     }
 
-
-
-    public int getHunterNumber()    {return sumFromTribe(card -> card.getHunterNumber());}
-    public int getCollectorNumber() { return sumFromTribe(card -> card.getCollectorNumber()); }
-    public int getShamanNumber()    { return sumFromTribe(card -> card.getStarsNumber()); }
-    public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
-    public int getArtistNumber()    { return sumFromTribe(card -> card.getArtistNumber()); }
-    public int getInventorsNumber() { return sumFromTribe(card -> card.getInventorsNumber()); }
-    public int getBuilderNumber()   { return sumFromTribe(card -> card.getBuilderNumber()); }
-    public int getBuilderDiscount() { return sumFromTribe(card -> card.getFoodDiscount());}
-
-    public int getTopRowBonus() {
-        int bonus = 0;
-        for(Card card : this.tribe){ bonus += card.TopRowBonus();}
-        return bonus;
+    public int countCharactersOfType(CharacterType typeToCount) {
+        return (int) tribe.stream()
+                .filter(card -> card.getCharacter() == typeToCount)
+                .count(); // count() restituisce long, ma lo convertiamo subito in int
     }
 
-}
+    public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
+    public int getBuilderDiscount() { return sumFromTribe(card -> card.getFoodDiscount());}
+
+    public int getTopRowBonus() {return sumFromTribe(card -> card.getTopRowBonus());}

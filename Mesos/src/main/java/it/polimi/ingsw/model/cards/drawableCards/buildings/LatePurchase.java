@@ -7,7 +7,7 @@ public class LatePurchase extends Building{
         super(foodCost, prestigePoints, era);
     }
     @Override
-    public int TopRowBonus(){
+    public int getTopRowBonus(){
         return 1;
     }
 }

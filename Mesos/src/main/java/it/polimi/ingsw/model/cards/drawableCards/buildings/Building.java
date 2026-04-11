@@ -22,6 +22,6 @@ public abstract class Building extends DrawableCard {
     public void placeDuringSetupBottom(Board board){ } //always in the top row by default
     @Override
     public CharacterType getCharacter() {
-        return null;
+        return CharacterType.BUILDING;
     }
 }

@@ -12,7 +12,6 @@ public class Builder extends Character {
         this.endGamePrestigePoints = endGamePrestigePoints;
     }
     @Override
-    public int getBuilderNumber(){return 1;}
     public int getFoodDiscount(){return foodDiscount;}
     public int getEndGamePrestigePoints(){return endGamePrestigePoints;}
 

@@ -16,7 +16,4 @@ public class Shaman extends Character {
     public CharacterType getCharacter() {
         return CharacterType.SHAMAN;
     }
-
-    @Override
-    public int getShamanNumber(){return 1;}
 }

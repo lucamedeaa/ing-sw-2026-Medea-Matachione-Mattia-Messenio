@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 import java.util.List;
 
@@ -22,11 +23,12 @@ public class CavePaintings extends Event {
     @Override
     public void execute(List<Player> players) {
         for (Player player : players) {
-            if(player.getArtistNumber() == upperNumArtists){
+            int artistNumber = player.countCharactersOfType(CharacterType.ARTIST);
+            if(artistNumber == upperNumArtists){
                 player.addPrestige(decrPrestigePoints);
 
-            }else if(player.getArtistNumber() >= lowerNumArtists && player.getArtistNumber() >= minArtists){
-                player.addPrestige(incrPrestigePoints*player.getArtistNumber());
+            }else if(artistNumber >= lowerNumArtists && artistNumber >= minArtists){
+                player.addPrestige(incrPrestigePoints*artistNumber);
             }
 
             for (DrawableCard card : player.getTribe()) {
