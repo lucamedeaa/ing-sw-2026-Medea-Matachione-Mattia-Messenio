@@ -16,10 +16,17 @@ import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.RitualShield;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.ArtistFood;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.BuilderMastery;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.ClassScorer;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerArtist;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerBuilder;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerCollector;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerHunter;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerInventor;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer.ClassScorerShaman;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.DiverseSet;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.DoublePrestigeShaman;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.FoodDiscount;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.foodDiscount.FoodDiscountArtist;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.foodDiscount.FoodDiscountCollector;
+import it.polimi.ingsw.model.cards.drawableCards.buildings.foodDiscount.FoodDiscountInventor;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.HunterBonus;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.InventorPair;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.LatePurchase;
@@ -27,6 +34,7 @@ import it.polimi.ingsw.model.cards.drawableCards.buildings. RitualStars;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.SetScorer;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.TurnBonus;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.VictoryPoints;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,8 +108,8 @@ public class DeckFactory {
             cards.add(new Inventor(2,  InventorIcon.NECKLACE));
             cards.add(new Inventor(2,  InventorIcon.BREAD));
 
-            cards.add(new CavePaintings(1, 1, 0, 2, 1));
-            cards.add(new CavePaintings(2, 2, 0, 2, 2));
+            cards.add(new CavePaintings(1, 1, 2, 1));
+            cards.add(new CavePaintings(2, 2, 2, 2));
 
             cards.add(new Hunt(1, 1, 1));
             cards.add(new Hunt(2, 1, 2));
@@ -206,8 +214,8 @@ public class DeckFactory {
             tmp.add(new DiverseSet(4, 3 ,1));
             tmp.add(new InventorPair(3, 4, 1));
             tmp.add(new TurnBonus(3, 3, 1));
-            tmp.add(new FoodDiscount(5, 3, 1, ARTIST));
-            tmp.add(new FoodDiscount(4, 4, 1, COLLECTOR));
+            tmp.add(new FoodDiscountArtist(5, 3, 1, CharacterType.ARTIST));
+            tmp.add(new FoodDiscountCollector(4, 4, 1, CharacterType.COLLECTOR));
         }
 
         if(era == 2){
@@ -215,19 +223,19 @@ public class DeckFactory {
             tmp.add(new BuilderMastery(6, 4 ,2));
             tmp.add(new RitualStars(6, 4, 2));
             tmp.add(new DoublePrestigeShaman(7, 0, 2));
-            tmp.add(new FoodDiscount(7, 4, 2, INVENTOR));
+            tmp.add(new FoodDiscountInventor(7, 4, 2, CharacterType.INVENTOR));
             tmp.add(new SetScorer(5, 6, 2));
             tmp.add(new HunterBonus(7, 2, 2 ));
         }
         if(era == 3){
             tmp.add(new VictoryPoints(10, 0, 3));
             tmp.add(new LatePurchase(9, 3 ,3));
-            tmp.add(new ClassScorer(6, 6, 3, INVENTOR));
-            tmp.add(new ClassScorer(7, 4, 3, ARTIST));
-            tmp.add(new ClassScorer(7, 4, 3, SHAMAN));
-            tmp.add(new ClassScorer(8, 8, 3, HUNTER));
-            tmp.add(new ClassScorer(7, 6, 3, COLLECTOR));
-            tmp.add(new ClassScorer(6, 3, 3, BUILDER));
+            tmp.add(new ClassScorerInventor(6, 6, 3, CharacterType.INVENTOR));
+            tmp.add(new ClassScorerArtist(7, 4, 3,CharacterType.ARTIST));
+            tmp.add(new ClassScorerShaman(7, 4, 3,CharacterType.SHAMAN));
+            tmp.add(new ClassScorerHunter(8, 8, 3,CharacterType.HUNTER));
+            tmp.add(new ClassScorerCollector(7, 6, 3,CharacterType.COLLECTOR));
+            tmp.add(new ClassScorerBuilder(6, 3, 3,CharacterType.BUILDER));
         }
 
         Collections.shuffle(tmp);

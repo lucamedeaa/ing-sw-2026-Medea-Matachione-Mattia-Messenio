@@ -1,0 +1,150 @@
+{
+  "tribeDeck": {
+    "baseCards": [
+      { "type": "Builder", "era": 1, "arg1": 1, "arg2": 2 },
+      { "type": "Builder", "era": 1, "arg1": 2, "arg2": 0 },
+      { "type": "Builder", "era": 1, "arg1": 1, "arg2": 3 },
+      { "type": "Builder", "era": 2, "arg1": 1, "arg2": 4 },
+      { "type": "Builder", "era": 2, "arg1": 2, "arg2": 1 },
+      { "type": "Builder", "era": 2, "arg1": 2, "arg2": 3 },
+      { "type": "Builder", "era": 3, "arg1": 1, "arg2": 5 },
+      { "type": "Builder", "era": 3, "arg1": 2, "arg2": 3 },
+      { "type": "Builder", "era": 3, "arg1": 2, "arg2": 2 },
+
+      { "type": "Hunter", "era": 1, "bonus": true },
+      { "type": "Hunter", "era": 1, "bonus": true },
+      { "type": "Hunter", "era": 1, "bonus": false },
+      { "type": "Hunter", "era": 2, "bonus": true },
+      { "type": "Hunter", "era": 2, "bonus": false },
+      { "type": "Hunter", "era": 2, "bonus": false },
+      { "type": "Hunter", "era": 3, "bonus": true },
+      { "type": "Hunter", "era": 3, "bonus": false },
+      { "type": "Hunter", "era": 3, "bonus": false },
+
+      { "type": "Artist", "era": 1 },
+      { "type": "Artist", "era": 1 },
+      { "type": "Artist", "era": 1 },
+      { "type": "Artist", "era": 2 },
+      { "type": "Artist", "era": 2 },
+      { "type": "Artist", "era": 2 },
+      { "type": "Artist", "era": 3 },
+      { "type": "Artist", "era": 3 },
+      { "type": "Artist", "era": 3 },
+
+      { "type": "Shaman", "era": 1, "power": 1 },
+      { "type": "Shaman", "era": 1, "power": 2 },
+      { "type": "Shaman", "era": 2, "power": 2 },
+      { "type": "Shaman", "era": 2, "power": 2 },
+      { "type": "Shaman", "era": 3, "power": 2 },
+      { "type": "Shaman", "era": 3, "power": 3 },
+      { "type": "Shaman", "era": 3, "power": 3 },
+
+      { "type": "Collector", "era": 1, "value": 3 },
+      { "type": "Collector", "era": 1, "value": 3 },
+      { "type": "Collector", "era": 2, "value": 3 },
+      { "type": "Collector", "era": 3, "value": 3 },
+
+      { "type": "Inventor", "era": 1, "icon": "SPEARHEAD" },
+      { "type": "Inventor", "era": 1, "icon": "LEATHER" },
+      { "type": "Inventor", "era": 1, "icon": "BREAD" },
+      { "type": "Inventor", "era": 1, "icon": "CANOE" },
+      { "type": "Inventor", "era": 1, "icon": "MORTAR" },
+      { "type": "Inventor", "era": 2, "icon": "ROPE" },
+      { "type": "Inventor", "era": 2, "icon": "LEATHER" },
+      { "type": "Inventor", "era": 2, "icon": "MORTAR" },
+      { "type": "Inventor", "era": 2, "icon": "FLUTE" },
+      { "type": "Inventor", "era": 2, "icon": "STATUE" },
+      { "type": "Inventor", "era": 2, "icon": "FISHHOOK" },
+      { "type": "Inventor", "era": 2, "icon": "STATUE" },
+      { "type": "Inventor", "era": 2, "icon": "NECKLACE" },
+      { "type": "Inventor", "era": 2, "icon": "BREAD" },
+
+      { "type": "CavePaintings", "era": 1, "arg1": 1, "arg2": 2, "arg3": 1},
+      { "type": "CavePaintings", "era": 2, "arg1": 2, "arg2": 2, "arg3": 2},
+
+      { "type": "Hunt", "era": 1, "arg1": 1, "arg2": 1 },
+      { "type": "Hunt", "era": 2, "arg1": 1, "arg2": 2 },
+
+      { "type": "ShamanicRitual", "era": 1, "threshold": 5,  "reward": 3 },
+      { "type": "ShamanicRitual", "era": 2, "threshold": 10, "reward": 5 },
+      { "type": "ShamanicRitual", "era": 3, "threshold": 15, "reward": 7 },
+
+      { "type": "Sustenance", "era": 1, "value": 1 },
+      { "type": "Sustenance", "era": 2, "value": 2 },
+      { "type": "Sustenance", "era": 2, "value": 2 }
+    ],
+    "extraCards_3players": [
+      { "type": "Artist",  "era": 1 },
+      { "type": "Artist",  "era": 2 },
+      { "type": "Hunter",  "era": 1, "bonus": false },
+      { "type": "Hunter",  "era": 1, "bonus": false },
+      { "type": "Hunter",  "era": 2, "bonus": true },
+      { "type": "Collector", "era": 1, "value": 3 },
+      { "type": "Collector", "era": 2, "value": 3 },
+      { "type": "Builder",   "era": 2, "arg1": 1, "arg2": 2 },
+      { "type": "Inventor",  "era": 3, "icon": "SPEARHEAD" },
+      { "type": "Inventor",  "era": 3, "icon": "CANOE" },
+      { "type": "Shaman",    "era": 3, "power": 2 }
+    ],
+    "extraCards_4players": [
+      { "type": "Shaman",    "era": 1, "power": 1 },
+      { "type": "Shaman",    "era": 3, "power": 2 },
+      { "type": "Artist",    "era": 1 },
+      { "type": "Inventor",  "era": 1, "icon": "ROPE" },
+      { "type": "Inventor",  "era": 1, "icon": "FLUTE" },
+      { "type": "Inventor",  "era": 2, "icon": "FISHHOOK" },
+      { "type": "Inventor",  "era": 3, "icon": "NECKLACE" },
+      { "type": "Collector", "era": 2, "value": 3 },
+      { "type": "Collector", "era": 3, "value": 3 },
+      { "type": "Hunter",    "era": 2, "bonus": true }
+    ],
+    "extraCards_5players": [
+      { "type": "Shaman",  "era": 1, "power": 2 },
+      { "type": "Shaman",  "era": 2, "power": 1 },
+      { "type": "Shaman",  "era": 2, "power": 2 },
+      { "type": "Collector", "era": 1, "value": 3 },
+      { "type": "Collector", "era": 2, "value": 3 },
+      { "type": "Collector", "era": 3, "value": 3 },
+      { "type": "Builder", "era": 1, "arg1": 2, "arg2": 1 },
+      { "type": "Builder", "era": 3, "arg1": 1, "arg2": 4 },
+      { "type": "Hunter",  "era": 2, "bonus": false },
+      { "type": "Hunter",  "era": 3, "bonus": true },
+      { "type": "Artist",  "era": 3 }
+    ]
+  },
+  "buildingDecks": {
+    "era1": [
+      { "type": "RitualShield",       "cost": 5, "food": 2, "era": 1 },
+      { "type": "DiverseSet",         "cost": 4, "food": 3, "era": 1 },
+      { "type": "InventorPair",       "cost": 3, "food": 4, "era": 1 },
+      { "type": "TurnBonus",          "cost": 3, "food": 3, "era": 1 },
+      { "type": "FoodDiscount",       "cost": 5, "food": 3, "era": 1, "character": "ARTIST" },
+      { "type": "FoodDiscount",       "cost": 4, "food": 4, "era": 1, "character": "COLLECTOR" }
+    ],
+    "era2": [
+      { "type": "ArtistFood",         "cost": 5, "food": 6, "era": 2 },
+      { "type": "BuilderMastery",     "cost": 6, "food": 4, "era": 2 },
+      { "type": "RitualStars",        "cost": 6, "food": 4, "era": 2 },
+      { "type": "DoublePrestigeShaman","cost": 7, "food": 0, "era": 2 },
+      { "type": "FoodDiscount",       "cost": 7, "food": 4, "era": 2, "character": "INVENTOR" },
+      { "type": "SetScorer",          "cost": 5, "food": 6, "era": 2 },
+      { "type": "HunterBonus",        "cost": 7, "food": 2, "era": 2 }
+    ],
+    "era3": [
+      { "type": "VictoryPoints",      "cost": 10, "food": 0, "era": 3 },
+      { "type": "LatePurchase",       "cost": 9,  "food": 3, "era": 3 },
+      { "type": "ClassScorer",        "cost": 6,  "food": 6, "era": 3, "character": "INVENTOR" },
+      { "type": "ClassScorer",        "cost": 7,  "food": 4, "era": 3, "character": "ARTIST" },
+      { "type": "ClassScorer",        "cost": 7,  "food": 4, "era": 3, "character": "SHAMAN" },
+      { "type": "ClassScorer",        "cost": 8,  "food": 8, "era": 3, "character": "HUNTER" },
+      { "type": "ClassScorer",        "cost": 7,  "food": 6, "era": 3, "character": "COLLECTOR" },
+      { "type": "ClassScorer",        "cost": 6,  "food": 3, "era": 3, "character": "BUILDER" }
+    ],
+    "buildingCountsPerEra": {
+      "2players": [1, 2, 3],
+      "3players": [2, 2, 4],
+      "4players": [2, 3, 4],
+      "5players": [2, 3, 5]
+    }
+  }
+}
