@@ -24,4 +24,6 @@ public class Inventor extends Character {
         inventorIcons.add(inventorIcon);
         return 1;
     }
+
+    public InventorIcon getInventorIcon() {return inventorIcon;}
 }

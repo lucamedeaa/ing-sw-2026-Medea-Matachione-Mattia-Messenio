@@ -9,6 +9,6 @@ public class ClassScorerShaman extends ClassScorer{
     }
     @Override
     public int getFinalPoints(Player owner){
-        return owner.getShamanNumber() * 4 + this.prestigePoints;
+        return owner.countCharactersOfType(CharacterType.SHAMAN) * 4 + this.prestigePoints;
     }
 }

@@ -9,6 +9,6 @@ public class ClassScorerBuilder extends ClassScorer {
     }
     @Override
     public int getFinalPoints(Player owner){
-        return owner.getBuilderNumber() * 4 + this.prestigePoints;
+        return owner.countCharactersOfType(CharacterType.BUILDER) * 4 + this.prestigePoints;
     }
 }

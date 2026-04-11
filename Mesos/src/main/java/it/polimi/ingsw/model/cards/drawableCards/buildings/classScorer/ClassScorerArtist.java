@@ -10,7 +10,7 @@ public class ClassScorerArtist extends ClassScorer {
     }
     @Override
     public int getFinalPoints(Player owner){
-        return owner.getArtistNumber() * 4 + this.prestigePoints;
+        return owner.countCharactersOfType(CharacterType.ARTIST) * 4 + this.prestigePoints;
     }
 
 }

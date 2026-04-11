@@ -10,7 +10,7 @@ public class FoodDiscountCollector extends FoodDiscount {
     }
     @Override
     public int onSustenanceEvent(Player owner){
-        return owner.getCollectorNumber();
+        return owner.countCharactersOfType(CharacterType.COLLECTOR);
     }
 }
 
