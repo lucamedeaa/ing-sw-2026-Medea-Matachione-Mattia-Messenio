@@ -27,7 +27,6 @@ public class ShamanicRitual extends Event {
         }
 
         min = stars[0];
-
         for (int x : stars) {
             max = Math.max(max, x);
             min = Math.min(min, x);

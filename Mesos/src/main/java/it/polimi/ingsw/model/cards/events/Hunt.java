@@ -18,9 +18,6 @@ public class Hunt extends Event {
         int num;
         for(Player player : players) {
             num=player.countCharactersOfType(CharacterType.HUNTER);
-            for(DrawableCard card : player.getTribe()) {
-                card.onHuntEvent(player);
-            }
             player.addFood(num*foodGiven);
             player.addPrestige(num*prestigeGiven);
             for (DrawableCard card : player.getTribe()) {
