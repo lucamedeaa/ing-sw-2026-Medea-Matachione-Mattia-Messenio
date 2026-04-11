@@ -23,9 +23,11 @@ public class CavePaintings extends Event {
     public void execute(List<Player> players) {
 
         for (Player player : players) {
-
             int artistNumber = player.countCharactersOfType(CharacterType.ARTIST);
 
+            for(DrawableCard card : player.getTribe()){
+                card.onCavePaintingsEvent(player);
+            }
             if(artistNumber <= upperNumArtists){
                 player.addPrestige(decrPrestigePoints);
 
