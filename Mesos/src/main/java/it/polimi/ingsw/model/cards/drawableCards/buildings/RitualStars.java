@@ -4,7 +4,11 @@ import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import java.util.List;
 
 public class RitualStars extends Building {
-    public RitualStars(){}
+    public RitualStars(int foodCost, int prestigePoints, int era) {
+        super(foodCost, prestigePoints, era);
+    }
     @Override
-    public void eventPerks(List<DrawableCard> tribe){}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        return 3;
+    }
 }

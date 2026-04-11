@@ -55,7 +55,7 @@
 +refreshBoard(playerCount: int)
 +resolveEvents(players : List&lt;Player&gt;)
 +allTotemsPlaced(): Boolean
-+refillTopRow()
++refillTopRow(playerCount: int)
 +moveToBottom()
 +removeBottomRow()
 +shiftBuildingsToLow()
@@ -403,7 +403,7 @@
     <coordinates>
       <x>1792</x>
       <y>56</y>
-      <w>464</w>
+      <w>864</w>
       <h>272</h>
     </coordinates>
     <panel_attributes>ENUMS</panel_attributes>

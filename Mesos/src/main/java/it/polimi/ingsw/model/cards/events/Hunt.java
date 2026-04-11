@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.cards.events;
 
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 import java.util.List;
 
@@ -10,9 +11,10 @@ public class Hunt extends Event {
     private final int prestigeGiven;
     public Hunt(int era, int foodGiven, int prestigeGiven) {
         this.era = era;
-        this.foodGiven = foodGiven;
+        this.foodGiven = foodGiven; //teoricamente inutile visto che è sempre 1
         this.prestigeGiven = prestigeGiven;
     }
+
     @Override
     public void execute(List<Player> players) {
         int num;
@@ -22,4 +24,9 @@ public class Hunt extends Event {
             player.addPrestige(num*prestigeGiven);
         }
     }
-}
+}/*ciccione aggiunge
+            for (DrawableCard card : player.getTribe()) {
+                card.onHuntEvent(player);
+            }
+        }
+    }*/

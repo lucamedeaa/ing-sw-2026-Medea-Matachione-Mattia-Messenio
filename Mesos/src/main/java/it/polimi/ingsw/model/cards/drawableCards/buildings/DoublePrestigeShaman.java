@@ -4,7 +4,14 @@ import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import java.util.List;
 
 public class DoublePrestigeShaman extends Building {
-    public DoublePrestigeShaman() {}
+    public DoublePrestigeShaman(int foodCost, int prestigePoints, int era) {
+        super(foodCost, prestigePoints, era);
+    }
     @Override
-    public void eventPerks(List<DrawableCard> tribe){}
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        if(increment != 0){
+            owner.addPrestige(increment); //doubles the increment
+        }
+        return 0;
+    }
 }

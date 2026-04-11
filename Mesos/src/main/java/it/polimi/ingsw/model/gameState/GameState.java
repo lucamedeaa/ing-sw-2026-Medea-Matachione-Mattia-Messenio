@@ -2,12 +2,30 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.board.OfferTile;
 
 public abstract class GameState {
-    private Game game;
-    public void transition(GameState newState){}
-    public void start(){}
-    public void placeTotem(Player player, OfferTile tile){}
-    public void takeCard(Player player, int rowIdx, int cardIdx ){}
+
+    protected final Game game;
+
+    public GameState(Game game) {
+        this.game = game;
+    }
+
+    public abstract void start();
+
+    protected void transition(GameState newState) {
+        this.game.changeState(newState);
+    }
+
+    public void placeTotem(Player player, int tileIndex) {
+        throw new IllegalStateException("Action not allowed: You cannot place a totem in this game phase.");
+    }
+
+    public void takeCard(Player player, int rowIdx, int cardIdx) {
+        throw new IllegalStateException("Action not allowed: You cannot take cards in this game phase.");
+    }
+
+    public void passTurn(Player player) {
+        throw new IllegalStateException("Action not allowed: You cannot pass the turn in this game phase.");
+    }
 }
