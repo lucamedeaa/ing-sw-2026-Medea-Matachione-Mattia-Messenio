@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.model.enums.TotemColor;
 import it.polimi.ingsw.model.enums.CharacterType;
 
+import java.util.HashSet;
 import java.util.function.ToIntFunction;
 
 import java.util.List;
@@ -52,7 +53,13 @@ public class Player {
     }
 
     public int calculateTotalScore(){
-        return prestigePoints + sumFromTribe(card -> card.getFinalPoints(this));
+        Set<InventorIcon> seenIcons = new HashSet<>();
+        int distincIcons = sumFromTribe(card -> card.getInventorIconsNumber(seenIcons));
+
+        return prestigePoints +
+                sumFromTribe(card -> card.getFinalPoints(this)) +
+                ((countCharactersOfType(CharacterType.ARTIST)/2) * 10) +
+                countCharactersOfType(CharacterType.INVENTOR) * distincIcons ;
     }
 
     public int getInventorIconsNumber(Set<InventorIcon> icons) {

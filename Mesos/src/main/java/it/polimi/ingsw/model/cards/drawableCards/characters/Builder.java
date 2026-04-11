@@ -13,7 +13,7 @@ public class Builder extends Character {
     }
     @Override
     public int getFoodDiscount(){return foodDiscount;}
-    public int getEndGamePrestigePoints(){return endGamePrestigePoints;}
+    public int getFinalPoints(){return endGamePrestigePoints;}
 
         @Override
     public CharacterType getCharacter() {
