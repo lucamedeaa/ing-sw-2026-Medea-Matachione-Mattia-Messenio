@@ -20,5 +20,6 @@ public abstract class DrawableCard extends Card {
     public void onHuntEvent(Player owner) {}
     public int onShamanicRitualEvent(Player owner, int increment, int decrement) {return 0;}
     public abstract CharacterType getCharacter();
+    public void onCardAddedToTribe(Player owner) {}
 
 }

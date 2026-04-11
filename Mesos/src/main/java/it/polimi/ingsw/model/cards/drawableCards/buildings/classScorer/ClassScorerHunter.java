@@ -9,6 +9,6 @@ public class ClassScorerHunter extends ClassScorer {
     }
     @Override
     public int getFinalPoints(Player owner){
-        return owner.getHunterNumber() * 3 + this.prestigePoints;
+        return owner.countCharactersOfType(CharacterType.HUNTER) * 3 + this.prestigePoints;
     }
 }

@@ -7,6 +7,7 @@ public abstract class Character extends DrawableCard{
     public boolean isPersistent() {
         return false;
     }
+
     @Override
     public void placeDuringSetupBottom(Board board) {
         board.addBottomRow(this);

@@ -6,15 +6,13 @@ import it.polimi.ingsw.model.enums.CharacterType;
 import java.util.List;
 
 public class CavePaintings extends Event {
-    private final int minArtists;
     private final int lowerNumArtists;
     private final int upperNumArtists;
     private final int decrPrestigePoints;
     private final int incrPrestigePoints;
 
-    public CavePaintings(int era, int minArtists, int lowerNumArtists, int upperNumArtists, int decrPrestigePoints, int incrPrestigePoints) {
+    public CavePaintings(int era, int lowerNumArtists, int upperNumArtists, int decrPrestigePoints, int incrPrestigePoints) {
         this.era=era;
-        this.minArtists = minArtists;
         this.lowerNumArtists = lowerNumArtists;
         this.upperNumArtists = upperNumArtists;
         this.decrPrestigePoints = decrPrestigePoints;
@@ -23,28 +21,21 @@ public class CavePaintings extends Event {
     
     @Override
     public void execute(List<Player> players) {
-        for (Player player : players) {
-            if(player.getArtistNumber() <= upperNumArtists){
-                player.payPrestige(decrPrestigePoints);
 
-        }else if(player.getArtistNumber() >= lowerNumArtists){
-                player.addPrestige(incrPrestigePoints*player.getArtistNumber());
-            }
-        }
-        //ho commentato quello sotto di luca perché sembra abbastanza diverso
-       /* 
         for (Player player : players) {
+
             int artistNumber = player.countCharactersOfType(CharacterType.ARTIST);
-            if(artistNumber == upperNumArtists){
+
+            if(artistNumber <= upperNumArtists){
                 player.addPrestige(decrPrestigePoints);
 
-            }else if(artistNumber >= lowerNumArtists && artistNumber >= minArtists){
+            }else if(artistNumber >= lowerNumArtists){
                 player.addPrestige(incrPrestigePoints*artistNumber);
             }
 
             for (DrawableCard card : player.getTribe()) {
                 card.onCavePaintingsEvent(player);
             }
-        }*/
+        }
     }
 }
