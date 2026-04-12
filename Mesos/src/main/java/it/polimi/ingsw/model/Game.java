@@ -43,8 +43,8 @@ public class Game {
         this.currentState.takeCard(player, rowIdx, cardIdx);
     }
 
-    public void passTurn(Player player) {
-        this.currentState.passTurn(player);
+    public void skipBonus(Player player) {
+        this.currentState.skipBonus(player);
     }
 
     public void incrementRound() {

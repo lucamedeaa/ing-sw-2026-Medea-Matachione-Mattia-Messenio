@@ -48,6 +48,9 @@ public class Player {
             this.food = 0;
         }
     }
+
+    public int getFoodBonus(){ return sumFromTribe(card -> card.getFoodBonus());}
+
     public void addPrestige(int amount) {
         this.prestigePoints += amount;
     }
@@ -94,6 +97,5 @@ public class Player {
     }
 
     public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
-    public int getBuilderDiscount() { return sumFromTribe(card -> card.getFoodDiscount());}
 
-    public int getTopRowBonus() {return sumFromTribe(card -> card.getTopRowBonus());}
+    public int getTopRowBonus() { return sumFromTribe(card -> card.getTopRowBonus());}

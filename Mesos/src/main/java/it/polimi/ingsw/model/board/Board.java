@@ -228,7 +228,10 @@ public class Board {
         this.nextTotemOrder.add(player);
         int currentIndex = this.nextTotemOrder.size() - 1;
         int bonus = foodTurnOrderBonus.get(currentIndex);
-        for(Card card : player.getTribe()){bonus += card.getFoodBonus();} //only building 'TurnBonus' returns 1
+        if (bonus > 0){
+            bonus += player.getFoodBonus();
+        }
+        //only building 'TurnBonus' returns 1
         player.addFood(bonus);
         //TODO: Conidering what I said about addFood in Player, I'd do this way here
         /*if (bonus > 0) {

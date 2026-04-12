@@ -96,6 +96,6 @@ public class ActionState extends GameState {
     }
 
     private void endRound() {
-        this.transition(new RoundEndState(this.game));
+        this.transition(new AdditionalPickState(this.game));
     }
 }

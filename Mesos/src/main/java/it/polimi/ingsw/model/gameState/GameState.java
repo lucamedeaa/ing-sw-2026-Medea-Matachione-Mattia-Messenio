@@ -25,7 +25,7 @@ public abstract class GameState {
         throw new IllegalStateException("Action not allowed: You cannot take cards in this game phase.");
     }
 
-    public void passTurn(Player player) {
-        throw new IllegalStateException("Action not allowed: You cannot pass the turn in this game phase.");
+    public void skipBonus(Player player) {
+        throw new IllegalStateException("You can't skip bonus in this phase!");
     }
 }
