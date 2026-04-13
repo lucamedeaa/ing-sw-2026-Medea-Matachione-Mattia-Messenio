@@ -16,7 +16,7 @@ public class Hunter extends Character{
     }
 
     @Override
-    public void onCardAddedToTribe(Player owner){
+    public void onCardAddedInstantEffects(Player owner){
         int cnt=1;
         if(this.hasIcon){
             for(DrawableCard drawableCard : owner.getTribe()){

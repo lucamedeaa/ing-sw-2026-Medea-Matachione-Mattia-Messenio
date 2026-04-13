@@ -30,4 +30,5 @@ public abstract class Card {
         return 0;
     }
     public int getFoodDiscount(){return 0;}
+    public void onCardAddedInstantEffects(Player player) {};
 }

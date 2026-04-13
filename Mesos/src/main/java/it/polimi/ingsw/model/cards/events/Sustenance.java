@@ -26,7 +26,7 @@ public class Sustenance extends Event {
             int total = 0;
             int playerFood = player.getFood();
             for (DrawableCard card : player.getTribe()) {
-                if (!(card instanceof Building)) {
+                if (!(card.getCharacter().equals(CharacterType.BUILDING))) {
                     total += 1;
                 }
             }
