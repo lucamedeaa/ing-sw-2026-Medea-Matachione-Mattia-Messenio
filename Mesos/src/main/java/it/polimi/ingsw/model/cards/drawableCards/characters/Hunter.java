@@ -4,20 +4,20 @@ import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.enums.CharacterType;
 
 public class Hunter extends Character{
-    private final Boolean hasIcon;
-    public Hunter(int era,Boolean hasIcon) {
+    private final boolean hasIcon;
+    public Hunter(int era, boolean hasIcon) {
         this.foodCost=0;
         this.era=era;
         this.hasIcon = hasIcon;
     }
 
-    public Boolean getHasIcon() {
+    public boolean getHasIcon() {
         return hasIcon;
     }
 
     @Override
-    public void onCardAddedToTribe(Player owner){
-        int cnt=1;
+    public void onCardAddedInstantEffects(Player owner){
+        int cnt=0;
         if(this.hasIcon){
             for(DrawableCard drawableCard : owner.getTribe()){
                 if(drawableCard.getCharacter()==CharacterType.HUNTER){
@@ -25,8 +25,10 @@ public class Hunter extends Character{
                 }
             }
             owner.addFood(cnt);
-    }
         }
+    }
+
+
     @Override
     public CharacterType getCharacter() {
         return CharacterType.HUNTER;

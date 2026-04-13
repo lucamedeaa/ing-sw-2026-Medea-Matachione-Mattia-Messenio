@@ -52,7 +52,27 @@ public class Game {
     }
 
     public Player determineWinner() {
-        /*TODO implementare*/
+
+        Player winner = players.get(0);
+
+        for (int i = 1; i < players.size(); i++) {
+            Player currentPlayer = players.get(i);
+            int currentPP = currentPlayer.calculateTotalScore();
+            int winnerPP = winner.calculateTotalScore();
+
+            if (currentPP > winnerPP) {
+                winner = currentPlayer;
+            } else if (currentPP == winnerPP) {
+                // Tie-breaker: Check Food
+                if (currentPlayer.getFood() > winner.getFood()) {
+                    winner = currentPlayer;
+                }
+                // Note: If PP and Food are both equal, the player
+                // already stored as "winner" remains the winner.
+            }
+        }
+
+        return winner;
     }
 
     public Board getBoard() {

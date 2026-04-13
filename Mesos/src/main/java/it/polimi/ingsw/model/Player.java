@@ -80,9 +80,11 @@ public class Player {
 
     public void addCard(DrawableCard newCard) {
         tribe.add(newCard);
+        newCard.onCardAddedInstantEffects(this);
         for(DrawableCard card : this.tribe) {
             card.onCardAddedToTribe(this, newCard);
         }
+
     }
 
 

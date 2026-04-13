@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enums.CharacterType;
 
 public class Builder extends Character {
@@ -13,7 +14,7 @@ public class Builder extends Character {
     }
     @Override
     public int getFoodDiscount(){return foodDiscount;}
-    public int getFinalPoints(){return endGamePrestigePoints;}
+    public int getFinalPoints(Player owner){return endGamePrestigePoints;}
 
         @Override
     public CharacterType getCharacter() {

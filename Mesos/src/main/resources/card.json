@@ -59,9 +59,9 @@
       { "type": "Inventor", "era": 2, "icon": "NECKLACE" },
       { "type": "Inventor", "era": 2, "icon": "BREAD" },
 
-      { "type": "CavePaintings", "era": 1, "arg1": 1, "arg2": 2, "arg3": 1},
-      { "type": "CavePaintings", "era": 2, "arg1": 2, "arg2": 2, "arg3": 2},
-      { "type": "CavePaintings", "era": 3, "arg1": 3, "arg2": 2, "arg3": 3},
+      { "type": "CavePaintings", "era": 1, "arg1": 1, "arg2": -2, "arg3": 1},
+      { "type": "CavePaintings", "era": 2, "arg1": 2, "arg2": -2, "arg3": 2},
+      { "type": "CavePaintings", "era": 3, "arg1": 3, "arg2": -2, "arg3": 3},
 
 
       { "type": "Hunt", "era": 1, "arg1": 1, "arg2": 1 },
