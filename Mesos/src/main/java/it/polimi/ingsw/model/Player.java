@@ -99,3 +99,4 @@ public class Player {
     public int getStarsNumber()     { return sumFromTribe(card -> card.getStarsNumber()); }
 
     public int getTopRowBonus() { return sumFromTribe(card -> card.getTopRowBonus());}
+}

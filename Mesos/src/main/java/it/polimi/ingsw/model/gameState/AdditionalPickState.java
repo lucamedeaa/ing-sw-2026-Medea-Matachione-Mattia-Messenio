@@ -68,7 +68,7 @@ public class AdditionalPickState extends GameState {
 
         player.addFood(-finalCost);
         Card purchasedCard = board.takeCard(rowIdx, cardIdx);
-        player.addCard(purchasedCard);
+        player.addCard((DrawableCard) purchasedCard);
         remainingUpperPicks--;
 
         if (remainingUpperPicks <= 0) {

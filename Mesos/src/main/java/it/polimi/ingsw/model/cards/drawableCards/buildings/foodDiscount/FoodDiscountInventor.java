@@ -10,7 +10,7 @@ public class FoodDiscountInventor extends FoodDiscount {
     }
     @Override
     public int onSustenanceEvent(Player owner){
-        return owner.getInventorsNumber();
+        return owner.countCharactersOfType(CharacterType.INVENTOR);
     }
 }
 

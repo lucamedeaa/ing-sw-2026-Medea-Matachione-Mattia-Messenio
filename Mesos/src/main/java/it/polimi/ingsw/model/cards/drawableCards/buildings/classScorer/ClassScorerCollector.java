@@ -9,6 +9,6 @@ public class ClassScorerCollector extends ClassScorer {
     }
     @Override
     public int getFinalPoints(Player owner){
-        return owner.getCollectorNumber() * 4 + this.prestigePoints;
+        return owner.countCharactersOfType(CharacterType.COLLECTOR) * 4 + this.prestigePoints;
     }
 }

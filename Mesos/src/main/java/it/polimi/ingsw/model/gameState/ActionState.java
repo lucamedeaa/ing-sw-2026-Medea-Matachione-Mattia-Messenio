@@ -79,7 +79,7 @@ public class ActionState extends GameState {
         /*TODO sistemare qua che andrebbe fatto casting, imo avrebbe senso mettere il deck come deck di carte normali nel player tanto cambia poco
         *  pero forse alcuni metodi andrebbero definiti in card e drawable card non avrebbe senso di esister. gia ne ha poco dato che prima di pescare bisogna usare
         * il metodo isPickable sulla carta quindi boh, leverei quella classe e fine*/
-        player.addCard(purchasedCard);
+        player.addCard((DrawableCard) purchasedCard);
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
         if (remainingUpperPicks <= 0 && remainingLowerPicks <= 0) {

@@ -110,6 +110,8 @@ public class DeckFactory {
 
             cards.add(new CavePaintings(1, 1, 2, 1));
             cards.add(new CavePaintings(2, 2, 2, 2));
+            cards.add(new CavePaintings(3, 3, 2, 3));
+
 
             cards.add(new Hunt(1, 1, 1));
             cards.add(new Hunt(2, 1, 2));

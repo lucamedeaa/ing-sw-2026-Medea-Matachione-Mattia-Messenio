@@ -62,7 +62,7 @@ public class Board {
         }
     }
     private void initTopRow(){
-        //questo un pelo diverso da refillTopRow perché potrebbero gia esserci eventi, mentre sotto peschi sempre players + 4. pensa se codice puo essere unificato
+        //questo un pelo diverso da refillTopRow perché potrebbero gia esserci eventi, mentre sotto peschi sempre players + 4. pensa se codice puo essere unificatozz
         while(upperRow.size() < (playerCount + 4)){
             Card cardToAdd = tribeDeck.draw();
             addTopRow(cardToAdd);

@@ -9,6 +9,6 @@ public class FoodDiscountArtist extends FoodDiscount {
     }
     @Override
     public int onSustenanceEvent(Player owner){
-        return owner.getArtistNumber();
+        return owner.countCharactersOfType(CharacterType.ARTIST);
     }
 }
