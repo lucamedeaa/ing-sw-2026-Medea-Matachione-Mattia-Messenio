@@ -10,9 +10,7 @@ public abstract class Building extends DrawableCard {
         this.prestigePoints = prestigePoints;
         this.era = era;
     }
-    protected int foodCost;
     protected int prestigePoints;
-    protected int era;
     public int getFinalPoints(Player owner){return prestigePoints;}
     public void onCardAddedToTribe(Player owner, DrawableCard newcard){}
     @Override

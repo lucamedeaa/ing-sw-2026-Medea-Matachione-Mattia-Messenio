@@ -8,7 +8,6 @@ import java.util.Set;
 
 public abstract class DrawableCard extends Card {
     protected int foodCost;
-    public DrawableCard() {};
     public int getStarsNumber(){return 0;}
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){return 0;}
 

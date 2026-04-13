@@ -12,5 +12,4 @@ public class ClassScorerArtist extends ClassScorer {
     public int getFinalPoints(Player owner){
         return owner.countCharactersOfType(CharacterType.ARTIST) * 4 + this.prestigePoints;
     }
-
 }

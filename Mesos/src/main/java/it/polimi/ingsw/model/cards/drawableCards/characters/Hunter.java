@@ -11,9 +11,6 @@ public class Hunter extends Character{
         this.hasIcon = hasIcon;
     }
 
-    public boolean getHasIcon() {
-        return hasIcon;
-    }
 
     @Override
     public void onCardAddedInstantEffects(Player owner){

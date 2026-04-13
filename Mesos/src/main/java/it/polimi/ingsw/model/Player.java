@@ -65,9 +65,9 @@ public class Player {
                 countCharactersOfType(CharacterType.INVENTOR) * distincIcons ;
     }
 
-    public int getInventorIconsNumber(Set<InventorIcon> icons) {
+/*    public int getInventorIconsNumber(Set<InventorIcon> icons) {
         return sumFromTribe(card -> card.getInventorIconsNumber(icons));
-    }
+    }*/
 
 
     public int getPrestigePoints() {
