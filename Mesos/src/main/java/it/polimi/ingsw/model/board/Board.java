@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.board;
 import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.board.Era.EraOneState;
+import it.polimi.ingsw.model.board.Era.EraState;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.Factory.DeckFactory;
 
@@ -28,7 +30,7 @@ public class Board {
     private int playerCount;
     private Deck tribeDeck;
     private Deck[] buildingDecks;
-    private int currentEra;
+    private EraState currentEraState;
 
 
     public Board(int playerCount){
@@ -36,11 +38,11 @@ public class Board {
         this.lowerRow = new ArrayList<>();
         this.playerCount = playerCount;
         this.offerTrack = new ArrayList<>();
-        this.currentEra = 1;
+        this.currentEraState = new EraOneState();
     }
 
     private Deck getCurrentBuildingDeck() {
-        return buildingDecks[currentEra - 1];
+        return buildingDecks[currentEraState.getEraNumber() - 1];
     }
 
     public void setupBoard(List<Player> players) {
@@ -104,23 +106,17 @@ public class Board {
             }
             Card drawn = tribeDeck.draw();
             addTopRow(drawn);
-            if (drawn.getEra() > this.currentEra) {
+            if (drawn.getEra() > this.currentEraState.getEraNumber()) {
                 handleEraTransition();
             }
         }
     }
     private void handleEraTransition() {
-        this.currentEra += 1;
-        if (this.currentEra == 3) {
-            clearBuildingsFromLowerRow();
-        }
-        if (this.currentEra == 2 || this.currentEra == 3) {
-            shiftBuildingsToBottomRow();
-            setupNewEraBuildings();
-        }
+        this.currentEraState = this.currentEraState.getNextEra();
+        this.currentEraState.transitionSetup(this);
     }
 
-    private void clearBuildingsFromLowerRow() {
+    public void clearBuildingsFromLowerRow() {
         List<Card> nonBuildings = lowerRow.stream()
                 .flatMap(Optional::stream)
                 .filter(card -> !card.isPersistent())
@@ -129,7 +125,7 @@ public class Board {
         nonBuildings.forEach(this::addBottomRow);
     }
 
-    private void shiftBuildingsToBottomRow() {
+    public void shiftBuildingsToBottomRow() {
         List<Card> buildingsToMove = upperRow.stream()
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
@@ -143,7 +139,7 @@ public class Board {
         buildingsToMove.forEach(this::addBottomRow);
     }
 
-    private void setupNewEraBuildings() {
+    public void setupNewEraBuildings() {
 
         Deck currentDeck = getCurrentBuildingDeck();
         while (!currentDeck.isEmpty()) {
