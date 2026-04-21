@@ -1,9 +1,27 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
-import java.util.List;
+import it.polimi.ingsw.model.Player;
 
-public class SetScorer extends Building{
-    public SetScorer() {}
+import it.polimi.ingsw.model.enums.CharacterType;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+public class SetScorer extends Building {
+    private final Set<CharacterType> targetSet;
+
+    public SetScorer(int foodCost, int prestigePoints, int era) {
+        super(foodCost, prestigePoints, era);
+        this.targetSet = EnumSet.allOf(CharacterType.class);
+        this.targetSet.remove(CharacterType.BUILDING);
+    }
+
     @Override
-    public int getFinalPoints(List<DrawableCard> cards){return 0;}
+    public int getFinalPoints(Player owner) {
+        long completedSets = targetSet.stream()
+                .mapToInt(owner::countCharactersOfType)
+                .min()
+                .orElse(0);
+        int bonus = (int) completedSets * 6;
+        return this.prestigePoints + bonus;
+    }
 }

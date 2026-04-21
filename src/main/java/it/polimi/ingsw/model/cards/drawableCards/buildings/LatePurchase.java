@@ -3,7 +3,11 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 
 public class LatePurchase extends Building{
-    public LatePurchase() {}
+    public LatePurchase(int foodCost, int prestigePoints, int era) {
+        super(foodCost, prestigePoints, era);
+    }
     @Override
-    public void onTurnEnded(Player owner, Board board){}
+    public int getTopRowBonus(){
+        return 1;
+    }
 }

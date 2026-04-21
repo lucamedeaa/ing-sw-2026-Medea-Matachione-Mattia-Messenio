@@ -1,14 +1,28 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.enums.CharacterType;
 import it.polimi.ingsw.model.enums.InventorIcon;
-
 import java.util.Set;
 
-public class Inventor extends DrawableCard {
-    private InventorIcon inventorIcon;
-    public Inventor(InventorIcon inventorIcon){}
+public class Inventor extends Character {
+    private final InventorIcon inventorIcon;
+
+    public Inventor(int era, InventorIcon inventorIcon){
+        this.era=era;
+        this.foodCost=0;
+        this.inventorIcon = inventorIcon;
+    }
+
     @Override
-    public int getInventorsNumber(){return 1;}
-    @Override
-    public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){return 0;}
+    public CharacterType getCharacter() {
+        return CharacterType.INVENTOR;
+    }
+
+    public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){
+        if(inventorIcons.contains(inventorIcon)){
+            return 0;
+        }
+        inventorIcons.add(inventorIcon);
+        return 1;
+    }
+    public InventorIcon getInventorIcon() {return inventorIcon;}
 }

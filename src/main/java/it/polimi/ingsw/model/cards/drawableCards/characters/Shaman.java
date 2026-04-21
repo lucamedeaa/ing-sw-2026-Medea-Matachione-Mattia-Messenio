@@ -1,10 +1,19 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.enums.CharacterType;
 
-public class Shaman extends DrawableCard {
-    private int starsCount;
-    public Shaman(int starsCount){}
+public class Shaman extends Character {
+    private final int starsCount;
+    public Shaman(int era, int starsCount){
+        this.era=era;
+        this.foodCost=0;
+        this.starsCount = starsCount;
+    }
     @Override
     public int getStarsNumber(){return starsCount;}
+
+    @Override
+    public CharacterType getCharacter() {
+        return CharacterType.SHAMAN;
+    }
 }

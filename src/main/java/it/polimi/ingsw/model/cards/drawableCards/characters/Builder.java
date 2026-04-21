@@ -1,11 +1,23 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
 
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.enums.CharacterType;
 
-public class Builder extends DrawableCard {
-    private int foodDiscount;
-    private int endGamePrestigePoints;
-    public Builder(int foodDiscount, int endGamePrestigePoints) {}
+public class Builder extends Character {
+    private final int foodDiscount;
+    private final int endGamePrestigePoints;
+    public Builder(int era, int foodDiscount, int endGamePrestigePoints) {
+        this.foodCost=0;
+        this.era=era;
+        this.foodDiscount = foodDiscount;
+        this.endGamePrestigePoints = endGamePrestigePoints;
+    }
     @Override
-    public int getBuilderNumber(){return 1;}
+    public int getFoodDiscount(){return foodDiscount;}
+    public int getFinalPoints(Player owner){return endGamePrestigePoints;}
+
+        @Override
+    public CharacterType getCharacter() {
+        return CharacterType.BUILDER;
+    }
 }
