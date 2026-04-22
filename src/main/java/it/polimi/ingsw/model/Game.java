@@ -22,7 +22,8 @@ public class Game {
         }
         this.players = players;
         this.playersSize = players.size();
-        this.board = new Board(this.playersSize);
+
+        this.board = new Board(this.playersSize,  this.players);
         this.currentRound = 1;
     }
 

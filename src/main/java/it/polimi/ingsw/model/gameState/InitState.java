@@ -1,6 +1,10 @@
 package it.polimi.ingsw.model.gameState;
 
+import it.polimi.ingsw.model.Factory.TileFactory;
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.board.OfferTile;
+
+import java.util.List;
 
 public class InitState extends GameState {
 
@@ -10,7 +14,6 @@ public class InitState extends GameState {
 
     @Override
     public void start() {
-        game.getBoard().setupBoard(game.getPlayers());
         this.transition(new PlacementState(this.game));
     }
 }

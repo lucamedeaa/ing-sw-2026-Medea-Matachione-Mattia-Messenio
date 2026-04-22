@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.board;
 import it.polimi.ingsw.model.Deck;
+import it.polimi.ingsw.model.Factory.TileFactory;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Era.EraOneState;
 import it.polimi.ingsw.model.board.Era.EraState;
@@ -15,12 +16,7 @@ import java.util.stream.Stream;
 import java.util.Optional;
 
 public class Board {
-    private static final Map<Integer, String> TILE_LAYOUTS = Map.of(
-            2, "BCEF",
-            3, "BCDEF",
-            4, "BCDEFG",
-            5, "ABCDEFG"
-    );
+
     private List<Optional<Card>> upperRow;
     private List<Optional<Card>> lowerRow;
     private List<OfferTile> offerTrack;
@@ -33,29 +29,30 @@ public class Board {
     private EraState currentEraState;
 
 
-    public Board(int playerCount){
+    public Board(int playerCount, List<Player> players){
+        this.playerCount = playerCount;
+
         this.upperRow = new ArrayList<>();
         this.lowerRow = new ArrayList<>();
-        this.playerCount = playerCount;
-        this.offerTrack = new ArrayList<>();
+
         this.currentEraState = new EraOneState();
-    }
 
-    private Deck getCurrentBuildingDeck() {
-        return buildingDecks[currentEraState.getEraNumber() - 1];
-    }
+        this.offerTrack = TileFactory.createOfferTrack(playerCount);
+        this.tribeDeck = DeckFactory.buildTribeDeck(playerCount);
+        this.buildingDecks = DeckFactory.buildBuildingDecks(playerCount);
 
-    public void setupBoard(List<Player> players) {
-        this.tribeDeck = DeckFactory.buildTribeDeck(this.playerCount);
-        this.buildingDecks = DeckFactory.buildBuildingDecks(this.playerCount);
-
-        setupOfferTrack();
         setupInitialTurnOrder(players);
         setupFoodBonuses();
 
         this.initBottomRow();
         this.initTopRow();
     }
+
+    private Deck getCurrentBuildingDeck() {
+        return buildingDecks[currentEraState.getEraNumber() - 1];
+    }
+
+
 
     private void initBottomRow(){
         while(lowerRow.size() < (playerCount + 1)){
@@ -64,12 +61,10 @@ public class Board {
         }
     }
     private void initTopRow(){
-        //questo un pelo diverso da refillTopRow perché potrebbero gia esserci eventi, mentre sotto peschi sempre players + 4. pensa se codice puo essere unificatozz
         while(upperRow.size() < (playerCount + 4)){
             Card cardToAdd = tribeDeck.draw();
             addTopRow(cardToAdd);
         }
-        //add if se è vuoto?
         setupNewEraBuildings();
     }
 
@@ -88,15 +83,6 @@ public class Board {
         this.moveTopToLow();
         this.refillTopRow();
         }
-
-    public void setupOfferTrack() {
-        String layout = TILE_LAYOUTS.get(this.playerCount);
-        this.offerTrack = layout.chars()
-                .mapToObj(c -> String.valueOf((char) c))
-                .map(TileTemplate::valueOf)
-                .map(TileTemplate::createTile)
-                .toList();
-    }
 
 
     private void refillTopRow(){
