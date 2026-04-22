@@ -13,6 +13,7 @@ public class Game {
     private int playersSize;
     private int currentRound;
     private GameState currentState;
+    private List<ModelObserver> observers = new ArrayList<>();
 
 
 
@@ -28,6 +29,14 @@ public class Game {
 
     public void start() {
         changeState(new InitState(this));
+    }
+
+    public void addObserver(ModelObserver obs) { observers.add(obs); }
+
+    public void notifyAll(GameMemento memento) {
+        for (ModelObserver obs : observers) {
+            obs.onModelUpdate(memento);
+        }
     }
 
     public void changeState(GameState newState) {
