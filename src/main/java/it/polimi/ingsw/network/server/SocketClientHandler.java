@@ -42,11 +42,11 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         try {
             if (active) {
                 out.writeObject(message);
-                out.reset();
+                out.reset(); // Fondamentale per evitare che Java invii cache di oggetti vecchi
             }
         } catch (IOException e) {
-            //TODO: notificare controller e chiudere
-            active = false;
+            System.err.println("[SOCKET] Disconnessione rilevata in scrittura per: " + nickname);
+            handleDisconnection();
         }
     }
 
@@ -55,16 +55,20 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         try {
             while (active) {
                 Object input = in.readObject();
+
                 if (input instanceof ClientMessage message) {
                     if (virtualView != null) {
+                        // Il giocatore è in partita: il pacchetto va spacchettato tramite Visitor
                         virtualView.onMessageReceived(message);
                     } else {
+                        // Il giocatore è ancora nella schermata di avvio
                         handleMatchmakingMessage(message);
                     }
                 }
             }
         } catch (Exception e) {
-            active = false;
+            System.err.println("[SOCKET] Disconnessione rilevata in lettura per: " + nickname);
+            handleDisconnection();
         } finally {
             closeConnection();
         }
@@ -75,12 +79,15 @@ public class SocketClientHandler implements ClientConnection, Runnable {
             if (message instanceof GetAvailableGamesMessage) {
                 var availableGames = gameManager.getAvailableGames();
                 send(new AvailableGamesResponseMessage(availableGames));
+
             } else if (message instanceof CreateGameMessage createMsg) {
                 this.nickname = createMsg.getNickname();
                 String gameId = gameManager.createNewGame(this.nickname, createMsg.getMaxPlayers());
                 GameRoom room = gameManager.getGame(gameId);
+
                 room.addPlayer(this.nickname, this);
                 send(new MatchmakingSuccessMessage("Partita creata! Sei in attesa di altri giocatori..."));
+
             } else if (message instanceof JoinGameMessage joinMsg) {
                 this.nickname = joinMsg.getNickname();
                 GameRoom room = gameManager.getGame(joinMsg.getGameId());
@@ -92,11 +99,30 @@ public class SocketClientHandler implements ClientConnection, Runnable {
 
                 room.addPlayer(this.nickname, this);
                 send(new MatchmakingSuccessMessage("Unito alla partita con successo! In attesa di iniziare..."));
+
             } else {
-                send(new ErrorMessageDTO("Errore: non sei ancora in una partita! Devi prima unirti o crearne una."));
+                send(new ErrorMessageDTO("Errore: non sei ancora in una partita."));
             }
         } catch (Exception e) {
-            send(new ErrorMessageDTO("Impossibile accedere alla partita: " + e.getMessage()));
+            send(new ErrorMessageDTO("Errore durante l'accesso: " + e.getMessage()));
+        }
+    }
+
+    private void handleDisconnection() {
+        if (!active) return;
+        this.active = false;
+
+        closeConnection();
+
+        if (virtualView != null) {
+            // Se era in partita, avvisa la logica di gioco
+            virtualView.handleDisconnection(nickname);
+        } else if (nickname != null) {
+            // Se era nel matchmaking, ripulisci la sua presenza eventuale nelle lobby
+            GameRoom room = gameManager.getGameRoomByPlayer(nickname);
+            if (room != null) {
+                room.removePlayer(nickname);
+            }
         }
     }
 
