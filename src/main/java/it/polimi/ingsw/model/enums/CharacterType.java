@@ -7,5 +7,5 @@ public enum CharacterType {
     HUNTER,
     INVENTOR,
     SHAMAN,
-    BUILDING
+    NONCHARACTER
 }

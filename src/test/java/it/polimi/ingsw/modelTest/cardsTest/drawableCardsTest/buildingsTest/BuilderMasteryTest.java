@@ -1,7 +1,6 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.BuilderMastery;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Builder;
 import it.polimi.ingsw.model.enums.TotemColor;

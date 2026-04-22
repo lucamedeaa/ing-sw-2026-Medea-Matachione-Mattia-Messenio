@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.board.Board;
 
 public class TurnBonus extends Building{
     public TurnBonus(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+        super(idcard, foodCost, prestigePoints, era);
     }
     @Override
     public int getFoodBonus() {

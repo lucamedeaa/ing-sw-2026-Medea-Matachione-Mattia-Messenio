@@ -1,5 +1,7 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.client.model.LightGameModel;
+import it.polimi.ingsw.client.network.ClientMessageReceiver;
 import it.polimi.ingsw.network.messages.ClientMessageVisitor;
 import it.polimi.ingsw.network.client.VirtualServer;
 import it.polimi.ingsw.network.client.SocketServerConnection;
@@ -35,7 +37,8 @@ public class ClientMain {
         String nickname = scanner.nextLine();
 
         //TODO: scrivere con scelta GUI o CLI
-        ClientMessageVisitor view = null;
+        LightGameModel lightModel = new LightGameModel();
+        ClientMessageVisitor messageReceiver = new ClientMessageReceiver(lightModel);
 
         try {
             VirtualServer connection;
@@ -67,7 +70,7 @@ public class ClientMain {
                 Registry registry = LocateRegistry.getRegistry(ip, rmiPort);
                 RMIMatchmakingService lobby = (RMIMatchmakingService) registry.lookup("MesosMatchmaking");
 
-                RMIClientCallback callback = new RMIClientCallbackImpl(view);
+                RMIClientCallback callback = new RMIClientCallbackImpl(messageReceiver);
                 RMIServerSession session;
                 //TODO: visitor in socket nella fase iniziale?
 

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.SetScorer;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.VictoryPoints;
 import it.polimi.ingsw.model.cards.drawableCards.characters.*;

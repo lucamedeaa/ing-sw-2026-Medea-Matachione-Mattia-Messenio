@@ -215,17 +215,7 @@ public class Board {
         }
         //only building 'TurnBonus' returns 1
         player.addFood(bonus);
-        //TODO: Conidering what I said about addFood in Player, I'd do this way here
-        /*if (bonus > 0) {
-        player.addFood(bonus);
-    } else if (bonus < 0) {
-        int cost = Math.abs(bonus);
-        if (player.getFood() >= cost) {
-            player.addFood(-cost);
-        } else {
-            player.payPrestige(2);
-        }
-    }*/
+
     }
 
     public Card peekCard(int rowIndex, int colIndex) {

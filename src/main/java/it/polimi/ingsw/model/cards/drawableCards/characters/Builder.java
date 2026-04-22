@@ -6,9 +6,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 public class Builder extends Character {
     private final int foodDiscount;
     private final int endGamePrestigePoints;
-    public Builder(int era, int foodDiscount, int endGamePrestigePoints) {
-        this.foodCost=0;
-        this.era=era;
+    public Builder(int idcard, int era, int foodDiscount, int endGamePrestigePoints) {
+        super(idcard, era);
         this.foodDiscount = foodDiscount;
         this.endGamePrestigePoints = endGamePrestigePoints;
     }

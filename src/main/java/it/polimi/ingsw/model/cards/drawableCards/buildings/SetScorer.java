@@ -10,9 +10,9 @@ public class SetScorer extends Building {
     private final Set<CharacterType> targetSet;
 
     public SetScorer(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+        super(idcard, foodCost, prestigePoints, era);
         this.targetSet = EnumSet.allOf(CharacterType.class);
-        this.targetSet.remove(CharacterType.BUILDING);
+        this.targetSet.remove(CharacterType.NONCHARACTER);
     }
 
     @Override

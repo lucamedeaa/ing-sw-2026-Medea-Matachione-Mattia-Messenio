@@ -3,8 +3,8 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enums.CharacterType;
 
 public class HunterBonus extends Building {
-    public HunterBonus(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+    public HunterBonus(int idcard, int foodCost, int prestigePoints, int era) {
+        super(idcard, foodCost, prestigePoints, era);
     }
     @Override
     public void onHuntEvent(Player owner) {

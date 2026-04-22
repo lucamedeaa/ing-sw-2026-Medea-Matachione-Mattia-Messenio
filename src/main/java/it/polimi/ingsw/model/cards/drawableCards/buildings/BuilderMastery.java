@@ -1,20 +1,19 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
+import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Builder;
-
-import java.util.List;
+import it.polimi.ingsw.model.enums.CharacterType;
 
 public class BuilderMastery extends Building {
-    public BuilderMastery(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+    public BuilderMastery(int idcard, int foodCost, int prestigePoints, int era) {
+        super(idcard, foodCost, prestigePoints, era);
     }
 
     @Override
     public int getFinalPoints(Player owner){
         int finalPoint = 0;
-        for (DrawableCard card : owner.getTribe()){
-            if(card instanceof Builder){
+        for (Card card : owner.getTribe()){
+            if(card.getCharacter().equals(CharacterType.BUILDER){
                 finalPoint += card.getFinalPoints(owner); // owner useless
             }
         }

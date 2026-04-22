@@ -5,8 +5,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 import java.util.List;
 
 public class ArtistFood extends Building {
-    public ArtistFood(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+    public ArtistFood(int idcard, int foodCost, int prestigePoints, int era) {
+        super(idcard, foodCost, prestigePoints, era);
     }
 
     @Override

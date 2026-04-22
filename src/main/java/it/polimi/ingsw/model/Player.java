@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.model.enums.TotemColor;
 import it.polimi.ingsw.model.enums.CharacterType;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 public class Player {
     private String name;
     private int food;
-    private List<DrawableCard> tribe;
+    private List<Card> tribe;
     private int prestigePoints;
     private TotemColor totemColor;
 
@@ -31,16 +30,14 @@ public class Player {
         return sumFromTribe(Card::getFoodDiscount);
     }
 
-    //ToIntFunction<DrawableCard> is a Java functional interface that represents a function that takes a DrawableCard and returns an int
-    private int sumFromTribe(ToIntFunction<DrawableCard> extract){
+    //ToIntFunction<Card> is a Java functional interface that represents a function that takes a Card and returns an int
+    private int sumFromTribe(ToIntFunction<Card> extract){
         return tribe.stream()
                 .mapToInt(card -> extract.applyAsInt(card))
                 .sum();
     }
 
-    /* TODO: From the rules: if you can't pay for food you lose PP, but the logic depends on the context — during Sustenance you lose X PP for each unfeeded character, not generically 2 for each missing food.
-    Wouldn't it be better to leave it as this.food += amount and have the caller handle the case?
-     */
+
     public void addFood(int amount) {
         this.food += amount;
         if (this.food < 0){
@@ -78,17 +75,17 @@ public class Player {
         return food;
     }
 
-    public void addCard(DrawableCard newCard) {
+    public void addCard(Card newCard) {
         tribe.add(newCard);
         newCard.onCardAddedInstantEffects(this);
-        for(DrawableCard card : this.tribe) {
+        for(Card card : this.tribe) {
             card.onCardAddedToTribe(this, newCard);
         }
 
     }
 
 
-    public List<DrawableCard> getTribe() {
+    public List<Card> getTribe() {
         return tribe;
     }
 

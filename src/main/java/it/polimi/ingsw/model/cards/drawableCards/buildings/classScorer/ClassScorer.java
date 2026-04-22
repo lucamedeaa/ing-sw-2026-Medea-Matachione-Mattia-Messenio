@@ -4,8 +4,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 
 public abstract class ClassScorer extends Building {
     private CharacterType charType;
-    public ClassScorer(int foodCost, int prestigePoints, int era, CharacterType characters) {
-        super(foodCost, prestigePoints, era);
+    public ClassScorer(int idcard, int foodCost, int prestigePoints, int era, CharacterType characters) {
+        super(idcard, foodCost, prestigePoints, era);
         this.charType = characters;
     }
 }

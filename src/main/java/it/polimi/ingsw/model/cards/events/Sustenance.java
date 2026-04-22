@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.Building;
+import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.CharacterType;
 
 import java.util.List;
@@ -9,8 +8,8 @@ import java.util.List;
 public class Sustenance extends Event {
     private final int numPrestRem;
 
-    public Sustenance(int era, int numPrestRem) {
-        this.era = era;
+    public Sustenance(int idcard, int era, int numPrestRem) {
+        super(idcard, era);
         this.numPrestRem = numPrestRem;
     }
 
@@ -19,14 +18,14 @@ public class Sustenance extends Event {
         for (Player player : players) {
             int discount = player.countCharactersOfType(CharacterType.COLLECTOR) * 3;
 
-            for (DrawableCard card : player.getTribe()) {
+            for (Card card : player.getTribe()) {
                 discount += card.onSustenanceEvent(player);
             }
 
             int total = 0;
             int playerFood = player.getFood();
-            for (DrawableCard card : player.getTribe()) {
-                if (!(card.getCharacter().equals(CharacterType.BUILDING))) {
+            for (Card card : player.getTribe()) {
+                if (!(card.getCharacter().equals(CharacterType.NONCHARACTER))) {
                     total += 1;
                 }
             }

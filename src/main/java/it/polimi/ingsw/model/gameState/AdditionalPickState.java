@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 
 import java.util.List;
 

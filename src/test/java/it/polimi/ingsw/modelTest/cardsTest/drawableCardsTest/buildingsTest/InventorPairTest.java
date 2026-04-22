@@ -1,7 +1,6 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.InventorPair;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Inventor;
 import it.polimi.ingsw.model.enums.InventorIcon;

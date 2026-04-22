@@ -1,11 +1,9 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
-import java.util.List;
 
 public class VictoryPoints extends Building{
     public VictoryPoints(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+        super(idcard, foodCost, prestigePoints, era);
     }
 
     @Override

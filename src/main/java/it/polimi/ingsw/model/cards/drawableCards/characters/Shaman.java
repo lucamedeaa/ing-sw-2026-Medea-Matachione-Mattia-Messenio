@@ -4,8 +4,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 
 public class Shaman extends Character {
     private final int starsCount;
-    public Shaman(int era, int starsCount){
-        this.era=era;
+    public Shaman(int idcard, int era, int starsCount){
+        super(idcard, era);
         this.foodCost=0;
         this.starsCount = starsCount;
     }

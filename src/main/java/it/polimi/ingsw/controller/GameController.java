@@ -16,4 +16,12 @@ public class GameController {
     public void handlePlayerDisconnection(String nickname) {
         // TODO: far zompare la partita
     }
+
+    public void handleTakeCard(String nickname, int row, int col) {
+        try {
+            game.takeCard(nickname, row, col);
+        } catch (IllegalMoveException e) {
+            //messaggio d'errore da mettere
+        }
+    }
 }

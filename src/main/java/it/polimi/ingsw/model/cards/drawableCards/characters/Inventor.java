@@ -6,8 +6,8 @@ import java.util.Set;
 public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
-    public Inventor(int era, InventorIcon inventorIcon){
-        this.era=era;
+    public Inventor(int idcard, int era, InventorIcon inventorIcon){
+        super(idcard, era);
         this.foodCost=0;
         this.inventorIcon = inventorIcon;
     }

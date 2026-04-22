@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.DrawableCard;
-import it.polimi.ingsw.model.cards.drawableCards.characters.*;
+import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.CharacterType;
 import java.util.Set;
 import java.util.EnumSet;
@@ -11,14 +10,14 @@ public class DiverseSet extends Building {
     private int setsAlreadyRewarded = 0;
     private boolean initialized = false;
 
-    public DiverseSet(int foodCost, int prestigePoints, int era) {
-        super(foodCost, prestigePoints, era);
+    public DiverseSet(int idcard, int foodCost, int prestigePoints, int era) {
+        super(idcard, foodCost, prestigePoints, era);
         this.targetSet = EnumSet.allOf(CharacterType.class);
-        this.targetSet.remove(CharacterType.BUILDING);
+        this.targetSet.remove(CharacterType.NONCHARACTER);
     }
 
     @Override
-    public void onCardAddedToTribe(Player owner, DrawableCard newcard) {
+    public void onCardAddedToTribe(Player owner, Card newcard) {
         if (!initialized) {
             this.setsAlreadyRewarded = countFullSets(owner);
             this.initialized = true;
