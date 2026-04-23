@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/** Socket-based implementation of VirtualServer that handles bidirectional communication with the server. */
 public class SocketServerConnection implements VirtualServer, Runnable {
 
     private final Socket socket;
@@ -17,6 +18,7 @@ public class SocketServerConnection implements VirtualServer, Runnable {
     private final ClientMessageVisitor view;
     private boolean active;
 
+    /** Constructs a socket connection to the server. @param ip server IP address @param port server port @param view visitor handling incoming messages @throws IOException if connection fails */
     public SocketServerConnection(String ip, int port, ClientMessageVisitor view) throws IOException {
         this.socket = new Socket(ip, port);
         this.view = view;
@@ -25,6 +27,7 @@ public class SocketServerConnection implements VirtualServer, Runnable {
         this.in = new ObjectInputStream(socket.getInputStream());
     }
 
+    /** Sends a message to the server if the connection is active. @param message message to send */
     @Override
     public synchronized void sendMessage(ClientMessage message) {
         try {
@@ -37,6 +40,7 @@ public class SocketServerConnection implements VirtualServer, Runnable {
         }
     }
 
+    /** Continuously listens for incoming messages from the server and dispatches them to the visitor. */
     @Override
     public void run() {
         try {
@@ -51,6 +55,7 @@ public class SocketServerConnection implements VirtualServer, Runnable {
         }
     }
 
+    /** Closes the connection and releases resources, marking the connection as inactive. */
     @Override
     public void disconnect() {
         if (!active) return;

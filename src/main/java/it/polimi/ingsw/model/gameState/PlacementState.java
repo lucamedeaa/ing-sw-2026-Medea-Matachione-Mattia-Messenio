@@ -4,16 +4,20 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 
+/** Game state handling the totem placement phase, where players place their totems on the offer track in turn order. */
 public class PlacementState extends GameState {
 
+    /** Constructs the placement state. @param game the game instance */
     public PlacementState(Game game) {
         super(game);
     }
 
+    /** Initializes the placement phase. */
     @Override
     public void start() {
     }
 
+    /** Allows the current player to place their totem on a tile and advances the turn. @param player acting player @param tileIndex target tile index @throws IllegalStateException if it is not the player's turn */
     @Override
     public void placeTotem(Player player, int tileIndex) {
         Board board = game.getBoard();
@@ -23,7 +27,6 @@ public class PlacementState extends GameState {
         }
 
         board.placeTotem(tileIndex, player);
-
         board.consumeCurrentPlayer();
 
         if (board.allTotemsPlaced()) {

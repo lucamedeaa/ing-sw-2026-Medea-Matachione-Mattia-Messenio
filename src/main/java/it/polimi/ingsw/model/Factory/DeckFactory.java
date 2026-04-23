@@ -1,5 +1,4 @@
 package it.polimi.ingsw.model.Factory;
-
 import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.cards.drawableCards.characters.Builder;

@@ -3,10 +3,15 @@ package it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enums.CharacterType;
 
+/** Building that grants end-game points based on the number of HUNTER characters owned. */
 public class ClassScorerHunter extends ClassScorer {
-        public ClassScorerHunter(int foodCost, int prestigePoints, int era, CharacterType characters){
+
+    /** Constructs the ClassScorerHunter building. @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to HUNTER logic) */
+    public ClassScorerHunter(int foodCost, int prestigePoints, int era, CharacterType characters){
         super(foodCost, prestigePoints, era, characters);
     }
+
+    /** Computes final points based on HUNTER count. @param owner the owning player @return total points */
     @Override
     public int getFinalPoints(Player owner){
         return owner.countCharactersOfType(CharacterType.HUNTER) * 3 + this.prestigePoints;

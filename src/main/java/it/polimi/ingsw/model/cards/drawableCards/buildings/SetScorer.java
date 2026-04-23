@@ -1,20 +1,23 @@
 package it.polimi.ingsw.model.cards.drawableCards.buildings;
-import it.polimi.ingsw.model.Player;
 
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enums.CharacterType;
 
 import java.util.EnumSet;
 import java.util.Set;
 
+/** Building that grants end-game points based on the number of complete sets of all character types owned. */
 public class SetScorer extends Building {
     private final Set<CharacterType> targetSet;
 
-    public SetScorer(int foodCost, int prestigePoints, int era) {
+    /** Constructs the SetScorer building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
+    public SetScorer(int idcard, int foodCost, int prestigePoints, int era) {
         super(idcard, foodCost, prestigePoints, era);
         this.targetSet = EnumSet.allOf(CharacterType.class);
         this.targetSet.remove(CharacterType.NONCHARACTER);
     }
 
+    /** Computes final points by counting complete sets of all character types. @param owner the owning player @return total points */
     @Override
     public int getFinalPoints(Player owner) {
         long completedSets = targetSet.stream()

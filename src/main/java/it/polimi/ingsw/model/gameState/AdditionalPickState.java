@@ -7,21 +7,25 @@ import it.polimi.ingsw.model.cards.Card;
 
 import java.util.List;
 
+/** Game state handling additional picks from the upper row granted by bonuses after the main action phase. */
 public class AdditionalPickState extends GameState {
     private int currentPlayerIndex;
     private Player currentPlayer;
     private int remainingUpperPicks;
 
+    /** Constructs the additional pick state. @param game the game instance */
     public AdditionalPickState(Game game) {
         super(game);
     }
 
+    /** Initializes the state and selects the first player eligible for bonus picks. */
     @Override
     public void start() {
         this.currentPlayerIndex = 0;
         findNextPlayer();
     }
 
+    /** Finds the next player with available top-row bonus picks. */
     private void findNextPlayer() {
         List<Player> players = game.getPlayers();
 
@@ -39,35 +43,36 @@ public class AdditionalPickState extends GameState {
         endBonusPhase();
     }
 
+    /** Allows the current player to take a card from the upper row using bonus picks. @param player acting player @param rowIdx must be 0 (upper row) @param cardIdx column index */
     @Override
     public void takeCard(Player player, int rowIdx, int cardIdx) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Non è il tuo turno bonus");
+            throw new IllegalStateException("Not your bonus turn");
         }
 
         if (rowIdx != 0) {
-            throw new IllegalStateException("Il bonus permette di pescare solo dalla fila superiore");
+            throw new IllegalStateException("Bonus picks are allowed only from the upper row");
         }
 
         if (remainingUpperPicks <= 0) {
-            throw new IllegalStateException("Nessun pick bonus rimasto");
+            throw new IllegalStateException("No bonus picks left");
         }
 
         Board board = game.getBoard();
         Card targetCard = board.peekCard(rowIdx, cardIdx);
 
         if (!targetCard.isPickable()) {
-            throw new IllegalStateException("Non puoi prendere carte evento con questo bonus");
+            throw new IllegalStateException("Cannot take event cards with bonus picks");
         }
 
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
         if (player.getFood() < finalCost) {
-            throw new IllegalStateException("Cibo insufficiente per riscattare il bonus");
+            throw new IllegalStateException("Insufficient food");
         }
 
         player.addFood(-finalCost);
         Card purchasedCard = board.takeCard(rowIdx, cardIdx);
-        player.addCard((DrawableCard) purchasedCard);
+        player.addCard(purchasedCard);
         remainingUpperPicks--;
 
         if (remainingUpperPicks <= 0) {
@@ -75,19 +80,22 @@ public class AdditionalPickState extends GameState {
         }
     }
 
+    /** Allows the current player to skip their remaining bonus picks. @param player acting player */
     @Override
     public void skipBonus(Player player) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Non è il tuo turno");
+            throw new IllegalStateException("Not your turn");
         }
         goToNextPlayer();
     }
 
+    /** Advances to the next eligible player. */
     private void goToNextPlayer() {
         currentPlayerIndex++;
         findNextPlayer();
     }
 
+    /** Ends the bonus phase and transitions to the round end state. */
     private void endBonusPhase() {
         this.transition(new RoundEndState(this.game));
     }

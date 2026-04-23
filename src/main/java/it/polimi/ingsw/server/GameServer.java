@@ -8,59 +8,61 @@ import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/** Main server class that starts both RMI and Socket services and manages incoming client connections. */
 public class GameServer {
 
     private final int socketPort;
     private final int rmiPort;
     private final GameManager gameManager;
 
+    /** Constructs the server with given ports. @param socketPort port for socket connections @param rmiPort port for RMI registry */
     public GameServer(int socketPort, int rmiPort) {
         this.socketPort = socketPort;
         this.rmiPort = rmiPort;
         this.gameManager = new GameManager();
     }
 
+    /** Starts the server by initializing both RMI and Socket services. */
     public void start() {
-        System.out.println("=== Avvio Server di Mesos ===");
+        System.out.println("=== Starting Mesos Server ===");
         startRMIServer();
         startSocketServer();
     }
 
-
+    /** Initializes and binds the RMI matchmaking service. */
     private void startRMIServer() {
-        //TODO: gestire try catch bene
         try {
             RMIMatchmakingServiceImpl matchmakingService = new RMIMatchmakingServiceImpl(gameManager);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind("MesosMatchmaking", matchmakingService);
-            System.out.println("[RMI] Servizio di Matchmaking avviato sulla porta " + rmiPort);
-            System.out.println("[RMI] Nome del servizio esposto: 'MesosMatchmaking'");
-
+            System.out.println("[RMI] Matchmaking service started on port " + rmiPort);
+            System.out.println("[RMI] Service name: 'MesosMatchmaking'");
         } catch (Exception e) {
-            System.err.println("[RMI] ERRORE FATALE durante l'avvio: " + e.getMessage());
+            System.err.println("[RMI] Fatal error during startup: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /** Starts the socket server and listens for incoming client connections. */
     private void startSocketServer() {
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {
-            System.out.println("[SOCKET] In ascolto per nuove connessioni sulla porta " + socketPort);
+            System.out.println("[SOCKET] Listening for connections on port " + socketPort);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("[SOCKET] Nuova connessione rilevata da: " + clientSocket.getInetAddress());
+                System.out.println("[SOCKET] New connection from: " + clientSocket.getInetAddress());
                 SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager);
                 new Thread(clientHandler).start();
             }
 
         } catch (Exception e) {
-            System.err.println("[SOCKET] ERRORE FATALE del server: " + e.getMessage());
+            System.err.println("[SOCKET] Fatal server error: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    /** Entry point of the server application with default ports. @param args command-line arguments */
     public static void main(String[] args) {
-        // TODO: selezione input
         int defaultSocketPort = 1234;
         int defaultRmiPort = 1099;
         GameServer server = new GameServer(defaultSocketPort, defaultRmiPort);

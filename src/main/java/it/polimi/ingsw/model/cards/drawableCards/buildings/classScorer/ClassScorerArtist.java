@@ -3,11 +3,15 @@ package it.polimi.ingsw.model.cards.drawableCards.buildings.classScorer;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.enums.CharacterType;
 
-
+/** Building that grants end-game points based on the number of ARTIST characters owned. */
 public class ClassScorerArtist extends ClassScorer {
+
+    /** Constructs the ClassScorerArtist building. @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to ARTIST logic) */
     public ClassScorerArtist(int foodCost, int prestigePoints, int era, CharacterType characters){
         super(foodCost, prestigePoints, era, characters);
     }
+
+    /** Computes final points based on ARTIST count. @param owner the owning player @return total points */
     @Override
     public int getFinalPoints(Player owner){
         return owner.countCharactersOfType(CharacterType.ARTIST) * 4 + this.prestigePoints;

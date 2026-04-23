@@ -1,28 +1,39 @@
 package it.polimi.ingsw.model.cards.drawableCards.characters;
+
 import it.polimi.ingsw.model.enums.CharacterType;
 import it.polimi.ingsw.model.enums.InventorIcon;
+
 import java.util.Set;
 
+/** Represents an Inventor character card that contributes a unique inventor icon for scoring. */
 public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
+    /** Constructs an Inventor card. @param idcard the card identifier @param era the card era @param inventorIcon the associated inventor icon */
     public Inventor(int idcard, int era, InventorIcon inventorIcon){
         super(idcard, era);
-        this.foodCost=0;
+        this.foodCost = 0;
         this.inventorIcon = inventorIcon;
     }
 
+    /** Returns the character type. @return CharacterType.INVENTOR */
     @Override
     public CharacterType getCharacter() {
         return CharacterType.INVENTOR;
     }
 
+    /** Adds the icon to the set if not already present and returns its contribution. @param inventorIcons set of collected icons @return 1 if new, 0 otherwise */
+    @Override
     public int getInventorIconsNumber(Set<InventorIcon> inventorIcons){
-        if(inventorIcons.contains(inventorIcon)){
+        if (inventorIcons.contains(inventorIcon)){
             return 0;
         }
         inventorIcons.add(inventorIcon);
         return 1;
     }
-    public InventorIcon getInventorIcon() {return inventorIcon;}
+
+    /** Returns the inventor icon associated with this card. @return inventor icon */
+    public InventorIcon getInventorIcon() {
+        return inventorIcon;
+    }
 }

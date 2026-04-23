@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
 public class SocketClientHandler implements ClientConnection, Runnable {
 
     private final Socket socket;
@@ -20,6 +21,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private boolean active;
     private String nickname;
 
+    /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
     public SocketClientHandler(Socket socket, GameManager gameManager) {
         this.socket = socket;
         this.gameManager = gameManager;
@@ -32,24 +34,27 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
+    /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
     public void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
     }
 
+    /** Sends a server message to the client; handles disconnection on failure. @param message message to send */
     @Override
     public synchronized void send(ServerMessage message) {
         try {
             if (active) {
                 out.writeObject(message);
-                out.reset(); // Fondamentale per evitare che Java invii cache di oggetti vecchi
+                out.reset();
             }
         } catch (IOException e) {
-            System.err.println("[SOCKET] Disconnessione rilevata in scrittura per: " + nickname);
+            System.err.println("[SOCKET] Disconnection detected on write for: " + nickname);
             handleDisconnection();
         }
     }
 
+    /** Main loop: receives client messages and routes them to matchmaking or game logic. */
     @Override
     public void run() {
         try {
@@ -58,22 +63,21 @@ public class SocketClientHandler implements ClientConnection, Runnable {
 
                 if (input instanceof ClientMessage message) {
                     if (virtualView != null) {
-                        // Il giocatore è in partita: il pacchetto va spacchettato tramite Visitor
                         virtualView.onMessageReceived(message);
                     } else {
-                        // Il giocatore è ancora nella schermata di avvio
                         handleMatchmakingMessage(message);
                     }
                 }
             }
         } catch (Exception e) {
-            System.err.println("[SOCKET] Disconnessione rilevata in lettura per: " + nickname);
+            System.err.println("[SOCKET] Disconnection detected on read for: " + nickname);
             handleDisconnection();
         } finally {
             closeConnection();
         }
     }
 
+    /** Handles messages related to matchmaking (before joining a game). @param message client message */
     private void handleMatchmakingMessage(ClientMessage message) {
         try {
             if (message instanceof GetAvailableGamesMessage) {
@@ -86,28 +90,29 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 GameRoom room = gameManager.getGame(gameId);
 
                 room.addPlayer(this.nickname, this);
-                send(new MatchmakingSuccessMessage("Partita creata! Sei in attesa di altri giocatori..."));
+                send(new MatchmakingSuccessMessage("Game created. Waiting for other players..."));
 
             } else if (message instanceof JoinGameMessage joinMsg) {
                 this.nickname = joinMsg.getNickname();
                 GameRoom room = gameManager.getGame(joinMsg.getGameId());
 
                 if (room == null) {
-                    send(new ErrorMessageDTO("La partita richiesta non esiste."));
+                    send(new ErrorMessageDTO("Requested game does not exist."));
                     return;
                 }
 
                 room.addPlayer(this.nickname, this);
-                send(new MatchmakingSuccessMessage("Unito alla partita con successo! In attesa di iniziare..."));
+                send(new MatchmakingSuccessMessage("Joined game successfully. Waiting to start..."));
 
             } else {
-                send(new ErrorMessageDTO("Errore: non sei ancora in una partita."));
+                send(new ErrorMessageDTO("Error: you are not in a game yet."));
             }
         } catch (Exception e) {
-            send(new ErrorMessageDTO("Errore durante l'accesso: " + e.getMessage()));
+            send(new ErrorMessageDTO("Error during access: " + e.getMessage()));
         }
     }
 
+    /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
     private void handleDisconnection() {
         if (!active) return;
         this.active = false;
@@ -115,10 +120,8 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         closeConnection();
 
         if (virtualView != null) {
-            // Se era in partita, avvisa la logica di gioco
             virtualView.handleDisconnection(nickname);
         } else if (nickname != null) {
-            // Se era nel matchmaking, ripulisci la sua presenza eventuale nelle lobby
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
                 room.removePlayer(nickname);
@@ -126,6 +129,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
+    /** Closes socket and associated streams. */
     private void closeConnection() {
         try {
             if (in != null) in.close();
