@@ -19,11 +19,12 @@ public class Game {
 
 
 
-    public Game(List<Player> players) {
+    public Game(List<String> players) {
         if (players == null || players.size() < 2 || players.size() > 5) {
             throw new IllegalArgumentException("Invalid number of players. Must be between 2 and 5.");
         }
-        this.players = players;
+        //this.players = players;
+        //TODO: usare il costruttore del player e randomizzare il colore usando la stringa
         this.playersSize = players.size();
 
         this.board = new Board(this.playersSize,  this.players);

@@ -49,7 +49,7 @@ public class GameRoom {
 
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
-        this.game = new Game();
+        this.game = new Game(players.keySet().stream().toList());
         this.controller = new GameController(game);
 
         for (Map.Entry<String, ClientConnection> entry : players.entrySet()) {
@@ -58,7 +58,6 @@ public class GameRoom {
             VirtualView vv = new VirtualView(name, conn, controller);
             conn.setVirtualView(vv);
             game.addObserver(vv);
-            game.addPlayer(name);
         }
 
         this.gameStarted = true;

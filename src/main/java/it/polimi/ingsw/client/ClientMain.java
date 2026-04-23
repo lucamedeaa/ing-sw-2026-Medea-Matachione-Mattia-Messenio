@@ -13,73 +13,26 @@ import java.util.Scanner;
 public class ClientMain {
 
     public static void main(String[] args) {
-        //TODO: Move the Scanner/CLI logic to a proper View class later.
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("=== BENVENUTO IN MESOS ===");
-        System.out.print("Inserisci l'IP del Server (es. 127.0.0.1 o localhost): ");
-        String ip = scanner.nextLine();
+        /* l'idea di base è che questo coso deve chiedere solo se vuoi mettere GUI o TUI. Poi si
+        apre la GUI/TUI e scegli se usare socket o RMI. A quel punto usando networkClientFactory, vi darà
+        un virtualServer. Questo è un virtualServer generico, voi vi dovete preoccupare soltanto di usare il metodo send d'ora in
+        poi del tipo di messaggio che volete inviare sia per socket che per rmi su quel virtual server.
+        Per questa fase inziale, ho creato i messaggi GetAvailableGameMessage, che vi da la lista di games disponibili
+        JoinGameMessage che dandogli l' id e un nickname vi aggiunge al game e CreateGameMessage, che crea un game con numero di giocatori che gli dite voi.
+        Per ogni errore in questa fase mando un semplice ErrorMessageDTO, che contiene una stringa con la spiegazione del motivo
+        . Non penso che serva molto di più che visualizzare una stringa, sia nella GUI che nella TUI,
+        per questo ne ho fatto uno unico per tutti e non ho fatto classi per ogni errore.
+        In generale penso che per i messaggi di Errore basti fare un DTO così e scriverci il messagio, anche dopo ma ditemi cosa ne pensate (in modo da fare un unico visit).
+        Se ho un successo dopo creazione o entrata ricevo un MatchMakingSuccessMessage, che significa che o ho creato la partita e sono entrato (anche qua una stringa mi dirà quale
+        delle due, è una semplice stringa) o AvailableGamesResponseMessage, che semplicemente mi dice gli id disponibili.
+         Ora ho scritto dei visit stupidi nel ClientMessageReceiver, ma ovviamente
+        bisogna trovare un modo di delegare alla view (deve essere un modo coerente con le scelte fatte fino ad ora)
+        il visit di questi. Una volta fatto questo inizia il game, quindi si può inizare a usare la vostra logica con il lightgamemodel.
+        DAJE RAGA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        System.out.println("\nScegli la tecnologia di rete:");
-        System.out.println("1. Socket TCP");
-        System.out.println("2. RMI");
-        System.out.print("Scelta: ");
-        int networkTypeInt = Integer.parseInt(scanner.nextLine());
-        NetworkClientFactory.NetworkType networkType = (networkTypeInt == 1) ? 
-                NetworkClientFactory.NetworkType.SOCKET : NetworkClientFactory.NetworkType.RMI;
-
-        System.out.print("\nInserisci il tuo Nickname: ");
-        String nickname = scanner.nextLine();
-
-        LightGameModel lightModel = new LightGameModel();
-        ClientMessageVisitor messageReceiver = new ClientMessageReceiver(lightModel);
-
-        try {
-            System.out.println("\nVuoi creare una nuova partita o unirti a una esistente?");
-            System.out.println("1. Crea nuova partita");
-            System.out.println("2. Unisciti a una partita");
-            System.out.print("Scelta: ");
-            int action = Integer.parseInt(scanner.nextLine());
-
-            int maxPlayers = 0;
-            String gameId = "";
-
-            if (action == 1) {
-                System.out.print("\nNumero massimo di giocatori (2-5): ");
-                maxPlayers = Integer.parseInt(scanner.nextLine());
-            } else {
-                System.out.print("\nInserisci l'ID della partita: ");
-                gameId = scanner.nextLine();
-            }
-
-            int port = (networkType == NetworkClientFactory.NetworkType.SOCKET) ? 1234 : 1099;
-
-            VirtualServer connection = NetworkClientFactory.createConnection(
-                    networkType,
-                    ip,
-                    port,
-                    messageReceiver,
-                    nickname,
-                    action,
-                    maxPlayers,
-                    gameId
-            );
-
-            // If using Socket, we need to send the matchmaking message over the created connection.
-            // RMI does this during session creation.
-            if (networkType == NetworkClientFactory.NetworkType.SOCKET) {
-                if (action == 1) {
-                    connection.sendMessage(new CreateGameMessage(nickname, maxPlayers));
-                } else {
-                    connection.sendMessage(new JoinGameMessage(nickname, gameId));
-                }
-            }
-
-            System.out.println("\n[SETUP COMPLETATO] In attesa dei dati dal server...");
-
-        } catch (Exception e) {
-            System.err.println("\n[ERRORE FATALE] Impossibile connettersi al server: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+        TODO miei: aggiungere possibilità di uscire da una lobby e relativi messaggi. Gestire disconnessioni anche involontarie in fase di lobby, probabilmente facendo un ping ogni tot
+        TODO (capisci come farlo bene). Mettere un timer per le mosse del player quando è il proprio turno. Creare eventuali eccezioni custom + messaggi di errore per eccezioni
+        TODO nel controller. Riguardare e sistemare codice
+         */
 }
