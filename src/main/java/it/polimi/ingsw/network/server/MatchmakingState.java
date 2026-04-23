@@ -7,10 +7,10 @@ import it.polimi.ingsw.server.GameRoom;
 
 public class MatchmakingState implements MatchmakingVisitor {
 
-    private final SocketClientHandler handler;
+    private final ClientConnection handler;
     private final GameManager gameManager;
 
-    public MatchmakingState(SocketClientHandler handler, GameManager gameManager) {
+    public MatchmakingState(ClientConnection handler, GameManager gameManager) {
         this.handler = handler;
         this.gameManager = gameManager;
     }
@@ -18,7 +18,6 @@ public class MatchmakingState implements MatchmakingVisitor {
     @Override
     public void visit(CreateGameMessage msg) {
         try {
-            handler.setNickname(msg.nickname());
             String gameId = gameManager.createNewGame(msg.nickname(), msg.maxPlayers());
             GameRoom room = gameManager.getGame(gameId);
             room.addPlayer(msg.nickname(), handler);
@@ -31,7 +30,6 @@ public class MatchmakingState implements MatchmakingVisitor {
     @Override
     public void visit(JoinGameMessage msg) {
         try {
-            handler.setNickname(msg.nickname());
             GameRoom room = gameManager.getGame(msg.gameId());
             if (room == null) {
                 handler.send(new ErrorMessageDTO("Requested game does not exist."));
