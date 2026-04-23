@@ -1,9 +1,9 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.messages.ClientMessage;
-import it.polimi.ingsw.network.messages.ServerMessage;
+import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
+import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.view.VirtualView;
 
 import java.rmi.RemoteException;
@@ -13,23 +13,31 @@ import java.rmi.server.UnicastRemoteObject;
 public class RMIClientHandler extends UnicastRemoteObject implements ClientConnection, RMIServerSession {
 
     private final RMIClientCallback callback;
-    private final String nickname;
-    private VirtualView virtualView;
+    private MatchmakingState matchmakingState;
 
-    /** Constructs the handler. @param callback client callback for outgoing messages @param nickname client nickname @throws RemoteException if export fails */
-    public RMIClientHandler(RMIClientCallback callback, String nickname) throws RemoteException {
+    private VirtualView virtualView;
+    private String nickname;
+
+    /**
+     * Constructs the handler. @param callback client callback for outgoing messages @param nickname client nickname @throws RemoteException if export fails
+     */
+    public RMIClientHandler(GameManager gameManager, RMIClientCallback callback) throws RemoteException {
         super();
         this.callback = callback;
-        this.nickname = nickname;
+        this.matchmakingState = new MatchmakingState(this, gameManager);
     }
 
-    /** Sets the VirtualView used to forward incoming client messages. @param virtualView associated virtual view */
+    /**
+     * Sets the VirtualView used to forward incoming client messages. @param virtualView associated virtual view
+     */
     @Override
     public void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
     }
 
-    /** Sends a server message to the client; on failure, handles disconnection. @param message message to send */
+    /**
+     * Sends a server message to the client; on failure, handles disconnection. @param message message to send
+     */
     @Override
     public void send(ServerMessage message) {
         try {
@@ -41,16 +49,24 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         }
     }
 
-    /** Receives a client message via RMI and forwards it to the VirtualView. @param message message received @throws RemoteException if communication fails */
+    /**
+     * Receives a client message via RMI and forwards it to the VirtualView. @param message message received @throws RemoteException if communication fails
+     */
     @Override
     public void sendMessage(ClientMessage message) throws RemoteException {
-        if (virtualView != null) {
-            virtualView.onMessageReceived(message);
+        if (message instanceof MatchmakingMessage mm) {
+            if (matchmakingState != null) {
+                mm.accept(matchmakingState);
+            } else {
+                send(new ErrorMessageDTO("Already in game."));
+            }
+        } else if (message instanceof InGameMessage igm) {
+            if (virtualView != null) {
+                igm.accept(virtualView);
+            } else {
+                send(new ErrorMessageDTO("Not in a game yet."));
+            }
         }
-    }
 
-    /** Returns the client's nickname. @return nickname */
-    public String getNickname() {
-        return nickname;
     }
 }

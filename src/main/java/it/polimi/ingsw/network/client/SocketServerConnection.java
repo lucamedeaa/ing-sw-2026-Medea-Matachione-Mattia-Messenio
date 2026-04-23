@@ -73,4 +73,8 @@ public class SocketServerConnection implements VirtualServer, Runnable {
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException ignored) {}
     }
+
+    @Override
+    public void disconnect() {
+    }
 }

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.network.server.RMIMatchmakingServiceImpl;
 import it.polimi.ingsw.network.server.SocketClientHandler;
+import it.polimi.ingsw.network.server.RMIConnectionServerImpl;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -32,11 +32,9 @@ public class GameServer {
     /** Initializes and binds the RMI matchmaking service. */
     private void startRMIServer() {
         try {
-            RMIMatchmakingServiceImpl matchmakingService = new RMIMatchmakingServiceImpl(gameManager);
+            RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
-            registry.rebind("MesosMatchmaking", matchmakingService);
-            System.out.println("[RMI] Matchmaking service started on port " + rmiPort);
-            System.out.println("[RMI] Service name: 'MesosMatchmaking'");
+            registry.rebind("MesosServer", entryPoint);
         } catch (Exception e) {
             System.err.println("[RMI] Fatal error during startup: " + e.getMessage());
             e.printStackTrace();
