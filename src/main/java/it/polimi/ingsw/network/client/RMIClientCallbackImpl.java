@@ -21,7 +21,7 @@ public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMICli
     }
 
     @Override
-    public void notifyMessage(ServerMessage message) throws RemoteException {
+    public void onMessageReceived(ServerMessage message) throws RemoteException {
         // Forward the incoming server message to the client's visitor.
         message.accept(viewObserver);
     }
