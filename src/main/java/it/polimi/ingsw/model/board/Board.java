@@ -255,4 +255,11 @@ public class Board {
     public List<OfferTile> getOfferTrack() {
         return this.offerTrack;
     }
+
+    public List<Optional<Card>> getRow(int idx){
+        return idx == 0 ? this.upperRow : this.lowerRow;
+    }
+
+
+
 }

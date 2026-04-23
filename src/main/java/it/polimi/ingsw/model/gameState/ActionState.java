@@ -25,6 +25,7 @@ public class ActionState extends GameState {
     @Override
     public void start() {
         this.currentColumnIndex = 0;
+        this.getAvailableActions(currentPlayer.getNickname());
         findNextPlayer();
     }
 
@@ -101,4 +102,73 @@ public class ActionState extends GameState {
     private void endRound() {
         this.transition(new AdditionalPickState(this.game));
     }
+
+
+
+    @Override
+    public String getActivePlayerNickname() {
+        return this.currentPlayer != null ? this.currentPlayer.getNickname() : null;
+    }
+
+
+    private boolean existsCharacterToPick(int rowIdx) {
+        int remaining = (rowIdx == 0) ? remainingUpperPicks : remainingLowerPicks;
+        if (remaining <= 0) return false;
+
+        return game.getBoard().getRow(rowIdx).stream()
+                .flatMap(Optional::stream)
+                .anyMatch(card -> !card.isPersistent()); // Personaggi
+    }
+
+    private boolean canAffordAnyBuildingInRow(int rowIdx) {
+        int remaining = (rowIdx == 0) ? remainingUpperPicks : remainingLowerPicks;
+        if (remaining <= 0) return false;
+
+        return game.getBoard().getRow(rowIdx).stream()
+                .flatMap(Optional::stream)
+                .filter(Card::isPersistent) // Solo Edifici
+                .anyMatch(card -> {
+                    int cost = Math.max(card.getFoodCost() - currentPlayer.getFoodDiscount(), 0);
+                    return currentPlayer.getFood() >= cost;
+                });
+    }
+
+
+    private void checkTurnConditions() {
+        if (currentPlayer == null) return;
+
+        // 1. Condizione base: ha finito i pick?
+        boolean picksExhausted = (remainingUpperPicks <= 0 && remainingLowerPicks <= 0);
+
+        // 2. Condizione di stallo: può ancora fare mosse legali?
+        boolean canDoMandatory = existsCharacterToPick(0) || existsCharacterToPick(1);
+        boolean canDoOptional = canAffordAnyBuildingInRow(0) || canAffordAnyBuildingInRow(1);
+
+        // Se ha finito i pick O non può più fare nulla, il turno finisce
+        if (picksExhausted || (!canDoMandatory && !canDoOptional)) {
+            endPlayerTurn();
+        }
+    }
+
+
+
+
+    @Override
+    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+        if (!playerNickname.equals(getActivePlayerNickname())) return List.of();
+
+        List<AvailableActionDTO> actions = new ArrayList<>();
+        actions.add(new TakeCardActionDTO(remainingUpperPicks, remainingLowerPicks));
+
+        // Lo SKIP è permesso solo se non ci sono più Personaggi obbligatori da raccogliere
+        // nelle righe dove il giocatore ha ancora dei pick.
+        boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
+
+        if (!mustPickCharacter) {
+            actions.add(new SkipActionDTO());
+        }
+
+        return actions;
+    }
+
 }

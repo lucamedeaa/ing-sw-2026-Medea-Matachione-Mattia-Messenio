@@ -71,7 +71,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     }
 
     @Override
-    public void visit(SkipBonusMessage msg) {
+    public void visit(SkipActionMessage msg) {
         try {
             controller.handleSkipBonus(this.nickname);
         } catch (IllegalStateException | IllegalArgumentException e) {

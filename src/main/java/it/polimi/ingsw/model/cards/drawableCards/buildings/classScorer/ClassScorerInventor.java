@@ -7,8 +7,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 public class ClassScorerInventor extends ClassScorer {
 
     /** Constructs the ClassScorerInventor building. @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to INVENTOR logic) */
-    public ClassScorerInventor(int foodCost, int prestigePoints, int era, CharacterType characters){
-        super(foodCost, prestigePoints, era, characters);
+    public ClassScorerInventor(int idcard, int foodCost, int prestigePoints, int era, CharacterType characters){
+        super(idcard, foodCost, prestigePoints, era, characters);
     }
 
     /** Computes final points based on INVENTOR count. @param owner the owning player @return total points */

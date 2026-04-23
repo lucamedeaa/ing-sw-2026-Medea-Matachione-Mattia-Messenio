@@ -7,8 +7,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 public class ClassScorerHunter extends ClassScorer {
 
     /** Constructs the ClassScorerHunter building. @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to HUNTER logic) */
-    public ClassScorerHunter(int foodCost, int prestigePoints, int era, CharacterType characters){
-        super(foodCost, prestigePoints, era, characters);
+    public ClassScorerHunter(int idcard, int foodCost, int prestigePoints, int era, CharacterType characters){
+        super(idcard, foodCost, prestigePoints, era, characters);
     }
 
     /** Computes final points based on HUNTER count. @param owner the owning player @return total points */

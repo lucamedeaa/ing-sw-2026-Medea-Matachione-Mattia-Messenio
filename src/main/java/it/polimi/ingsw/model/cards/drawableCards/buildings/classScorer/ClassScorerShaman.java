@@ -7,8 +7,8 @@ import it.polimi.ingsw.model.enums.CharacterType;
 public class ClassScorerShaman extends ClassScorer {
 
     /** Constructs the ClassScorerShaman building. @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to SHAMAN logic) */
-    public ClassScorerShaman(int foodCost, int prestigePoints, int era, CharacterType characters){
-        super(foodCost, prestigePoints, era, characters);
+    public ClassScorerShaman(int idcard, int foodCost, int prestigePoints, int era, CharacterType characters){
+        super(idcard, foodCost, prestigePoints, era, characters);
     }
 
     /** Computes final points based on SHAMAN count. @param owner the owning player @return total points */

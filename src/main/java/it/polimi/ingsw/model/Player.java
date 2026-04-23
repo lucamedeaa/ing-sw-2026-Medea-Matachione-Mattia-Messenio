@@ -162,4 +162,8 @@ public class Player {
     public int getTopRowBonus() {
         return sumFromTribe(card -> card.getTopRowBonus());
     }
+
+    public String getNickname() {
+        return name;
+    }
 }

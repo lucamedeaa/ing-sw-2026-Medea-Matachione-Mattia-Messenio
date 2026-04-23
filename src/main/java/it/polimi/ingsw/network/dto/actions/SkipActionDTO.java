@@ -4,7 +4,7 @@ import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.visitor.ActionVisitor;
 
 /** Action DTO representing the ability to skip a bonus action. */
-public record SkipBonusActionDTO() implements AvailableActionDTO {
+public record SkipActionDTO() implements AvailableActionDTO {
 
     /** Accepts a visitor. @param visitor */
     public void accept(ActionVisitor visitor) {
