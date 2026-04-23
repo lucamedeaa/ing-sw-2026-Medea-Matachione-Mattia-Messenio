@@ -21,11 +21,14 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private boolean active;
     private String nickname;
 
+    private MatchmakingState matchmakingState;
+
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
     public SocketClientHandler(Socket socket, GameManager gameManager) {
         this.socket = socket;
         this.gameManager = gameManager;
         this.active = true;
+        this.matchmakingState = new MatchmakingState(this, gameManager);
         try {
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
@@ -34,10 +37,20 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
     /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
     public void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
+        // When view is set, we are no longer in matchmaking.
+        this.matchmakingState = null;
     }
 
     /** Sends a server message to the client; handles disconnection on failure. @param message message to send */
@@ -61,12 +74,20 @@ public class SocketClientHandler implements ClientConnection, Runnable {
             while (active) {
                 Object input = in.readObject();
 
-                if (input instanceof ClientMessage message) {
-                    if (virtualView != null) {
-                        virtualView.onMessageReceived(message);
+                if (input instanceof MatchmakingMessage mm) {
+                    if (matchmakingState != null) {
+                        mm.accept(matchmakingState);
                     } else {
-                        handleMatchmakingMessage(message);
+                        send(new ErrorMessageDTO("Already in game. Cannot send matchmaking messages."));
                     }
+                } else if (input instanceof InGameMessage igm) {
+                    if (virtualView != null) {
+                        igm.accept(virtualView);
+                    } else {
+                        send(new ErrorMessageDTO("Not in a game yet."));
+                    }
+                } else {
+                    send(new ErrorMessageDTO("Unknown message type."));
                 }
             }
         } catch (Exception e) {
@@ -74,41 +95,6 @@ public class SocketClientHandler implements ClientConnection, Runnable {
             handleDisconnection();
         } finally {
             closeConnection();
-        }
-    }
-
-    /** Handles messages related to matchmaking (before joining a game). @param message client message */
-    private void handleMatchmakingMessage(ClientMessage message) {
-        try {
-            if (message instanceof GetAvailableGamesMessage) {
-                var availableGames = gameManager.getAvailableGames();
-                send(new AvailableGamesResponseMessage(availableGames));
-
-            } else if (message instanceof CreateGameMessage createMsg) {
-                this.nickname = createMsg.getNickname();
-                String gameId = gameManager.createNewGame(this.nickname, createMsg.getMaxPlayers());
-                GameRoom room = gameManager.getGame(gameId);
-
-                room.addPlayer(this.nickname, this);
-                send(new MatchmakingSuccessMessage("Game created. Waiting for other players..."));
-
-            } else if (message instanceof JoinGameMessage joinMsg) {
-                this.nickname = joinMsg.getNickname();
-                GameRoom room = gameManager.getGame(joinMsg.getGameId());
-
-                if (room == null) {
-                    send(new ErrorMessageDTO("Requested game does not exist."));
-                    return;
-                }
-
-                room.addPlayer(this.nickname, this);
-                send(new MatchmakingSuccessMessage("Joined game successfully. Waiting to start..."));
-
-            } else {
-                send(new ErrorMessageDTO("Error: you are not in a game yet."));
-            }
-        } catch (Exception e) {
-            send(new ErrorMessageDTO("Error during access: " + e.getMessage()));
         }
     }
 

@@ -2,9 +2,13 @@ package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.client.model.EventApplier;
 import it.polimi.ingsw.client.model.LightGameModel;
-import it.polimi.ingsw.network.messages.ClientMessageVisitor;
+import it.polimi.ingsw.network.messages.AvailableGamesResponseMessage;
 import it.polimi.ingsw.network.messages.DeltaEventMessage;
+import it.polimi.ingsw.network.messages.ErrorMessage;
+import it.polimi.ingsw.network.messages.ErrorMessageDTO;
 import it.polimi.ingsw.network.messages.FullSyncMessage;
+import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
+import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 public class ClientMessageReceiver implements ClientMessageVisitor {
     private final LightGameModel model;
@@ -17,15 +21,32 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(FullSyncMessage msg) {
-        // Sincronizzazione totale (es. inizio partita)
         model.setFullState(msg.board(), msg.players());
     }
 
     @Override
     public void visit(DeltaEventMessage msg) {
-        //  Applica l'evento allo stato locale
         msg.event().accept(applier);
-        //  Aggiorna le azioni che l'utente può cliccare
         model.setAvailableActions(msg.nextActions());
+    }
+
+    @Override
+    public void visit(ErrorMessage message) {
+        System.err.println("[SERVER ERROR] " + message.error());
+    }
+
+    @Override
+    public void visit(ErrorMessageDTO message) {
+        System.err.println("[MATCHMAKING ERROR] " + message.error());
+    }
+
+    @Override
+    public void visit(MatchmakingSuccessMessage message) {
+        System.out.println("[MATCHMAKING SUCCESS] " + message.text());
+    }
+
+    @Override
+    public void visit(AvailableGamesResponseMessage message) {
+        System.out.println("[AVAILABLE GAMES] " + message.games());
     }
 }

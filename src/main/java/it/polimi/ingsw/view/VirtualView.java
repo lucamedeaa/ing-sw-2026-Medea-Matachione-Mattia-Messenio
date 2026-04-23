@@ -6,12 +6,13 @@ import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
 import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.visitor.InGameVisitor;
 import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.controller.GameController;
 
 import java.util.List;
 
-public class VirtualView implements ModelObserver, ServerMessageVisitor {
+public class VirtualView implements ModelObserver, InGameVisitor {
 
     private final String nickname;
     private final ClientConnection connection;
@@ -39,7 +40,7 @@ public class VirtualView implements ModelObserver, ServerMessageVisitor {
 
     //Messaggi che arrivano dal giocatore verso il Server.
 
-    public void onMessageReceived(ClientMessage message) {
+    public void onMessageReceived(InGameMessage message) {
         // Il pattern Visitor qui smista l'azione verso i metodi 'visit'
         // che chiameranno poi il GameController.
         message.accept(this);

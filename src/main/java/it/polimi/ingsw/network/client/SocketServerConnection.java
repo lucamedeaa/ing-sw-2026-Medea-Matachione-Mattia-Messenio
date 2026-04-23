@@ -1,8 +1,8 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.messages.ClientMessage;
-import it.polimi.ingsw.network.messages.ClientMessageVisitor;
 import it.polimi.ingsw.network.messages.ServerMessage;
+import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,16 +18,16 @@ public class SocketServerConnection implements VirtualServer, Runnable {
     private final ClientMessageVisitor view;
     private boolean active;
 
-    /** Constructs a socket connection to the server. @param ip server IP address @param port server port @param view visitor handling incoming messages @throws IOException if connection fails */
+    /** Initializes the socket and streams. */
     public SocketServerConnection(String ip, int port, ClientMessageVisitor view) throws IOException {
         this.socket = new Socket(ip, port);
-        this.view = view;
-        this.active = true;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
+        this.view = view;
+        this.active = true;
     }
 
-    /** Sends a message to the server if the connection is active. @param message message to send */
+    /** Sends a generic client message to the server. */
     @Override
     public synchronized void sendMessage(ClientMessage message) {
         try {
@@ -36,11 +36,11 @@ public class SocketServerConnection implements VirtualServer, Runnable {
                 out.reset();
             }
         } catch (IOException e) {
-            disconnect();
+            handleDisconnection();
         }
     }
 
-    /** Continuously listens for incoming messages from the server and dispatches them to the visitor. */
+    /** Background loop to receive messages from the server and forward them to the view. */
     @Override
     public void run() {
         try {
@@ -50,22 +50,27 @@ public class SocketServerConnection implements VirtualServer, Runnable {
                     message.accept(view);
                 }
             }
-        } catch (IOException | ClassNotFoundException e) {
-            disconnect();
+        } catch (Exception e) {
+            handleDisconnection();
+        } finally {
+            closeConnection();
         }
     }
 
-    /** Closes the connection and releases resources, marking the connection as inactive. */
-    @Override
-    public void disconnect() {
-        if (!active) return;
-        active = false;
+    /** Handles unexpected disconnections. */
+    private void handleDisconnection() {
+        this.active = false;
+        closeConnection();
+        // TODO: Notificare la UI della disconnessione (es. inviando un ErrorMessage locale o chamando un metodo apposito)
+        System.err.println("[CLIENT] Disconnesso dal server.");
+    }
+
+    /** Closes streams and socket safely. */
+    private void closeConnection() {
         try {
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException ignored) {}
-        //TODO: notifica disconnessione view
-        // view.showConnectionError();
     }
 }
