@@ -38,9 +38,9 @@ public class Game {
 
     public void addObserver(ModelObserver obs) { observers.add(obs); }
 
-    public void notifyAll(GameMemento memento) {
+    public void notifyAll(GameEventDTO event) {
         for (ModelObserver obs : observers) {
-            obs.onModelUpdate(memento);
+            obs.onModelUpdate(event);
         }
     }
 
@@ -87,6 +87,13 @@ public class Game {
         }
 
         return winner;
+    }
+
+    public Player getPlayerByNickname(String nickname) {
+        return players.stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Player not found: " + nickname));
     }
 
     public Board getBoard() {

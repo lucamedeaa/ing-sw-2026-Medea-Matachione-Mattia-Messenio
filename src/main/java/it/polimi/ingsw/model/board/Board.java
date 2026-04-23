@@ -44,6 +44,7 @@ public class Board {
         this.initTopRow();
     }
 
+
     /** Returns the building deck corresponding to the current era. @return current era building deck */
     private Deck getCurrentBuildingDeck() {
         return buildingDecks[currentEraState.getEraNumber() - 1];

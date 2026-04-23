@@ -5,8 +5,13 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.actions.SkipActionDTO;
+import it.polimi.ingsw.network.dto.actions.TakeCardActionDTO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Game state handling the main action phase where players take cards from the board based on their placed totems. */
 public class ActionState extends GameState {
@@ -84,9 +89,7 @@ public class ActionState extends GameState {
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
 
-        if (remainingUpperPicks <= 0 && remainingLowerPicks <= 0) {
-            endPlayerTurn();
-        }
+        checkTurnConditions();
     }
 
     /** Ends the current player's turn, returns their totem, and advances to the next player. */

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ModelObserver {
     // Chiamato per ogni mossa/cambiamento
-    void onModelUpdate(GameEventDTO event, List<AvailableActionDTO> availableActions);
+    void onModelUpdate(GameEventDTO event);
 
     // Chiamato solo all'inizio o per ripristinare un client
     void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer);

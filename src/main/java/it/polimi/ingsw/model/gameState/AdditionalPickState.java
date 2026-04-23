@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.actions.SkipActionDTO;
+import it.polimi.ingsw.network.dto.actions.TakeCardActionDTO;
 
 import java.util.List;
 
@@ -98,5 +101,19 @@ public class AdditionalPickState extends GameState {
     /** Ends the bonus phase and transitions to the round end state. */
     private void endBonusPhase() {
         this.transition(new RoundEndState(this.game));
+    }
+
+    @Override
+    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+        if (playerNickname.equals(getActivePlayerNickname())) {
+            // Il giocatore in fase bonus può pescare dalla prima fila o saltare il bonus
+            return List.of(new TakeCardActionDTO(), new SkipActionDTO());
+        }
+        return List.of();
+    }
+
+    @Override
+    public String getActivePlayerNickname() {
+        return this.currentPlayer != null ? this.currentPlayer.getNickname() : null;
     }
 }

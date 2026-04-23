@@ -2,6 +2,9 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+
+import java.util.List;
 
 /** Final game state responsible for computing scores and determining the winner. */
 public class ScoringState extends GameState {
@@ -25,5 +28,14 @@ public class ScoringState extends GameState {
 
     /** Handles winner announcement logic. @param winner the winning player */
     private void announceWinner(Player winner) {
+    }
+    @Override
+    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+        return List.of(); // Nessuna azione disponibile
+    }
+
+    @Override
+    public String getActivePlayerNickname() {
+        return null; // Nessun giocatore attivo
     }
 }

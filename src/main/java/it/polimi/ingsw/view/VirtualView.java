@@ -26,15 +26,17 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     //TODO: gestione timer se turno
 
     @Override
-    public void onModelUpdate(GameEventDTO event, List<AvailableActionDTO> availableActions) {
+    public void onModelUpdate(GameEventDTO event, List<AvailableActionDTO> actions) {
         // TODO: trasformarlo in snapshot e mandarlo
-        connection.send(new DeltaEventMessage(event, availableActions));
+        List<AvailableActionDTO> actions = game.getCurrentState().getAvailableActions(this.nickname);
+        connection.send(new DeltaEventMessage(event, actions));
     }
 
      //Inviata solo all'inizio o riconnessione.
 
     @Override
     public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer) {
+        List<AvailableActionDTO> actions = game.getCurrentState().getAvailableActions(this.nickname);
         connection.send(new FullSyncMessage(board, players, activePlayer));
     }
 

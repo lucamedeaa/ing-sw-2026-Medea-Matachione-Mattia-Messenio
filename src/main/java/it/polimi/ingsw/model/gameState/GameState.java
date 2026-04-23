@@ -2,6 +2,9 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+
+import java.util.List;
 
 /** Abstract base class for all game states. Defines lifecycle, transitions, and default invalid actions. */
 public abstract class GameState {
@@ -35,4 +38,8 @@ public abstract class GameState {
     public void skipBonus(Player player) {
         throw new IllegalStateException("You can't skip bonus in this phase!");
     }
+
+    public abstract List<AvailableActionDTO> getAvailableActions(String nickName);
+
+    public abstract String getActivePlayerNickname();
 }

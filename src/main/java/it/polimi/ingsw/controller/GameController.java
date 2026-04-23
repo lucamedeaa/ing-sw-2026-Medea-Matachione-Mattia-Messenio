@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Player;
 
 public class GameController {
 
@@ -19,30 +20,36 @@ public class GameController {
 
     public void handleTakeCard(String nickname, int row, int col) {
         synchronized (game) {
-            if (!game.getCurrentPlayer().equals(nickname)) {
-                throw new IllegalStateException("Non è il tuo turno.");
+            try{
+                Player player = game.getPlayerByNickname(nickname);
+                game.takeCard(player, row, col);
+            }catch(IllegalArgumentException e){
+                //nickname non presente
+                throw new IllegalArgumentException("Error" + e.getMessage());
             }
-            // Delega la logica profonda al Model (il quale lancerà eccezioni
-            // se le risorse non bastano o la carta non esiste)
-            game.takeCard(nickname, row, col);
         }
     }
 
     public void handlePlaceTotem(String nickname, int positionIndex) {
         synchronized (game) {
-            if (!game.getCurrentPlayer().equals(nickname)) {
-                throw new IllegalStateException("Non è il tuo turno.");
+            try{
+                Player player = game.getPlayerByNickname(nickname);
+                game.placeTotem(player, positionIndex);
+            }catch(IllegalArgumentException e){
+                //giocatore non trovato
+                throw new IllegalArgumentException("Error" + e.getMessage());
             }
-            game.placeTotem(nickname, positionIndex);
         }
     }
 
     public void handleSkipBonus(String nickname) {
         synchronized (game) {
-            if (!game.getCurrentPlayer().equals(nickname)) {
-                throw new IllegalStateException("Non è il tuo turno.");
+            try{
+                Player player = game.getPlayerByNickname(nickname);
+                game.skipBonus(player);
+            }catch(IllegalArgumentException e){
+                throw new IllegalArgumentException("Error" + e.getMessage());
             }
-            game.skipBonus(nickname);
         }
     }
 }
