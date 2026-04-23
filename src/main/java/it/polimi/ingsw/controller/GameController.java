@@ -18,10 +18,31 @@ public class GameController {
     }
 
     public void handleTakeCard(String nickname, int row, int col) {
-        try {
+        synchronized (game) {
+            if (!game.getCurrentPlayer().equals(nickname)) {
+                throw new IllegalStateException("Non è il tuo turno.");
+            }
+            // Delega la logica profonda al Model (il quale lancerà eccezioni
+            // se le risorse non bastano o la carta non esiste)
             game.takeCard(nickname, row, col);
-        } catch (IllegalMoveException e) {
-            //messaggio d'errore da mettere
+        }
+    }
+
+    public void handlePlaceTotem(String nickname, int positionIndex) {
+        synchronized (game) {
+            if (!game.getCurrentPlayer().equals(nickname)) {
+                throw new IllegalStateException("Non è il tuo turno.");
+            }
+            game.placeTotem(nickname, positionIndex);
+        }
+    }
+
+    public void handleSkipBonus(String nickname) {
+        synchronized (game) {
+            if (!game.getCurrentPlayer().equals(nickname)) {
+                throw new IllegalStateException("Non è il tuo turno.");
+            }
+            game.skipBonus(nickname);
         }
     }
 }

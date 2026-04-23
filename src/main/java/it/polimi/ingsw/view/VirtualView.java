@@ -53,7 +53,28 @@ public class VirtualView implements ModelObserver, ServerMessageVisitor {
 
     @Override
     public void visit(TakeCardMessage msg) {
-        // La VirtualView decodifica il messaggio e delega la logica al Controller
-        controller.handleTakeCard(this.nickname, msg.row(), msg.col());
+        try {
+            controller.handleTakeCard(this.nickname, msg.row(), msg.col());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            connection.send(new ErrorMessage(e.getMessage()));
+        }
+    }
+
+    @Override
+    public void visit(PlaceTotemMessage msg) {
+        try {
+            controller.handlePlaceTotem(this.nickname, msg.positionIndex());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            connection.send(new ErrorMessage(e.getMessage()));
+        }
+    }
+
+    @Override
+    public void visit(SkipBonusMessage msg) {
+        try {
+            controller.handleSkipBonus(this.nickname);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            connection.send(new ErrorMessage(e.getMessage()));
+        }
     }
 }

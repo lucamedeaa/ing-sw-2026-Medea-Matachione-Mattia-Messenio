@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
