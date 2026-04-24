@@ -51,6 +51,10 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         this.nickname = nickname;
     }
 
+    public String getNickname(){
+        return this.nickname;
+    }
+
     /**
      * Sets the VirtualView used to forward incoming client messages. @param virtualView associated virtual view
      */

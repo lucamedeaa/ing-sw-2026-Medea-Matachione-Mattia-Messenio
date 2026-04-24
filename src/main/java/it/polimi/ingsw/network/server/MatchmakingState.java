@@ -50,10 +50,13 @@ public class MatchmakingState implements MatchmakingVisitor {
 
     @Override
     public void visit(LeaveGameMessage msg) {
-        GameRoom room = gameManager.getGame(msg.gameId());
-        if (room != null) {
-            room.removePlayer(msg.nickname());
-            handler.send(new MatchmakingSuccessMessage("You left the lobby."));
+        String playerName = handler.getNickname();
+        if (playerName != null){
+            GameRoom room = gameManager.getGameRoomByPlayer(playerName);
+            if (room != null) {
+                room.removePlayer(playerName);
+                handler.send(new MatchmakingSuccessMessage("You left the lobby."));
+            }
         }
     }
 }

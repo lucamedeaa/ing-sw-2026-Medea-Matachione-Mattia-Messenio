@@ -11,4 +11,6 @@ public interface ClientConnection {
 
     void setNickname(String nickname);
 
+    String getNickname();
+
 }

@@ -43,6 +43,10 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         this.nickname = nickname;
     }
 
+    public String getNickname(){
+        return this.nickname;
+    }
+
 
     /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
