@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.view.VirtualView;
 import it.polimi.ingsw.controller.GameController;
@@ -20,7 +21,6 @@ public class GameRoom {
     private boolean gameStarted;
     private Game game;
     private GameController controller;
-    private VirtualView virtualView;
 
     /** Constructs a game room. @param gameId unique game identifier @param maxPlayers maximum number of players @param gameManager manager handling active games */
     public GameRoom(String gameId, int maxPlayers, GameManager gameManager) {
@@ -39,8 +39,10 @@ public class GameRoom {
         if (isNicknameTaken(nickname)) {
             throw new Exception("Nickname already in use.");
         }
-
+        //potenziale isactive?
+        connection.setNickname(nickname);
         players.put(nickname, connection);
+        broadcast("Il giocatore " + nickname + " è entrato nella stanza.");
 
         if (isFull()) {
             startGame();
@@ -66,12 +68,17 @@ public class GameRoom {
 
     /** Removes a player and handles cleanup or disconnection logic. @param nickname player nickname */
     public synchronized void removePlayer(String nickname) {
-        players.remove(nickname);
+        ClientConnection removed = players.remove(nickname);
 
         if (players.isEmpty()) {
             gameManager.removeGame(gameId);
-        } else if (gameStarted && controller != null) {
+        } //TODO pensare se serve
+        else if (gameStarted && controller != null) {
             controller.handlePlayerDisconnection(nickname);
+        }
+        else if (removed != null) {
+            // Invia l'aggiornamento a chi è rimasto in lobby (solo se la partita non era iniziata)
+            broadcast("Il giocatore " + nickname + " ha abbandonato la stanza.");
         }
     }
 
@@ -104,4 +111,15 @@ public class GameRoom {
     public List<String> getPlayers() {
         return new ArrayList<>(players.keySet());
     }
+
+    private void broadcast(String messageText) {
+        RoomUpdateMessage message = new RoomUpdateMessage(messageText, getPlayers());
+        //copia delle connesioni in caso uno venisse tolto nel mentre. Pensare meglio a tutto questo aspetto.
+        List<ClientConnection> currentConnections = new ArrayList<>(players.values());
+        for (ClientConnection conn : currentConnections) {
+            conn.send(message);
+        }
+    }
+
+
 }

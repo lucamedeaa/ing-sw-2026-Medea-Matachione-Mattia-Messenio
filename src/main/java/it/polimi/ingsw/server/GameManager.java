@@ -26,6 +26,16 @@ public class GameManager {
         return activeGames.get(gameId);
     }
 
+
+    public GameRoom getGameRoomByPlayer(String nickname) {
+        for (GameRoom room : activeGames.values()) {
+            if (room.isNicknameTaken(nickname)) {
+                return room;
+            }
+        }
+        return null;
+    }
+
     /** Returns the list of joinable games (not full and not started). @return list of available game info DTOs */
     public synchronized List<GameInfoDTO> getAvailableGames() {
         List<GameInfoDTO> available = new ArrayList<>();

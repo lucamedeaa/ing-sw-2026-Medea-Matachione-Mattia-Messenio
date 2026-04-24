@@ -68,10 +68,11 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
 
     //TODO: scrivere sta roba che chiami il controller e faccia zompare la partita
-    public void handleDisconnection(String disconnectedNickname){
+    //attento se due fanno insieme
+    public void handleDisconnection(){
         //cancelTurnTimer();
         // Propago la disconnessione al controller per salto turno/ fine partita
-        controller.handlePlayerDisconnection(disconnectedNickname);
+        controller.handlePlayerDisconnection(this.nickname);
     }
     //TODO: fare i vari visit che chiamano il controller
 
