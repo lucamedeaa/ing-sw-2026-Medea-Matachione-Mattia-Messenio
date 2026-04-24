@@ -3,7 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.ModelUpdateDTO;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,8 +41,17 @@ public class Game {
     public void addObserver(ModelObserver obs) { observers.add(obs); }
 
     public void notifyAll(GameEventDTO event) {
+        String activePlayer = currentState.getActivePlayerNickname();
+        List<AvailableActionDTO> actions = List.of();
+
+        if (activePlayer != null) {
+            actions = currentState.getAvailableActions(activePlayer);
+        }
+
+        ModelUpdateDTO snapshot = new ModelUpdateDTO(event, activePlayer, actions);
+
         for (ModelObserver obs : observers) {
-            obs.onModelUpdate(event);
+            obs.onModelUpdate(snapshot);
         }
     }
 

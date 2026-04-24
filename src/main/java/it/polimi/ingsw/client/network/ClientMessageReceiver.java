@@ -2,12 +2,7 @@ package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.client.model.EventApplier;
 import it.polimi.ingsw.client.model.LightGameModel;
-import it.polimi.ingsw.network.messages.AvailableGamesResponseMessage;
-import it.polimi.ingsw.network.messages.DeltaEventMessage;
-import it.polimi.ingsw.network.messages.ErrorMessage;
-import it.polimi.ingsw.network.messages.ErrorMessageDTO;
-import it.polimi.ingsw.network.messages.FullSyncMessage;
-import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
+import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 public class ClientMessageReceiver implements ClientMessageVisitor {
@@ -48,5 +43,12 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
     @Override
     public void visit(AvailableGamesResponseMessage message) {
         System.out.println("[AVAILABLE GAMES] " + message.games());
+    }
+
+    @Override
+    public void visit(GameAbortedMessage message) {
+        System.err.println("[ERROR] Match Ended: " + message.reason());
+        // Qui la logica per chiudere la schermata di gioco e tornare al main menu
+        // Es: tui.showFatalErrorAndExit(message.reason());
     }
 }

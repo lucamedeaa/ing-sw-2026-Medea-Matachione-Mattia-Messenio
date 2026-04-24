@@ -3,82 +3,99 @@ package it.polimi.ingsw.client.model;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Lightweight client-side model that stores and updates the visible game state. */
+
+
 public class LightGameModel {
-
-    private BoardDTO board;
+    private final List<String> upperRowCards = new ArrayList<>();
+    private final List<String> lowerRowCards = new ArrayList<>();
     private final Map<String, PlayerDTO> players = new HashMap<>();
-    private List<AvailableActionDTO> actions;
+    private final Map<String, Integer> playerTotemPositions = new HashMap<>();
+    private final Map<String, List<String>> playerTribes = new HashMap<>();
 
-    /** Sets the full game state. @param board @param playersList */
+    private List<AvailableActionDTO> actions = new ArrayList<>();
+    private int currentEra = 1;
+    private int currentRound = 1;
+
+    private final List<UIObserver> observers = new ArrayList<>();
+
+    public void addObserver(UIObserver observer) {
+        this.observers.add(observer);
+    }
+
+    private void notifyUI() {
+        for (UIObserver obs : observers) {
+            obs.onStateChanged();
+        }
+    }
+
     public void setFullState(BoardDTO board, List<PlayerDTO> playersList) {
-        this.board = board;
+        this.upperRowCards.clear();
+        this.upperRowCards.addAll(board.UpperRowCards());
+        this.lowerRowCards.clear();
+        this.lowerRowCards.addAll(board.LowerRowCards());
+        this.currentEra = board.currentEra();
+        this.currentRound = board.currentRound();
+
         this.players.clear();
         for (PlayerDTO p : playersList) {
             this.players.put(p.nickname(), p);
+            this.playerTribes.putIfAbsent(p.nickname(), new ArrayList<>());
         }
         notifyUI();
     }
 
-    /** Updates available actions. @param actions */
     public void setAvailableActions(List<AvailableActionDTO> actions) {
         this.actions = actions;
         notifyUI();
     }
 
-    /** Removes a card from the board. @param row @param col */
     public void removeCard(int row, int col) {
-        if (row == 0) board.UpperRowCards().set(col, null);
-        else board.LowerRowCards().set(col, null);
+        if (row == 0) upperRowCards.set(col, null);
+        else lowerRowCards.set(col, null);
         notifyUI();
     }
 
-    /** Refills a board row. @param row @param newCardIds */
     public void refillBoardRow(int row, List<String> newCardIds) {
-        // TODO: Sovrascrivere UpperRowCards o LowerRowCards
+        List<String> targetRow = (row == 0) ? upperRowCards : lowerRowCards;
+        targetRow.clear();
+        targetRow.addAll(newCardIds);
         notifyUI();
     }
 
-    /** Updates a player's totem position. @param nickname @param positionIndex */
     public void updateTotemPosition(String nickname, int positionIndex) {
-        // TODO: Aggiornare la struttura dati locale del tracciato offerte
+        playerTotemPositions.put(nickname, positionIndex);
         notifyUI();
     }
 
-    /** Updates player resources. @param nickname @param newFood @param newPrestige */
-    public void updatePlayerResources(String nickname, int newFood, int newPrestige) {
-        PlayerDTO player = players.get(nickname);
-        if (player != null) {
-            players.put(nickname, new PlayerDTO(nickname, newFood, newPrestige));
-            notifyUI();
-        }
-    }
-
-    /** Adds a card to a player's tribe. @param nickname @param cardId */
     public void addCardToPlayerTribe(String nickname, String cardId) {
-        // TODO: Aggiungere l'ID alla lista di carte del giocatore
+        playerTribes.computeIfAbsent(nickname, k -> new ArrayList<>()).add(cardId);
         notifyUI();
     }
 
-    /** Updates current era. @param newEra */
     public void updateEra(int newEra) {
-        // TODO: Aggiornare contatore Era
+        this.currentEra = newEra;
         notifyUI();
     }
 
-    /** Updates current round. @param newRound */
     public void updateRound(int newRound) {
-        // TODO: Aggiornare contatore Round
+        this.currentRound = newRound;
         notifyUI();
     }
 
-    /** Notifies the UI about state changes. */
-    private void notifyUI() {
-        // Implementazione dell'Observer per notificare la CLI/GUI
-    }
+
+
+    // Getter che la TUI userà per disegnare la schermata
+    public List<String> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
+    public List<String> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
+    public Map<String, PlayerDTO> getPlayers() { return new HashMap<>(players); }
+    public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
+    public Map<String, List<String>> getTribes() { return new HashMap<>(playerTribes); }
+    public int getCurrentEra() { return currentEra; }
+    public int getCurrentRound() { return currentRound; }
+    public List<AvailableActionDTO> getMyActions() { return new ArrayList<>(actions); }
 }
