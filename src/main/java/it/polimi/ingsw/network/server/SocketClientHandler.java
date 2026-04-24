@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 /** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
 public class SocketClientHandler implements ClientConnection, Runnable {
@@ -18,7 +19,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private VirtualView virtualView;
-    private boolean active;
+    private volatile boolean active;
     private String nickname;
 
     private MatchmakingState matchmakingState;
@@ -32,6 +33,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         try {
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
+            this.socket.setSoTimeout(10000);
         } catch (IOException e) {
             this.active = false;
         }
@@ -41,13 +43,10 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         this.nickname = nickname;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
 
     /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
-    public void setVirtualView(VirtualView virtualView) {
+    public synchronized void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
         // When view is set, we are no longer in matchmaking.
         this.matchmakingState = null;
@@ -63,7 +62,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
             }
         } catch (IOException e) {
             System.err.println("[SOCKET] Disconnection detected on write for: " + nickname);
-            handleDisconnection();
+            handleClientDisconnection();
         }
     }
 
@@ -72,9 +71,12 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     public void run() {
         try {
             while (active) {
+                //TODO riscrivere con visitor per questo ed RMICLIENTHANDLER
                 Object input = in.readObject();
-
-                if (input instanceof MatchmakingMessage mm) {
+                if (input instanceof DisconnectionMessage ds) {
+                    handleClientDisconnection();
+                }
+                else if (input instanceof MatchmakingMessage mm) {
                     if (matchmakingState != null) {
                         mm.accept(matchmakingState);
                     } else {
@@ -90,24 +92,27 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                     send(new ErrorMessageDTO("Unknown message type."));
                 }
             }
-        } catch (Exception e) {
+        }catch (SocketTimeoutException e) {
+                System.err.println("[SOCKET] Timeout: Il client " + nickname + " non invia ping. Ritenuto morto.");
+                handleClientDisconnection();
+            }
+        catch (Exception e) {
             System.err.println("[SOCKET] Disconnection detected on read for: " + nickname);
-            handleDisconnection();
-        } finally {
-            closeConnection();
+            handleClientDisconnection();
         }
     }
 
     /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
-    private void handleDisconnection() {
+    private synchronized void handleClientDisconnection() {
         if (!active) return;
         this.active = false;
 
         closeConnection();
 
         if (virtualView != null) {
-            virtualView.handleDisconnection(nickname);
+            virtualView.handleDisconnection();
         } else if (nickname != null) {
+            //TODO pensa gestione nickname, non dovrebbe averlo questo, lo affidiamo dopo
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
                 room.removePlayer(nickname);

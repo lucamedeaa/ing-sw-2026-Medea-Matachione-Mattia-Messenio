@@ -2,12 +2,7 @@ package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.client.model.EventApplier;
 import it.polimi.ingsw.client.model.LightGameModel;
-import it.polimi.ingsw.network.messages.AvailableGamesResponseMessage;
-import it.polimi.ingsw.network.messages.DeltaEventMessage;
-import it.polimi.ingsw.network.messages.ErrorMessage;
-import it.polimi.ingsw.network.messages.ErrorMessageDTO;
-import it.polimi.ingsw.network.messages.FullSyncMessage;
-import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
+import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 public class ClientMessageReceiver implements ClientMessageVisitor {

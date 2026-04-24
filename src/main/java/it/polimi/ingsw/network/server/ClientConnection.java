@@ -9,4 +9,6 @@ public interface ClientConnection {
 
     void send(ServerMessage message);
 
+    void setNickname(String nickname);
+
 }

@@ -51,7 +51,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
 
     //TODO: scrivere sta roba che chiami il controller e faccia zompare la partita
-    public void handleDisconnection(String nickname){}
+    public void handleDisconnection(){}
     //TODO: fare i vari visit che chiamano il controller
 
     @Override

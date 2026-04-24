@@ -39,7 +39,8 @@ public class GameRoom {
         if (isNicknameTaken(nickname)) {
             throw new Exception("Nickname already in use.");
         }
-
+        //potenziale isactive?
+        connection.setNickname(nickname);
         players.put(nickname, connection);
 
         if (isFull()) {
