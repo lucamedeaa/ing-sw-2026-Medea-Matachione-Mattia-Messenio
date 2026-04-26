@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.client.model.EventApplier;
-import it.polimi.ingsw.client.model.LightGameModel;
+import it.polimi.ingsw.client.lightGameModel.EventApplier;
+import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
@@ -50,5 +50,10 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
         System.err.println("[ERROR] Match Ended: " + message.reason());
         // Qui la logica per chiudere la schermata di gioco e tornare al main menu
         // Es: tui.showFatalErrorAndExit(message.reason());
+    }
+
+    @Override
+    public void visit(RoomUpdateMessage message) {
+        //TODO
     }
 }

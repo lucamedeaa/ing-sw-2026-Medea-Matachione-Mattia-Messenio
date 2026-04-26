@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /** Data transfer object representing the board state, including visible cards, current era, and round. */
-public record BoardDTO(List<String> UpperRowCards,
-                       List<String> LowerRowCards,
+public record BoardDTO(List<Integer> UpperRowCards,
+                       List<Integer> LowerRowCards,
                        int currentEra,
                        int currentRound) implements Serializable {
 

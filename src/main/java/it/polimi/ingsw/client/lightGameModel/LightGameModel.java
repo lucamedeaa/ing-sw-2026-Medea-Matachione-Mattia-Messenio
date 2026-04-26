@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.model;
+package it.polimi.ingsw.client.lightGameModel;
 
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
@@ -11,9 +11,9 @@ import java.util.Map;
 
 
 public class LightGameModel {
-    private final List<String> upperRowCards = new ArrayList<>();
-    private final List<String> lowerRowCards = new ArrayList<>();
-    private final Map<String, PlayerDTO> players = new HashMap<>();
+    private final List<Integer> upperRowCards = new ArrayList<>();
+    private final List<Integer> lowerRowCards = new ArrayList<>();
+    private final Map<String, LightPlayer> players = new HashMap<>();
     private final Map<String, Integer> playerTotemPositions = new HashMap<>();
     private final Map<String, List<String>> playerTribes = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class LightGameModel {
 
         this.players.clear();
         for (PlayerDTO p : playersList) {
-            this.players.put(p.nickname(), p);
+            this.players.put(p.nickname(), new  LightPlayer(p));
             this.playerTribes.putIfAbsent(p.nickname(), new ArrayList<>());
         }
         notifyUI();
@@ -60,8 +60,8 @@ public class LightGameModel {
         notifyUI();
     }
 
-    public void refillBoardRow(int row, List<String> newCardIds) {
-        List<String> targetRow = (row == 0) ? upperRowCards : lowerRowCards;
+    public void refillBoardRow(int row, List<Integer> newCardIds) {
+        List<Integer> targetRow = (row == 0) ? upperRowCards : lowerRowCards;
         targetRow.clear();
         targetRow.addAll(newCardIds);
         notifyUI();
@@ -87,15 +87,25 @@ public class LightGameModel {
         notifyUI();
     }
 
+    public void updatePlayerResources(String nickname, int newFood, int newPrestige) {
+        LightPlayer player = players.get(nickname);
+        if (player != null) {
+            player.setFood(newFood);
+            player.setPrestige(newPrestige);
+            notifyUI();
+    }
+    }
 
 
     // Getter che la TUI userà per disegnare la schermata
-    public List<String> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
-    public List<String> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
-    public Map<String, PlayerDTO> getPlayers() { return new HashMap<>(players); }
+    public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
+    public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
+    public Map<String, LightPlayer> getPlayers() { return new HashMap<>(players); }
     public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
     public Map<String, List<String>> getTribes() { return new HashMap<>(playerTribes); }
     public int getCurrentEra() { return currentEra; }
     public int getCurrentRound() { return currentRound; }
     public List<AvailableActionDTO> getMyActions() { return new ArrayList<>(actions); }
+
+
 }

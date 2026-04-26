@@ -84,7 +84,7 @@ public class ActionState extends GameState {
         player.addFood(-finalCost);
         Card purchasedCard = board.takeCard(rowIdx, cardIdx);
 
-        player.addCard((Card) purchasedCard);
+        player.addCard(purchasedCard);
 
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;

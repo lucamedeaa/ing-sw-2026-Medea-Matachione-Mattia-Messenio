@@ -21,16 +21,15 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
     //TODO: check!
     // Gestione Timer
-   // private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-   // private ScheduledFuture<?> turnTimer;
-   // private static final int TURN_TIMEOUT_SECONDS = 60;
+    // private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    // private ScheduledFuture<?> turnTimer;
+    // private static final int TURN_TIMEOUT_SECONDS = 60;
 
     public VirtualView(String nickname, ClientConnection connection, GameController controller) {
         this.nickname = nickname;
         this.connection = connection;
         this.controller = controller;
     }
-
 
     @Override
     public void onModelUpdate(ModelUpdateDTO update) {
@@ -50,7 +49,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
         connection.send(new DeltaEventMessage(update.event(), myActions));
     }
 
-     //Inviata solo all'inizio o riconnessione.
+    //Inviata solo all'inizio o riconnessione.
 
     @Override
     public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer) {
@@ -66,10 +65,9 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     }
 
 
-
     //TODO: scrivere sta roba che chiami il controller e faccia zompare la partita
     //attento se due fanno insieme
-    public void handleDisconnection(){
+    public void handleDisconnection() {
         //cancelTurnTimer();
         // Propago la disconnessione al controller per salto turno/ fine partita
         controller.handlePlayerDisconnection(this.nickname);
@@ -106,6 +104,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
             connection.send(new ErrorMessage(e.getMessage()));
         }
     }
+}
 
 
     // metodi timer   PROBABILMENTE NON SERVONO

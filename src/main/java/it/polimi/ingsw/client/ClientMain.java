@@ -1,15 +1,5 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.model.LightGameModel;
-import it.polimi.ingsw.client.network.ClientMessageReceiver;
-import it.polimi.ingsw.client.network.NetworkClientFactory;
-import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
-import it.polimi.ingsw.network.client.VirtualServer;
-import it.polimi.ingsw.network.messages.CreateGameMessage;
-import it.polimi.ingsw.network.messages.JoinGameMessage;
-
-import java.util.Scanner;
-
 public class ClientMain {
 
     public static void main(String[] args) {

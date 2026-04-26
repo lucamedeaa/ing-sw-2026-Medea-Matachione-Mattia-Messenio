@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.model;
+package it.polimi.ingsw.client.lightGameModel;
 
 import it.polimi.ingsw.network.dto.events.*;
 import it.polimi.ingsw.network.visitor.EventVisitor;

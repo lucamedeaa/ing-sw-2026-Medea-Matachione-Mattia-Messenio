@@ -107,7 +107,7 @@ public class AdditionalPickState extends GameState {
     public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
         if (playerNickname.equals(getActivePlayerNickname())) {
             // Il giocatore in fase bonus può pescare dalla prima fila o saltare il bonus
-            return List.of(new TakeCardActionDTO(), new SkipActionDTO());
+            return List.of(new TakeCardActionDTO(1,0), new SkipActionDTO());
         }
         return List.of();
     }
