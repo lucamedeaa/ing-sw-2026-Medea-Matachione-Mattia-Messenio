@@ -5,8 +5,8 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.actions.SkipActionDTO;
-import it.polimi.ingsw.network.dto.actions.TakeCardActionDTO;
+import it.polimi.ingsw.network.dto.actions.*;
+import it.polimi.ingsw.network.dto.events.*;
 
 import java.util.List;
 
@@ -77,6 +77,12 @@ public class AdditionalPickState extends GameState {
         Card purchasedCard = board.takeCard(rowIdx, cardIdx);
         player.addCard(purchasedCard);
         remainingUpperPicks--;
+
+        game.notifyAll(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
+
+        game.notifyAll(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+
+        game.notifyAll(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
 
         if (remainingUpperPicks <= 0) {
             goToNextPlayer();

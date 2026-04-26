@@ -257,10 +257,13 @@ public class Board {
         return this.offerTrack;
     }
 
+    //potenzialmente cambiarlo a direttamente getRowID, invece di dorlero risolvere ogni volta nei gameState (es: RoundEndState)
     public List<Optional<Card>> getRow(int idx){
         return idx == 0 ? this.upperRow : this.lowerRow;
     }
 
-
+    public int getCurrentEraNumber() {
+        return this.currentEraState.getEraNumber();
+    }
 
 }

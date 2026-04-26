@@ -15,7 +15,7 @@ public class LightGameModel {
     private final List<Integer> lowerRowCards = new ArrayList<>();
     private final Map<String, LightPlayer> players = new HashMap<>();
     private final Map<String, Integer> playerTotemPositions = new HashMap<>();
-    private final Map<String, List<String>> playerTribes = new HashMap<>();
+    private final Map<String, List<Integer>> playerTribes = new HashMap<>();
 
     private List<AvailableActionDTO> actions = new ArrayList<>();
     private int currentEra = 1;
@@ -72,7 +72,7 @@ public class LightGameModel {
         notifyUI();
     }
 
-    public void addCardToPlayerTribe(String nickname, String cardId) {
+    public void addCardToPlayerTribe(String nickname, Integer cardId) {
         playerTribes.computeIfAbsent(nickname, k -> new ArrayList<>()).add(cardId);
         notifyUI();
     }
@@ -102,7 +102,7 @@ public class LightGameModel {
     public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
     public Map<String, LightPlayer> getPlayers() { return new HashMap<>(players); }
     public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
-    public Map<String, List<String>> getTribes() { return new HashMap<>(playerTribes); }
+    public Map<String, List<Integer>> getTribes() { return new HashMap<>(playerTribes); }
     public int getCurrentEra() { return currentEra; }
     public int getCurrentRound() { return currentRound; }
     public List<AvailableActionDTO> getMyActions() { return new ArrayList<>(actions); }

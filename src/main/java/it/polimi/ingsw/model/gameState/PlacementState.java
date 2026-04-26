@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.actions.PlaceTotemActionDTO;
+import it.polimi.ingsw.network.dto.events.TotemPlacedEventDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,9 @@ public class PlacementState extends GameState {
         }
 
         board.placeTotem(tileIndex, player);
+
+        game.notifyAll(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
+
         board.consumeCurrentPlayer();
 
         if (board.allTotemsPlaced()) {
@@ -69,5 +73,4 @@ public class PlacementState extends GameState {
         if (board.allTotemsPlaced()) return null;
         return board.getCurrentPlayer().getNickname();
     }
-
 }

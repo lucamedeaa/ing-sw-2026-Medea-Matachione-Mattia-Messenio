@@ -25,4 +25,5 @@ public class ClientMain {
         TODO (capisci come farlo bene). Mettere un timer per le mosse del player quando è il proprio turno. Creare eventuali eccezioni custom + messaggi di errore per eccezioni
         TODO nel controller. Riguardare e sistemare codice
          */
+    }
 }

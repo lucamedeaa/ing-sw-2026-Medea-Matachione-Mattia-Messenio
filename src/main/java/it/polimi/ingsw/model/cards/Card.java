@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public abstract class Card {
     protected final int era;
-    protected final int IDcarta;
+    protected final int IDcard;
 
     /**
      * Constructs a card.
@@ -24,7 +24,7 @@ public abstract class Card {
      * @param era the card era
      */
     public Card(int idcard, int era){
-        this.IDcarta = idcard;
+        this.IDcard = idcard;
         this.era = era;
     }
 
@@ -186,4 +186,8 @@ public abstract class Card {
      * @return character type
      */
     public abstract CharacterType getCharacter();
+
+    public Integer getIDcard() {
+        return IDcard;
+    }
 }
