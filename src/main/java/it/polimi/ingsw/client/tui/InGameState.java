@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.tui;
 
-public class GameState implements TuiState{
+public class InGameState implements UIState {
 
 
     @Override

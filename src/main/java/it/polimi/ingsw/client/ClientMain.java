@@ -1,9 +1,39 @@
 package it.polimi.ingsw.client;
+import it.polimi.ingsw.client.lightGameModel.LightGameModel;
+import it.polimi.ingsw.client.network.ClientMessageReceiver;
+import it.polimi.ingsw.client.network.NetworkClientFactory;
+import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.view.ClientUI;
+import it.polimi.ingsw.client.view.UIFactory;
+import it.polimi.ingsw.network.client.VirtualServer;
+
+import java.util.Scanner;
 
 public class ClientMain {
-
     public static void main(String[] args) {
-
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Scegli: [1] TUI [2] GUI");
+        int uiChoice = Integer.parseInt(scanner.nextLine());
+        System.out.println("IP del server:");
+        String ip = scanner.nextLine();
+        System.out.println("Porta:");
+        int port = Integer.parseInt(scanner.nextLine().trim());
+        System.out.println("Scegli: [1] Socket [2] RMI");
+        NetworkClientFactory.NetworkType type = scanner.nextLine().equals("2")
+                ? NetworkClientFactory.NetworkType.RMI : NetworkClientFactory.NetworkType.SOCKET;
+        LightGameModel model = new LightGameModel();
+        try {
+            ClientUI ui = UIFactory.create(uiChoice, model);
+            ClientMessageReceiver receiver = new ClientMessageReceiver(model, ui);
+            VirtualServer server = NetworkClientFactory.createConnection(type, ip, port, receiver);
+            ServerController controller = new ServerController(server);
+            ui.setController(controller);
+            ui.start(); // blocca qui — loop scanner nel thread principale
+        } catch (Exception e) {
+            System.err.println("Errore di connessione: " + e.getMessage());
+        }
+    }
+}
         /* l'idea di base è che questo coso deve chiedere solo se vuoi mettere GUI o TUI. Poi si
         apre la GUI/TUI e scegli se usare socket o RMI. A quel punto usando networkClientFactory, vi darà
         un virtualServer. Questo è un virtualServer generico, voi vi dovete preoccupare soltanto di usare il metodo send d'ora in
@@ -25,5 +55,3 @@ public class ClientMain {
         TODO (capisci come farlo bene). Mettere un timer per le mosse del player quando è il proprio turno. Creare eventuali eccezioni custom + messaggi di errore per eccezioni
         TODO nel controller. Riguardare e sistemare codice
          */
-    }
-}

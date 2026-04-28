@@ -1,4 +1,11 @@
 package it.polimi.ingsw.client.view;
 
-public class ClientUI {
+import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.tui.UIState;
+import java.util.function.Consumer;
+
+public interface ClientUI {
+        void setController(ServerController controller);
+        void start();
+        void dispatch(Consumer<UIState> action);
 }
