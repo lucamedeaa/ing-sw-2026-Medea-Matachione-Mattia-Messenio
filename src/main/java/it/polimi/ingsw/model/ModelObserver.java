@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.ModelUpdateDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
@@ -10,5 +11,5 @@ public interface ModelObserver {
     void onModelUpdate(ModelUpdateDTO update);
 
     // Chiamato solo all'inizio o per ripristinare un client
-    void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer);
+    void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions);
 }

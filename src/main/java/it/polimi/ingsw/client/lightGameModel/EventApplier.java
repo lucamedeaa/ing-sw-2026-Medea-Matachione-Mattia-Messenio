@@ -46,5 +46,6 @@ public class EventApplier implements EventVisitor {
         model.updateRound(event.newRound());
     }
 
-
+    @Override
+    public void visit(GameOverEventDTO event){model.setGameOver(event.leaderboard());};
 }

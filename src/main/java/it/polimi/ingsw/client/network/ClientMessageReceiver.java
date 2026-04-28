@@ -37,6 +37,7 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(MatchmakingSuccessMessage message) {
+
         System.out.println("[MATCHMAKING SUCCESS] " + message.text());
     }
 
@@ -56,4 +57,5 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
     public void visit(RoomUpdateMessage message) {
         //TODO
     }
+
 }

@@ -10,4 +10,5 @@ public interface EventVisitor {
     void visit(CardAddedToTribeEventDTO event);
     void visit(EraTransitionEventDTO event);
     void visit(RoundAdvancedEventDTO event);
+    void visit(GameOverEventDTO event);
 }
