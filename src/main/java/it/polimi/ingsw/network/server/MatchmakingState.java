@@ -51,12 +51,20 @@ public class MatchmakingState implements MatchmakingVisitor {
     @Override
     public void visit(LeaveGameMessage msg) {
         String playerName = handler.getNickname();
-        if (playerName != null){
-            GameRoom room = gameManager.getGameRoomByPlayer(playerName);
-            if (room != null) {
-                room.removePlayer(playerName);
-                handler.send(new MatchmakingSuccessMessage("You left the lobby."));
-            }
+        if (playerName == null) {
+            handler.send(new ErrorMessageDTO("Error: You don't have a nickname set."));
+            return;
+        }
+        GameRoom room = gameManager.getGameRoomByPlayer(playerName);
+        if (room == null) {
+            handler.send(new ErrorMessageDTO("Error: You are not in any game room."));
+            return;
+        }
+        try {
+            room.removePlayer(playerName);
+            handler.send(new GameLeftSuccessMessage("You left the lobby."));
+        } catch (IllegalStateException e) {
+            handler.send(new ErrorMessageDTO(e.getMessage()));
         }
     }
 }

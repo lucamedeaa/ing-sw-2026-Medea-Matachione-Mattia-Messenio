@@ -13,19 +13,22 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** RMI-based client handler that bridges server messages to the client and client messages to the VirtualView. */
 public class RMIClientHandler extends UnicastRemoteObject implements ClientConnection, RMIServerSession {
 
-    private final RMIClientCallback callback;
-    private MatchmakingState matchmakingState;
     private final GameManager gameManager;
-    private volatile boolean active;
-    private volatile long lastPingTime;
+    private final RMIClientCallback callback;
+    private volatile VirtualView virtualView;
+    private MatchmakingState matchmakingState;
+    private String nickname;
+
     private final ScheduledExecutorService timeoutChecker;
 
-    private VirtualView virtualView;
-    private String nickname;
+    private final AtomicBoolean active = new AtomicBoolean(true);
+    private final AtomicLong lastPingTime = new AtomicLong();
 
     /**
      * Constructs the handler. @param callback client callback for outgoing messages @param nickname client nickname @throws RemoteException if export fails
@@ -35,12 +38,11 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         this.callback = callback;
         this.gameManager = gameManager;
         this.matchmakingState = new MatchmakingState(this, gameManager);
-        this.active = true;
-        this.lastPingTime = System.currentTimeMillis();
+        this.lastPingTime.set(System.currentTimeMillis());
         this.timeoutChecker = Executors.newSingleThreadScheduledExecutor();
 
         this.timeoutChecker.scheduleAtFixedRate(() -> {
-            if (active && (System.currentTimeMillis() - lastPingTime > 10000)) {
+            if (active.get() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
                 System.err.println("[RMI] Timeout: Il client " + nickname + " non invia ping. Ritenuto morto.");
                 handleClientDisconnection();
             }
@@ -51,7 +53,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         this.nickname = nickname;
     }
 
-    public String getNickname(){
+    public String getNickname() {
         return this.nickname;
     }
 
@@ -59,9 +61,13 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
      * Sets the VirtualView used to forward incoming client messages. @param virtualView associated virtual view
      */
     @Override
-    public synchronized void setVirtualView(VirtualView virtualView) {
+    public void setVirtualView(VirtualView virtualView) {
         this.matchmakingState = null;
         this.virtualView = virtualView;
+
+        if (!this.active.get()) {
+            virtualView.handleDisconnection();
+        }
     }
 
     /**
@@ -70,8 +76,11 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     @Override
     public void send(ServerMessage message) {
         try {
-            if (active) callback.onMessageReceived(message);
+            if (active.get()) {
+                callback.onMessageReceived(message);
+            }
         } catch (RemoteException e) {
+            System.err.println("[RMI] Disconnection detected on write for: " + nickname);
             handleClientDisconnection();
         }
     }
@@ -81,15 +90,13 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
      */
     @Override
     public void sendMessage(ClientMessage message) throws RemoteException {
-        this.lastPingTime = System.currentTimeMillis();
-        //TODO: usare visitor pure qua
+        this.lastPingTime.set(System.currentTimeMillis());
+
         if (message instanceof PingMessage) {
             return;
-        }
-        else if (message instanceof DisconnectionMessage){
+        } else if (message instanceof DisconnectionMessage) {
             handleClientDisconnection();
-        }
-        else if (message instanceof MatchmakingMessage mm) {
+        } else if (message instanceof MatchmakingMessage mm) {
             if (matchmakingState != null) {
                 mm.accept(matchmakingState);
             } else {
@@ -101,21 +108,36 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
             } else {
                 send(new ErrorMessageDTO("Not in a game yet."));
             }
-        }else{
+        } else {
             send(new ErrorMessageDTO("Unknown message type."));
         }
-
     }
 
-    private void handleClientDisconnection(){
-        if (!active) return;
-        this.active = false;
+    private void handleClientDisconnection() {
+        if (!active.compareAndSet(true, false)) {
+            return;
+        }
+
+        if (timeoutChecker != null) {
+            timeoutChecker.shutdownNow();
+        }
+
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (java.rmi.NoSuchObjectException e) {
+            System.err.println("[RMI] Impossibile eseguire l'unexport dell'oggetto: " + e.getMessage());
+        }
+
         if (virtualView != null) {
             virtualView.handleDisconnection();
         } else if (nickname != null) {
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
-                room.removePlayer(nickname);
+                try {
+                    room.removePlayer(nickname);
+                } catch (IllegalStateException e) {
+                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                }
             }
         }
     }
