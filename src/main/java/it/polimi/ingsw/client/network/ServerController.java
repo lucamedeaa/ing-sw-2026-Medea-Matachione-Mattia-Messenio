@@ -2,19 +2,57 @@ package it.polimi.ingsw.client.network;
 import it.polimi.ingsw.network.client.VirtualServer;
 import it.polimi.ingsw.network.messages.*;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class ServerController {
+
     private final VirtualServer server;
-    public ServerController(VirtualServer server) { this.server = server; }
+    private final ExecutorService networkExecutor;
+
+    public ServerController(VirtualServer server) {
+        this.server = server;
+        this.networkExecutor = Executors.newSingleThreadExecutor();
+    }
+
+    private void sendAsync(ClientMessage message) {
+        networkExecutor.submit(() -> {
+            server.sendMessage(message);
+        });
+    }
+
     public void createGame(String nickname, int maxPlayers) {
-        server.sendMessage(new CreateGameMessage(nickname, maxPlayers));
+        sendAsync(new CreateGameMessage(nickname, maxPlayers));
     }
+
     public void joinGame(String nickname, String gameId) {
-        server.sendMessage(new JoinGameMessage(nickname, gameId));
+        sendAsync(new JoinGameMessage(nickname, gameId));
     }
-    public void getAvailableGames() { server.sendMessage(new GetAvailableGamesMessage()); }
-    public void leaveGame() { server.sendMessage(new LeaveGameMessage()); }
-    public void placeTotem(int posIdx) { server.sendMessage(new PlaceTotemMessage(posIdx)); }
-    public void takeCard(int row, int col){ server.sendMessage(new TakeCardMessage(row, col)); }
-    public void skipAction() { server.sendMessage(new SkipActionMessage()); }
-    public void disconnect() { server.disconnect(); }
+
+    public void getAvailableGames() {
+        sendAsync(new GetAvailableGamesMessage());
+    }
+
+    public void leaveGame() {
+        sendAsync(new LeaveGameMessage());
+    }
+
+    public void placeTotem(int posIdx) {
+        sendAsync(new PlaceTotemMessage(posIdx));
+    }
+
+    public void takeCard(int row, int col) {
+        sendAsync(new TakeCardMessage(row, col));
+    }
+
+    public void skipAction() {
+        sendAsync(new SkipActionMessage());
+    }
+
+    public void disconnect() {
+        networkExecutor.submit(() -> {
+            server.disconnect();
+            networkExecutor.shutdown();
+        });
+    }
 }
