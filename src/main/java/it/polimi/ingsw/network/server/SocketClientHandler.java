@@ -85,6 +85,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 //TODO riscrivere con visitor per questo ed RMICLIENTHANDLER
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
+                    send(new PongMessage());
                     continue;
                 }
                 if (input instanceof DisconnectionMessage ds) {
