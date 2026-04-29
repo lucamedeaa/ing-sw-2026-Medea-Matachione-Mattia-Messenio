@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.lightGameModel;
 
+import it.polimi.ingsw.network.dto.TribeDTO;
 import it.polimi.ingsw.network.dto.events.*;
 import it.polimi.ingsw.network.visitor.EventVisitor;
 
@@ -45,6 +46,10 @@ public class EventApplier implements EventVisitor {
     public void visit(RoundAdvancedEventDTO event) {
         model.updateRound(event.newRound());
     }
+
+    @Override
+    public void visit(TribeDTO tribe) {//TODO definirlo
+        }
 
 
 }

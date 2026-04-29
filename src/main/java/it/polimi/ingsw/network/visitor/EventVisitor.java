@@ -1,5 +1,6 @@
 package it.polimi.ingsw.network.visitor;
 
+import it.polimi.ingsw.network.dto.TribeDTO;
 import it.polimi.ingsw.network.dto.events.*;
 
 public interface EventVisitor {
@@ -10,4 +11,5 @@ public interface EventVisitor {
     void visit(CardAddedToTribeEventDTO event);
     void visit(EraTransitionEventDTO event);
     void visit(RoundAdvancedEventDTO event);
+    void visit(TribeDTO tribe);
 }

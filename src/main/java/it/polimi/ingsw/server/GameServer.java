@@ -35,6 +35,7 @@ public class GameServer {
             RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind("MesosServer", entryPoint);
+            System.out.println("[RMI] Listening for connections on port " + rmiPort);
         } catch (Exception e) {
             System.err.println("[RMI] Fatal error during startup: " + e.getMessage());
             e.printStackTrace();

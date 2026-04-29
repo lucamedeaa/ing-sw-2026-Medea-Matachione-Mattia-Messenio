@@ -17,7 +17,7 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Socket-based implementation of VirtualServer that handles bidirectional communication with the server. */
-public class SocketServerConnection implements Runnable {
+public class SocketServerConnection implements Runnable, VirtualServer {
 
     private final Socket socket;
     private final ObjectInputStream in;
