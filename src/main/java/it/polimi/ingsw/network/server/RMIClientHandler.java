@@ -91,7 +91,6 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     @Override
     public void sendMessage(ClientMessage message) throws RemoteException {
         this.lastPingTime.set(System.currentTimeMillis());
-
         if (message instanceof PingMessage) {
             return;
         } else if (message instanceof DisconnectionMessage) {

@@ -21,7 +21,7 @@ public class MatchmakingState implements UIState {
                 "1", () -> { tui.prompt("Nickname: ");  currentHandler = this::handleCreateNickname; },
                 "2", () -> { tui.prompt("Game ID: ");   currentHandler = this::handleJoinGameId; },
                 "3", () -> tui.getController().getAvailableGames(),
-                "0", () -> tui.getController().disconnect()
+                "0", () -> { tui.getController().disconnect(); System.exit(0); }
         );
         currentHandler = this::handleMenu;
     }

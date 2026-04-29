@@ -12,15 +12,30 @@ import java.util.Scanner;
 public class ClientMain {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Scegli: [1] TUI [2] GUI");
-        int uiChoice = Integer.parseInt(scanner.nextLine());
+        int uiChoice = 0;
+        while (uiChoice != 1 && uiChoice != 2) {
+            System.out.print("\033[H\033[2J");
+            System.out.println("Scegli: [1] TUI  [2] GUI");
+            try { uiChoice = Integer.parseInt(scanner.nextLine().trim()); }
+            catch (NumberFormatException e) { System.out.println("Invalid choice."); }
+        }
         System.out.println("IP del server:");
         String ip = scanner.nextLine();
-        System.out.println("Porta:");
-        int port = Integer.parseInt(scanner.nextLine().trim());
-        System.out.println("Scegli: [1] Socket [2] RMI");
-        NetworkClientFactory.NetworkType type = scanner.nextLine().equals("2")
-                ? NetworkClientFactory.NetworkType.RMI : NetworkClientFactory.NetworkType.SOCKET;
+        int networkChoice = 0;
+        while (networkChoice != 1 && networkChoice != 2) {
+            System.out.println("Scegli: [1] Socket  [2] RMI");
+            try { networkChoice = Integer.parseInt(scanner.nextLine().trim()); }
+            catch (NumberFormatException e) { System.out.println("Invalid choice."); }
+        }
+        NetworkClientFactory.NetworkType type = networkChoice == 1
+                ? NetworkClientFactory.NetworkType.SOCKET
+                : NetworkClientFactory.NetworkType.RMI;
+        int port = -1;
+        while (port < 0 || port > 65535) {
+            System.out.println("Porta:");
+            try { port = Integer.parseInt(scanner.nextLine().trim()); }
+            catch (NumberFormatException e) { System.out.println("Invalid port."); }
+        }
         LightGameModel model = new LightGameModel();
         try {
             ClientUI ui = UIFactory.create(uiChoice, model);
