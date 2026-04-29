@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
 public class SocketClientHandler implements ClientConnection, Runnable {
@@ -19,7 +20,8 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private VirtualView virtualView;
-    private volatile boolean active;
+    private AtomicBoolean active = new AtomicBoolean(true);
+    private final Object streamLock = new Object();
     private String nickname;
 
     private MatchmakingState matchmakingState;
@@ -28,14 +30,13 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     public SocketClientHandler(Socket socket, GameManager gameManager) {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.active = true;
         this.matchmakingState = new MatchmakingState(this, gameManager);
         try {
             this.out = new ObjectOutputStream(socket.getOutputStream());
             this.in = new ObjectInputStream(socket.getInputStream());
             this.socket.setSoTimeout(10000);
         } catch (IOException e) {
-            this.active = false;
+            active.set(false);
         }
     }
 
@@ -50,23 +51,29 @@ public class SocketClientHandler implements ClientConnection, Runnable {
 
     /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
-    public synchronized void setVirtualView(VirtualView virtualView) {
+    public void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
         // When view is set, we are no longer in matchmaking.
         this.matchmakingState = null;
+        //in case vView changed after check in handleDisconnection
+        if (!this.active.get()) {
+            virtualView.handleDisconnection();
+        }
     }
 
     /** Sends a server message to the client; handles disconnection on failure. @param message message to send */
     @Override
-    public synchronized void send(ServerMessage message) {
-        try {
-            if (active) {
-                out.writeObject(message);
-                out.reset();
+    public void send(ServerMessage message) {
+        if (active.get()) {
+            try {
+                synchronized (streamLock) {
+                    out.writeObject(message);
+                    out.reset();
+                }
+            } catch (IOException e) {
+                System.err.println("[SOCKET] Disconnection detected on write for: " + getNickname());
+                handleClientDisconnection();
             }
-        } catch (IOException e) {
-            System.err.println("[SOCKET] Disconnection detected on write for: " + nickname);
-            handleClientDisconnection();
         }
     }
 
@@ -74,9 +81,12 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     @Override
     public void run() {
         try {
-            while (active) {
+            while (active.get()) {
                 //TODO riscrivere con visitor per questo ed RMICLIENTHANDLER
                 Object input = in.readObject();
+                if (input instanceof PingMessage) {
+                    continue;
+                }
                 if (input instanceof DisconnectionMessage ds) {
                     handleClientDisconnection();
                 }
@@ -107,19 +117,21 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     }
 
     /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
-    private synchronized void handleClientDisconnection() {
-        if (!active) return;
-        this.active = false;
+    private void handleClientDisconnection() {
+        if (!active.compareAndSet(true, false)) return;
 
         closeConnection();
 
         if (virtualView != null) {
             virtualView.handleDisconnection();
         } else if (nickname != null) {
-            //TODO pensa gestione nickname, non dovrebbe averlo questo, lo affidiamo dopo
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
-                room.removePlayer(nickname);
+                try {
+                    room.removePlayer(nickname);
+                } catch (IllegalStateException e) {
+                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                }
             }
         }
     }

@@ -14,16 +14,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Socket-based implementation of VirtualServer that handles bidirectional communication with the server. */
-public class SocketServerConnection implements VirtualServer, Runnable {
+public class SocketServerConnection implements Runnable {
 
     private final Socket socket;
-    private final ObjectOutputStream out;
     private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final ClientMessageVisitor view;
-    private volatile boolean active;
+
     private final ScheduledExecutorService pinger;
+    private final AtomicBoolean active = new AtomicBoolean(true);
+    private final Object streamLock = new Object();
 
     /**
      * Initializes the socket and streams.
@@ -33,8 +36,8 @@ public class SocketServerConnection implements VirtualServer, Runnable {
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
         this.view = view;
-        this.active = true;
         this.socket.setSoTimeout(10000);
+
         this.pinger = Executors.newSingleThreadScheduledExecutor();
         this.pinger.scheduleAtFixedRate(() -> {
             sendMessage(new PingMessage());
@@ -44,15 +47,16 @@ public class SocketServerConnection implements VirtualServer, Runnable {
     /**
      * Sends a generic client message to the server.
      */
-    @Override
-    public synchronized void sendMessage(ClientMessage message) {
-        try {
-            if (active) {
-                out.writeObject(message);
-                out.reset();
+    public void sendMessage(ClientMessage message) {
+        if (active.get()) {
+            try {
+                synchronized (streamLock) {
+                    out.writeObject(message);
+                    out.reset();
+                }
+            } catch (IOException e) {
+                handleServerDisconnection();
             }
-        } catch (IOException e) {
-            handleServerDisconnection();
         }
     }
 
@@ -62,40 +66,43 @@ public class SocketServerConnection implements VirtualServer, Runnable {
     @Override
     public void run() {
         try {
-            while (active) {
+            while (active.get()) {
                 Object input = in.readObject();
                 if (input instanceof ServerMessage message) {
                     message.accept(view);
                 }
             }
-        }catch (SocketTimeoutException e) {
-                System.err.println("[CLIENT] Timeout: Il server non risponde (nessun Pong ricevuto).");
-                handleServerDisconnection();
-            }
-        catch(Exception e) {
+        } catch (SocketTimeoutException e) {
+            System.err.println("[CLIENT] Timeout: Il server non risponde (nessun Pong ricevuto).");
+            handleServerDisconnection();
+        } catch (Exception e) {
             handleServerDisconnection();
         }
     }
 
-    @Override
     public void disconnect() {
-        if (!active) return;
-        this.sendMessage(new DisconnectionMessage());
-        this.active = false;
-        closeConnection();
+        if (active.compareAndSet(true, false)) {
+            try {
+                synchronized (streamLock) {
+                    out.writeObject(new DisconnectionMessage());
+                    out.reset();
+                }
+            } catch (IOException ignored) {
+            }
+            closeConnection();
+            System.out.println("[CLIENT] Disconnessione volontaria effettuata.");
+        }
     }
-
 
     /**
      * Handles unexpected disconnections.
      */
     private void handleServerDisconnection() {
-        if (!active) return;
-        this.active = false;
-        if (pinger != null) pinger.shutdownNow();
-        closeConnection();
-        //TODO: notificare la view del crash del server observer
-        System.err.println("[CLIENT] Disconnesso dal server.");
+        if (active.compareAndSet(true, false)) {
+            closeConnection();
+            System.err.println("[CLIENT] Disconnesso dal server inaspettatamente.");
+            //TODO: notificare la view del crash del server
+        }
     }
 
     /**
@@ -103,11 +110,11 @@ public class SocketServerConnection implements VirtualServer, Runnable {
      */
     private void closeConnection() {
         try {
+            if (pinger != null) pinger.shutdownNow();
             if (in != null) in.close();
             if (out != null) out.close();
             if (socket != null && !socket.isClosed()) socket.close();
         } catch (IOException ignored) {
         }
     }
-
 }
