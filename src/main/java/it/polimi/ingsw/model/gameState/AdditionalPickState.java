@@ -78,11 +78,11 @@ public class AdditionalPickState extends GameState {
         player.addCard(purchasedCard);
         remainingUpperPicks--;
 
-        game.notifyAll(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
+        game.notifyObservers(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
 
-        game.notifyAll(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.notifyObservers(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
 
-        game.notifyAll(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
+        game.notifyObservers(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
 
         if (remainingUpperPicks <= 0) {
             goToNextPlayer();

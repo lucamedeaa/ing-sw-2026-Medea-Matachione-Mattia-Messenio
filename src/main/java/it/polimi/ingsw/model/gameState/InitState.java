@@ -18,30 +18,10 @@ public class InitState extends GameState {
     /** Starts the game by transitioning to the placement state. */
     @Override
     public void start() {
-        game.notifyAll(new RoundAdvancedEventDTO(game.getCurrentRound()));
 
-        //il model dovrebbe inizializzare a 0 food e 0 prestige i player
-        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.notifyAll(new PlayerResourcesChangedEventDTO(
-                p.getNickname(),
-                p.getFood(),
-                p.getPrestigePoints()
-            ));
-        }
-
-        List<Integer> upperIds = game.getBoard().getRow(0).stream()
-                .map(opt -> opt.map(Card::getIDcard).orElse(null))
-                .toList();
-        List<Integer> lowerIds = game.getBoard().getRow(1).stream()
-                .map(opt -> opt.map(Card::getIDcard).orElse(null))
-                .toList();
-
-        game.notifyAll(new BoardRefilledEventDTO(0, upperIds));
-        game.notifyAll(new BoardRefilledEventDTO(1, lowerIds));
-
+        game.notifyFullSync();
 
         this.transition(new PlacementState(this.game));
-
     }
 
     @Override

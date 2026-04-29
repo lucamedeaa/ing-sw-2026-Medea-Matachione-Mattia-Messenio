@@ -3,8 +3,13 @@ package it.polimi.ingsw.model.gameState;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.PlayerScoreDTO;
+import it.polimi.ingsw.network.dto.events.GameOverEventDTO;
+import it.polimi.ingsw.network.dto.events.PlayerResourcesChangedEventDTO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Final game state responsible for computing scores and determining the winner. */
 public class ScoringState extends GameState {
@@ -14,20 +19,35 @@ public class ScoringState extends GameState {
         super(game);
     }
 
-    /** Executes final scoring and determines the winner. */
     @Override
     public void start() {
         calculateFinalScores();
-        Player winner = game.determineWinner();
-        announceWinner(winner);
+        announceWinner();
     }
 
-    /** Computes final scores for all players. */
     private void calculateFinalScores() {
+        for (Player player : game.getPlayers()) {
+            game.notifyObservers(new PlayerResourcesChangedEventDTO(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.calculateTotalScore()
+            ));
+        }
     }
 
-    /** Handles winner announcement logic. @param winner the winning player */
-    private void announceWinner(Player winner) {
+    private void announceWinner() {
+        List<PlayerScoreDTO> leaderboard = game.getPlayers().stream()
+                .map(p -> new PlayerScoreDTO(p.getNickname(), p.calculateTotalScore(), p.getFood()))
+                .sorted((p1, p2) -> {
+                    int scoreCompare = Integer.compare(p2.finalScore(), p1.finalScore());
+                    if (scoreCompare != 0) return scoreCompare;
+
+                    return Integer.compare(p2.remainingFood(), p1.remainingFood());
+                })
+                .toList();
+
+
+        game.notifyObservers(new GameOverEventDTO(leaderboard));
     }
     @Override
     public List<AvailableActionDTO> getAvailableActions(String playerNickname) {

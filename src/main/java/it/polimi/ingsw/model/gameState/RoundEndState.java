@@ -23,12 +23,12 @@ public class RoundEndState extends GameState {
     public void start() {
         game.incrementRound();
 
-        game.notifyAll(new RoundAdvancedEventDTO(game.getCurrentRound()));
+        game.notifyObservers(new RoundAdvancedEventDTO(game.getCurrentRound()));
 
         if (isGameOver()) {
             game.getBoard().resolveFinalEvents(game.getPlayers());
 
-            notifyAllPlayersResources();
+            notifyObserversPlayersResources();
 
             this.transition(new ScoringState(this.game));
         } else {
@@ -40,10 +40,10 @@ public class RoundEndState extends GameState {
             int eraAfter = game.getBoard().getCurrentEraNumber();
 
             if (eraAfter > eraBefore) {
-                game.notifyAll(new EraTransitionEventDTO(eraAfter));
+                game.notifyObservers(new EraTransitionEventDTO(eraAfter));
             }
 
-            notifyAllPlayersResources();
+            notifyObserversPlayersResources();
 
             notifyBoardState();
 
@@ -66,9 +66,9 @@ public class RoundEndState extends GameState {
         return null; // Nessun giocatore attivo
     }
 
-    private void notifyAllPlayersResources() {
+    private void notifyObserversPlayersResources() {
         for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.notifyAll(new PlayerResourcesChangedEventDTO(
+            game.notifyObservers(new PlayerResourcesChangedEventDTO(
                 p.getNickname(),
                 p.getFood(),
                 p.getPrestigePoints()
@@ -85,7 +85,7 @@ public class RoundEndState extends GameState {
                 .map(opt -> opt.map(Card::getIDcard).orElse(null))
                 .toList();
 
-        game.notifyAll(new BoardRefilledEventDTO(0, upperIds));
-        game.notifyAll(new BoardRefilledEventDTO(1, lowerIds));
+        game.notifyObservers(new BoardRefilledEventDTO(0, upperIds));
+        game.notifyObservers(new BoardRefilledEventDTO(1, lowerIds));
     }
 }

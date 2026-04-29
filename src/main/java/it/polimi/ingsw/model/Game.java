@@ -1,11 +1,10 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.board.Board;
+import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.GameEventDTO;
-import it.polimi.ingsw.network.dto.ModelUpdateDTO;
+import it.polimi.ingsw.network.dto.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,7 +39,7 @@ public class Game {
 
     public void addObserver(ModelObserver obs) { observers.add(obs); }
 
-    public void notifyAll(GameEventDTO event) {
+    public void notifyObservers(GameEventDTO event) {
         String activePlayer = currentState.getActivePlayerNickname();
         List<AvailableActionDTO> actions = List.of();
 
@@ -52,6 +51,28 @@ public class Game {
 
         for (ModelObserver obs : observers) {
             obs.onModelUpdate(snapshot);
+        }
+    }
+    public void notifyFullSync() {
+        BoardDTO boardDTO = new BoardDTO(
+                board.getRow(0).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
+                board.getRow(1).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
+                board.getCurrentEraNumber(),
+                currentRound
+        );
+
+        List<PlayerDTO> playersDTO = players.stream()
+                .map(p -> new PlayerDTO(p.getNickname(), p.getFood(), p.getPrestigePoints()))
+                .toList();
+
+        String activePlayer = (currentState != null) ? currentState.getActivePlayerNickname() : null;
+        List<AvailableActionDTO> actions = List.of();
+        if (activePlayer != null) {
+            actions = currentState.getAvailableActions(activePlayer);
+        }
+
+        for (ModelObserver obs : observers) {
+            obs.onFullSync(boardDTO, playersDTO, activePlayer, actions);
         }
     }
 

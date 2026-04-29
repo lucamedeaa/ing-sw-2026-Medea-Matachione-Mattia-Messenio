@@ -49,11 +49,12 @@ public class VirtualView implements ModelObserver, InGameVisitor {
         connection.send(new DeltaEventMessage(update.event(), myActions));
     }
 
-    //Inviata solo all'inizio o riconnessione.
-
+    //Inviata solo all'inizio o riconness@Override
     @Override
-    public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer) {
-        connection.send(new FullSyncMessage(board, players, activePlayer));
+    public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+        FullSyncMessage message = new FullSyncMessage(board, players, activePlayer, actions);
+
+        connection.send(message);
     }
 
     //Messaggi che arrivano dal giocatore verso il Server.

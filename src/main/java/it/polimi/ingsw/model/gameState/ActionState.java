@@ -90,9 +90,9 @@ public class ActionState extends GameState {
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
 
-        game.notifyAll(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
-        game.notifyAll(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
-        game.notifyAll(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
+        game.notifyObservers(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
+        game.notifyObservers(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.notifyObservers(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
 
         checkTurnConditions();
     }
