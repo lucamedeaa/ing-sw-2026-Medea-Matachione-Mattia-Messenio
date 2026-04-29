@@ -39,6 +39,7 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleCreateNickname(String input) {
+        if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
         pendingNickname = input;
         tui.prompt("Max players: ");
         currentHandler = this::handleCreateMaxPlayers;
@@ -46,7 +47,13 @@ public class MatchmakingState implements UIState {
 
     private void handleCreateMaxPlayers(String input) {
         try {
-            tui.getController().createGame(pendingNickname, Integer.parseInt(input));
+            int max = Integer.parseInt(input);
+            if (max < 2 || max > 5) {
+                tui.print("Players must be between 2 and 5.");
+                tui.prompt("Max players: ");
+                return;
+            }
+            tui.getController().createGame(pendingNickname, max);
             currentHandler = this::handleMenu;
         } catch (NumberFormatException e) {
             tui.print("Invalid number.");
@@ -55,12 +62,14 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleJoinGameId(String input) {
+        if (input.isEmpty()) { tui.prompt("Game ID: "); return; }
         pendingGameId = input;
         tui.prompt("Nickname: ");
         currentHandler = this::handleJoinNickname;
     }
 
     private void handleJoinNickname(String input) {
+        if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
         tui.getController().joinGame(pendingGameId, input);
         currentHandler = this::handleMenu;
     }
