@@ -48,8 +48,18 @@ public class EventApplier implements EventVisitor {
     }
 
     @Override
-    public void visit(TribeDTO tribe) {//TODO definirlo
-        }
+    public void visit(TribeDTO tribe) {
+        model.updatePlayerTribe(tribe.nickname(), tribe.tribe());
+    }
 
+    @Override
+    public void visit(WinnersAnnouncedEventDTO event) {
+        model.setWinners(event.winnersNicknames());
+    }
+
+    @Override
+    public void visit(PlayerLeftGameDTO event) {
+        //TODO disconnessione player
+    }
 
 }

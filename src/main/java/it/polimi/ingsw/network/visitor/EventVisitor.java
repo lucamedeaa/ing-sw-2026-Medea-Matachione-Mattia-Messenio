@@ -12,4 +12,5 @@ public interface EventVisitor {
     void visit(EraTransitionEventDTO event);
     void visit(RoundAdvancedEventDTO event);
     void visit(TribeDTO tribe);
-}
+    void visit(WinnersAnnouncedEventDTO event);
+    void visit(PlayerLeftGameDTO event);}

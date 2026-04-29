@@ -6,6 +6,7 @@ import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.PlayerScoreDTO;
 import it.polimi.ingsw.network.dto.events.GameOverEventDTO;
 import it.polimi.ingsw.network.dto.events.PlayerResourcesChangedEventDTO;
+import it.polimi.ingsw.network.dto.events.WinnersAnnouncedEventDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,8 @@ public class ScoringState extends GameState {
     @Override
     public void start() {
         calculateFinalScores();
-        announceWinner();
+        List<Player> winners = determineWinners();
+        announceWinners(winners);
     }
 
     private void calculateFinalScores() {
@@ -35,20 +37,38 @@ public class ScoringState extends GameState {
         }
     }
 
-    private void announceWinner() {
-        List<PlayerScoreDTO> leaderboard = game.getPlayers().stream()
-                .map(p -> new PlayerScoreDTO(p.getNickname(), p.calculateTotalScore(), p.getFood()))
-                .sorted((p1, p2) -> {
-                    int scoreCompare = Integer.compare(p2.finalScore(), p1.finalScore());
-                    if (scoreCompare != 0) return scoreCompare;
-
-                    return Integer.compare(p2.remainingFood(), p1.remainingFood());
-                })
+    private void announceWinners(List<Player> winners) {
+        List<String> winnerNicknames = winners.stream()
+                .map(Player::getNickname)
                 .toList();
 
-
-        game.notifyObservers(new GameOverEventDTO(leaderboard));
+        game.notifyObservers(new WinnersAnnouncedEventDTO(winnerNicknames));
     }
+
+    private List<Player> determineWinners() {
+        List<Player> players = game.getPlayers();
+        if (players == null || players.isEmpty()) return List.of();
+
+        int maxScore = players.stream()
+                .mapToInt(Player::calculateTotalScore)
+                .max()
+                .orElse(0);
+
+        List<Player> topScorers = players.stream()
+                .filter(p -> p.calculateTotalScore() == maxScore)
+                .toList();
+
+        int maxFood = topScorers.stream()
+                .mapToInt(Player::getFood)
+                .max()
+                .orElse(0);
+
+        return topScorers.stream()
+                .filter(p -> p.getFood() == maxFood)
+                .toList();
+    }
+
+
     @Override
     public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
         return List.of(); // Nessuna azione disponibile

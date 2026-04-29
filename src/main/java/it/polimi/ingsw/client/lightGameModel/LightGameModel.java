@@ -1,9 +1,6 @@
 package it.polimi.ingsw.client.lightGameModel;
 
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.BoardDTO;
-import it.polimi.ingsw.network.dto.PlayerDTO;
-import it.polimi.ingsw.network.dto.PlayerScoreDTO;
+import it.polimi.ingsw.network.dto.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +24,7 @@ public class LightGameModel {
 
     private boolean isGameOver = false;
     private List<PlayerScoreDTO> leaderboard = new ArrayList<>();
+    private List<String> winners = new ArrayList<>();
 
     public void addObserver(UIObserver observer) {
         this.observers.add(observer);
@@ -107,6 +105,16 @@ public class LightGameModel {
         notifyUI();
     }
 
+    public void setWinners(List<String> winners) {
+        this.winners = new ArrayList<>(winners);
+        notifyUI();
+    }
+
+    public void updatePlayerTribe(String nickname, List<Integer> newTribeCards) {
+        playerTribes.put(nickname, new ArrayList<>(newTribeCards));
+        notifyUI();
+    }
+
     // Getter che la TUI userà per disegnare la schermata
     public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
     public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
@@ -118,5 +126,5 @@ public class LightGameModel {
     public List<AvailableActionDTO> getMyActions() { return new ArrayList<>(actions); }
     public boolean isGameOver() { return isGameOver; }
     public List<PlayerScoreDTO> getLeaderboard() { return new ArrayList<>(leaderboard); }
-
+    public List<String> getWinners() {return new ArrayList<>(winners);}
 }
