@@ -17,10 +17,12 @@ public class RMIServerConnection implements VirtualServer {
     private final RMIServerSession serverSession;
     private final AtomicBoolean active = new AtomicBoolean(true);
     private final ScheduledExecutorService pinger;
+    private final RMIClientCallbackImpl callback;
 
     /** Constructs the RMI server connection. @param serverSession remote server session */
-    public RMIServerConnection(RMIServerSession serverSession) {
+    public RMIServerConnection(RMIServerSession serverSession, RMIClientCallbackImpl callback) {
         this.serverSession = serverSession;
+        this.callback = callback;
         this.pinger = Executors.newSingleThreadScheduledExecutor();
         this.pinger.scheduleAtFixedRate(() -> {
             sendMessage(new PingMessage());
@@ -34,7 +36,7 @@ public class RMIServerConnection implements VirtualServer {
             try {
                 serverSession.sendMessage(message);
             } catch (RemoteException e) {
-                handleServerDisconnection();
+                handleServerDisconnection("Errore di comunicazione RMI: " + e.getMessage());
             }
         }
     }
@@ -45,17 +47,25 @@ public class RMIServerConnection implements VirtualServer {
             try {
                 serverSession.sendMessage(new DisconnectionMessage());
             } catch (RemoteException ignored) {
+            } finally {
+                closeConnection();
             }
-            if (pinger != null) pinger.shutdownNow();
-            System.out.println("[RMI] Disconnessione volontaria effettuata.");
         }
     }
 
-    private void handleServerDisconnection() {
+    private void handleServerDisconnection(String reason) {
         if (active.compareAndSet(true, false)) {
-            if (pinger != null) pinger.shutdownNow();
-            System.err.println("[RMI] Disconnesso dal server inaspettatamente.");
-            //TODO notificare UI della disconnessione inaspettata
+            closeConnection();
+            //TODO notificare UI della disconnessione inaspettata con la reason
+        }
+    }
+
+    private void closeConnection() {
+        if (pinger != null && !pinger.isShutdown()) {
+            pinger.shutdownNow();
+        }
+        if (callback != null) {
+            callback.disconnect();
         }
     }
 }

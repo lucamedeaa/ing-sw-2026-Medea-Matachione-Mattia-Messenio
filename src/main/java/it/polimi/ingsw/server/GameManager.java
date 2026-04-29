@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.network.messages.GameInfoDTO;
+import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,10 @@ public class GameManager {
     private final Map<String, GameRoom> activeGames = new ConcurrentHashMap<>();
 
     /** Creates a new game room and registers it. @param creator nickname of the creator @param maxPlayers maximum number of players @return generated game identifier */
-    public String createNewGame(String creator, int maxPlayers) {
+    public String createNewGame(String creator, int maxPlayers) throws InvalidPlayerCountException {
+        if (maxPlayers < 2 || maxPlayers > 5) {
+            throw new InvalidPlayerCountException("Errore: inserire un numero di giocatori compreso tra 2 e 5.");
+        }
         String gameId = UUID.randomUUID().toString().substring(0, 8);
         GameRoom newRoom = new GameRoom(gameId, maxPlayers, this);
         activeGames.put(gameId, newRoom);

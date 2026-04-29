@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.io.IOException;
 
 /** Main server class that starts both RMI and Socket services and manages incoming client connections. */
 public class GameServer {
@@ -50,8 +51,16 @@ public class GameServer {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("[SOCKET] New connection from: " + clientSocket.getInetAddress());
-                SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager);
-                new Thread(clientHandler).start();
+
+                try {
+                    SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager);
+                    new Thread(clientHandler).start();
+                } catch (IOException e) {
+                    System.err.println("[SOCKET] Errore di I/O durante l'inizializzazione del client: " + e.getMessage());
+                    try {
+                        clientSocket.close();
+                    } catch (IOException ignored) {}
+                }
             }
 
         } catch (Exception e) {

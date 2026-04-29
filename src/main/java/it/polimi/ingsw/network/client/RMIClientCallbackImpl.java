@@ -4,6 +4,7 @@ import it.polimi.ingsw.network.messages.ServerMessage;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -24,5 +25,12 @@ public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMICli
     public void onMessageReceived(ServerMessage message) throws RemoteException {
         // Forward the incoming server message to the client's visitor.
         message.accept(viewObserver);
+    }
+
+    public void disconnect() {
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException e) {
+        }
     }
 }
