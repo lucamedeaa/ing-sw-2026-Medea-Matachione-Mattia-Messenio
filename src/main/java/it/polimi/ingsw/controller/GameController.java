@@ -5,9 +5,9 @@ import it.polimi.ingsw.model.Player;
 
 public class GameController {
 
-    private final Game game;
+    private final ModelControllerInterface game;
 
-    public GameController(Game game) {
+    public GameController(ModelControllerInterface game) {
         //TODO: creare interfaccia per il Game
         this.game = game;
     }
@@ -19,7 +19,7 @@ public class GameController {
     }
 
     public void handleTakeCard(String nickname, int row, int col) {
-        synchronized (game) {
+        //synchronized (game) {
             try{
                 Player player = game.getPlayerByNickname(nickname);
                 game.takeCard(player, row, col);
@@ -27,11 +27,11 @@ public class GameController {
                 //nickname non presente
                 throw new IllegalArgumentException("Error" + e.getMessage());
             }
-        }
+        //}
     }
 
     public void handlePlaceTotem(String nickname, int positionIndex) {
-        synchronized (game) {
+        //synchronized (game) {
             try{
                 Player player = game.getPlayerByNickname(nickname);
                 game.placeTotem(player, positionIndex);
@@ -39,17 +39,17 @@ public class GameController {
                 //giocatore non trovato
                 throw new IllegalArgumentException("Error" + e.getMessage());
             }
-        }
+        //}
     }
 
     public void handleSkipBonus(String nickname) {
-        synchronized (game) {
+        //synchronized (game) {
             try{
                 Player player = game.getPlayerByNickname(nickname);
                 game.skipBonus(player);
             }catch(IllegalArgumentException e){
                 throw new IllegalArgumentException("Error" + e.getMessage());
             }
-        }
+        //}
     }
 }

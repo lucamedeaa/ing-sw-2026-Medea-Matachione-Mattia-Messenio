@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.controller.ModelControllerInterface;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.gameState.GameState;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Game {
+public class Game implements ModelControllerInterface {
 
     private Board board;
     private List<Player> players;
@@ -81,15 +82,15 @@ public class Game {
         this.currentState.start();
     }
 
-    public void placeTotem(Player player, int tileIndex) {
+    public synchronized void placeTotem(Player player, int tileIndex) {
         this.currentState.placeTotem(player, tileIndex);
     }
 
-    public void takeCard(Player player, int rowIdx, int cardIdx) {
+    public synchronized void takeCard(Player player, int rowIdx, int cardIdx) {
         this.currentState.takeCard(player, rowIdx, cardIdx);
     }
 
-    public void skipBonus(Player player) {
+    public synchronized void skipBonus(Player player) {
         this.currentState.skipBonus(player);
     }
 
