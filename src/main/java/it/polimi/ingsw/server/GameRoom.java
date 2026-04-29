@@ -53,7 +53,6 @@ public class GameRoom {
                 startNow = true;
             }
         }
-        broadcast("Il giocatore " + nickname + " è entrato nella stanza.");
 
         if (startNow) {
             startGame();
@@ -124,7 +123,7 @@ public class GameRoom {
         return new ArrayList<>(players.keySet());
     }
 
-    private void broadcast(String messageText) {
+    public void broadcast(String messageText) {
         List<ClientConnection> currentConnections = new ArrayList<>(players.values());
         RoomUpdateMessage message = new RoomUpdateMessage(messageText, getPlayers());
 

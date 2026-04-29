@@ -25,6 +25,7 @@ public class MatchmakingState implements MatchmakingVisitor {
             GameRoom room = gameManager.getGame(gameId);
             room.addPlayer(msg.nickname(), handler);
             handler.send(new MatchmakingSuccessMessage("Game created. Waiting for other players..."));
+            room.broadcast("Il giocatore " + handler.getNickname() + " è entrato nella stanza.");
         } catch (InvalidPlayerCountException | RoomFullException | NicknameTakenException | IllegalStateException e) {
             handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
@@ -43,6 +44,9 @@ public class MatchmakingState implements MatchmakingVisitor {
             }
             room.addPlayer(msg.nickname(), handler);
             handler.send(new MatchmakingSuccessMessage("Joined game successfully. Waiting to start..."));
+            if (!room.isGameStarted()) {
+                room.broadcast("Il giocatore " + msg.nickname() + " è entrato.");
+            }
         } catch (RoomFullException | NicknameTakenException | IllegalStateException e) {
             handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
