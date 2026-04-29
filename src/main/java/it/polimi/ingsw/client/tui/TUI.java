@@ -3,6 +3,9 @@ import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.lightGameModel.UIObserver;
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.view.ClientUI;
+import it.polimi.ingsw.network.messages.GameInfoDTO;
+
+import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -49,4 +52,29 @@ public class TUI implements ClientUI, UIObserver {
     public synchronized void onStateChanged() {
         dispatch(UIState::onModelUpdated);
     }
+
+    public void renderMatchmaking(List<GameInfoDTO> availableGames){
+        System.out.print("\033[H\033[2J");
+        System.out.println("╔══════════════════════════╗");
+        System.out.println("║     MESOS — MENU         ║");
+        System.out.println("╚══════════════════════════╝");
+        System.out.println("  1. Create new game");
+        System.out.println("  2. Join a game");
+        System.out.println("  3. Available games");
+        System.out.println("  0. Disconnect");
+        if (!availableGames.isEmpty()) {
+            System.out.println("Available games:");
+            for (GameInfoDTO g : availableGames)
+                System.out.println("  - " + g.getGameId() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")");
+        }
+        System.out.print("> ");
+    }
+    public void renderLobby(List<String> currentPlayers, String notification){
+
+    }
+    public void renderInGame(){
+
+    }
+    public synchronized void print(String msg) { System.out.println(msg); }
+    public synchronized void prompt(String msg) { System.out.print(msg); }
 }

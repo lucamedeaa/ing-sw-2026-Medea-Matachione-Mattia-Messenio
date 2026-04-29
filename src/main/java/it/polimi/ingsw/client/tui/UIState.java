@@ -13,4 +13,5 @@ public interface UIState {
     default void onGameAborted(String reason) {}
     default void onRoomUpdate(List<String> strings, String notification) {}
     default void onGameStarted() {}
+    default void onGameLeft() {}
 }
