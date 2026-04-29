@@ -6,10 +6,12 @@ import it.polimi.ingsw.network.messages.PingMessage;
 import it.polimi.ingsw.network.messages.ServerMessage;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,10 +35,10 @@ public class SocketServerConnection implements Runnable, VirtualServer {
      */
     public SocketServerConnection(String ip, int port, ClientMessageVisitor view) throws IOException {
         this.socket = new Socket(ip, port);
+        this.socket.setSoTimeout(10000);
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
         this.view = view;
-        this.socket.setSoTimeout(10000);
 
         this.pinger = Executors.newSingleThreadScheduledExecutor();
         this.pinger.scheduleAtFixedRate(() -> {
@@ -55,7 +57,7 @@ public class SocketServerConnection implements Runnable, VirtualServer {
                     out.reset();
                 }
             } catch (IOException e) {
-                handleServerDisconnection();
+                handleServerDisconnection("Errore durante l'invio di un messaggio al server.");
             }
         }
     }
@@ -65,6 +67,7 @@ public class SocketServerConnection implements Runnable, VirtualServer {
      */
     @Override
     public void run() {
+        String disconnectReason = "Disconnessione dal server inaspettata.";
         try {
             while (active.get()) {
                 Object input = in.readObject();
@@ -73,10 +76,15 @@ public class SocketServerConnection implements Runnable, VirtualServer {
                 }
             }
         } catch (SocketTimeoutException e) {
-            System.err.println("[CLIENT] Timeout: Il server non risponde (nessun Pong ricevuto).");
-            handleServerDisconnection();
+            disconnectReason = "Timeout: Il server non risponde (crash o rete assente).";
+        } catch (EOFException e) {
+            disconnectReason = "Il server ha chiuso la connessione in modo imprevisto.";
+        } catch (SocketException e) {
+            disconnectReason = "Connessione al server interrotta (SocketException).";
         } catch (Exception e) {
-            handleServerDisconnection();
+            disconnectReason = "Errore imprevisto durante la comunicazione: " + e.getMessage();
+        } finally {
+            handleServerDisconnection(disconnectReason);
         }
     }
 
@@ -84,24 +92,28 @@ public class SocketServerConnection implements Runnable, VirtualServer {
         if (active.compareAndSet(true, false)) {
             try {
                 synchronized (streamLock) {
+                    socket.setSoTimeout(1000);
                     out.writeObject(new DisconnectionMessage());
+                    out.flush();
                     out.reset();
                 }
             } catch (IOException ignored) {
+            } finally {
+                closeConnection();
             }
-            closeConnection();
-            System.out.println("[CLIENT] Disconnessione volontaria effettuata.");
         }
     }
 
     /**
      * Handles unexpected disconnections.
      */
-    private void handleServerDisconnection() {
+    private void handleServerDisconnection(String reason) {
         if (active.compareAndSet(true, false)) {
             closeConnection();
-            System.err.println("[CLIENT] Disconnesso dal server inaspettatamente.");
             //TODO: notificare la view del crash del server
+            if (view != null) {
+                //view.showNetworkError(reason);
+            }
         }
     }
 

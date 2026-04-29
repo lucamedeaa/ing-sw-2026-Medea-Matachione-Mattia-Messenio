@@ -5,10 +5,12 @@ import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
 import it.polimi.ingsw.view.VirtualView;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,17 +29,14 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private MatchmakingState matchmakingState;
 
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
-    public SocketClientHandler(Socket socket, GameManager gameManager) {
+    public SocketClientHandler(Socket socket, GameManager gameManager) throws IOException {
         this.socket = socket;
         this.gameManager = gameManager;
         this.matchmakingState = new MatchmakingState(this, gameManager);
-        try {
-            this.out = new ObjectOutputStream(socket.getOutputStream());
-            this.in = new ObjectInputStream(socket.getInputStream());
-            this.socket.setSoTimeout(10000);
-        } catch (IOException e) {
-            active.set(false);
-        }
+
+        this.socket.setSoTimeout(10000);
+        this.out = new ObjectOutputStream(socket.getOutputStream());
+        this.in = new ObjectInputStream(socket.getInputStream());
     }
 
     public void setNickname(String nickname) {
@@ -107,12 +106,17 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                     send(new ErrorMessageDTO("Unknown message type."));
                 }
             }
-        }catch (SocketTimeoutException e) {
-                System.err.println("[SOCKET] Timeout: Il client " + nickname + " non invia ping. Ritenuto morto.");
-                handleClientDisconnection();
-            }
-        catch (Exception e) {
-            System.err.println("[SOCKET] Disconnection detected on read for: " + nickname);
+        } catch (SocketTimeoutException e) {
+            System.err.println("[SOCKET] Timeout: Il client " + nickname + " non invia ping. Cavo staccato o freeze.");
+        } catch (EOFException e) {
+            System.out.println("[SOCKET] Il client " + nickname + " ha chiuso la connessione in modo pulito (senza messaggio di disconnessione).");
+        } catch (SocketException e) {
+            System.err.println("[SOCKET] Connessione interrotta bruscamente per " + nickname + " (possibile Alt+F4 o crash). Dettaglio: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            System.err.println("[SOCKET] Ricevuto oggetto sconosciuto da " + nickname);
+        } catch (IOException e) {
+            System.err.println("[SOCKET] Errore generico di I/O per " + nickname + ": " + e.getMessage());
+        } finally {
             handleClientDisconnection();
         }
     }

@@ -3,6 +3,8 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
+import it.polimi.ingsw.server.exceptions.NicknameTakenException;
+import it.polimi.ingsw.server.exceptions.RoomFullException;
 import it.polimi.ingsw.view.VirtualView;
 import it.polimi.ingsw.controller.GameController;
 
@@ -11,10 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /** Represents a game lobby that manages players, connections, and game lifecycle. */
 public class GameRoom {
@@ -36,14 +34,17 @@ public class GameRoom {
     }
 
     /** Adds a player to the room and starts the game if full. */
-    public void addPlayer(String nickname, ClientConnection connection) throws Exception {
+    public void addPlayer(String nickname, ClientConnection connection) throws RoomFullException, NicknameTakenException, IllegalStateException {
         boolean startNow = false;
         synchronized (this) {
-            if (isFull() || gameStarted) {
-                throw new Exception("Game full or already started.");
+            if (gameStarted) {
+                throw new IllegalStateException("Game already started.");
+            }
+            if (isFull()) {
+                throw new RoomFullException("Game is full.");
             }
             if (isNicknameTaken(nickname)) {
-                throw new Exception("Nickname already in use.");
+                throw new NicknameTakenException("Nickname already in use.");
             }
             connection.setNickname(nickname);
             players.put(nickname, connection);
@@ -72,7 +73,7 @@ public class GameRoom {
             game.addObserver(vv);
         }
 
-        new Thread(game::start).start();
+        game.start();
     }
 
     /** Removes a player and handles cleanup or disconnection logic. */

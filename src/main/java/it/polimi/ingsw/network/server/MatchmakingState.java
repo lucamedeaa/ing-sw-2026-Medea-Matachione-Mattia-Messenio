@@ -4,6 +4,9 @@ import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
 import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
+import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
+import it.polimi.ingsw.server.exceptions.NicknameTakenException;
+import it.polimi.ingsw.server.exceptions.RoomFullException;
 
 public class MatchmakingState implements MatchmakingVisitor {
 
@@ -22,8 +25,11 @@ public class MatchmakingState implements MatchmakingVisitor {
             GameRoom room = gameManager.getGame(gameId);
             room.addPlayer(msg.nickname(), handler);
             handler.send(new MatchmakingSuccessMessage("Game created. Waiting for other players..."));
+        } catch (InvalidPlayerCountException | RoomFullException | NicknameTakenException | IllegalStateException e) {
+            handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
-            handler.send(new ErrorMessageDTO("Error during game creation: " + e.getMessage()));
+            e.printStackTrace();
+            handler.send(new ErrorMessageDTO("Internal server error during game creation."));
         }
     }
 
@@ -37,11 +43,13 @@ public class MatchmakingState implements MatchmakingVisitor {
             }
             room.addPlayer(msg.nickname(), handler);
             handler.send(new MatchmakingSuccessMessage("Joined game successfully. Waiting to start..."));
+        } catch (RoomFullException | NicknameTakenException | IllegalStateException e) {
+            handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
-            handler.send(new ErrorMessageDTO("Error during join: " + e.getMessage()));
+            e.printStackTrace();
+            handler.send(new ErrorMessageDTO("Internal server error during join."));
         }
     }
-
     @Override
     public void visit(GetAvailableGamesMessage msg) {
         var availableGames = gameManager.getAvailableGames();

@@ -22,7 +22,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     private final GameManager gameManager;
     private final RMIClientCallback callback;
     private volatile VirtualView virtualView;
-    private MatchmakingState matchmakingState;
+    private volatile MatchmakingState matchmakingState;
     private String nickname;
 
     private final ScheduledExecutorService timeoutChecker;
@@ -117,15 +117,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
             return;
         }
 
-        if (timeoutChecker != null) {
-            timeoutChecker.shutdownNow();
-        }
-
-        try {
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch (java.rmi.NoSuchObjectException e) {
-            System.err.println("[RMI] Impossibile eseguire l'unexport dell'oggetto: " + e.getMessage());
-        }
+        closeConnection();
 
         if (virtualView != null) {
             virtualView.handleDisconnection();
@@ -138,6 +130,17 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
                     System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
                 }
             }
+        }
+    }
+
+    private void closeConnection() {
+        if (timeoutChecker != null && !timeoutChecker.isShutdown()) {
+            timeoutChecker.shutdownNow();
+        }
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (java.rmi.NoSuchObjectException e) {
+            System.err.println("[RMI] Impossibile eseguire l'unexport dell'oggetto: " + e.getMessage());
         }
     }
 }
