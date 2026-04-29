@@ -68,4 +68,8 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
         ui.dispatch(state -> state.onRoomUpdate(message.currentPlayers(), message.notification()));
         //TODO
     }
+    @Override
+    public void visit(GameLeftSuccessMessage message) {
+        ui.dispatch(UIState::onGameLeft);
+    }
 }

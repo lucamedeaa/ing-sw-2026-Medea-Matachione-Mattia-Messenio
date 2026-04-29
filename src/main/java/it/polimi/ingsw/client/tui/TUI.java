@@ -53,7 +53,7 @@ public class TUI implements ClientUI, UIObserver {
         dispatch(UIState::onModelUpdated);
     }
 
-    public void renderMatchmaking(List<GameInfoDTO> availableGames){
+    public synchronized void renderMatchmaking(List<GameInfoDTO> availableGames){
         System.out.print("\033[H\033[2J");
         System.out.println("╔══════════════════════════╗");
         System.out.println("║     MESOS — MENU         ║");
@@ -69,10 +69,21 @@ public class TUI implements ClientUI, UIObserver {
         }
         System.out.print("> ");
     }
-    public void renderLobby(List<String> currentPlayers, String notification){
 
+    public synchronized void renderLobby(List<String> currentPlayers, String notification) {
+        System.out.print("\033[H\033[2J");
+        System.out.println("╔══════════════════════════╗");
+        System.out.println("║    MESOS — LOBBY         ║");
+        System.out.println("╚══════════════════════════╝");
+        System.out.println("Players in lobby:");
+        for (String p : currentPlayers) System.out.println("  • " + p);
+        if (!notification.isEmpty()) System.out.println(notification);
+        System.out.println("  0. Leave lobby");
+        System.out.println("  d. Disconnect");
+        System.out.print("> ");
     }
-    public void renderInGame(){
+
+    public synchronized void renderInGame(){
 
     }
     public synchronized void print(String msg) { System.out.println(msg); }
