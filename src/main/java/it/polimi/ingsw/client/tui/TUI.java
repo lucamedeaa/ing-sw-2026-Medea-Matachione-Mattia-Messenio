@@ -3,6 +3,7 @@ import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.lightGameModel.UIObserver;
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.view.ClientUI;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.List;
@@ -83,9 +84,20 @@ public class TUI implements ClientUI, UIObserver {
         System.out.print("> ");
     }
 
-    public synchronized void renderInGame(){
-
+    public synchronized void renderInGame(List<AvailableActionDTO> actions){
+        System.out.print("\n--- AVAILABLE ACTIONS ---");
+        if (actions.isEmpty()) {
+            System.out.print("Wait for your turn...");
+            return;
+        }
+        ActionRender renderer = new ActionRender(this);
+        for (int i = 0; i < actions.size(); i++) {
+            System.out.println(i + ") ");
+            actions.get(i).accept(renderer);
+        }
+        System.out.println("> (Format: <action_id> [parameters...])\n> ");
     }
+
     public synchronized void print(String msg) { System.out.println(msg); }
     public synchronized void prompt(String msg) { System.out.print(msg); }
 }

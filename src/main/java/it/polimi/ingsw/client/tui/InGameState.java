@@ -6,6 +6,7 @@ import java.util.List;
 
 public class InGameState implements UIState {
     private final TUI tui;
+    List<AvailableActionDTO> actions;
 
     public InGameState(TUI tui) {
         this.tui = tui;
@@ -13,27 +14,13 @@ public class InGameState implements UIState {
 
     @Override
     public void render() {
-        tui.renderInGame();
-
-        List<AvailableActionDTO> actions = tui.getModel().getMyActions();
-
-        tui.print("\n--- AVAILABLE ACTIONS ---");
-        if (actions.isEmpty()) {
-            tui.print("Wait for your turn...");
-            return;
-        }
-
-        ActionRender renderer = new ActionRender(tui);
-        for (int i = 0; i < actions.size(); i++) {
-            tui.prompt(i + ") ");
-            actions.get(i).accept(renderer);
-        }
-        tui.prompt("> (Format: <action_id> [parameters...])\n> ");
+        actions = tui.getModel().getMyActions();
+        tui.renderInGame(actions);
     }
 
     @Override
     public void handleInput(String input) {
-        List<AvailableActionDTO> actions = tui.getModel().getMyActions();
+        actions = tui.getModel().getMyActions();
         if (actions.isEmpty()) return;
 
         try {
