@@ -70,7 +70,7 @@ public class MatchmakingState implements UIState {
 
     private void handleJoinNickname(String input) {
         if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
-        tui.getController().joinGame(pendingGameId, input);
+        tui.getController().joinGame(input, pendingGameId);
         currentHandler = this::handleMenu;
     }
 

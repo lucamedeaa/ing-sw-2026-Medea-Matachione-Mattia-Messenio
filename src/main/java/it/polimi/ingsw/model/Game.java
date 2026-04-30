@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.controller.ModelControllerInterface;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.enums.TotemColor;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
 import it.polimi.ingsw.network.dto.*;
@@ -26,8 +27,12 @@ public class Game implements ModelControllerInterface {
         if (players == null || players.size() < 2 || players.size() > 5) {
             throw new IllegalArgumentException("Invalid number of players. Must be between 2 and 5.");
         }
-        //this.players = players;
-        //TODO: usare il costruttore del player e randomizzare il colore usando la stringa
+        this.players = new ArrayList<>();
+        TotemColor[] availableColors = TotemColor.values();
+
+        for (int i = 0; i < players.size(); i++) {
+            this.players.add(new Player(players.get(i), availableColors[i % availableColors.length]));
+        }
         this.playersSize = players.size();
 
         this.board = new Board(this.playersSize,  this.players);
