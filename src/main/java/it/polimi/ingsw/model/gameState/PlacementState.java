@@ -35,13 +35,15 @@ public class PlacementState extends GameState {
 
         board.placeTotem(tileIndex, player);
 
-        game.notifyObservers(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
+
 
         board.consumeCurrentPlayer();
 
         if (board.allTotemsPlaced()) {
             this.transition(new ActionState(this.game));
         }
+
+        game.pushEvent(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
     }
 
     @Override

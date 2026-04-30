@@ -68,6 +68,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 synchronized (streamLock) {
                     out.writeObject(message);
                     out.reset();
+                    out.flush();
                 }
             } catch (IOException e) {
                 System.err.println("[SOCKET] Disconnection detected on write for: " + getNickname());

@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.lightGameModel.EventApplier;
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.view.ClientUI;
+import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
@@ -27,9 +28,15 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(DeltaEventMessage msg) {
-        msg.event().accept(applier);
+        model.startBatch(); // Muta la TUI
+
+        // Applica gli eventi in silenzio
+        for (GameEventDTO event : msg.events()) {
+            event.accept(applier);
+        }
         model.setAvailableActions(msg.nextActions());
-        // il model notifica la TUI via UIObserver.onStateChanged()
+
+        model.endBatch();  // Riattiva la TUI e renderizza
     }
 
     @Override

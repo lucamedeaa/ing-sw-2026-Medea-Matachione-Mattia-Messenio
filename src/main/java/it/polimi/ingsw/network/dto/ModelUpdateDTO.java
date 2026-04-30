@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public record ModelUpdateDTO(
-        GameEventDTO event,
+        List<GameEventDTO> events,
         String activePlayerNickname,
         List<AvailableActionDTO> activePlayerActions
 ) implements Serializable {}

@@ -31,7 +31,7 @@ public class ActionState extends GameState {
     @Override
     public void start() {
         this.currentColumnIndex = 0;
-        this.getAvailableActions(currentPlayer.getNickname());
+        //this.getAvailableActions(currentPlayer.getNickname());
         findNextPlayer();
     }
 
@@ -90,11 +90,13 @@ public class ActionState extends GameState {
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
 
-        game.notifyObservers(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
-        game.notifyObservers(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
-        game.notifyObservers(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
-
         checkTurnConditions();
+
+        game.pushEvent(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
+        game.pushEvent(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.pushEvent(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
+
+
     }
 
     /** Ends the current player's turn, returns their totem, and advances to the next player. */

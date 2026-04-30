@@ -23,7 +23,7 @@ public class RoundEndState extends GameState {
     public void start() {
         game.incrementRound();
 
-        game.notifyObservers(new RoundAdvancedEventDTO(game.getCurrentRound()));
+        game.pushEvent(new RoundAdvancedEventDTO(game.getCurrentRound()));
 
         if (isGameOver()) {
             game.getBoard().resolveFinalEvents(game.getPlayers());
@@ -40,7 +40,7 @@ public class RoundEndState extends GameState {
             int eraAfter = game.getBoard().getCurrentEraNumber();
 
             if (eraAfter > eraBefore) {
-                game.notifyObservers(new EraTransitionEventDTO(eraAfter));
+                game.pushEvent(new EraTransitionEventDTO(eraAfter));
             }
 
             notifyObserversPlayersResources();
@@ -68,7 +68,7 @@ public class RoundEndState extends GameState {
 
     private void notifyObserversPlayersResources() {
         for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.notifyObservers(new PlayerResourcesChangedEventDTO(
+            game.pushEvent(new PlayerResourcesChangedEventDTO(
                 p.getNickname(),
                 p.getFood(),
                 p.getPrestigePoints()
@@ -85,7 +85,7 @@ public class RoundEndState extends GameState {
                 .map(opt -> opt.map(Card::getIDcard).orElse(null))
                 .toList();
 
-        game.notifyObservers(new BoardRefilledEventDTO(0, upperIds));
-        game.notifyObservers(new BoardRefilledEventDTO(1, lowerIds));
+        game.pushEvent(new BoardRefilledEventDTO(0, upperIds));
+        game.pushEvent(new BoardRefilledEventDTO(1, lowerIds));
     }
 }

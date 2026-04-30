@@ -55,6 +55,7 @@ public class SocketServerConnection implements Runnable, VirtualServer {
                 synchronized (streamLock) {
                     out.writeObject(message);
                     out.reset();
+                    out.flush();
                 }
             } catch (IOException e) {
                 handleServerDisconnection("Errore durante l'invio di un messaggio al server.");

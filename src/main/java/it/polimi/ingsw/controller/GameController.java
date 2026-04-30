@@ -43,15 +43,39 @@ public class GameController {
         });
     }
 
-    public void handleTakeCard(String nickname, int row, int col) {
-        executeAction(nickname, player -> game.takeCard(player, row, col));
+    public void handleTakeCard(String nickname, int row, int col, java.util.function.Consumer<String> onError) {
+        gameExecutor.submit(() -> {
+            try {
+                Player player = game.getPlayerByNickname(nickname);
+                game.takeCard(player, row, col);
+                game.commitEvents();
+            } catch (Exception e) {
+                onError.accept(e.getMessage());
+            }
+        });
     }
 
-    public void handlePlaceTotem(String nickname, int positionIndex) {
-        executeAction(nickname, player -> game.placeTotem(player, positionIndex));
+    public void handlePlaceTotem(String nickname, int positionIndex, java.util.function.Consumer<String> onError) {
+        gameExecutor.submit(() -> {
+            try {
+                Player player = game.getPlayerByNickname(nickname);
+                game.placeTotem(player, positionIndex);
+                game.commitEvents();
+            } catch (Exception e) {
+                onError.accept(e.getMessage());
+            }
+        });
     }
 
-    public void handleSkipBonus(String nickname) {
-        executeAction(nickname, player -> game.skipBonus(player));
+    public void handleSkipBonus(String nickname, java.util.function.Consumer<String> onError) {
+        gameExecutor.submit(() -> {
+            try {
+                Player player = game.getPlayerByNickname(nickname);
+                game.skipBonus(player);
+                game.commitEvents();
+            } catch (Exception e) {
+                onError.accept(e.getMessage());
+            }
+        });
     }
 }
