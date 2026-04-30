@@ -14,7 +14,10 @@ public class TUI implements ClientUI, UIObserver {
     private ServerController controller;
     private final LightGameModel model;
     private final Scanner scanner = new Scanner(System.in);
-    public TUI(LightGameModel model) { this.model = model; }
+    public TUI(LightGameModel model) {
+        this.model = model;
+        this.model.addObserver(this);
+    }
 
     public ServerController getController() {
         return this.controller;
@@ -84,7 +87,8 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     public synchronized void renderInGame(){
-
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
     public synchronized void print(String msg) { System.out.println(msg); }
     public synchronized void prompt(String msg) { System.out.print(msg); }

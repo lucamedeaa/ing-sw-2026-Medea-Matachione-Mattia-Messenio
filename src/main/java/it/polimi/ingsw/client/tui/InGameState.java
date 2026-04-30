@@ -56,7 +56,11 @@ public class InGameState implements UIState {
             tui.print("Input error: " + e.getMessage());
         }
     }
-
+    @Override
+    public void onError(String errorText) {
+        tui.print("\n[ERRORE DAL SERVER]: " + errorText);
+        render();
+    }
     @Override
     public void onModelUpdated() {
         render();

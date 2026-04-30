@@ -79,33 +79,23 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
     @Override
     public void visit(TakeCardMessage msg) {
-        //ricevo l'azione quindi blocco il timer
-        //cancelTurnTimer();
-        try {
-            controller.handleTakeCard(this.nickname, msg.row(), msg.col());
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            connection.send(new ErrorMessage(e.getMessage()));
-        }
+        controller.handleTakeCard(this.nickname, msg.row(), msg.col(), errorMessage -> {
+            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
+        });
     }
 
     @Override
     public void visit(PlaceTotemMessage msg) {
-        //cancelTurnTimer();
-        try {
-            controller.handlePlaceTotem(this.nickname, msg.positionIndex());
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            connection.send(new ErrorMessage(e.getMessage()));
-        }
+        controller.handlePlaceTotem(this.nickname, msg.positionIndex(), errorMessage -> {
+            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
+        });
     }
 
     @Override
     public void visit(SkipActionMessage msg) {
-        //cancelTurnTimer();
-        try {
-            controller.handleSkipBonus(this.nickname);
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            connection.send(new ErrorMessage(e.getMessage()));
-        }
+        controller.handleSkipBonus(this.nickname, errorMessage -> {
+            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
+        });
     }
 }
 
