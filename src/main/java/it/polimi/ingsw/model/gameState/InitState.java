@@ -19,9 +19,11 @@ public class InitState extends GameState {
     @Override
     public void start() {
 
+        this.transition(new PlacementState(this.game));
+
         game.notifyFullSync();
 
-        this.transition(new PlacementState(this.game));
+
     }
 
     @Override

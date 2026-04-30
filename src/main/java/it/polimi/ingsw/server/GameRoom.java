@@ -71,8 +71,8 @@ public class GameRoom {
             conn.setVirtualView(vv);
             game.addObserver(vv);
         }
-        //new Thread(game::start).start(); //TODO LEGGI DS TUI_GUI
-        game.start();
+        new Thread(game::start).start();
+        //game.start();
     }
 
     /** Removes a player and handles cleanup or disconnection logic. */

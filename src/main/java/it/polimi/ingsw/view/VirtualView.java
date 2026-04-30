@@ -52,8 +52,10 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     //Inviata solo all'inizio o riconness@Override
     @Override
     public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
-        FullSyncMessage message = new FullSyncMessage(board, players, activePlayer, actions);
+        // Invia le azioni solo se il nickname della vista corrisponde al giocatore attivo
+        List<AvailableActionDTO> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
 
+        FullSyncMessage message = new FullSyncMessage(board, players, activePlayer, myActions);
         connection.send(message);
     }
 

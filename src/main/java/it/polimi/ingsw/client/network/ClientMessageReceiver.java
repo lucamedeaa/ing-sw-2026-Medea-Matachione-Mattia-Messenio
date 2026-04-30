@@ -21,6 +21,7 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
     @Override
     public void visit(FullSyncMessage msg) {
         model.setFullState(msg.board(), msg.players());
+        model.setAvailableActions(msg.actions());
         ui.dispatch(UIState::onGameStarted);
     }
 

@@ -87,15 +87,15 @@ public class Game implements ModelControllerInterface {
         this.currentState.start();
     }
 
-    public synchronized void placeTotem(Player player, int tileIndex) {
+    public void placeTotem(Player player, int tileIndex) {
         this.currentState.placeTotem(player, tileIndex);
     }
 
-    public synchronized void takeCard(Player player, int rowIdx, int cardIdx) {
+    public void takeCard(Player player, int rowIdx, int cardIdx) {
         this.currentState.takeCard(player, rowIdx, cardIdx);
     }
 
-    public synchronized void skipBonus(Player player) {
+    public void skipBonus(Player player) {
         this.currentState.skipBonus(player);
     }
 
