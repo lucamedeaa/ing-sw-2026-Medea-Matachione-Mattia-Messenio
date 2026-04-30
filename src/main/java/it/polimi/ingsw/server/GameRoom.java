@@ -71,7 +71,7 @@ public class GameRoom {
             conn.setVirtualView(vv);
             game.addObserver(vv);
         }
-
+        //new Thread(game::start).start(); //TODO LEGGI DS TUI_GUI
         game.start();
     }
 

@@ -16,7 +16,8 @@ public class BuilderMasteryTest {
 
     @BeforeEach
     void setUp() {
-        builderMastery = new BuilderMastery(0, 4, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        builderMastery = new BuilderMastery(103, 6, 4, 2);
         player = newPlayer("Alice");
     }
 
@@ -24,52 +25,50 @@ public class BuilderMasteryTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
-    private void give(Player p, DrawableCard card) {
-        p.addCard(card);
-    }
-
     @Test
     void testNoBuilders() {
-        give(player, builderMastery);
-
+        player.addCard(builderMastery);
         assertEquals(4, builderMastery.getFinalPoints(player),
                 "Senza builder deve restituire solo i prestigePoints dell'edificio");
     }
 
     @Test
     void testSingleBuilder() {
-        give(player, new Builder(1, 0, 3)); // builder da 3 punti
-        give(player, builderMastery);
+        // Builder Constructor: idcard, era, foodDiscount, endGamePrestigePoints
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(builderMastery);
 
-        assertEquals(7, builderMastery.getFinalPoints(player),
-                "1 builder (3) + prestige (4) = 7");
+        // Builder PP (2) + BuilderMastery PP (4) = 6
+        assertEquals(6, builderMastery.getFinalPoints(player),
+                "1 builder (2 PP) + prestige (4) = 6");
     }
 
     @Test
     void testMultipleBuilders() {
-        give(player, new Builder(1, 0, 3));
-        give(player, new Builder(1, 0, 2));
-        give(player, builderMastery);
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(2, 1, 2, 0));
+        player.addCard(builderMastery);
 
-        // (3 + 2) + 4 = 9
-        assertEquals(9, builderMastery.getFinalPoints(player),
+        // (2 + 0) + 4 = 6
+        assertEquals(6, builderMastery.getFinalPoints(player),
                 "Somma builder + prestigePoints");
     }
 
     @Test
     void testOnlyCountsBuilders() {
-        give(player, new Builder(1, 0, 3));
-        give(player, new BuilderMastery(0, 4, 1)); // altro edificio, non builder
-        give(player, builderMastery);
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new BuilderMastery(103, 6, 4, 2)); // Another building
+        player.addCard(builderMastery);
 
-        assertEquals(7, builderMastery.getFinalPoints(player),
+        // Builder PP (2) + BuilderMastery PP (4) = 6
+        assertEquals(6, builderMastery.getFinalPoints(player),
                 "Deve contare solo i Builder");
     }
 
     @Test
     void testMultipleCallsConsistency() {
-        give(player, new Builder(1, 0, 3));
-        give(player, builderMastery);
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(builderMastery);
 
         int first = builderMastery.getFinalPoints(player);
         int second = builderMastery.getFinalPoints(player);

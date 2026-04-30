@@ -16,16 +16,12 @@ public class HunterBonusTest {
 
     @BeforeEach
     void setUp() {
-        hunterBonus = new HunterBonus(0, 0, 1);
+        hunterBonus = new HunterBonus(108, 7, 2, 2);
         player = newPlayer("Alice");
     }
 
     private Player newPlayer(String name) {
         return new Player(name, TotemColor.ORANGE);
-    }
-
-    private void give(Player p, DrawableCard card) {
-        p.addCard(card);
     }
 
     @Test
@@ -38,42 +34,41 @@ public class HunterBonusTest {
 
     @Test
     void testOneHunterGivesOneFoodAndOnePrestige() {
-        give(player, new Hunter(1, false));
+        // hasIcon deve essere FALSE per non inquinare il cibo iniziale
+        player.addCard(new Hunter(10, 1, false));
 
         hunterBonus.onHuntEvent(player);
 
-        assertEquals(1, player.getFood(), "1 hunter → +1 cibo");
-        assertEquals(1, player.getPrestigePoints(), "1 hunter → +1 prestigio");
+        assertEquals(1, player.getFood(), "1 hunter = +1 cibo");
+        assertEquals(1, player.getPrestigePoints(), "1 hunter = +1 prestigio");
     }
 
     @Test
     void testMultipleHuntersGiveCorrectBonus() {
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Hunter(11, 1, false));
+        player.addCard(new Hunter(12, 1, false));
 
         hunterBonus.onHuntEvent(player);
 
-        assertEquals(3, player.getFood(), "3 hunter → +3 cibo");
-        assertEquals(3, player.getPrestigePoints(), "3 hunter → +3 prestigio");
+        assertEquals(3, player.getFood(), "3 hunter = +3 cibo");
+        assertEquals(3, player.getPrestigePoints(), "3 hunter = +3 prestigio");
     }
 
     @Test
     void testMultipleCallsAccumulate() {
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Hunter(11, 1, false));
 
         hunterBonus.onHuntEvent(player);
         hunterBonus.onHuntEvent(player);
 
-        assertEquals(4, player.getFood(), "2 hunter × 2 chiamate → 4 cibo");
-        assertEquals(4, player.getPrestigePoints(), "2 hunter × 2 chiamate → 4 prestigio");
+        assertEquals(4, player.getFood(), "2 hunter * 2 chiamate = 4 cibo");
+        assertEquals(4, player.getPrestigePoints(), "2 hunter * 2 chiamate = 4 prestigio");
     }
 
     @Test
     void testDoesNotCountNonHunters() {
-        // nessun hunter → solo altri tipi (qui simuliamo implicitamente)
-
         hunterBonus.onHuntEvent(player);
 
         assertEquals(0, player.getFood());

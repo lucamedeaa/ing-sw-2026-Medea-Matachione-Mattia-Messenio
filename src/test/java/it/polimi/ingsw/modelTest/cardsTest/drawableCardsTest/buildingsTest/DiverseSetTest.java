@@ -1,4 +1,5 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
+
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.DiverseSet;
 import it.polimi.ingsw.model.cards.drawableCards.buildings.VictoryPoints;
@@ -17,7 +18,7 @@ public class DiverseSetTest {
 
     @BeforeEach
     void setUp() {
-        diverseSet = new DiverseSet(0, 0, 1);
+        diverseSet = new DiverseSet(97, 4, 3, 1);
         player = newPlayer("Alice");
     }
 
@@ -25,20 +26,16 @@ public class DiverseSetTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
-    private void give(Player p, DrawableCard card) {
-        p.addCard(card);
-    }
-
     @Test
     void testNoRewardOnAcquisition() {
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new Inventor(1, InventorIcon.CANOE));
+        player.addCard(new Hunter(10, 1, false)); // FALSE per sicurezza
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Inventor(39, 1, InventorIcon.SPEARHEAD));
 
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
         assertEquals(0, player.getFood(),
                 "I set già completi al momento dell'acquisto non devono dare cibo");
@@ -46,14 +43,14 @@ public class DiverseSetTest {
 
     @Test
     void testOneNewCompleteSetGivesFiveFood() {
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new Inventor(1, InventorIcon.CANOE));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Inventor(39, 1, InventorIcon.SPEARHEAD));
 
         assertEquals(5, player.getFood(),
                 "Il completamento di un set completo deve dare 5 cibo");
@@ -61,25 +58,20 @@ public class DiverseSetTest {
 
     @Test
     void testTwoNewCompleteSetsGiveTenFood() {
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
-
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-
-        give(player, new Builder(1, 0, 0));
-        give(player, new Builder(1, 0, 0));
-
-        give(player, new Collector(1, 0));
-        give(player, new Collector(1, 0));
-
-        give(player, new Shaman(1, 1));
-        give(player, new Shaman(1, 1));
-
-        give(player, new Inventor(1, InventorIcon.CANOE));
-        give(player, new Inventor(1, InventorIcon.BREAD));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Hunter(11, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(2, 1, 2, 0));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Collector(36, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Shaman(29, 1, 2));
+        player.addCard(new Inventor(39, 1, InventorIcon.SPEARHEAD));
+        player.addCard(new Inventor(40, 1, InventorIcon.LEATHER));
 
         assertEquals(10, player.getFood(),
                 "Il completamento di due set completi deve dare 10 cibo");
@@ -87,14 +79,13 @@ public class DiverseSetTest {
 
     @Test
     void testIncompleteSetGivesNoFood() {
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        // manca Inventor
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
 
         assertEquals(0, player.getFood(),
                 "Un set incompleto non deve dare cibo");
@@ -102,14 +93,14 @@ public class DiverseSetTest {
 
     @Test
     void testBuildingDoesNotContributeToSet() {
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new VictoryPoints(0, 0, 1));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new VictoryPoints(109, 10, 0, 3));
 
         assertEquals(0, player.getFood(),
                 "Gli edifici non devono contribuire al completamento del set");
@@ -117,18 +108,18 @@ public class DiverseSetTest {
 
     @Test
     void testNoExtraRewardWithoutNewFullSet() {
-        give(player, diverseSet);
+        player.addCard(diverseSet);
 
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new Inventor(1, InventorIcon.CANOE));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Inventor(39, 1, InventorIcon.SPEARHEAD));
 
         assertEquals(5, player.getFood());
 
-        give(player, new Hunter(1, false));
+        player.addCard(new Hunter(11, 1, false));
 
         assertEquals(5, player.getFood(),
                 "Aggiungere carte senza completare un nuovo set non deve dare altro cibo");

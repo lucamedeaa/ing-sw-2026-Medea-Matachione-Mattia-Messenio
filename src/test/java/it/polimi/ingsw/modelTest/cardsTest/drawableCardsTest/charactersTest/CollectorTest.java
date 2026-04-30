@@ -14,32 +14,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CollectorTest extends ModelTest {
 
-    /**
-     * each Collector gives 3 food discount on Sustenance.
-     * Does NOT give food directly when added.
-     */
     @Test
     @DisplayName("Adding a Collector does not give direct food")
     void collectorGivesNoFoodWhenAdded() {
         Player p = newPlayer("Eve");
-        give(p, new Collector(1, 3));
+        // Updated Constructor: idcard, era, discount
+        p.addCard(new Collector(35, 1, 3));
+
         assertEquals(0, p.getFood());
     }
 
-    /**
-     * With 1 Collector (discount=3) and 3 characters: total food due=3, discount=3 → no loss.
-     * Without Collector: with 0 food and 3 characters loses 3×PP.
-     */
     @Test
     @DisplayName("1 Collector with discount 3 exactly covers 3 characters at Sustenance")
     void collectorDiscountCoversThreeCharacters() {
         Player p = newPlayer("Eve");
-        give(p, new Collector(1, 3));
-        give(p, new Artist(1));
-        give(p, new Artist(1));
-        // food=0, characters=3, collector discount=3 → discount=3, total=3 → ok, no loss
-        Sustenance s = new Sustenance(1, 2);
+        p.addCard(new Collector(35, 1, 3));
+        p.addCard(new Artist(19, 1));
+        p.addCard(new Artist(20, 1));
+
+        // Sustenance Constructor: idcard, era, numPrestRem
+        Sustenance s = new Sustenance(61, 1, 2);
         s.execute(List.of(p));
+
         assertEquals(0, p.getPrestigePoints(), "With discount equal to cost no PP should be lost");
         assertEquals(0, p.getFood());
     }

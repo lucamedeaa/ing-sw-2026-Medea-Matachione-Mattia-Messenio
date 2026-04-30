@@ -15,7 +15,8 @@ class VictoryPointsTest {
 
     @BeforeEach
     void setUp() {
-        victoryPoints = new VictoryPoints(0, 5, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        victoryPoints = new VictoryPoints(109, 10, 0, 3);
         player = newPlayer("Alice");
     }
 
@@ -25,8 +26,8 @@ class VictoryPointsTest {
 
     @Test
     void testFinalPointsCorrectCalculation() {
-        assertEquals(30, victoryPoints.getFinalPoints(player),
-                "Deve restituire prestigePoints + 25");
+        assertEquals(25, victoryPoints.getFinalPoints(player),
+                "Deve restituire prestigePoints (0) + 25");
     }
 
     @Test
@@ -51,8 +52,7 @@ class VictoryPointsTest {
 
     @Test
     void testDifferentPrestigeValues() {
-        VictoryPoints vp = new VictoryPoints(0, 10, 1);
-
+        VictoryPoints vp = new VictoryPoints(109, 10, 10, 3);
         assertEquals(35, vp.getFinalPoints(player),
                 "Deve funzionare con diversi valori di prestigePoints");
     }

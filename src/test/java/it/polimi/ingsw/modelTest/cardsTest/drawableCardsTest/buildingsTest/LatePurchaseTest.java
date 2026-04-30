@@ -9,7 +9,8 @@ class LatePurchaseTest {
 
     @Test
     void testTopRowBonusIsOne() {
-        LatePurchase latePurchase = new LatePurchase(2, 3, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        LatePurchase latePurchase = new LatePurchase(110, 9, 3, 3);
         assertEquals(1, latePurchase.getTopRowBonus());
     }
 }

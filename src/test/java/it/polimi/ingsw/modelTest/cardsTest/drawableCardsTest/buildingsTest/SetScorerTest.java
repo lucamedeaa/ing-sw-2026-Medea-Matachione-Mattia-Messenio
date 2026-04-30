@@ -18,7 +18,7 @@ public class SetScorerTest {
 
     @BeforeEach
     void setUp() {
-        setScorer = new SetScorer(0, 2, 1);
+        setScorer = new SetScorer(107, 5, 6, 2);
         player = newPlayer("Alice");
     }
 
@@ -26,92 +26,78 @@ public class SetScorerTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
-    private void give(Player p, DrawableCard card) {
-        p.addCard(card);
-    }
-
     @Test
     void testNoCompleteSet() {
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
+        player.addCard(new Hunter(10, 1, false)); // false
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
 
-        assertEquals(2, setScorer.getFinalPoints(player),
+        assertEquals(6, setScorer.getFinalPoints(player),
                 "Senza set completi deve restituire solo i prestigePoints base");
     }
 
     @Test
     void testOneCompleteSet() {
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new Inventor(1, InventorIcon.CANOE));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Inventor(39, 1, InventorIcon.CANOE));
 
-        assertEquals(8, setScorer.getFinalPoints(player),
-                "Un set completo deve dare 6 punti bonus + 2 base");
+        assertEquals(12, setScorer.getFinalPoints(player),
+                "Un set completo deve dare 6 punti bonus + 6 base");
     }
 
     @Test
     void testTwoCompleteSets() {
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Hunter(11, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(2, 1, 2, 0));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Collector(36, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Shaman(29, 1, 2));
+        player.addCard(new Inventor(39, 1, InventorIcon.CANOE));
+        player.addCard(new Inventor(41, 1, InventorIcon.BREAD));
 
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-
-        give(player, new Builder(1, 0, 0));
-        give(player, new Builder(1, 0, 0));
-
-        give(player, new Collector(1, 0));
-        give(player, new Collector(1, 0));
-
-        give(player, new Shaman(1, 1));
-        give(player, new Shaman(1, 1));
-
-        give(player, new Inventor(1, InventorIcon.CANOE));
-        give(player, new Inventor(1, InventorIcon.BREAD));
-
-        assertEquals(14, setScorer.getFinalPoints(player),
-                "Due set completi devono dare 12 punti bonus + 2 base");
+        assertEquals(18, setScorer.getFinalPoints(player),
+                "Due set completi devono dare 12 punti bonus + 6 base");
     }
 
     @Test
     void testBuildingsDoNotCountInSet() {
-        give(player, new Hunter(1, false));
-        give(player, new Artist(1));
-        give(player, new Builder(1, 0, 0));
-        give(player, new Collector(1, 0));
-        give(player, new Shaman(1, 1));
-        give(player, new VictoryPoints(0, 0, 1));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new VictoryPoints(109, 10, 0, 3));
 
-        assertEquals(2, setScorer.getFinalPoints(player),
+        assertEquals(6, setScorer.getFinalPoints(player),
                 "Gli edifici non devono contribuire al completamento del set");
     }
 
     @Test
     void testMinimumCountDeterminesCompletedSets() {
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
-        give(player, new Hunter(1, false));
+        player.addCard(new Hunter(10, 1, false));
+        player.addCard(new Hunter(11, 1, false));
+        player.addCard(new Hunter(12, 1, false));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
+        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(2, 1, 2, 0));
+        player.addCard(new Collector(35, 1, 3));
+        player.addCard(new Collector(36, 1, 3));
+        player.addCard(new Shaman(28, 1, 1));
+        player.addCard(new Shaman(29, 1, 2));
+        player.addCard(new Inventor(39, 1, InventorIcon.CANOE));
+        player.addCard(new Inventor(41, 1, InventorIcon.BREAD));
 
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-
-        give(player, new Builder(1, 0, 0));
-        give(player, new Builder(1, 0, 0));
-
-        give(player, new Collector(1, 0));
-        give(player, new Collector(1, 0));
-
-        give(player, new Shaman(1, 1));
-        give(player, new Shaman(1, 1));
-
-        give(player, new Inventor(1, InventorIcon.CANOE));
-        give(player, new Inventor(1, InventorIcon.BREAD));
-
-        assertEquals(14, setScorer.getFinalPoints(player),
+        assertEquals(18, setScorer.getFinalPoints(player),
                 "Il numero di set completi deve essere determinato dal minimo tra i tipi presenti");
     }
 }

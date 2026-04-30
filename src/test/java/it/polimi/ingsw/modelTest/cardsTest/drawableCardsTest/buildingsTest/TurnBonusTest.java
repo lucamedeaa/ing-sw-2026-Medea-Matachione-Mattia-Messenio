@@ -12,7 +12,8 @@ public class TurnBonusTest {
 
     @BeforeEach
     void setUp() {
-        turnBonus = new TurnBonus(2, 3, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        turnBonus = new TurnBonus(99, 3, 3, 1);
     }
 
     @Test

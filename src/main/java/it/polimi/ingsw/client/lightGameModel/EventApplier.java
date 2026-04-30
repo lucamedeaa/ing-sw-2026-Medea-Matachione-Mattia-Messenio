@@ -62,4 +62,8 @@ public class EventApplier implements EventVisitor {
         //TODO disconnessione player
     }
 
+    @Override
+    public void visit(GameOverEventDTO event) {
+        // mostrare i punteggi finali sulla TUI
+    }
 }

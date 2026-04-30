@@ -16,7 +16,8 @@ public class ArtistFoodTest {
 
     @BeforeEach
     void setUp() {
-        artistFood = new ArtistFood(0, 0, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        artistFood = new ArtistFood(102, 5, 6, 2);
         player = newPlayer("Alice");
     }
 
@@ -24,44 +25,37 @@ public class ArtistFoodTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
-    private void give(Player p, DrawableCard card) {
-        p.addCard(card);
-    }
-
     @Test
     void testZeroArtists() {
         artistFood.onCavePaintingsEvent(player);
-
         assertEquals(0, player.getFood(), "Con 0 artisti non deve essere aggiunto cibo");
     }
 
     @Test
     void testTwoArtistsAddTwoFood() {
-        give(player, new Artist(1));
-        give(player, new Artist(1));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
 
         artistFood.onCavePaintingsEvent(player);
-
         assertEquals(2, player.getFood(), "Deve aggiungere 1 cibo per ogni artista");
     }
 
     @Test
     void testManyArtistsAddCorrectFood() {
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-        give(player, new Artist(1));
-        give(player, new Artist(1));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
+        player.addCard(new Artist(21, 1));
+        player.addCard(new Artist(22, 2));
+        player.addCard(new Artist(23, 2));
 
         artistFood.onCavePaintingsEvent(player);
-
         assertEquals(5, player.getFood(), "Deve funzionare anche con molti artisti");
     }
 
     @Test
     void testMultipleCallsAccumulateFood() {
-        give(player, new Artist(1));
-        give(player, new Artist(1));
+        player.addCard(new Artist(19, 1));
+        player.addCard(new Artist(20, 1));
 
         artistFood.onCavePaintingsEvent(player);
         artistFood.onCavePaintingsEvent(player);

@@ -61,10 +61,10 @@ public class BoardTest extends ModelTest {
         }
 
         @Test
-        @DisplayName("Invalid player count throws IllegalStateException")
+        @DisplayName("Invalid player count throws IllegalArgumentException")
         void invalidPlayerCountThrows() {
             List<Player> p = players(1);
-            assertThrows(IllegalStateException.class, () -> new Board(1, p));
+            assertThrows(IllegalArgumentException.class, () -> new Board(1, p));
         }
 
         @Test

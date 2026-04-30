@@ -13,4 +13,6 @@ public interface EventVisitor {
     void visit(RoundAdvancedEventDTO event);
     void visit(TribeDTO tribe);
     void visit(WinnersAnnouncedEventDTO event);
-    void visit(PlayerLeftGameDTO event);}
+    void visit(PlayerLeftGameDTO event);
+    void visit(GameOverEventDTO event);
+}

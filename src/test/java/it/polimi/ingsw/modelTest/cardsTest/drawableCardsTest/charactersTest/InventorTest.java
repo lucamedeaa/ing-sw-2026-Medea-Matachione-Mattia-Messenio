@@ -5,36 +5,33 @@ import it.polimi.ingsw.model.cards.drawableCards.characters.Inventor;
 import it.polimi.ingsw.model.enums.InventorIcon;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InventorTest extends ModelTest {
-        /**
-         * final score = number of inventors × number of DIFFERENT icons.
-         * With 3 inventors all having different icons → 3 × 3 = 9 points.
-         */
-        @Test
-        @DisplayName("Inventor score: n_inventors × distinct_icons")
-        void inventorScoreMultipliesByDistinctIcons() {
-            Player p = newPlayer("Bob");
-            give(p, new Inventor(1, InventorIcon.CANOE));
-            give(p, new Inventor(1, InventorIcon.BREAD));
-            give(p, new Inventor(1, InventorIcon.ROPE));
-            // prestigePoints=0 during game, only calculateTotalScore includes inventors
-            assertEquals(9, p.calculateTotalScore());
-        }
 
-        /**
-         * With 2 inventors having the same icon → distinct icons = 1 → 2 × 1 = 2 points.
-         */
-        @Test
-        @DisplayName("Inventors with the same icon count as 1 distinct icon")
-        void duplicateIconCountsOnce() {
-            Player p = newPlayer("Bob");
-            give(p, new Inventor(1, InventorIcon.CANOE));
-            give(p, new Inventor(1, InventorIcon.CANOE));
-            assertEquals(2, p.calculateTotalScore()); // 2 inventors × 1 distinct icon
-        }
+    @Test
+    @DisplayName("Inventor score: n_inventors * distinct_icons")
+    void inventorScoreMultipliesByDistinctIcons() {
+        Player p = newPlayer("Bob");
+        // Updated Constructor: idcard, era, inventorIcon
+        p.addCard(new Inventor(39, 1, InventorIcon.CANOE));
+        p.addCard(new Inventor(40, 1, InventorIcon.BREAD));
+        p.addCard(new Inventor(44, 2, InventorIcon.ROPE));
+
+        // 3 inventors * 3 distinct icons = 9 points
+        assertEquals(9, p.calculateTotalScore());
     }
+
+    @Test
+    @DisplayName("Inventors with the same icon count as 1 distinct icon")
+    void duplicateIconCountsOnce() {
+        Player p = newPlayer("Bob");
+        p.addCard(new Inventor(39, 1, InventorIcon.CANOE));
+        p.addCard(new Inventor(42, 1, InventorIcon.CANOE));
+
+        // 2 inventors * 1 distinct icon = 2 points
+        assertEquals(2, p.calculateTotalScore());
+    }
+}

@@ -15,7 +15,8 @@ class RitualShieldTest {
 
     @BeforeEach
     void setUp() {
-        ritualShield = new RitualShield(0, 0, 1);
+        // Updated Constructor: idcard, foodCost, prestigePoints, era
+        ritualShield = new RitualShield(96, 5, 2, 1);
         player = newPlayer("Alice");
     }
 
@@ -28,7 +29,7 @@ class RitualShieldTest {
         ritualShield.onShamanicRitualEvent(player, 0, -5);
 
         assertEquals(5, player.getPrestigePoints(),
-                "Decrement negativo deve essere annullato (→ +5)");
+                "Decrement negativo deve essere annullato (-> +5)");
     }
 
     @Test
@@ -52,7 +53,7 @@ class RitualShieldTest {
         ritualShield.onShamanicRitualEvent(player, 10, -5);
 
         assertEquals(5, player.getPrestigePoints(),
-                "Deve annullare solo il decrement (-5 → +5)");
+                "Deve annullare solo il decrement (-5 -> +5)");
     }
 
     @Test
