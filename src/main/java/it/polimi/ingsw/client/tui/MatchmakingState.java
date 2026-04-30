@@ -53,6 +53,7 @@ public class MatchmakingState implements UIState {
                 tui.prompt("Max players: ");
                 return;
             }
+            tui.setMyNickname(pendingNickname);
             tui.getController().createGame(pendingNickname, max);
             currentHandler = this::handleMenu;
         } catch (NumberFormatException e) {
@@ -70,6 +71,7 @@ public class MatchmakingState implements UIState {
 
     private void handleJoinNickname(String input) {
         if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
+        tui.setMyNickname(input);
         tui.getController().joinGame(input, pendingGameId);
         currentHandler = this::handleMenu;
     }
