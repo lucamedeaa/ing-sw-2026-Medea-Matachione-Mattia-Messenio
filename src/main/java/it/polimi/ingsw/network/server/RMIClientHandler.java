@@ -64,7 +64,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     public void setVirtualView(VirtualView virtualView) {
         this.matchmakingState = null;
         this.virtualView = virtualView;
-
+        //in case vView changed after check in handleDisconnection
         if (!this.active.get()) {
             virtualView.handleDisconnection();
         }

@@ -63,16 +63,17 @@ public class GameRoom {
     private void startGame() {
         this.game = new Game(getPlayers());
         this.controller = new GameController(game);
-
-        for (Map.Entry<String, ClientConnection> entry : players.entrySet()) {
-            String name = entry.getKey();
-            ClientConnection conn = entry.getValue();
-            VirtualView vv = new VirtualView(name, conn, controller);
-            conn.setVirtualView(vv);
-            game.addObserver(vv);
-        }
-        new Thread(game::start).start();
-        //game.start();
+        //everyone has a virtualview set, if one leaves the game everyone gets notified
+        controller.getGameExecutor().submit(() -> {
+            for (Map.Entry<String, ClientConnection> entry : players.entrySet()) {
+                String name = entry.getKey();
+                ClientConnection conn = entry.getValue();
+                VirtualView vv = new VirtualView(name, conn, controller);
+                conn.setVirtualView(vv);
+                game.addObserver(vv);
+            }
+            game.start();
+        });
     }
 
     /** Removes a player and handles cleanup or disconnection logic. */
