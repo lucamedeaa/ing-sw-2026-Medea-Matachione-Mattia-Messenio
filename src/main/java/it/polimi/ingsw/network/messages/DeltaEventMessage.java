@@ -7,7 +7,7 @@ import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 import java.util.List;
 
 public record DeltaEventMessage(
-        GameEventDTO event,
+        List<GameEventDTO> events,
         List<AvailableActionDTO> nextActions
 ) implements ServerMessage {
     @Override

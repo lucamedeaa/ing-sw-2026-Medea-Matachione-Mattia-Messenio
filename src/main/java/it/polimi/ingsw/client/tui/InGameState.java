@@ -34,26 +34,38 @@ public class InGameState implements UIState {
     @Override
     public void handleInput(String input) {
         List<AvailableActionDTO> actions = tui.getModel().getMyActions();
-        if (actions.isEmpty()) return;
+
+        // 1. Errore se non è il tuo turno
+        if (actions.isEmpty()) {
+            String errorMsg = "Non è il tuo turno! Attendi che gli altri giocatori finiscano.";
+            System.err.println("[CLIENT ERROR] " + errorMsg); // <-- QUESTO STAMPA IL MESSAGGIO ROSSO
+            onError(errorMsg);
+            return;
+        }
 
         try {
             String[] parts = input.trim().split("\\s+");
             int actionIndex = Integer.parseInt(parts[0]);
 
             if (actionIndex < 0 || actionIndex >= actions.size()) {
-                tui.print("Invalid action index.");
+                String errorMsg = "Azione non valida. Scegli un numero dalla lista.";
+                System.err.println("[CLIENT ERROR] " + errorMsg);
+                onError(errorMsg);
                 return;
             }
 
             AvailableActionDTO selectedAction = actions.get(actionIndex);
             ActionExecutor executor = new ActionExecutor(tui, parts);
-
             selectedAction.accept(executor);
 
         } catch (NumberFormatException e) {
-            tui.print("Invalid input format. Use numbers.");
+            String errorMsg = "Formato non valido. Devi inserire un numero.";
+            System.err.println("[CLIENT ERROR] " + errorMsg);
+            onError(errorMsg);
         } catch (Exception e) {
-            tui.print("Input error: " + e.getMessage());
+            String errorMsg = "Errore di input: " + e.getMessage();
+            System.err.println("[CLIENT ERROR] " + errorMsg);
+            onError(errorMsg);
         }
     }
     @Override

@@ -43,7 +43,7 @@ public class PlacementState extends GameState {
             this.transition(new ActionState(this.game));
         }
 
-        game.notifyObservers(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
+        game.pushEvent(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
     }
 
     @Override

@@ -26,11 +26,20 @@ public class LightGameModel {
     private List<PlayerScoreDTO> leaderboard = new ArrayList<>();
     private List<String> winners = new ArrayList<>();
 
+    private boolean batchMode = false;
+
+    public void startBatch() { this.batchMode = true; }
+    public void endBatch() {
+        this.batchMode = false;
+        notifyUI(); // Chiama la TUI UNA SOLA VOLTA alla fine
+    }
+
     public void addObserver(UIObserver observer) {
         this.observers.add(observer);
     }
 
     private void notifyUI() {
+        if (batchMode) return; // SE È IN BATCH, BLOCCA LO SPAM
         for (UIObserver obs : observers) {
             obs.onStateChanged();
         }

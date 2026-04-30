@@ -29,7 +29,7 @@ public class ScoringState extends GameState {
 
     private void calculateFinalScores() {
         for (Player player : game.getPlayers()) {
-            game.notifyObservers(new PlayerResourcesChangedEventDTO(
+            game.pushEvent(new PlayerResourcesChangedEventDTO(
                     player.getNickname(),
                     player.getFood(),
                     player.calculateTotalScore()
@@ -42,7 +42,7 @@ public class ScoringState extends GameState {
                 .map(Player::getNickname)
                 .toList();
 
-        game.notifyObservers(new WinnersAnnouncedEventDTO(winnerNicknames));
+        game.pushEvent(new WinnersAnnouncedEventDTO(winnerNicknames));
     }
 
     private List<Player> determineWinners() {

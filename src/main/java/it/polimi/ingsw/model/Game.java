@@ -21,6 +21,8 @@ public class Game implements ModelControllerInterface {
     private GameState currentState;
     private List<ModelObserver> observers = new ArrayList<>();
 
+    private final List<GameEventDTO> pendingEvents = new ArrayList<>();
+
 
 
     public Game(List<String> players) {
@@ -45,20 +47,23 @@ public class Game implements ModelControllerInterface {
 
     public void addObserver(ModelObserver obs) { observers.add(obs); }
 
-    public void notifyObservers(GameEventDTO event) {
-        String activePlayer = currentState.getActivePlayerNickname();
-        List<AvailableActionDTO> actions = List.of();
+    public void pushEvent(GameEventDTO event) {
+        this.pendingEvents.add(event);
+    }
+    public void commitEvents() {
+        if (pendingEvents.isEmpty()) return;
 
-        if (activePlayer != null) {
-            actions = currentState.getAvailableActions(activePlayer);
-        }
+        String activePlayer = currentState != null ? currentState.getActivePlayerNickname() : null;
+        List<AvailableActionDTO> actions = activePlayer != null ? currentState.getAvailableActions(activePlayer) : List.of();
 
-        ModelUpdateDTO snapshot = new ModelUpdateDTO(event, activePlayer, actions);
+        ModelUpdateDTO snapshot = new ModelUpdateDTO(new ArrayList<>(pendingEvents), activePlayer, actions);
+        pendingEvents.clear();
 
         for (ModelObserver obs : observers) {
             obs.onModelUpdate(snapshot);
         }
     }
+
     public void notifyFullSync() {
         BoardDTO boardDTO = new BoardDTO(
                 board.getRow(0).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),

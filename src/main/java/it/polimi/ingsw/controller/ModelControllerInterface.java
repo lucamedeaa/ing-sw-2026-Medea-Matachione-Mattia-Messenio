@@ -7,4 +7,5 @@ public interface ModelControllerInterface {
     void placeTotem(Player nickname, int positionIndex);
     void skipBonus(Player nickname);
     Player getPlayerByNickname(String nickname);
+    void commitEvents();
 }

@@ -92,9 +92,9 @@ public class ActionState extends GameState {
 
         checkTurnConditions();
 
-        game.notifyObservers(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
-        game.notifyObservers(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
-        game.notifyObservers(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
+        game.pushEvent(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
+        game.pushEvent(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.pushEvent(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
 
 
     }

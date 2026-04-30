@@ -48,6 +48,7 @@ public class GameController {
             try {
                 Player player = game.getPlayerByNickname(nickname);
                 game.takeCard(player, row, col);
+                game.commitEvents();
             } catch (Exception e) {
                 onError.accept(e.getMessage());
             }
@@ -59,6 +60,7 @@ public class GameController {
             try {
                 Player player = game.getPlayerByNickname(nickname);
                 game.placeTotem(player, positionIndex);
+                game.commitEvents();
             } catch (Exception e) {
                 onError.accept(e.getMessage());
             }
@@ -70,6 +72,7 @@ public class GameController {
             try {
                 Player player = game.getPlayerByNickname(nickname);
                 game.skipBonus(player);
+                game.commitEvents();
             } catch (Exception e) {
                 onError.accept(e.getMessage());
             }
