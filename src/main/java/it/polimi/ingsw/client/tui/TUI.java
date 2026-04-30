@@ -15,7 +15,7 @@ public class TUI implements ClientUI, UIObserver {
     private ServerController controller;
     private final LightGameModel model;
     private final Scanner scanner = new Scanner(System.in);
-    public TUI(LightGameModel model) { this.model = model; }
+    public TUI(LightGameModel model) { this.model = model; this.model.addObserver(this); }
 
     public ServerController getController() {
         return this.controller;
@@ -85,6 +85,7 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     public synchronized void renderInGame(List<AvailableActionDTO> actions){
+        System.out.flush();
         System.out.print("\n--- AVAILABLE ACTIONS ---");
         if (actions.isEmpty()) {
             System.out.print("Wait for your turn...");

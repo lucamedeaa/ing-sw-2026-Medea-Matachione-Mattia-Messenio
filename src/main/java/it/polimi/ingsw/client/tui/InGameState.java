@@ -6,7 +6,6 @@ import java.util.List;
 
 public class InGameState implements UIState {
     private final TUI tui;
-    List<AvailableActionDTO> actions;
 
     public InGameState(TUI tui) {
         this.tui = tui;
@@ -14,34 +13,42 @@ public class InGameState implements UIState {
 
     @Override
     public void render() {
-        actions = tui.getModel().getMyActions();
-        tui.renderInGame(actions);
+        tui.renderInGame(tui.getModel().getMyActions());
     }
 
     @Override
     public void handleInput(String input) {
-        actions = tui.getModel().getMyActions();
-        if (actions.isEmpty()) return;
+        List<AvailableActionDTO> actions = tui.getModel().getMyActions();
+
+        if (actions.isEmpty()) {
+            onError("It's not your turn! Wait for the other players.");
+            return;
+        }
 
         try {
             String[] parts = input.trim().split("\\s+");
             int actionIndex = Integer.parseInt(parts[0]);
 
             if (actionIndex < 0 || actionIndex >= actions.size()) {
-                tui.print("Invalid action index.");
+                onError("Invalid action. Pick a number from the list.");
                 return;
             }
 
             AvailableActionDTO selectedAction = actions.get(actionIndex);
             ActionExecutor executor = new ActionExecutor(tui, parts);
-
             selectedAction.accept(executor);
 
         } catch (NumberFormatException e) {
-            tui.print("Invalid input format. Use numbers.");
+            onError("Invalid format. You must enter a number.");
         } catch (Exception e) {
-            tui.print("Input error: " + e.getMessage());
+            onError("Input error: " + e.getMessage());
         }
+    }
+
+    @Override
+    public void onError(String errorText) {
+        tui.print("[ERROR]: " + errorText);
+        render();
     }
 
     @Override
