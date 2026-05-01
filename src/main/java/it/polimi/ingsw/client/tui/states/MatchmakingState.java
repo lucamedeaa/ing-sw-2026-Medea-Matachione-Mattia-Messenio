@@ -42,9 +42,9 @@ public class MatchmakingState implements UIState {
 
     private void handleCreateNickname(String input) {
         if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
-        if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
+        if (input.isEmpty()) { tui.prompt("Nickname(b to cancel): "); return; }
         pendingNickname = input;
-        tui.prompt("Max players: ");
+        tui.prompt("Max players(b to cancel): ");
         currentHandler = this::handleCreateMaxPlayers;
     }
 
@@ -54,7 +54,7 @@ public class MatchmakingState implements UIState {
             int max = Integer.parseInt(input);
             if (max < 2 || max > 5) {
                 tui.print("Players must be between 2 and 5.");
-                tui.prompt("Max players: ");
+                tui.prompt("Max players(b to cancel): ");
                 return;
             }
             tui.setMyNickname(pendingNickname);
@@ -62,21 +62,21 @@ public class MatchmakingState implements UIState {
             currentHandler = this::handleMenu;
         } catch (NumberFormatException e) {
             tui.print("Invalid number.");
-            tui.prompt("Max players: ");
+            tui.prompt("Max players(b to cancel): ");
         }
     }
 
     private void handleJoinGameId(String input) {
         if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
-        if (input.isEmpty()) { tui.prompt("Game ID: "); return; }
+        if (input.isEmpty()) { tui.prompt("Game ID(b to cancel): "); return; }
         pendingGameId = input;
-        tui.prompt("Nickname: ");
+        tui.prompt("Nickname(b to cancel): ");
         currentHandler = this::handleJoinNickname;
     }
 
     private void handleJoinNickname(String input) {
         if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
-        if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
+        if (input.isEmpty()) { tui.prompt("Nickname(b to cancel): "); return; }
         tui.setMyNickname(input);
         tui.getController().joinGame(input, pendingGameId);
         currentHandler = this::handleMenu;
