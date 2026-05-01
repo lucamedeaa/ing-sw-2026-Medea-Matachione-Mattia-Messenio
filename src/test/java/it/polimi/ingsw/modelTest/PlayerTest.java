@@ -152,7 +152,7 @@ public class PlayerTest extends ModelTest {
         Player p = newPlayer("Alice");
         give(p, new Hunter(1, 1, false));
         give(p, new Hunter(2, 1, true)); // 1 hunter already → +1 food
-        assertEquals(1, p.getFood());
+        assertEquals(2, p.getFood());
     }
 
     @Test

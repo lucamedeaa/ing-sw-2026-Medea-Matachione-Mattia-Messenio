@@ -5,10 +5,10 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.actions.SkipActionDTO;
-import it.polimi.ingsw.network.dto.actions.TakeCardActionDTO;
-import it.polimi.ingsw.network.dto.events.*;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.AvailableAction.*;
+import it.polimi.ingsw.model.updates.GameEvent.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,9 +92,9 @@ public class ActionState extends GameState {
 
         checkTurnConditions();
 
-        game.pushEvent(new CardTakenEventDTO(player.getNickname(), rowIdx, cardIdx));
-        game.pushEvent(new PlayerResourcesChangedEventDTO(player.getNickname(), player.getFood(), player.getPrestigePoints()));
-        game.pushEvent(new CardAddedToTribeEventDTO(player.getNickname(), purchasedCard.getIDcard()));
+        game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
+        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
 
     }
@@ -164,18 +164,18 @@ public class ActionState extends GameState {
 
 
     @Override
-    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+    public List<AvailableAction> getAvailableActions(String playerNickname) {
         if (!playerNickname.equals(getActivePlayerNickname())) return List.of();
 
-        List<AvailableActionDTO> actions = new ArrayList<>();
-        actions.add(new TakeCardActionDTO(remainingUpperPicks, remainingLowerPicks));
+        List<AvailableAction> actions = new ArrayList<>();
+        actions.add(new TakeCardAction(remainingUpperPicks, remainingLowerPicks));
 
         // Lo SKIP è permesso solo se non ci sono più Personaggi obbligatori da raccogliere
         // nelle righe dove il giocatore ha ancora dei pick.
         boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
 
         if (!mustPickCharacter) {
-            actions.add(new SkipActionDTO());
+            actions.add(new SkipAction());
         }
 
         return actions;

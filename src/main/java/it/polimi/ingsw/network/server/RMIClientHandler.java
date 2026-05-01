@@ -5,7 +5,7 @@ import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
 import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
-import it.polimi.ingsw.view.VirtualView;
+import it.polimi.ingsw.virtualView.VirtualView;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

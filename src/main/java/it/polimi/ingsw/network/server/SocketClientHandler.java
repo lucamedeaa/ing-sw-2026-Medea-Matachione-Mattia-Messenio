@@ -3,7 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
-import it.polimi.ingsw.view.VirtualView;
+import it.polimi.ingsw.virtualView.VirtualView;
 
 import java.io.EOFException;
 import java.io.IOException;
