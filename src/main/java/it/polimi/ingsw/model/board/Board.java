@@ -143,6 +143,12 @@ public class Board {
         this.currentTotemOrder = new ArrayList<>(players);
         Collections.shuffle(this.currentTotemOrder);
         this.nextTotemOrder = new ArrayList<>();
+
+        int[] initialFood = {2, 3, 3, 4, 4}; //food bonus in base all'ordine dei totem nel primo round
+
+        for (int i = 0; i < currentTotemOrder.size(); i++) {
+            currentTotemOrder.get(i).addFood(initialFood[i]);
+        }
     }
 
     /** Moves non-persistent cards from the upper row to the lower row and keeps persistent cards in place according to board rules. */

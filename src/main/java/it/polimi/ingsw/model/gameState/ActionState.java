@@ -181,4 +181,25 @@ public class ActionState extends GameState {
         return actions;
     }
 
+    @Override
+    public void skipBonus(Player player) {
+        if (!player.equals(this.currentPlayer)) {
+            throw new IllegalStateException("Not your turn");
+        }
+
+        boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
+        if (mustPickCharacter) {
+            throw new IllegalStateException("You cannot skip, you must pick a character.");
+        }
+
+        // Azzera i pick rimanenti per forzare la fine del turno
+        this.remainingUpperPicks = 0;
+        this.remainingLowerPicks = 0;
+
+        endPlayerTurn();
+
+        // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
+        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+    }
+
 }
