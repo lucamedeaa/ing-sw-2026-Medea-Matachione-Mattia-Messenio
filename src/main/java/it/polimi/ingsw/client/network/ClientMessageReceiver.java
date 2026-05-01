@@ -41,31 +41,31 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(ErrorMessage message) {
-        System.err.println("[SERVER ERROR] " + message.error());
+        //System.err.println("[SERVER ERROR] " + message.error());
         ui.dispatch(state -> state.onError(message.error()));
     }
 
     @Override
     public void visit(ErrorMessageDTO message) {
-        System.err.println("[MATCHMAKING ERROR] " + message.error());
+        //System.err.println("[MATCHMAKING ERROR] " + message.error());
         ui.dispatch(state -> state.onError(message.error()));
     }
 
     @Override
     public void visit(MatchmakingSuccessMessage message) {
-        System.out.println("[MATCHMAKING SUCCESS] " + message.text());
+        //System.out.println("[MATCHMAKING SUCCESS] " + message.text());
         ui.dispatch(state -> state.onMatchmakingSuccess(message.text()));
     }
 
     @Override
     public void visit(AvailableGamesResponseMessage message) {
-        System.out.println("[AVAILABLE GAMES] " + message.games());
+        //System.out.println("[AVAILABLE GAMES] " + message.games());
         ui.dispatch(state -> state.onAvailableGames(message.games()));
     }
 
     @Override
     public void visit(GameAbortedMessage message) {
-        System.err.println("[ERROR] Match Ended: " + message.reason());
+        //System.err.println("[ERROR] Match Ended: " + message.reason());
         // Qui la logica per chiudere la schermata di gioco e tornare al main menu
         // Es: tui.showFatalErrorAndExit(message.reason());
         ui.dispatch(state -> state.onGameAborted(message.reason()));

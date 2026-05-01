@@ -17,6 +17,11 @@ public abstract class Building extends Card {
         this.prestigePoints = prestigePoints;
     }
 
+    @Override
+    public int getFoodCost() {
+        return this.foodCost;
+    }
+
     /** Returns the base final points of the building. @param owner the owning player @return prestige points */
     @Override
     public int getFinalPoints(Player owner){

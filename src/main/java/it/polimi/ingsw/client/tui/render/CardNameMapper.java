@@ -10,11 +10,49 @@ public class CardNameMapper {
 
     public static String getDetail(int id) {
         if (isBuilding(id)) {
-            int era = id <= 101 ? 1 : id <= 108 ? 2 : 3;
-            return "Era " + era;
+            return "";
         }
         if (isEvent(id)) return eventDetail(id);
         return characterDetail(id);
+    }
+
+    public static int getEra(int id) {
+        if (isBuilding(id)) {
+            return id <= 101 ? 1 : id <= 108 ? 2 : 3;
+        }
+        return switch (id) {
+            // ERA 1
+            case 1, 2, 3, 91,           // Builder
+                 10, 11, 12, 66, 67,    // Hunter
+                 19, 20, 21, 64, 77,    // Artist
+                 28, 29, 75, 85,        // Shaman
+                 35, 36, 69, 88,        // Collector
+                 39, 40, 41, 42, 43, 78, 79, // Inventor
+                 53, 56, 58, 61         // Eventi
+                    -> 1;
+
+            // ERA 2
+            case 4, 5, 6, 71,           // Builder
+                 13, 14, 15, 68, 84, 93,// Hunter
+                 22, 23, 24, 65,        // Artist
+                 30, 31, 86, 87,        // Shaman
+                 37, 70, 82, 89,        // Collector
+                 44, 45, 46, 47, 48, 49, 50, 51, 52, 80, // Inventor
+                 54, 57, 59, 62, 63     // Eventi
+                    -> 2;
+
+            // ERA 3
+            case 7, 8, 9, 92,           // Builder
+                 16, 17, 18, 94,        // Hunter
+                 25, 26, 27, 95,        // Artist
+                 32, 33, 34, 74, 76,    // Shaman
+                 38, 83, 90,            // Collector
+                 72, 73, 81,            // Inventor
+                 55, 60                 // Eventi
+                    -> 3;
+
+            default -> 0; // Fallback di sicurezza
+        };
     }
 
     public static String getExtra(int id) {
@@ -72,6 +110,8 @@ public class CardNameMapper {
             default  -> "";
         };
     }
+
+
 
     public static boolean isEvent(int id)    { return id >= 53 && id <= 63; }
     public static boolean isBuilding(int id) { return id >= 96; }

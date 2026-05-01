@@ -30,6 +30,9 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(PlayerResourcesChangedEventDTO event) {
         model.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige());
+        if (event.reason() != null && !event.reason().isEmpty()) {
+            model.addGameLog("\033[33m[" + event.nickname() + "] " + event.reason() + "\033[0m");
+        }
     }
 
     @Override
@@ -40,6 +43,7 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(EraTransitionEventDTO event) {
         model.updateEra(event.newEraNumber());
+        model.addGameLog("\033[1;36m[!] INIZIA L'ERA " + event.newEraNumber() + "!\033[0m");
     }
 
     @Override

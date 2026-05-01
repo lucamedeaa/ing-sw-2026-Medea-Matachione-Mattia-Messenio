@@ -17,6 +17,8 @@ public class InGameState implements UIState {
     private Map<String, int[]> displayDeltas = new HashMap<>();
     private int lastRound;
 
+    private String lastError = "";
+
     public InGameState(TUI tui) {
         this.tui = tui;
         prevState = captureState();
@@ -43,7 +45,8 @@ public class InGameState implements UIState {
 
     @Override
     public void render() {
-        tui.renderInGame(tui.getModel().getMyActions(), displayDeltas);
+        tui.renderInGame(tui.getModel().getMyActions(), displayDeltas, lastError);
+        lastError = "";
     }
 
     @Override
@@ -82,7 +85,7 @@ public class InGameState implements UIState {
 
     @Override
     public void onError(String errorText) {
-        tui.print("[ERROR]: " + errorText);
+        this.lastError = errorText;
         render();
     }
 

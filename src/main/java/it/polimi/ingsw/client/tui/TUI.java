@@ -91,21 +91,35 @@ public class TUI implements ClientUI, UIObserver {
     }
 
 
-    public synchronized void renderInGame(List<AvailableActionDTO> actions, Map<String, int[]> deltas) {
+    public synchronized void renderInGame(List<AvailableActionDTO> actions, Map<String, int[]> deltas, String lastError) {
         System.out.print("\033[H\033[2J");
         System.out.flush();
+
         System.out.println("════ MESOS — Era " + model.getCurrentEra()
                 + " / Round " + model.getCurrentRound() + " ════");
         System.out.println();
         renderRows();
+
         System.out.println();
         renderPlayersBar();
+
         if (!myNickname.isEmpty()) {
             System.out.println();
             renderPlayerTribe(myNickname);
         }
+
         renderTurnRecap(deltas);
         System.out.println();
+
+        List<String> logs = model.consumeGameLogs();
+        if (!logs.isEmpty()) {
+            System.out.println("  NOTIFICHE RECENTI ──");
+            for (String log : logs) {
+                System.out.println("  " + log);
+            }
+            System.out.println();
+        }
+
         System.out.println("── AVAILABLE ACTIONS ──");
         if (actions.isEmpty()) {
             System.out.println("  Wait for your turn...");
@@ -117,6 +131,13 @@ public class TUI implements ClientUI, UIObserver {
             }
             System.out.println("  i) Card reference guide");
         }
+
+        System.out.println();
+
+        if (lastError != null && !lastError.isEmpty()) {
+            System.out.println("\033[31m[ERROR] " + lastError + "\033[0m");
+        }
+
         System.out.print("> ");
     }
 
@@ -166,18 +187,13 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     public synchronized void renderTurnRecap(Map<String, int[]> deltas) {
-        boolean anyChange = deltas.values().stream()
-                .anyMatch(d -> d[0] != 0 || d[1] != 0);
-        if (!anyChange) return;
-
         System.out.println();
         System.out.println("── TURN RECAP ──");
         for (var e : deltas.entrySet()) {
             int df = e.getValue()[0], dp = e.getValue()[1];
-            if (df == 0 && dp == 0) continue;
             String foodStr = (df >= 0 ? "+" : "") + df + "f";
             String ppStr   = (dp >= 0 ? "+" : "") + dp + "pp";
-            System.out.printf("  %-14s  food %s   prestige %s%n",
+            System.out.printf("  %-14s  food %-4s prestige %s%n",
                     e.getKey(), foodStr, ppStr);
         }
     }

@@ -124,6 +124,19 @@ public class LightGameModel {
         notifyUI();
     }
 
+
+    private final List<String> gameLogs = new ArrayList<>();
+
+    public void addGameLog(String log) {
+        this.gameLogs.add(log);
+        notifyUI();
+    }
+
+    public List<String> consumeGameLogs() {
+        List<String> copy = new ArrayList<>(this.gameLogs);
+        this.gameLogs.clear();
+        return copy;
+    }
     // Getter che la TUI userà per disegnare la schermata
     public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
     public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }

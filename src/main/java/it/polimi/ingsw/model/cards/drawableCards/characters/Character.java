@@ -23,4 +23,9 @@ public abstract class Character extends Card {
     public void placeDuringSetupBottom(Board board) {
         board.addBottomRow(this);
     }
+
+    @Override
+    public int getFoodCost() {
+        return this.foodCost;
+    }
 }

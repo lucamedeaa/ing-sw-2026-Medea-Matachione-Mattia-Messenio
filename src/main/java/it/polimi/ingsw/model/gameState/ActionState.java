@@ -75,8 +75,8 @@ public class ActionState extends GameState {
         if (!targetCard.isPickable()) {
             throw new IllegalStateException("Can't take event card");
         }
-
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
+
 
         if (player.getFood() < finalCost) {
             throw new IllegalStateException("Unsufficient food");
@@ -90,13 +90,20 @@ public class ActionState extends GameState {
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
 
-        checkTurnConditions();
+
 
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
-        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        if (finalCost > 0) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    "Acquisto Edificio (-" + finalCost + " cibo)"
+            ));
+        }
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
-
+        checkTurnConditions();
     }
 
     /** Ends the current player's turn, returns their totem, and advances to the next player. */
@@ -199,7 +206,12 @@ public class ActionState extends GameState {
         endPlayerTurn();
 
         // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
-        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                "Ritorno Totem (Skip)"
+        ));
     }
 
 }

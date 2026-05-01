@@ -11,4 +11,5 @@ public record EraTransitionEventDTO(int newEraNumber) implements GameEventDTO {
     public void accept(EventVisitor visitor) {
         visitor.visit(this);
     }
+
 }

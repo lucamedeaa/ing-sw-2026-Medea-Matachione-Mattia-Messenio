@@ -27,11 +27,7 @@ public class ScoringState extends GameState {
 
     private void calculateFinalScores() {
         for (Player player : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEvent(
-                    player.getNickname(),
-                    player.getFood(),
-                    player.calculateTotalScore()
-            ));
+            game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.calculateTotalScore(), "Calcolo Punteggio Finale"));
         }
     }
 

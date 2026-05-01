@@ -17,36 +17,42 @@ public class RoundEndState extends GameState {
         super(game);
     }
 
-    /** Advances the round, checks for game end, and transitions to the next appropriate state. */
     @Override
     public void start() {
         game.incrementRound();
-
         game.pushEvent(new RoundAdvancedEvent(game.getCurrentRound()));
+
+        // Snapshot risorse pre-risoluzione
+        java.util.Map<String, int[]> before = new java.util.HashMap<>();
+        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
+            before.put(p.getNickname(), new int[]{p.getFood(), p.getPrestigePoints()});
+        }
 
         if (isGameOver()) {
             game.getBoard().resolveFinalEvents(game.getPlayers());
-
-            notifyObserversPlayersResources();
-
+            notifyChanges(before, "Eventi di Fine Partita");
             this.transition(new ScoringState(this.game));
         } else {
-
             int eraBefore = game.getBoard().getCurrentEraNumber();
-
             game.getBoard().cleanupForNextRound(game.getPlayers());
-
             int eraAfter = game.getBoard().getCurrentEraNumber();
 
             if (eraAfter > eraBefore) {
                 game.pushEvent(new EraTransitionEvent(eraAfter));
             }
 
-            notifyObserversPlayersResources();
-
+            notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem/Eventi)");
             notifyBoardState();
-
             this.transition(new PlacementState(this.game));
+        }
+    }
+
+    private void notifyChanges(java.util.Map<String, int[]> before, String reason) {
+        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
+            // Invia l'evento per TUTTI, indipendentemente dai guadagni
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    p.getNickname(), p.getFood(), p.getPrestigePoints(), reason
+            ));
         }
     }
 
@@ -64,17 +70,13 @@ public class RoundEndState extends GameState {
     public String getActivePlayerNickname() {
         return null; // Nessun giocatore attivo
     }
-
+/*
     private void notifyObserversPlayersResources() {
         for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEvent(
-                p.getNickname(),
-                p.getFood(),
-                p.getPrestigePoints()
-            ));
+            game.pushEvent(new PlayerResourcesChangedEvent(p.getNickname(), p.getFood(), p.getPrestigePoints(), "Risoluzione Eventi di Fine Round"));
         }
     }
-
+*/
     private void notifyBoardState() {
         // Estraiamo gli ID usando il tuo nuovo metodo getIDcard()
         List<Integer> upperIds = game.getBoard().getRow(0).stream()
