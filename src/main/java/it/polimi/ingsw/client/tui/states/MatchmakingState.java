@@ -20,8 +20,8 @@ public class MatchmakingState implements UIState {
     public MatchmakingState(TUI tui) {
         this.tui = tui;
         menuCommands = Map.of(
-                "1", () -> { tui.prompt("Nickname: ");  currentHandler = this::handleCreateNickname; },
-                "2", () -> { tui.prompt("Game ID: ");   currentHandler = this::handleJoinGameId; },
+                "1", () -> { tui.prompt("Nickname (b to cancel): ");       currentHandler = this::handleCreateNickname; },
+                "2", () -> { tui.prompt("Game ID (b to cancel): ");        currentHandler = this::handleJoinGameId; },
                 "3", () -> tui.getController().getAvailableGames(),
                 "0", () -> { tui.getController().disconnect(); System.exit(0); }
         );
@@ -41,6 +41,7 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleCreateNickname(String input) {
+        if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
         if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
         pendingNickname = input;
         tui.prompt("Max players: ");
@@ -48,6 +49,7 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleCreateMaxPlayers(String input) {
+        if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
         try {
             int max = Integer.parseInt(input);
             if (max < 2 || max > 5) {
@@ -65,6 +67,7 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleJoinGameId(String input) {
+        if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
         if (input.isEmpty()) { tui.prompt("Game ID: "); return; }
         pendingGameId = input;
         tui.prompt("Nickname: ");
@@ -72,6 +75,7 @@ public class MatchmakingState implements UIState {
     }
 
     private void handleJoinNickname(String input) {
+        if (input.equalsIgnoreCase("b")) { backToMenu(); return; }
         if (input.isEmpty()) { tui.prompt("Nickname: "); return; }
         tui.setMyNickname(input);
         tui.getController().joinGame(input, pendingGameId);
@@ -92,5 +96,9 @@ public class MatchmakingState implements UIState {
         currentHandler = this::handleMenu;
         tui.print("[ERROR] " + errorText);
         this.render();
+    }
+    private void backToMenu() {
+        currentHandler = this::handleMenu;
+        render();
     }
 }

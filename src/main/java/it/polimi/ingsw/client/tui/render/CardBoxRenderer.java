@@ -36,7 +36,6 @@ public class CardBoxRenderer {
         String name   = CardNameMapper.getName(id);
         String detail = CardNameMapper.getDetail(id);
         String costPp = buildingCostPp(CardNameMapper.getExtra(id), CardNameMapper.getExtra2(id));
-        String idStr  = "#" + id;
         String[] nameParts = splitName(name, 13);
         return new String[]{
                 "┌─────────────┐",
@@ -44,7 +43,6 @@ public class CardBoxRenderer {
                 "│" + center(nameParts[1], 13) + "│",
                 "│" + center(detail,       13) + "│",
                 "│" + center(costPp,       13) + "│",
-                "│" + center(idStr,        13) + "│",
                 "└─────────────┘"
         };
     }

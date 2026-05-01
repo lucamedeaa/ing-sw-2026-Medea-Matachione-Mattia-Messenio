@@ -28,9 +28,7 @@ public class InGameState implements UIState {
         Map<String, int[]> curr      = captureState();
         Map<String, int[]> stepDelta = computeDeltas(prevState, curr);
         prevState = curr;
-
         mergeInto(accumulated, stepDelta);
-
         if (isEndOfTurn()) {
             displayDeltas = new HashMap<>(accumulated);
             accumulated   = new HashMap<>();
