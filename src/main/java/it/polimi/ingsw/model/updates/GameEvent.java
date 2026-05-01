@@ -22,4 +22,6 @@ public interface GameEvent {
     record TotemPlacedEvent(String nickname, int positionIndex) implements GameEvent {}
     
     record WinnersAnnouncedEvent(List<String> winnersNicknames) implements GameEvent {}
+
+    record TotemReturnedEvent(String nickname, int returnIndex) implements GameEvent {}
 }

@@ -56,6 +56,16 @@ public class InGameState implements UIState {
             return;
         }
 
+        if (input.trim().toLowerCase().startsWith("v ")) {
+            String target = input.trim().substring(2).trim();
+            if (tui.getModel().getTribes().containsKey(target)) {
+                tui.changeState(new ViewTribeState(tui, target));
+            } else {
+                onError("Giocatore '" + target + "' non trovato.");
+            }
+            return;
+        }
+
         List<AvailableActionDTO> actions = tui.getModel().getMyActions();
 
         if (actions.isEmpty()) {

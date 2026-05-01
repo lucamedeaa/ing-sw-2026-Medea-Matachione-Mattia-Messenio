@@ -98,9 +98,12 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("════ MESOS — Era " + model.getCurrentEra()
                 + " / Round " + model.getCurrentRound() + " ════");
         System.out.println();
-        renderRows();
 
+        renderRows();
         System.out.println();
+
+        renderTracks();
+
         renderPlayersBar();
 
         if (!myNickname.isEmpty()) {
@@ -113,7 +116,7 @@ public class TUI implements ClientUI, UIObserver {
 
         List<String> logs = model.consumeGameLogs();
         if (!logs.isEmpty()) {
-            System.out.println("  NOTIFICHE RECENTI ──");
+            System.out.println("── NOTIFICHE RECENTI ──");
             for (String log : logs) {
                 System.out.println("  " + log);
             }
@@ -130,6 +133,7 @@ public class TUI implements ClientUI, UIObserver {
                 actions.get(i).accept(renderer);
             }
             System.out.println("  i) Card reference guide");
+            System.out.println("  v <nome>) View player's tribe");
         }
 
         System.out.println();
@@ -150,11 +154,13 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     private void renderPlayersBar() {
-        System.out.println("── PLAYERS ──");
-        boolean myTurn = !model.getMyActions().isEmpty();
+        System.out.println("  PLAYERS ──");
         for (LightPlayer p : model.getPlayers().values()) {
             boolean isMe = p.getNickname().equals(myNickname);
-            String marker = (isMe && myTurn) ? "▶ " : "  ";
+
+            boolean isActive = p.getNickname().equals(model.getActivePlayer());
+            String marker = isActive ? "► " : "  ";
+
             int tribeSize = model.getTribes().getOrDefault(p.getNickname(), List.of()).size();
             String tag = isMe ? " (you)" : "";
             System.out.printf("%s%-14s  food: %2d  prestige: %3d  [%d cards]%s%n",
@@ -201,49 +207,170 @@ public class TUI implements ClientUI, UIObserver {
     public synchronized void renderCheatSheet() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println("╔══════════════════════════════════════════════════════╗");
-        System.out.println("║               MESOS — CARD REFERENCE                 ║");
-        System.out.println("╚══════════════════════════════════════════════════════╝");
+        System.out.println("┌─────────────────────────────────────────────────────────────┐");
+        System.out.println("│                  MESOS — CARD REFERENCE                     │");
+        System.out.println("└─────────────────────────────────────────────────────────────┘");
         System.out.println();
-        System.out.println("── CHARACTER TYPES ─────────────────────────────────────");
-        System.out.println("  Builder    Costs food, gains prestige immediately");
-        System.out.println("             e.g. -1f +2pp  /  -2f +5pp  (tier 1→3)");
-        System.out.println("  Hunter     sym:✓ compatible  /  sym:✗ incompatible");
-        System.out.println("             Hunt event: +1f  +N pp per hunter in tribe");
+        System.out.println("── CHARACTER TYPES ────────────────────────────────────────────");
+        System.out.println("  Builder    Grants food discount for buildings, gives PP at game end");
+        System.out.println("             e.g. -1f discount, +2pp final");
+        System.out.println("  Hunter     sym:✓ grants instant food equal to Hunters in tribe");
+        System.out.println("             Hunt event: grants food per Hunter in tribe");
         System.out.println("  Artist     No direct effect — score via CavePaintings");
         System.out.println("  Shaman     ★x1 / ★x2 / ★x3  ritual stars");
-        System.out.println("             ShamanicRitual: +Npp if ≥ threshold stars");
-        System.out.println("  Collector  Sustenance: -3f food cost per collector");
-        System.out.println("  Inventor   Has an icon — matching pair scores a bonus");
+        System.out.println("  Collector  Provides 3 food discount during the Sustenance event");
+        System.out.println("  Inventor   Has an icon — matching pairs score ONLY with InventorPair");
         System.out.println("             Icons: Spearhead Leather Bread Canoe Mortar");
         System.out.println("                    Rope Flute Statue Fishhook Necklace");
         System.out.println();
-        System.out.println("── EVENTS ───────────────────────────────────────────────");
-        System.out.println("  CavePaintings  ≥N artists → +N pp/artist | else -2pp");
-        System.out.println("  Hunt           +1f  +N pp per hunter in tribe");
-        System.out.println("  ShamanicRitual +N pp if enough stars | else -N pp");
-        System.out.println("  Sustenance     -1f per character  (Collectors discount)");
-        System.out.println("                 if food insufficient: -N pp per missing");
+        System.out.println("── EVENTS ─────────────────────────────────────────────────────");
+        System.out.println("  CavePaintings  Thresholds and PP rewards depend on the specific card");
+        System.out.println("  Hunt           Grants food based on Hunter count");
+        System.out.println("  ShamanicRitual Highest stars gain PP, lowest lose PP (ties apply)");
+        System.out.println("  Sustenance     -1f per character (Collectors discount)");
+        System.out.println("                 if food insufficient: -2 pp per missing food");
         System.out.println();
-        System.out.println("── BUILDINGS ────────────────────────────────────────────");
-        System.out.println("  Bought by spending food; give prestige on purchase.");
-        System.out.println("  Era 1 (3–5f)  RitualShield  DiverseSet   InventorPair");
+        System.out.println("── BUILDINGS ──────────────────────────────────────────────────");
+        System.out.println("  Bought by spending food; grant prestige at the end of the game.");
+        System.out.println("  Era 1 (3-5f)  RitualShield  DiverseSet   InventorPair");
         System.out.println("                TurnBonus     FoodDsc(Art) FoodDsc(Col)");
-        System.out.println("  Era 2 (5–7f)  ArtistFood    BuildrMastery RitualStars");
+        System.out.println("  Era 2 (5-7f)  ArtistFood    BuildrMastery RitualStars");
         System.out.println("                DblPrestige   FoodDsc(Inv) SetScorer");
         System.out.println("                HunterBonus");
-        System.out.println("  Era 3 (6–10f) VictoryPoints LatePurchase");
+        System.out.println("  Era 3 (6-10f) VictoryPoints LatePurchase");
         System.out.println("                ClassScorer(Inv/Art/Sha/Hun/Col/Bui)");
         System.out.println();
-        System.out.println("── COMMANDS ─────────────────────────────────────────────");
+        System.out.println("── COMMANDS ───────────────────────────────────────────────────");
         System.out.println("  N              select action N from the list");
         System.out.println("  N <tile>       place totem on tile index");
         System.out.println("  N <row> <col>  take card  (row: 0=upper  1=lower)");
+        System.out.println("  v <name>       view player's tribe");
         System.out.println("  i              open this reference guide");
         System.out.println("  q              return to game");
         System.out.println();
-        System.out.println("────────────────────────────────────────────────────────");
         System.out.print("  Press Q to return to game > ");
+
+    }
+
+    private void renderTracks() {
+        int pCount = Math.max(2, model.getPlayers().size());
+
+        // TURN ORDER TILE
+        int[] returnBonuses = switch(pCount) {
+            case 2 -> new int[]{1, -1};
+            case 3 -> new int[]{1, 0, -1};
+            case 4 -> new int[]{2, 1, 0, -1};
+            default -> new int[]{3, 1, 0, 0, -1};
+        };
+
+        String[] returnOccupants = new String[pCount];
+        java.util.Arrays.fill(returnOccupants, "free");
+        for (var e : model.getReturnPositions().entrySet()) {
+            if (e.getValue() >= 0 && e.getValue() < pCount) {
+                returnOccupants[e.getValue()] = e.getKey();
+            }
+        }
+
+        // OFFER TRACK
+        String offerLayout = switch(pCount) {
+            case 2 -> "BCEF"; case 3 -> "BCDEF"; case 4 -> "BCDEFG"; default -> "ABCDEFG";
+        };
+
+        String[] offerOccupants = new String[offerLayout.length()];
+        java.util.Arrays.fill(offerOccupants, "free");
+        for (var e : model.getTotemPositions().entrySet()) {
+            if (e.getValue() >= 0 && e.getValue() < offerLayout.length()) {
+                offerOccupants[e.getValue()] = e.getKey();
+            }
+        }
+
+        //Rendering
+        System.out.println("  TURN ORDER TILE " + " ".repeat(pCount * 8 - 4) + "OFFER TRACK ──");
+
+        StringBuilder top = new StringBuilder("  ");
+        StringBuilder mid1 = new StringBuilder("  "); // Ordine / Frecce picks
+        StringBuilder mid2 = new StringBuilder("  "); // Cibo / Cibo tile A
+        StringBuilder mid3 = new StringBuilder("  "); // Giocatore / Giocatore
+        StringBuilder bot = new StringBuilder("  ");
+
+
+        top.append("┌");
+        mid1.append("│");
+        mid2.append("│");
+        mid3.append("│");
+        bot.append("└");
+
+        String[] ordinals = {"1st", "2nd", "3rd", "4th", "5th"};
+
+        for (int i = 0; i < pCount; i++) {
+            top.append("───────");
+            mid1.append(centerString(ordinals[i], 7));
+
+            String bonusStr = (returnBonuses[i] > 0 ? "+" : "") + returnBonuses[i] + "f";
+            if (returnBonuses[i] == 0) bonusStr = "0f";
+            mid2.append(centerString(bonusStr, 7));
+
+            String player = centerString(returnOccupants[i], 7);
+            String color = returnOccupants[i].equals("free") ? "\033[90m" : (returnOccupants[i].equals(myNickname) ? "\033[32m" : "\033[37m");
+            mid3.append(color).append(player).append("\033[0m");
+
+            bot.append("───────");
+
+            if (i < pCount - 1) {
+                top.append("┬");
+                mid1.append("│");
+                mid2.append("│");
+                mid3.append("│");
+                bot.append("┴");
+            } else {
+                top.append("┐   ");
+                mid1.append("│   ");
+                mid2.append("│   ");
+                mid3.append("│   ");
+                bot.append("┘   ");
+            }
+        }
+
+        for (int i = 0; i < offerLayout.length(); i++) {
+            char t = offerLayout.charAt(i);
+            String[] specs = getTileSpecs(t);
+
+            String player = centerString(offerOccupants[i], 7);
+            String color = offerOccupants[i].equals("free") ? "\033[90m" : (offerOccupants[i].equals(myNickname) ? "\033[32m" : "\033[37m");
+
+            top.append("┌───────┐ ");
+            mid1.append("│").append(specs[0]).append("│ ");
+            mid2.append("│").append(specs[1]).append("│ ");
+            mid3.append("│").append(color).append(player).append("\033[0m│ ");
+            bot.append("└───────┘ ");
+        }
+
+        System.out.println(top);
+        System.out.println(mid1);
+        System.out.println(mid2);
+        System.out.println(mid3);
+        System.out.println(bot);
+        System.out.println("  * Nota: se non puoi pagare i malus in cibo, perdi 2pp per ogni cibo mancante.");
+        System.out.println();
+    }
+
+    private String[] getTileSpecs(char id) {
+        return switch (id) {
+            case 'A' -> new String[]{" ↑0 ↓0 ", "  +3f  "}; // Tile 5 giocatori
+            case 'B' -> new String[]{" ↑0 ↓1 ", "       "};
+            case 'C' -> new String[]{" ↑1 ↓0 ", "       "};
+            case 'D' -> new String[]{" ↑0 ↓2 ", "       "};
+            case 'E' -> new String[]{" ↑1 ↓1 ", "       "};
+            case 'F' -> new String[]{" ↑2 ↓0 ", "       "};
+            case 'G' -> new String[]{" ↑2 ↓1 ", "       "};
+            default  -> new String[]{"       ", "       "};
+        };
+    }
+
+    private String centerString(String s, int width) {
+        if (s.length() >= width) return s.substring(0, width);
+        int pad = width - s.length();
+        return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
     }
 
     public synchronized void print(String msg)  { System.out.println(msg); }

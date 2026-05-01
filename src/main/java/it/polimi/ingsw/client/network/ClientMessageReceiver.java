@@ -21,22 +21,20 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(FullSyncMessage msg) {
-        model.setFullState(msg.board(), msg.players());
+        model.setFullState(msg.board(), msg.players(), msg.activePlayer());
         model.setAvailableActions(msg.actions());
         ui.dispatch(UIState::onGameStarted);
     }
 
     @Override
     public void visit(DeltaEventMessage msg) {
-        model.startBatch(); // Muta la TUI
-
-        // Applica gli eventi in silenzio
+        model.startBatch();
         for (GameEventDTO event : msg.events()) {
             event.accept(applier);
         }
         model.setAvailableActions(msg.nextActions());
-
-        model.endBatch();  // Riattiva la TUI e renderizza
+        model.setActivePlayer(msg.activePlayer());
+        model.endBatch();
     }
 
     @Override

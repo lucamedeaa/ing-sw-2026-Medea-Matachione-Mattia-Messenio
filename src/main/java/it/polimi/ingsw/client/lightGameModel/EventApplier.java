@@ -70,4 +70,8 @@ public class EventApplier implements EventVisitor {
     public void visit(GameOverEventDTO event) {
         // mostrare i punteggi finali sulla TUI
     }
+    @Override
+    public void visit(TotemReturnedEventDTO event) {
+        model.returnTotemToTrack(event.nickname(), event.returnIndex());
+    }
 }

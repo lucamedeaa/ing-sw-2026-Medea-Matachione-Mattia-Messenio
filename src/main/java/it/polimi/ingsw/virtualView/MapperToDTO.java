@@ -53,9 +53,13 @@ public class MapperToDTO {
             case WinnersAnnouncedEvent w ->
                 new WinnersAnnouncedEventDTO(w.winnersNicknames());
 
+            case TotemReturnedEvent t ->
+                    new TotemReturnedEventDTO(t.nickname(), t.returnIndex());
+
 
             default -> throw new IllegalArgumentException("Errore di mapping: update del Model non gestito o di tipo errato -> " + update.getClass().getSimpleName());
         };
+
 
     }
 

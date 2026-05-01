@@ -294,4 +294,8 @@ public class Board {
         return this.currentEraState.getEraNumber();
     }
 
+    public int getNextTotemOrderSize() {
+        return this.nextTotemOrder.size();
+    }
+
 }

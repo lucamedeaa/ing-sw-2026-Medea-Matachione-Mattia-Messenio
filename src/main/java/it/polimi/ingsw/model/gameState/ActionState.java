@@ -110,7 +110,28 @@ public class ActionState extends GameState {
     public void endPlayerTurn() {
         Board board = game.getBoard();
         currentTile.clearOccupyingPlayer();
+
+        // salvo le risorse PRIMA di muovere il totem
+        int foodBefore = this.currentPlayer.getFood();
+        int ppBefore = this.currentPlayer.getPrestigePoints();
+
+        //  Muovo il totem (questo applica il +/- cibo in background)
         board.returnTotem(this.currentPlayer);
+
+        // invio l'evento grafico di movimento del totem
+        int returnIdx = board.getNextTotemOrderSize() - 1;
+        game.pushEvent(new TotemReturnedEvent(this.currentPlayer.getNickname(), returnIdx));
+
+        //  se le risorse sono cambiatemando SUBITO la notifica al client
+        if (foodBefore != this.currentPlayer.getFood() || ppBefore != this.currentPlayer.getPrestigePoints()) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    this.currentPlayer.getNickname(),
+                    this.currentPlayer.getFood(),
+                    this.currentPlayer.getPrestigePoints(),
+                    "Piazzamento Turn Order Tile"
+            ));
+        }
+
         currentColumnIndex++;
         findNextPlayer();
     }

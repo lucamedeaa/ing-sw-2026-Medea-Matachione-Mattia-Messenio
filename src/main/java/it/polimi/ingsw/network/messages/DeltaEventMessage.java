@@ -8,7 +8,8 @@ import java.util.List;
 
 public record DeltaEventMessage(
         List<GameEventDTO> events,
-        List<AvailableActionDTO> nextActions
+        List<AvailableActionDTO> nextActions,
+        String activePlayer
 ) implements ServerMessage {
     @Override
     public void accept(ClientMessageVisitor visitor) {
