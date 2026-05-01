@@ -10,4 +10,6 @@ public record SkipActionDTO() implements AvailableActionDTO {
     public void accept(ActionVisitor visitor) {
         visitor.visit(this);
     }
+
+
 }

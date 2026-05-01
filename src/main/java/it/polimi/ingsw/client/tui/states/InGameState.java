@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.tui.states;
 
 import it.polimi.ingsw.client.lightGameModel.LightPlayer;
+import it.polimi.ingsw.client.tui.commands.*;
 import it.polimi.ingsw.client.tui.render.ActionExecutor;
 import it.polimi.ingsw.client.tui.TUI;
 import it.polimi.ingsw.client.tui.UIState;
@@ -16,6 +17,7 @@ public class InGameState implements UIState {
     private Map<String, int[]> accumulated   = new HashMap<>();
     private Map<String, int[]> displayDeltas = new HashMap<>();
     private int lastRound;
+    private final Map<String, CommandFactory> commandRegistry;
 
     private String lastError = "";
 
@@ -23,6 +25,8 @@ public class InGameState implements UIState {
         this.tui = tui;
         prevState = captureState();
         lastRound = tui.getModel().getCurrentRound();
+        this.commandRegistry = new HashMap<>();
+        registerCommands();
     }
 
     @Override
@@ -49,48 +53,35 @@ public class InGameState implements UIState {
         lastError = "";
     }
 
+
+    private void registerCommands() {
+        // Manteniamo la factory SOLO per i comandi testuali locali
+        commandRegistry.put("v", args -> {
+            if (args.length < 2) throw new IllegalArgumentException("Uso: v <nickname>");
+            return new ViewTribeCommand(tui, args[1]);
+        });
+
+        commandRegistry.put("i", args -> new InfoCommand(tui));
+    }
+
     @Override
     public void handleInput(String input) {
-        if (input.trim().equalsIgnoreCase("i")) {
-            tui.changeState(new InfoState(tui));
-            return;
-        }
+        if (input == null || input.isBlank()) return;
+        String[] parts = input.trim().split("\\s+");
+        String key = parts[0].toLowerCase();
 
-        if (input.trim().toLowerCase().startsWith("v ")) {
-            String target = input.trim().substring(2).trim();
-            if (tui.getModel().getTribes().containsKey(target)) {
-                tui.changeState(new ViewTribeState(tui, target));
-            } else {
-                onError("Giocatore '" + target + "' non trovato.");
-            }
-            return;
-        }
-
-        List<AvailableActionDTO> actions = tui.getModel().getMyActions();
-
-        if (actions.isEmpty()) {
-            onError("It's not your turn! Wait for the other players.");
-            return;
-        }
-
-        try {
-            String[] parts = input.trim().split("\\s+");
-            int actionIndex = Integer.parseInt(parts[0]);
-
-            if (actionIndex < 0 || actionIndex >= actions.size()) {
-                onError("Invalid action. Pick a number from the list.");
+        GameCommand command;
+        if (key.matches("\\d+")) {
+            command = new ActionCommand(tui, parts);
+        } else {
+            CommandFactory factory = commandRegistry.get(key);
+            if (factory == null) {
+                onError("Comando sconosciuto.");
                 return;
             }
-
-            AvailableActionDTO selectedAction = actions.get(actionIndex);
-            ActionExecutor executor = new ActionExecutor(tui, parts);
-            selectedAction.accept(executor);
-
-        } catch (NumberFormatException e) {
-            onError("Invalid format. You must enter a number.");
-        } catch (Exception e) {
-            onError("Input error: " + e.getMessage());
+            command = factory.create(parts);
         }
+        command.execute();
     }
 
     @Override
@@ -130,4 +121,6 @@ public class InGameState implements UIState {
             acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1]});
         }
     }
+
+
 }

@@ -49,10 +49,11 @@ public class ServerController {
         sendAsync(new SkipActionMessage());
     }
 
-    public void disconnect() {
+    public void disconnect(Runnable completionCallback) {
         networkExecutor.submit(() -> {
+            server.sendMessage(new DisconnectionMessage());
             server.disconnect();
-            networkExecutor.shutdown();
+            if (completionCallback != null) completionCallback.run();
         });
     }
 }

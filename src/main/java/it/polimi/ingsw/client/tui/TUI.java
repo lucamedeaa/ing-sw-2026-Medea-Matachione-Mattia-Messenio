@@ -63,10 +63,11 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("╔══════════════════════════╗");
         System.out.println("║     MESOS — MENU         ║");
         System.out.println("╚══════════════════════════╝");
-        System.out.println("  1. Create new game");
-        System.out.println("  2. Join a game");
-        System.out.println("  3. Available games");
-        System.out.println("  0. Disconnect");
+        System.out.println("  Comandi disponibili:");
+        System.out.println("  create <nickname> <players>  - Crea partita");
+        System.out.println("  join <nickname> <gameID>     - Entra in partita");
+        System.out.println("  list                         - Mostra partite");
+        System.out.println("  0                            - Disconnetti");
         if (!availableGames.isEmpty()) {
             System.out.println("\nAvailable games:");
             for (GameInfoDTO g : availableGames)

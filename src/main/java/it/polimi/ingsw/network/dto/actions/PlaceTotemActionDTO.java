@@ -13,4 +13,6 @@ public record PlaceTotemActionDTO(List<Integer> availableTileIndices) implements
     public void accept(ActionVisitor visitor) {
         visitor.visit(this);
     }
+
+
 }

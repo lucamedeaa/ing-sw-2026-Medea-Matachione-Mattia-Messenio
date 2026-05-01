@@ -10,4 +10,6 @@ public record TakeCardActionDTO(int upperRowPick, int lowerRowPick) implements A
     public void accept(ActionVisitor visitor) {
         visitor.visit(this);
     }
+
+
 }
