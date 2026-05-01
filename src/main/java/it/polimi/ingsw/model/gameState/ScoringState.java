@@ -2,11 +2,9 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.PlayerScoreDTO;
-import it.polimi.ingsw.network.dto.events.GameOverEventDTO;
-import it.polimi.ingsw.network.dto.events.PlayerResourcesChangedEventDTO;
-import it.polimi.ingsw.network.dto.events.WinnersAnnouncedEventDTO;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.GameEvent.*;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +27,7 @@ public class ScoringState extends GameState {
 
     private void calculateFinalScores() {
         for (Player player : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEventDTO(
+            game.pushEvent(new PlayerResourcesChangedEvent(
                     player.getNickname(),
                     player.getFood(),
                     player.calculateTotalScore()
@@ -42,7 +40,7 @@ public class ScoringState extends GameState {
                 .map(Player::getNickname)
                 .toList();
 
-        game.pushEvent(new WinnersAnnouncedEventDTO(winnerNicknames));
+        game.pushEvent(new WinnersAnnouncedEvent(winnerNicknames));
     }
 
     private List<Player> determineWinners() {
@@ -70,7 +68,7 @@ public class ScoringState extends GameState {
 
 
     @Override
-    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+    public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of(); // Nessuna azione disponibile
     }
 

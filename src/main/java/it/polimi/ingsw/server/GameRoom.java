@@ -5,7 +5,7 @@ import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.server.exceptions.NicknameTakenException;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
-import it.polimi.ingsw.view.VirtualView;
+import it.polimi.ingsw.virtualView.VirtualView;
 import it.polimi.ingsw.controller.GameController;
 
 import java.util.ArrayList;

@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.updates.AvailableAction;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public abstract class GameState {
         throw new IllegalStateException("You can't skip bonus in this phase!");
     }
 
-    public abstract List<AvailableActionDTO> getAvailableActions(String nickName);
+    public abstract List<AvailableAction> getAvailableActions(String nickName);
 
     public abstract String getActivePlayerNickname();
 }

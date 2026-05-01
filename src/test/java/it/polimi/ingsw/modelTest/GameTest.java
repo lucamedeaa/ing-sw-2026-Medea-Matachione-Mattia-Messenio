@@ -2,6 +2,12 @@ package it.polimi.ingsw.modelTest;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.ModelObserver;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.board.Board;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.BoardUpdate;
+import it.polimi.ingsw.model.updates.ModelUpdate;
+import it.polimi.ingsw.model.updates.PlayerUpdate;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.ModelUpdateDTO;
@@ -136,8 +142,8 @@ public class GameTest extends ModelTest {
             Game g = game(2);
             boolean[] called = {false};
             g.addObserver(new ModelObserver() {
-                @Override public void onModelUpdate(ModelUpdateDTO update) {}
-                @Override public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+                @Override public void onModelUpdate(ModelUpdate update) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {
                     called[0] = true;
                 }
             });
@@ -151,8 +157,8 @@ public class GameTest extends ModelTest {
             Game g = game(3);
             int[] count = {0};
             g.addObserver(new ModelObserver() {
-                @Override public void onModelUpdate(ModelUpdateDTO update) {}
-                @Override public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+                @Override public void onModelUpdate(ModelUpdate update) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {
                     count[0] = players.size();
                 }
             });
@@ -172,8 +178,8 @@ public class GameTest extends ModelTest {
         void startDoesNotThrow() {
             Game g = game(2);
             g.addObserver(new ModelObserver() {
-                @Override public void onModelUpdate(ModelUpdateDTO update) {}
-                @Override public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {}
+                @Override public void onModelUpdate(ModelUpdate update) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {}
             });
             assertDoesNotThrow(g::start);
         }
@@ -183,8 +189,8 @@ public class GameTest extends ModelTest {
         void afterStartStateNonNull() {
             Game g = game(2);
             g.addObserver(new ModelObserver() {
-                @Override public void onModelUpdate(ModelUpdateDTO update) {}
-                @Override public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {}
+                @Override public void onModelUpdate(ModelUpdate update) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {}
             });
             g.start();
             assertNotNull(g.getCurrentState());

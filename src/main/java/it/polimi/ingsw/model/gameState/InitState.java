@@ -2,8 +2,7 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.events.*;
+import it.polimi.ingsw.model.updates.AvailableAction;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class InitState extends GameState {
     }
 
     @Override
-    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+    public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of(); // Nessuna azione disponibile
     }
 

@@ -1,6 +1,10 @@
-package it.polimi.ingsw.view;
+package it.polimi.ingsw.virtualView;
 
 import it.polimi.ingsw.model.ModelObserver;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.BoardUpdate;
+import it.polimi.ingsw.model.updates.ModelUpdate;
+import it.polimi.ingsw.model.updates.PlayerUpdate;
 import it.polimi.ingsw.network.dto.*;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.InGameVisitor;
@@ -8,9 +12,6 @@ import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.controller.GameController;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 //import java.util.concurrent.TimeUnit;
 
 public class VirtualView implements ModelObserver, InGameVisitor {
@@ -32,7 +33,8 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     }
 
     @Override
-    public void onModelUpdate(ModelUpdateDTO update) {
+    public void onModelUpdate(ModelUpdate modelUpdate) {
+        ModelUpdateDTO update =  MapperToDTO.modelToDTO(modelUpdate);
         List<AvailableActionDTO> myActions;
 
         // Il mio nickname è uguale a tizio a? Mando le azioni.
@@ -51,7 +53,11 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
     //Inviata solo all'inizio o riconness@Override
     @Override
-    public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+    public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates) {
+        BoardDTO board = MapperToDTO.boardToDTO(boardUpdate);
+        List<PlayerDTO> players = playersUpdates.stream().map(MapperToDTO::playerToDTO).toList();
+        List<AvailableActionDTO> actions = actionsUpdates.stream().map(MapperToDTO::availableActionToDTO).toList();
+
         // Invia le azioni solo se il nickname della vista corrisponde al giocatore attivo
         List<AvailableActionDTO> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
 

@@ -1,5 +1,9 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.BoardUpdate;
+import it.polimi.ingsw.model.updates.ModelUpdate;
+import it.polimi.ingsw.model.updates.PlayerUpdate;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.ModelUpdateDTO;
@@ -8,8 +12,8 @@ import java.util.List;
 
 public interface ModelObserver {
     // Chiamato per ogni mossa/cambiamento
-    void onModelUpdate(ModelUpdateDTO update);
+    void onModelUpdate(ModelUpdate update);
 
     // Chiamato solo all'inizio o per ripristinare un client
-    void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions);
+    void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions);
 }

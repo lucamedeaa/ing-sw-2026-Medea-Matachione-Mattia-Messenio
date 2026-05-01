@@ -97,7 +97,7 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("════ MESOS — Era " + model.getCurrentEra()
                 + " / Round " + model.getCurrentRound() + " ════");
         System.out.println();
-        renderOfferTiles();
+        renderRows();
         System.out.println();
         renderPlayersBar();
         if (!myNickname.isEmpty()) {
@@ -120,7 +120,7 @@ public class TUI implements ClientUI, UIObserver {
         System.out.print("> ");
     }
 
-    private void renderOfferTiles() {
+    private void renderRows() {
         System.out.println("── UPPER ROW ──");
         CardBoxRenderer.printCardRow(model.getUpperRowCards());
         System.out.println();

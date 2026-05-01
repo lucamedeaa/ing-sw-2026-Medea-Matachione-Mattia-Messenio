@@ -2,11 +2,10 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.events.BoardRefilledEventDTO;
-import it.polimi.ingsw.network.dto.events.EraTransitionEventDTO;
-import it.polimi.ingsw.network.dto.events.PlayerResourcesChangedEventDTO;
-import it.polimi.ingsw.network.dto.events.RoundAdvancedEventDTO;
+import it.polimi.ingsw.model.updates.AvailableAction.*;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.GameEvent.*;
+
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class RoundEndState extends GameState {
     public void start() {
         game.incrementRound();
 
-        game.pushEvent(new RoundAdvancedEventDTO(game.getCurrentRound()));
+        game.pushEvent(new RoundAdvancedEvent(game.getCurrentRound()));
 
         if (isGameOver()) {
             game.getBoard().resolveFinalEvents(game.getPlayers());
@@ -40,7 +39,7 @@ public class RoundEndState extends GameState {
             int eraAfter = game.getBoard().getCurrentEraNumber();
 
             if (eraAfter > eraBefore) {
-                game.pushEvent(new EraTransitionEventDTO(eraAfter));
+                game.pushEvent(new EraTransitionEvent(eraAfter));
             }
 
             notifyObserversPlayersResources();
@@ -57,7 +56,7 @@ public class RoundEndState extends GameState {
     }
 
     @Override
-    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+    public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of(); // Nessuna azione disponibile
     }
 
@@ -68,7 +67,7 @@ public class RoundEndState extends GameState {
 
     private void notifyObserversPlayersResources() {
         for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEventDTO(
+            game.pushEvent(new PlayerResourcesChangedEvent(
                 p.getNickname(),
                 p.getFood(),
                 p.getPrestigePoints()
@@ -85,7 +84,7 @@ public class RoundEndState extends GameState {
                 .map(opt -> opt.map(Card::getIDcard).orElse(null))
                 .toList();
 
-        game.pushEvent(new BoardRefilledEventDTO(0, upperIds));
-        game.pushEvent(new BoardRefilledEventDTO(1, lowerIds));
+        game.pushEvent(new BoardRefilledEvent(0, upperIds));
+        game.pushEvent(new BoardRefilledEvent(1, lowerIds));
     }
 }

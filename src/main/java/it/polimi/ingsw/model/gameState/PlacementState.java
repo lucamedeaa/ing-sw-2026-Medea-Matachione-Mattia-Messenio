@@ -4,9 +4,9 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.actions.PlaceTotemActionDTO;
-import it.polimi.ingsw.network.dto.events.TotemPlacedEventDTO;
+import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.AvailableAction.*;
+import it.polimi.ingsw.model.updates.GameEvent.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +43,11 @@ public class PlacementState extends GameState {
             this.transition(new ActionState(this.game));
         }
 
-        game.pushEvent(new TotemPlacedEventDTO(player.getNickname(), tileIndex));
+        game.pushEvent(new TotemPlacedEvent(player.getNickname(), tileIndex));
     }
 
     @Override
-    public List<AvailableActionDTO> getAvailableActions(String playerNickname) {
+    public List<AvailableAction> getAvailableActions(String playerNickname) {
         // 1. Controllo turno
         if (!playerNickname.equals(getActivePlayerNickname())) {
             return List.of();
@@ -65,8 +65,7 @@ public class PlacementState extends GameState {
             }
         }
 
-        // 4. Inserisco la lista nel DTO
-        return List.of(new PlaceTotemActionDTO(freeTiles));
+        return List.of(new PlaceTotemAction(freeTiles));
     }
 
     @Override

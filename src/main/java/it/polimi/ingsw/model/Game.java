@@ -6,7 +6,8 @@ import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.TotemColor;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
-import it.polimi.ingsw.network.dto.*;
+import it.polimi.ingsw.model.updates.*;
+
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +22,7 @@ public class Game implements ModelControllerInterface {
     private GameState currentState;
     private List<ModelObserver> observers = new ArrayList<>();
 
-    private final List<GameEventDTO> pendingEvents = new ArrayList<>();
+    private final List<GameEvent> pendingEvents = new ArrayList<>();
 
 
 
@@ -47,16 +48,16 @@ public class Game implements ModelControllerInterface {
 
     public void addObserver(ModelObserver obs) { observers.add(obs); }
 
-    public void pushEvent(GameEventDTO event) {
+    public void pushEvent(GameEvent event) {
         this.pendingEvents.add(event);
     }
     public void commitEvents() {
         if (pendingEvents.isEmpty()) return;
 
         String activePlayer = currentState != null ? currentState.getActivePlayerNickname() : null;
-        List<AvailableActionDTO> actions = activePlayer != null ? currentState.getAvailableActions(activePlayer) : List.of();
+        List<AvailableAction> actions = activePlayer != null ? currentState.getAvailableActions(activePlayer) : List.of();
 
-        ModelUpdateDTO snapshot = new ModelUpdateDTO(new ArrayList<>(pendingEvents), activePlayer, actions);
+        ModelUpdate snapshot = new ModelUpdate(new ArrayList<>(pendingEvents), activePlayer, actions);
         pendingEvents.clear();
 
         for (ModelObserver obs : observers) {
@@ -65,25 +66,25 @@ public class Game implements ModelControllerInterface {
     }
 
     public void notifyFullSync() {
-        BoardDTO boardDTO = new BoardDTO(
+        BoardUpdate boardUpdate = new BoardUpdate(
                 board.getRow(0).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
                 board.getRow(1).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
                 board.getCurrentEraNumber(),
                 currentRound
         );
 
-        List<PlayerDTO> playersDTO = players.stream()
-                .map(p -> new PlayerDTO(p.getNickname(), p.getFood(), p.getPrestigePoints()))
+        List<PlayerUpdate> playersUpdates = players.stream()
+                .map(p -> new PlayerUpdate(p.getNickname(), p.getFood(), p.getPrestigePoints()))
                 .toList();
 
         String activePlayer = (currentState != null) ? currentState.getActivePlayerNickname() : null;
-        List<AvailableActionDTO> actions = List.of();
+        List<AvailableAction> actions = List.of();
         if (activePlayer != null) {
             actions = currentState.getAvailableActions(activePlayer);
         }
 
         for (ModelObserver obs : observers) {
-            obs.onFullSync(boardDTO, playersDTO, activePlayer, actions);
+            obs.onFullSync(boardUpdate, playersUpdates, activePlayer, actions);
         }
     }
 
