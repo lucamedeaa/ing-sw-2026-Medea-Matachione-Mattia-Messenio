@@ -24,22 +24,28 @@ public class CardBoxRenderer {
     public static String[] cardBox(Integer id) {
         if (id == null) {
             return new String[]{
-                    "┌─────────┐",
-                    "│         │",
-                    "│  free   │",
-                    "│         │",
-                    "└─────────┘"
+                    "┌─────────────┐",
+                    "│             │",
+                    "│    free     │",
+                    "│             │",
+                    "│             │",
+                    "│             │",
+                    "└─────────────┘"
             };
         }
         String name   = CardNameMapper.getName(id);
         String detail = CardNameMapper.getDetail(id);
+        String costPp = buildingCostPp(CardNameMapper.getExtra(id), CardNameMapper.getExtra2(id));
         String idStr  = "#" + id;
+        String[] nameParts = splitName(name, 13);
         return new String[]{
-                "┌─────────┐",
-                "│" + center(name,   9) + "│",
-                "│" + center(detail, 9) + "│",
-                "│" + center(idStr,  9) + "│",
-                "└─────────┘"
+                "┌─────────────┐",
+                "│" + center(nameParts[0], 13) + "│",
+                "│" + center(nameParts[1], 13) + "│",
+                "│" + center(detail,       13) + "│",
+                "│" + center(costPp,       13) + "│",
+                "│" + center(idStr,        13) + "│",
+                "└─────────────┘"
         };
     }
 
@@ -49,7 +55,7 @@ public class CardBoxRenderer {
             return;
         }
         List<String[]> boxes = cards.stream().map(CardBoxRenderer::cardBox).toList();
-        for (int line = 0; line < 5; line++) {
+        for (int line = 0; line < 7; line++) {
             StringBuilder sb = new StringBuilder("  ");
             for (int i = 0; i < boxes.size(); i++) {
                 String color = ansiColor(cards.get(i));
@@ -58,6 +64,25 @@ public class CardBoxRenderer {
             }
             System.out.println(sb);
         }
+    }
+
+    /** Combines "cost: 5f" + "+2 pp" → "5f +2pp", or "" if both empty. */
+    private static String buildingCostPp(String extra, String extra2) {
+        if (extra.isEmpty()) return "";
+        String cost = extra.replace("cost: ", "");
+        String pp   = extra2.replace(" ", "");
+        return cost + " " + pp;
+    }
+
+    private static String[] splitName(String name, int width) {
+        // split sempre prima di '(' se presente
+        int paren = name.indexOf('(');
+        if (paren > 0) return new String[]{name.substring(0, paren), name.substring(paren)};
+        // altrimenti logica normale
+        if (name.length() <= width) return new String[]{name, ""};
+        int at = name.lastIndexOf(' ', width - 1);
+        if (at > 0) return new String[]{name.substring(0, at), name.substring(at + 1)};
+        return new String[]{name.substring(0, width), name.substring(width)};
     }
 
     private static String center(String s, int width) {

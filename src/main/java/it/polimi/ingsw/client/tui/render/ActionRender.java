@@ -1,5 +1,6 @@
-package it.polimi.ingsw.client.tui;
+package it.polimi.ingsw.client.tui.render;
 
+import it.polimi.ingsw.client.tui.TUI;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.actions.PlaceTotemActionDTO;
 import it.polimi.ingsw.network.dto.actions.SkipActionDTO;

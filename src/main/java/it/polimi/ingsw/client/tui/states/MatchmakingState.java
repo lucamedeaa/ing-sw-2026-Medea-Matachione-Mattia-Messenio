@@ -1,4 +1,6 @@
-package it.polimi.ingsw.client.tui;
+package it.polimi.ingsw.client.tui.states;
+import it.polimi.ingsw.client.tui.TUI;
+import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import java.util.ArrayList;
 import java.util.List;

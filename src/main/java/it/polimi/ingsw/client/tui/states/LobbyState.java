@@ -1,4 +1,7 @@
-package it.polimi.ingsw.client.tui;
+package it.polimi.ingsw.client.tui.states;
+import it.polimi.ingsw.client.tui.TUI;
+import it.polimi.ingsw.client.tui.UIState;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

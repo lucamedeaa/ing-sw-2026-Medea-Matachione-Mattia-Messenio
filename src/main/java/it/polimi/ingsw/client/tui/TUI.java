@@ -4,12 +4,15 @@ import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.lightGameModel.LightPlayer;
 import it.polimi.ingsw.client.lightGameModel.UIObserver;
 import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.tui.render.ActionRender;
 import it.polimi.ingsw.client.tui.render.CardBoxRenderer;
+import it.polimi.ingsw.client.tui.states.MatchmakingState;
 import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
@@ -88,7 +91,7 @@ public class TUI implements ClientUI, UIObserver {
     }
 
 
-    public synchronized void renderInGame(List<AvailableActionDTO> actions) {
+    public synchronized void renderInGame(List<AvailableActionDTO> actions, Map<String, int[]> deltas) {
         System.out.print("\033[H\033[2J");
         System.out.flush();
         System.out.println("════ MESOS — Era " + model.getCurrentEra()
@@ -101,6 +104,7 @@ public class TUI implements ClientUI, UIObserver {
             System.out.println();
             renderPlayerTribe(myNickname);
         }
+        renderTurnRecap(deltas);
         System.out.println();
         System.out.println("── AVAILABLE ACTIONS ──");
         if (actions.isEmpty()) {
@@ -111,6 +115,7 @@ public class TUI implements ClientUI, UIObserver {
                 System.out.print("  " + i + ") ");
                 actions.get(i).accept(renderer);
             }
+            System.out.println("  i) Card reference guide");
         }
         System.out.print("> ");
     }
@@ -160,6 +165,70 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("  Press ENTER to return to menu...");
     }
 
+    public synchronized void renderTurnRecap(Map<String, int[]> deltas) {
+        boolean anyChange = deltas.values().stream()
+                .anyMatch(d -> d[0] != 0 || d[1] != 0);
+        if (!anyChange) return;
+
+        System.out.println();
+        System.out.println("── TURN RECAP ──");
+        for (var e : deltas.entrySet()) {
+            int df = e.getValue()[0], dp = e.getValue()[1];
+            if (df == 0 && dp == 0) continue;
+            String foodStr = (df >= 0 ? "+" : "") + df + "f";
+            String ppStr   = (dp >= 0 ? "+" : "") + dp + "pp";
+            System.out.printf("  %-14s  food %s   prestige %s%n",
+                    e.getKey(), foodStr, ppStr);
+        }
+    }
+
+    public synchronized void renderCheatSheet() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("╔══════════════════════════════════════════════════════╗");
+        System.out.println("║               MESOS — CARD REFERENCE                 ║");
+        System.out.println("╚══════════════════════════════════════════════════════╝");
+        System.out.println();
+        System.out.println("── CHARACTER TYPES ─────────────────────────────────────");
+        System.out.println("  Builder    Costs food, gains prestige immediately");
+        System.out.println("             e.g. -1f +2pp  /  -2f +5pp  (tier 1→3)");
+        System.out.println("  Hunter     sym:✓ compatible  /  sym:✗ incompatible");
+        System.out.println("             Hunt event: +1f  +N pp per hunter in tribe");
+        System.out.println("  Artist     No direct effect — score via CavePaintings");
+        System.out.println("  Shaman     ★x1 / ★x2 / ★x3  ritual stars");
+        System.out.println("             ShamanicRitual: +Npp if ≥ threshold stars");
+        System.out.println("  Collector  Sustenance: -3f food cost per collector");
+        System.out.println("  Inventor   Has an icon — matching pair scores a bonus");
+        System.out.println("             Icons: Spearhead Leather Bread Canoe Mortar");
+        System.out.println("                    Rope Flute Statue Fishhook Necklace");
+        System.out.println();
+        System.out.println("── EVENTS ───────────────────────────────────────────────");
+        System.out.println("  CavePaintings  ≥N artists → +N pp/artist | else -2pp");
+        System.out.println("  Hunt           +1f  +N pp per hunter in tribe");
+        System.out.println("  ShamanicRitual +N pp if enough stars | else -N pp");
+        System.out.println("  Sustenance     -1f per character  (Collectors discount)");
+        System.out.println("                 if food insufficient: -N pp per missing");
+        System.out.println();
+        System.out.println("── BUILDINGS ────────────────────────────────────────────");
+        System.out.println("  Bought by spending food; give prestige on purchase.");
+        System.out.println("  Era 1 (3–5f)  RitualShield  DiverseSet   InventorPair");
+        System.out.println("                TurnBonus     FoodDsc(Art) FoodDsc(Col)");
+        System.out.println("  Era 2 (5–7f)  ArtistFood    BuildrMastery RitualStars");
+        System.out.println("                DblPrestige   FoodDsc(Inv) SetScorer");
+        System.out.println("                HunterBonus");
+        System.out.println("  Era 3 (6–10f) VictoryPoints LatePurchase");
+        System.out.println("                ClassScorer(Inv/Art/Sha/Hun/Col/Bui)");
+        System.out.println();
+        System.out.println("── COMMANDS ─────────────────────────────────────────────");
+        System.out.println("  N              select action N from the list");
+        System.out.println("  N <tile>       place totem on tile index");
+        System.out.println("  N <row> <col>  take card  (row: 0=upper  1=lower)");
+        System.out.println("  i              open this reference guide");
+        System.out.println("  q              return to game");
+        System.out.println();
+        System.out.println("────────────────────────────────────────────────────────");
+        System.out.print("  Press Q to return to game > ");
+    }
 
     public synchronized void print(String msg)  { System.out.println(msg); }
     public synchronized void prompt(String msg) { System.out.print(msg); }
