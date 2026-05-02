@@ -5,10 +5,7 @@ import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.tui.commands.*;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MatchmakingState implements UIState {
     private final TUI tui;
@@ -25,24 +22,39 @@ public class MatchmakingState implements UIState {
     private void registerCommands() {
         commandRegistry.put("create", args -> {
             if (args.length < 3) throw new IllegalArgumentException("Uso: create <nickname> <max_players>");
-            this.pendingNickname = args[1]; // SALVA TEMPORANEAMENTE
-            return new CreateGameCommand(tui.getController(), tui, args[1], Integer.parseInt(args[2]));
+
+            int maxPlayers;
+            try {
+                maxPlayers = Integer.parseInt(args[args.length - 1]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Errore: max_players deve essere un numero.");
+            }
+
+            if (maxPlayers < 2 || maxPlayers > 5) {
+                throw new IllegalArgumentException("Errore: max_players deve essere tra 2 e 5.");
+            }
+
+            String nickname = String.join(" ", Arrays.copyOfRange(args, 1, args.length - 1));
+            this.pendingNickname = nickname;
+
+            return new CreateGameCommand(tui.getController(), tui, nickname, maxPlayers);
         });
 
         commandRegistry.put("join", args -> {
             if (args.length < 3) throw new IllegalArgumentException("Uso: join <nickname> <game_id>");
-            this.pendingNickname = args[1]; // SALVA TEMPORANEAMENTE
-            return new JoinGameCommand(tui.getController(), tui, args[1], args[2]);
+
+            String gameId = args[args.length - 1];
+            String nickname = String.join(" ", Arrays.copyOfRange(args, 1, args.length - 1));
+
+            this.pendingNickname = nickname;
+
+            return new JoinGameCommand(tui.getController(), tui, nickname, gameId);
         });
 
         commandRegistry.put("list", args -> new AvailableGamesCommand(tui.getController(), tui));
-
-
         commandRegistry.put("disconnect", args -> new DisconnectCommand(tui.getController()));
-        commandRegistry.put("0", args -> new DisconnectCommand(tui.getController())); // Alias
+        commandRegistry.put("0", args -> new DisconnectCommand(tui.getController()));
     }
-
-
 
     @Override
     public void render() {
@@ -60,33 +72,6 @@ public class MatchmakingState implements UIState {
         String[] parts = input.trim().split("\\s+");
         String commandKey = parts[0].toLowerCase();
 
-        if (commandKey.equals("create")) {
-            if (parts.length < 3) {
-                onError("Uso: create <nickname> <max_players>");
-                return;
-            }
-            try {
-                int p = Integer.parseInt(parts[2]);
-                if (p < 2 || p > 5) {
-                    onError("Errore: max_players deve essere tra 2 e 5.");
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                onError("Errore: max_players deve essere un numero.");
-                return;
-            }
-            this.pendingNickname = parts[1]; // Salva il nickname temp
-        }
-
-        if (commandKey.equals("join")) {
-            if (parts.length < 3) {
-                onError("Uso: join <nickname> <game_id>");
-                return;
-            }
-            this.pendingNickname = parts[1]; // Salva il nickname temp
-        }
-
-        // 2. Lookup ed Esecuzione
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
             onError("Comando sconosciuto. Usa: create, join, list, 0.");
@@ -96,6 +81,8 @@ public class MatchmakingState implements UIState {
         try {
             GameCommand command = factory.create(parts);
             command.execute();
+        } catch (IllegalArgumentException e) {
+            onError(e.getMessage());
         } catch (Exception e) {
             onError("Errore durante l'esecuzione: " + e.getMessage());
         }

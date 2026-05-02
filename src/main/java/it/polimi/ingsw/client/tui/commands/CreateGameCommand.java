@@ -18,11 +18,7 @@ public class CreateGameCommand implements GameCommand {
 
     @Override
     public void execute() {
-        if (maxPlayers < 2 || maxPlayers > 5) {
-            tui.print("Errore: Il numero di giocatori deve essere compreso tra 2 e 5.");
-            return;
-        }
-        // RIMOSSO: tui.setMyNickname(nickname);
+
         controller.createGame(nickname, maxPlayers);
         tui.print("Richiesta di creazione partita inviata. In attesa del server...");
     }
