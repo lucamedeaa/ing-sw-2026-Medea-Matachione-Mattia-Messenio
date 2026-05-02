@@ -80,8 +80,8 @@ public class MapperToDTO {
         };
     }
 
-    public static PlayerDTO  playerToDTO(PlayerUpdate player) {
-        return new PlayerDTO(player.nickname(), player.food(), player.prestige());
+    public static PlayerDTO playerToDTO(PlayerUpdate player) {
+        return new PlayerDTO(player.nickname(), player.food(), player.prestige(), player.totemColor());
     }
 
     public static BoardDTO   boardToDTO(BoardUpdate board) {

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.lightGameModel;
 
 import it.polimi.ingsw.network.dto.*;
+import it.polimi.ingsw.model.enums.TotemColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ public class LightGameModel {
     private String activePlayer = "";
 
     private final Map<String, Integer> playerReturnPositions = new HashMap<>();
+
 
     public void returnTotemToTrack(String nickname, int returnIndex) {
         playerTotemPositions.remove(nickname);

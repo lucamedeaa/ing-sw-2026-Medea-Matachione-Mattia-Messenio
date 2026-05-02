@@ -83,8 +83,8 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
 
         System.out.println("   \033[1;33m•\033[0m \033[1mlist\033[0m       \033[90m| Osserva le Cronache (Partite disponibili)\033[0m");
-        System.out.println("   \033[1;33m•\033[0m \033[1mcreate\033[0m     \033[90m| Fonda un nuovo Insediamento\033[0m");
-        System.out.println("   \033[1;33m•\033[0m \033[1mjoin\033[0m       \033[90m| Unisciti a una Tribù esistente\033[0m");
+        System.out.println("   \033[1;33m•\033[0m \033[1mcreate <nickname> <players>\033[0m     \033[90m| Fonda un nuovo Insediamento\033[0m");
+        System.out.println("   \033[1;33m•\033[0m \033[1mjoin <nickname> <gameID>\033[0m       \033[90m| Unisciti a una Tribù esistente\033[0m");
         System.out.println("   \033[1;33m•\033[0m \033[1m0\033[0m          \033[90m| Abbandona la Storia ed esci\033[0m\n");
 
         if (!availableGames.isEmpty()) {
@@ -130,6 +130,22 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m");
 
         System.out.print("\n\033[1;33mIn attesa che la tribù sia al completo > \033[0m");
+    }
+
+    private String getTotemAnsiColor(String nickname) {
+        if (nickname.equals("free")) return "\033[90m";
+
+        LightPlayer player = model.getPlayers().get(nickname);
+        if (player == null || player.getTotemColor() == null) return "\033[1;37m";
+
+        // Lo switch ora lavora direttamente sull'Enum TotemColor!
+        return switch (player.getTotemColor()) {
+            case ORANGE -> "\033[38;5;208m";
+            case WHITE  -> "\033[1;37m";
+            case BLUE   -> "\033[1;34m";
+            case YELLOW -> "\033[1;33m";
+            case BLACK  -> "\033[1;30m";
+        };
     }
 
 
@@ -196,17 +212,19 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     private void renderPlayersBar() {
-        System.out.println("  PLAYERS ──");
+        System.out.println("\033[1;37m  PLAYERS\033[0m");
         for (LightPlayer p : model.getPlayers().values()) {
             boolean isMe = p.getNickname().equals(myNickname);
-
             boolean isActive = p.getNickname().equals(model.getActivePlayer());
-            String marker = isActive ? "► " : "  ";
 
+            String marker = isActive ? " \033[1;32m▶\033[0m" : "  ";
             int tribeSize = model.getTribes().getOrDefault(p.getNickname(), List.of()).size();
-            String tag = isMe ? " (you)" : "";
-            System.out.printf("%s%-14s  food: %2d  prestige: %3d  [%d cards]%s%n",
-                    marker, p.getNickname(), p.getFood(), p.getPrestige(), tribeSize, tag);
+            String tag = isMe ? " \033[3m(you)\033[0m" : "";
+
+            String pColor = getTotemAnsiColor(p.getNickname());
+
+            System.out.printf("%s %s%-14s\033[0m  food: %2d  prestige: %3d  [%d cards]%s%n",
+                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), tribeSize, tag);
         }
     }
 
@@ -236,13 +254,16 @@ public class TUI implements ClientUI, UIObserver {
 
     public synchronized void renderTurnRecap(Map<String, int[]> deltas) {
         System.out.println();
-        System.out.println("── TURN RECAP ──");
+        System.out.println("\033[1;37m  TURN RECAP\033[0m");
         for (var e : deltas.entrySet()) {
             int df = e.getValue()[0], dp = e.getValue()[1];
             String foodStr = (df >= 0 ? "+" : "") + df + "f";
             String ppStr   = (dp >= 0 ? "+" : "") + dp + "pp";
-            System.out.printf("  %-14s  food %-4s prestige %s%n",
-                    e.getKey(), foodStr, ppStr);
+
+            String pColor = getTotemAnsiColor(e.getKey());
+
+            System.out.printf("  %s%-14s\033[0m  food %-4s prestige %s%n",
+                    pColor, e.getKey(), foodStr, ppStr);
         }
     }
 
@@ -353,7 +374,7 @@ public class TUI implements ClientUI, UIObserver {
             mid2.append(centerString(bonusStr, 7));
 
             String player = centerString(returnOccupants[i], 7);
-            String color = returnOccupants[i].equals("free") ? "\033[90m" : (returnOccupants[i].equals(myNickname) ? "\033[32m" : "\033[37m");
+            String color = getTotemAnsiColor(returnOccupants[i]);
             mid3.append(color).append(player).append("\033[0m");
 
             bot.append("───────");
@@ -378,7 +399,7 @@ public class TUI implements ClientUI, UIObserver {
             String[] specs = getTileSpecs(t);
 
             String player = centerString(offerOccupants[i], 7);
-            String color = offerOccupants[i].equals("free") ? "\033[90m" : (offerOccupants[i].equals(myNickname) ? "\033[32m" : "\033[37m");
+            String color = getTotemAnsiColor(offerOccupants[i]);
 
             top.append("┌───────┐ ");
             mid1.append("│").append(specs[0]).append("│ ");

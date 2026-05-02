@@ -166,4 +166,8 @@ public class Player {
     public String getNickname() {
         return name;
     }
+
+    public TotemColor getTotemColor() {
+        return totemColor;
+    }
 }
