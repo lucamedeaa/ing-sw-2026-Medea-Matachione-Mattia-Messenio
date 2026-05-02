@@ -23,6 +23,7 @@ public class TUI implements ClientUI, UIObserver {
     private String myNickname = "";
     private final Scanner scanner = new Scanner(System.in);
 
+
     public TUI(LightGameModel model) {
         this.model = model;
         this.model.addObserver(this);
@@ -58,37 +59,77 @@ public class TUI implements ClientUI, UIObserver {
 
 
     public synchronized void renderMatchmaking(List<GameInfoDTO> availableGames) {
+        // 1. Pulizia dello schermo e stampa del Logo Pieno
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println("╔══════════════════════════╗");
-        System.out.println("║     MESOS — MENU         ║");
-        System.out.println("╚══════════════════════════╝");
-        System.out.println("  Comandi disponibili:");
-        System.out.println("  create <nickname> <players>  - Crea partita");
-        System.out.println("  join <nickname> <gameID>     - Entra in partita");
-        System.out.println("  list                         - Mostra partite");
-        System.out.println("  0                            - Disconnetti");
-        if (!availableGames.isEmpty()) {
-            System.out.println("\nAvailable games:");
-            for (GameInfoDTO g : availableGames)
-                System.out.println("  - " + g.getGameId() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")");
+
+        // Gradiente dal Giallo all'Arancione per il Logo
+        String[] logoLines = {
+                "███╗   ███╗███████╗███████╗ ██████╗ ███████╗",
+                "████╗ ████║██╔════╝██╔════╝██╔═══██╗██╔════╝",
+                "██╔████╔██║█████╗  ███████╗██║   ██║███████╗",
+                "██║╚██╔╝██║██╔══╝  ╚════██║██║   ██║╚════██║",
+                "██║ ╚═╝ ██║███████╗███████║╚██████╔╝███████║",
+                "╚═╝     ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚══════╝"
+        };
+        String[] colors = {"\033[38;5;226m", "\033[38;5;220m", "\033[38;5;214m", "\033[38;5;208m", "\033[38;5;202m", "\033[38;5;166m"};
+
+        for (int i = 0; i < logoLines.length; i++) {
+            System.out.println(colors[i] + logoLines[i] + "\033[0m");
         }
-        System.out.print("> ");
+
+        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m");
+        System.out.println("\033[1;37mBenvenuto Capotribù. Incidi la tua storia nel tempo.\033[0m"); // <--- Spazi rimossi qui
+        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
+
+        System.out.println("   \033[1;33m•\033[0m \033[1mlist\033[0m       \033[90m| Osserva le Cronache (Partite disponibili)\033[0m");
+        System.out.println("   \033[1;33m•\033[0m \033[1mcreate\033[0m     \033[90m| Fonda un nuovo Insediamento\033[0m");
+        System.out.println("   \033[1;33m•\033[0m \033[1mjoin\033[0m       \033[90m| Unisciti a una Tribù esistente\033[0m");
+        System.out.println("   \033[1;33m•\033[0m \033[1m0\033[0m          \033[90m| Abbandona la Storia ed esci\033[0m\n");
+
+        if (!availableGames.isEmpty()) {
+            System.out.println("   \033[1;32mCRONACHE ATTIVE:\033[0m");
+            for (GameInfoDTO g : availableGames) {
+                System.out.printf("   \033[33m▶\033[0m \033[1mID: %-8s\033[0m \033[90m| Fondatore:\033[0m %-12s \033[90m| Popolazione:\033[0m [%d/%d]\n",
+                        g.getGameId(), g.getCreatorNickname(), g.getCurrentPlayers(), g.getMaxPlayers());
+            }
+        } else {
+            System.out.println("   \033[3mNessuna storia iniziata. Sii il primo a incidere la pietra.\033[0m");
+        }
+        System.out.print("\n\033[1;33mDigita il tuo destino > \033[0m");
     }
 
 
     public synchronized void renderLobby(List<String> currentPlayers, String notification) {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println("╔══════════════════════════╗");
-        System.out.println("║    MESOS — LOBBY         ║");
-        System.out.println("╚══════════════════════════╝");
-        System.out.println("Players in lobby:");
-        for (String p : currentPlayers) System.out.println("  • " + p);
-        if (notification != null && !notification.isEmpty()) System.out.println("\n" + notification);
-        System.out.println("\n  0. Leave lobby");
-        System.out.println("  d. Disconnect");
-        System.out.print("> ");
+
+        System.out.println("\033[1;33m" + "█".repeat(52) + "\033[0m");
+        System.out.println("\033[1;37m   MESOS   \033[0m| \033[1;32mLOBBY DELL'INSEDIAMENTO\033[0m");
+        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
+
+        System.out.println("\033[1;37mEsploratori pronti al viaggio:\033[0m");
+        if (currentPlayers.isEmpty()) {
+            System.out.println(" \033[90m  Nessun membro trovato nell'accampamento...\033[0m");
+        } else {
+            for (String p : currentPlayers) {
+                boolean isMe = p.equals(myNickname);
+                String color = isMe ? "\033[1;32m" : "\033[1;37m"; // Verde per il client, bianco per gli altri
+                String marker = isMe ? " \033[1;32m(tu)\033[0m" : "";
+                System.out.println(" \033[33m▶\033[0m " + color + String.format("%-15s", p) + marker + "\033[0m");
+            }
+        }
+
+        if (notification != null && !notification.isEmpty()) {
+            System.out.println("\n\033[1;34mℹ ECO DALLA VALLE:\033[0m \033[3m" + notification + "\033[0m");
+        }
+
+        System.out.println("\n\033[1;30m" + "━".repeat(52) + "\033[0m");
+        System.out.println(" \033[1;33m[ 0 ]\033[0m \033[1;37mAbbandona\033[0m \033[90m| Torna alla ricerca di altre storie\033[0m");
+        System.out.println(" \033[1;31m[ d ]\033[0m \033[1;37mSvanisci\033[0m  \033[90m| Disconnettiti dal mondo di Mesos\033[0m");
+        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m");
+
+        System.out.print("\n\033[1;33mIn attesa che la tribù sia al completo > \033[0m");
     }
 
 
