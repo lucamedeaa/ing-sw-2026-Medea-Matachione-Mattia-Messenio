@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.lightGameModel;
 
 import it.polimi.ingsw.network.dto.*;
+import it.polimi.ingsw.model.enums.TotemColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,21 @@ public class LightGameModel {
 
     private boolean batchMode = false;
 
+    private String activePlayer = "";
+
+    private final Map<String, Integer> playerReturnPositions = new HashMap<>();
+
+
+    public void returnTotemToTrack(String nickname, int returnIndex) {
+        playerTotemPositions.remove(nickname);
+        playerReturnPositions.put(nickname, returnIndex);
+        notifyUI();
+    }
+
+    public Map<String, Integer> getReturnPositions() {
+        return new HashMap<>(playerReturnPositions);
+    }
+
     public void startBatch() { this.batchMode = true; }
     public void endBatch() {
         this.batchMode = false;
@@ -45,7 +61,7 @@ public class LightGameModel {
         }
     }
 
-    public void setFullState(BoardDTO board, List<PlayerDTO> playersList) {
+    public void setFullState(BoardDTO board, List<PlayerDTO> playersList, String activePlayer) {
         this.upperRowCards.clear();
         this.upperRowCards.addAll(board.UpperRowCards());
         this.lowerRowCards.clear();
@@ -54,15 +70,22 @@ public class LightGameModel {
         this.currentRound = board.currentRound();
 
         this.players.clear();
+        this.playerReturnPositions.clear();
         for (PlayerDTO p : playersList) {
             this.players.put(p.nickname(), new  LightPlayer(p));
             this.playerTribes.putIfAbsent(p.nickname(), new ArrayList<>());
         }
+        this.activePlayer = activePlayer;
         notifyUI();
     }
 
     public void setAvailableActions(List<AvailableActionDTO> actions) {
         this.actions = actions;
+        notifyUI();
+    }
+
+    public void setActivePlayer(String activePlayer) {
+        this.activePlayer = activePlayer;
         notifyUI();
     }
 
@@ -96,6 +119,7 @@ public class LightGameModel {
 
     public void updateRound(int newRound) {
         this.currentRound = newRound;
+        this.playerReturnPositions.clear();
         notifyUI();
     }
 
@@ -124,6 +148,19 @@ public class LightGameModel {
         notifyUI();
     }
 
+
+    private final List<String> gameLogs = new ArrayList<>();
+
+    public void addGameLog(String log) {
+        this.gameLogs.add(log);
+        notifyUI();
+    }
+
+    public List<String> consumeGameLogs() {
+        List<String> copy = new ArrayList<>(this.gameLogs);
+        this.gameLogs.clear();
+        return copy;
+    }
     // Getter che la TUI userà per disegnare la schermata
     public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
     public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
@@ -136,4 +173,5 @@ public class LightGameModel {
     public boolean isGameOver() { return isGameOver; }
     public List<PlayerScoreDTO> getLeaderboard() { return new ArrayList<>(leaderboard); }
     public List<String> getWinners() {return new ArrayList<>(winners);}
+    public String getActivePlayer() {return this.activePlayer;}
 }

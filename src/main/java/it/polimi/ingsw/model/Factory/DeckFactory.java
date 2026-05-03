@@ -186,7 +186,26 @@ public class DeckFactory {
             cards.add(new Artist(95,3));
 
         }
-        return new Deck(cards);
+        List<Card> era1 = new ArrayList<>();
+        List<Card> era2 = new ArrayList<>();
+        List<Card> era3 = new ArrayList<>();
+
+        for (Card c : cards) {
+            if (c.getEra() == 1) era1.add(c);
+            else if (c.getEra() == 2) era2.add(c);
+            else if (c.getEra() == 3) era3.add(c);
+        }
+
+        Collections.shuffle(era1);
+        Collections.shuffle(era2);
+        Collections.shuffle(era3);
+
+        List<Card> stackedDeck = new ArrayList<>();
+        stackedDeck.addAll(era1);
+        stackedDeck.addAll(era2);
+        stackedDeck.addAll(era3);
+
+        return new Deck(stackedDeck);
     }
 
     public static Deck[] buildBuildingDecks(int playerCount) {

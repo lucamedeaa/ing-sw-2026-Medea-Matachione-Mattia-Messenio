@@ -69,6 +69,8 @@ public class AdditionalPickState extends GameState {
         }
 
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
+
+
         if (player.getFood() < finalCost) {
             throw new IllegalStateException("Insufficient food");
         }
@@ -80,7 +82,15 @@ public class AdditionalPickState extends GameState {
 
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
 
-        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+
+        if (finalCost > 0) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    "Acquisto Edificio (-" + finalCost + " cibo)"
+            ));
+        }
 
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 

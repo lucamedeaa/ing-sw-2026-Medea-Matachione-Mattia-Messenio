@@ -75,8 +75,8 @@ public class ActionState extends GameState {
         if (!targetCard.isPickable()) {
             throw new IllegalStateException("Can't take event card");
         }
-
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
+
 
         if (player.getFood() < finalCost) {
             throw new IllegalStateException("Unsufficient food");
@@ -90,20 +90,48 @@ public class ActionState extends GameState {
         if (rowIdx == 0) remainingUpperPicks--;
         else remainingLowerPicks--;
 
-        checkTurnConditions();
+
 
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
-        game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.getPrestigePoints()));
+        if (finalCost > 0) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    "Acquisto Edificio (-" + finalCost + " cibo)"
+            ));
+        }
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
-
+        checkTurnConditions();
     }
 
     /** Ends the current player's turn, returns their totem, and advances to the next player. */
     public void endPlayerTurn() {
         Board board = game.getBoard();
         currentTile.clearOccupyingPlayer();
+
+        // salvo le risorse PRIMA di muovere il totem
+        int foodBefore = this.currentPlayer.getFood();
+        int ppBefore = this.currentPlayer.getPrestigePoints();
+
+        //  Muovo il totem (questo applica il +/- cibo in background)
         board.returnTotem(this.currentPlayer);
+
+        // invio l'evento grafico di movimento del totem
+        int returnIdx = board.getNextTotemOrderSize() - 1;
+        game.pushEvent(new TotemReturnedEvent(this.currentPlayer.getNickname(), returnIdx));
+
+        //  se le risorse sono cambiatemando SUBITO la notifica al client
+        if (foodBefore != this.currentPlayer.getFood() || ppBefore != this.currentPlayer.getPrestigePoints()) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    this.currentPlayer.getNickname(),
+                    this.currentPlayer.getFood(),
+                    this.currentPlayer.getPrestigePoints(),
+                    "Piazzamento Turn Order Tile"
+            ));
+        }
+
         currentColumnIndex++;
         findNextPlayer();
     }
@@ -179,6 +207,32 @@ public class ActionState extends GameState {
         }
 
         return actions;
+    }
+
+    @Override
+    public void skipBonus(Player player) {
+        if (!player.equals(this.currentPlayer)) {
+            throw new IllegalStateException("Not your turn");
+        }
+
+        boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
+        if (mustPickCharacter) {
+            throw new IllegalStateException("You cannot skip, you must pick a character.");
+        }
+
+        // Azzera i pick rimanenti per forzare la fine del turno
+        this.remainingUpperPicks = 0;
+        this.remainingLowerPicks = 0;
+
+        endPlayerTurn();
+
+        // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                "Ritorno Totem (Skip)"
+        ));
     }
 
 }

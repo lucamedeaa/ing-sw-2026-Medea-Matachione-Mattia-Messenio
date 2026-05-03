@@ -21,51 +21,49 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(FullSyncMessage msg) {
-        model.setFullState(msg.board(), msg.players());
+        model.setFullState(msg.board(), msg.players(), msg.activePlayer());
         model.setAvailableActions(msg.actions());
         ui.dispatch(UIState::onGameStarted);
     }
 
     @Override
     public void visit(DeltaEventMessage msg) {
-        model.startBatch(); // Muta la TUI
-
-        // Applica gli eventi in silenzio
+        model.startBatch();
         for (GameEventDTO event : msg.events()) {
             event.accept(applier);
         }
         model.setAvailableActions(msg.nextActions());
-
-        model.endBatch();  // Riattiva la TUI e renderizza
+        model.setActivePlayer(msg.activePlayer());
+        model.endBatch();
     }
 
     @Override
     public void visit(ErrorMessage message) {
-        System.err.println("[SERVER ERROR] " + message.error());
+        //System.err.println("[SERVER ERROR] " + message.error());
         ui.dispatch(state -> state.onError(message.error()));
     }
 
     @Override
     public void visit(ErrorMessageDTO message) {
-        System.err.println("[MATCHMAKING ERROR] " + message.error());
+        //System.err.println("[MATCHMAKING ERROR] " + message.error());
         ui.dispatch(state -> state.onError(message.error()));
     }
 
     @Override
     public void visit(MatchmakingSuccessMessage message) {
-        System.out.println("[MATCHMAKING SUCCESS] " + message.text());
+        //System.out.println("[MATCHMAKING SUCCESS] " + message.text());
         ui.dispatch(state -> state.onMatchmakingSuccess(message.text()));
     }
 
     @Override
     public void visit(AvailableGamesResponseMessage message) {
-        System.out.println("[AVAILABLE GAMES] " + message.games());
+        //System.out.println("[AVAILABLE GAMES] " + message.games());
         ui.dispatch(state -> state.onAvailableGames(message.games()));
     }
 
     @Override
     public void visit(GameAbortedMessage message) {
-        System.err.println("[ERROR] Match Ended: " + message.reason());
+        //System.err.println("[ERROR] Match Ended: " + message.reason());
         // Qui la logica per chiudere la schermata di gioco e tornare al main menu
         // Es: tui.showFatalErrorAndExit(message.reason());
         ui.dispatch(state -> state.onGameAborted(message.reason()));

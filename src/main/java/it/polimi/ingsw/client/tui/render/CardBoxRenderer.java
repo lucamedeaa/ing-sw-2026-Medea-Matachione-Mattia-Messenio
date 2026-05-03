@@ -25,24 +25,30 @@ public class CardBoxRenderer {
         if (id == null) {
             return new String[]{
                     "┌─────────────┐",
-                    "│             │",
                     "│    free     │",
+                    "│             │",
                     "│             │",
                     "│             │",
                     "│             │",
                     "└─────────────┘"
             };
         }
+
         String name   = CardNameMapper.getName(id);
         String detail = CardNameMapper.getDetail(id);
         String costPp = buildingCostPp(CardNameMapper.getExtra(id), CardNameMapper.getExtra2(id));
+
+        String eraStr = "Era " + CardNameMapper.getEra(id);
+
         String[] nameParts = splitName(name, 13);
+
         return new String[]{
                 "┌─────────────┐",
                 "│" + center(nameParts[0], 13) + "│",
                 "│" + center(nameParts[1], 13) + "│",
                 "│" + center(detail,       13) + "│",
                 "│" + center(costPp,       13) + "│",
+                "│" + center(eraStr,       13) + "│",
                 "└─────────────┘"
         };
     }

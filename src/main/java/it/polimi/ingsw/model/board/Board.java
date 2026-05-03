@@ -86,16 +86,34 @@ public class Board {
         this.refillTopRow();
     }
 
-    /** Refills the upper row from the tribe deck and handles era transitions if needed. */
     private void refillTopRow() {
-        for (int i = 0; i < playerCount + 4; i++) {
+        int charactersToDraw = playerCount + 4;
+        List<Card> drawnCharacters = new ArrayList<>();
+        boolean eraTransitionTriggered = false;
+
+        for (int i = 0; i < charactersToDraw; i++) {
             if (tribeDeck.isEmpty()) break;
             Card drawn = tribeDeck.draw();
-            addTopRow(drawn);
-            if (drawn.getEra() > this.currentEraState.getEraNumber()) {
-                handleEraTransition();
+            if (drawn != null) {
+                drawnCharacters.add(drawn);
+                if (!eraTransitionTriggered && drawn.getEra() > this.currentEraState.getEraNumber()) {
+                    eraTransitionTriggered = true;
+                }
             }
         }
+
+        if (eraTransitionTriggered) {
+            handleEraTransition();
+        }
+
+        List<Optional<Card>> newUpperRow = new ArrayList<>();
+        // Personaggi a sinistra
+        for (Card c : drawnCharacters) {
+            newUpperRow.add(Optional.of(c));
+        }
+        // Building (rimasti/nuovi) a destra
+        newUpperRow.addAll(this.upperRow);
+        this.upperRow = newUpperRow;
     }
 
     /** Advances the game to the next era and applies the corresponding setup changes. */
@@ -143,10 +161,17 @@ public class Board {
         this.currentTotemOrder = new ArrayList<>(players);
         Collections.shuffle(this.currentTotemOrder);
         this.nextTotemOrder = new ArrayList<>();
+
+        int[] initialFood = {2, 3, 3, 4, 4}; //food bonus in base all'ordine dei totem nel primo round
+
+        for (int i = 0; i < currentTotemOrder.size(); i++) {
+            currentTotemOrder.get(i).addFood(initialFood[i]);
+        }
     }
 
     /** Moves non-persistent cards from the upper row to the lower row and keeps persistent cards in place according to board rules. */
     private void moveTopToLow() {
+        // flatMap distrugge gli spazi bianchi vuoti, estraendo solo le carte vere
         List<Card> remainingLower = lowerRow.stream()
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
@@ -159,10 +184,13 @@ public class Board {
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
                 .toList();
+
         lowerRow.clear();
         upperRow.clear();
-        remainingLower.forEach(this::addBottomRow);
+
+        // Ricostruzione compatta senza spazi vuoti
         cardsSlidingDown.forEach(this::addBottomRow);
+        remainingLower.forEach(this::addBottomRow);
         remainingUpper.forEach(this::addTopRow);
     }
 
@@ -264,6 +292,10 @@ public class Board {
 
     public int getCurrentEraNumber() {
         return this.currentEraState.getEraNumber();
+    }
+
+    public int getNextTotemOrderSize() {
+        return this.nextTotemOrder.size();
     }
 
 }

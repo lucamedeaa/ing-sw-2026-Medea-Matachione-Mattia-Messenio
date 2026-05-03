@@ -48,7 +48,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
         }
 
         // Mando SEMPRE l'evento, così la UI degli altri si aggiorna
-        connection.send(new DeltaEventMessage(update.events(), myActions));
+        connection.send(new DeltaEventMessage(update.events(), myActions, update.activePlayerNickname()));
     }
 
     //Inviata solo all'inizio o riconness@Override

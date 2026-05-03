@@ -29,7 +29,7 @@ public class MapperToDTO {
                 new PlayerLeftGameDTO(p.nickname());
 
             case PlayerResourcesChangedEvent p ->
-                new PlayerResourcesChangedEventDTO(p.nickname(), p.newFood(), p.newPrestige());
+                    new PlayerResourcesChangedEventDTO(p.nickname(), p.newFood(), p.newPrestige(), p.reason());
 
             case GameOverEvent g -> {
                 List<PlayerScoreDTO> dtoList = g.leaderboard().stream()
@@ -53,9 +53,13 @@ public class MapperToDTO {
             case WinnersAnnouncedEvent w ->
                 new WinnersAnnouncedEventDTO(w.winnersNicknames());
 
+            case TotemReturnedEvent t ->
+                    new TotemReturnedEventDTO(t.nickname(), t.returnIndex());
+
 
             default -> throw new IllegalArgumentException("Errore di mapping: update del Model non gestito o di tipo errato -> " + update.getClass().getSimpleName());
         };
+
 
     }
 
@@ -76,8 +80,8 @@ public class MapperToDTO {
         };
     }
 
-    public static PlayerDTO  playerToDTO(PlayerUpdate player) {
-        return new PlayerDTO(player.nickname(), player.food(), player.prestige());
+    public static PlayerDTO playerToDTO(PlayerUpdate player) {
+        return new PlayerDTO(player.nickname(), player.food(), player.prestige(), player.totemColor());
     }
 
     public static BoardDTO   boardToDTO(BoardUpdate board) {

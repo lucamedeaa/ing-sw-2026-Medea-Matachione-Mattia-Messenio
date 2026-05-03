@@ -15,11 +15,13 @@ public interface GameEvent {
     
     record PlayerLeftGame(String nickname) implements GameEvent {}
 
-    record PlayerResourcesChangedEvent(String nickname, int newFood, int newPrestige) implements GameEvent {}
+    record PlayerResourcesChangedEvent(String nickname, int newFood, int newPrestige, String reason) implements GameEvent {}
     
     record RoundAdvancedEvent(int newRound) implements GameEvent {}
     
     record TotemPlacedEvent(String nickname, int positionIndex) implements GameEvent {}
     
     record WinnersAnnouncedEvent(List<String> winnersNicknames) implements GameEvent {}
+
+    record TotemReturnedEvent(String nickname, int returnIndex) implements GameEvent {}
 }
