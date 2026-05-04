@@ -76,6 +76,7 @@ public class ClientMain {
             ui.start();
         } catch (Exception e) {
             System.err.println("\n \033[1;41;37m ERRORE FATALE \033[0m \033[1;31mImpossibile connettersi: " + e.getMessage() + "\033[0m");
+            System.exit(1);
         }
     }
 
