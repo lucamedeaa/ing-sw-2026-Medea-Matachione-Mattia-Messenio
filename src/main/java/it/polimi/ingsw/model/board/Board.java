@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.board.Era.EraOneState;
 import it.polimi.ingsw.model.board.Era.EraState;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.Factory.DeckFactory;
+import it.polimi.ingsw.model.updates.GameEvent;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -78,12 +79,16 @@ public class Board {
     }
 
     /** Prepares the board for the next round by updating turn order, resolving lower-row effects, moving cards, and refilling the upper row. @param players list of players */
-    public void cleanupForNextRound(List<Player> players) {
+    public List<GameEvent> cleanupForNextRound(List<Player> players) {
         this.currentTotemOrder = new ArrayList<>(this.nextTotemOrder);
         this.nextTotemOrder.clear();
-        this.resolveLowerEvents(players);
+
+        List<GameEvent> events = this.resolveLowerEvents(players);
+
         this.moveTopToLow();
         this.refillTopRow();
+
+        return events;
     }
 
     private void refillTopRow() {
@@ -206,21 +211,21 @@ public class Board {
     }
 
     /** Resolves all cards remaining on both rows, ordered by resolution priority and then by era. @param players list of players */
-    public void resolveFinalEvents(List<Player> players) {
-        Stream.concat(upperRow.stream(), lowerRow.stream())
+    public List<GameEvent> resolveFinalEvents(List<Player> players) {
+        return Stream.concat(upperRow.stream(), lowerRow.stream())
                 .flatMap(Optional::stream)
-                .sorted(Comparator.comparingInt(Card::getResolutionPriority)
-                        .thenComparingInt(Card::getEra))
-                .forEach(card -> card.execute(players));
+                .sorted(Comparator.comparingInt(Card::getResolutionPriority).thenComparingInt(Card::getEra))
+                .flatMap(card -> card.execute(players).stream())
+                .toList();
     }
 
     /** Resolves all cards currently in the lower row, ordered by resolution priority and then by era. @param players list of players */
-    private void resolveLowerEvents(List<Player> players) {
-        lowerRow.stream()
+    private List<GameEvent> resolveLowerEvents(List<Player> players) {
+        return lowerRow.stream()
                 .flatMap(Optional::stream)
-                .sorted(Comparator.comparingInt(Card::getResolutionPriority)
-                        .thenComparingInt(Card::getEra))
-                .forEach(card -> card.execute(players));
+                .sorted(Comparator.comparingInt(Card::getResolutionPriority).thenComparingInt(Card::getEra))
+                .flatMap(card -> card.execute(players).stream())
+                .toList();
     }
 
     /** Returns the player whose turn is currently active. @return current player @throws IllegalStateException if no players remain in turn order */

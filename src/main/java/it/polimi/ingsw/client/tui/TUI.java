@@ -181,17 +181,17 @@ public class TUI implements ClientUI, UIObserver {
             System.out.println();
         }
 
-        System.out.println("── AVAILABLE ACTIONS ──");
+        System.out.println("\n\033[1;33m── AVAILABLE ACTIONS ──> \033[0m");
         if (actions.isEmpty()) {
             System.out.println("  Wait for your turn...");
         } else {
             ActionRender renderer = new ActionRender(this);
             for (int i = 0; i < actions.size(); i++) {
-                System.out.print("  " + i + ") ");
+                System.out.print("  \033[1;36m[ " + i + " ]\033[0m ");
                 actions.get(i).accept(renderer);
             }
-            System.out.println("  i) Card reference guide");
-            System.out.println("  v <nome>) View player's tribe");
+            System.out.println("  \033[1;36m[ i ]\033[0m Guida alle carte");
+            System.out.println("  \033[1;36m[ v <nome> ]\033[0m Guarda la tribù di un giocatore");
         }
 
         System.out.println();
@@ -223,8 +223,8 @@ public class TUI implements ClientUI, UIObserver {
 
             String pColor = getTotemAnsiColor(p.getNickname());
 
-            System.out.printf("%s %s%-14s\033[0m  food: %2d  prestige: %3d  [%d cards]%s%n",
-                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), tribeSize, tag);
+            System.out.printf("%s %s%-14s\033[0m  cibo: \033[1;32m%2d\033[0m  prestigio: \033[1;32m%3d\033[0m  sconto: \033[1;32m-%d\033[0m  [%d carte]%s%n",
+                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), tribeSize, tag);
         }
     }
 
@@ -256,14 +256,18 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println();
         System.out.println("\033[1;37m  TURN RECAP\033[0m");
         for (var e : deltas.entrySet()) {
-            int df = e.getValue()[0], dp = e.getValue()[1];
-            String foodStr = (df >= 0 ? "+" : "") + df + "f";
-            String ppStr   = (dp >= 0 ? "+" : "") + dp + "pp";
+            int df = e.getValue()[0];
+            int dp = e.getValue()[1];
+            int dd = e.getValue().length > 2 ? e.getValue()[2] : 0;
+
+            String foodStr = (df >= 0 ? "+" : "") + df;
+            String ppStr   = (dp >= 0 ? "+" : "") + dp;
+            String discStr = (dd >= 0 ? "+" : "") + dd;
 
             String pColor = getTotemAnsiColor(e.getKey());
 
-            System.out.printf("  %s%-14s\033[0m  food %-4s prestige %s%n",
-                    pColor, e.getKey(), foodStr, ppStr);
+            System.out.printf("  %s%-14s\033[0m  cibo: \033[1;32m%-3s\033[0m prestigio: \033[1;32m%-3s\033[0m sconto: \033[1;32m%-3s\033[0m%n",
+                    pColor, e.getKey(), foodStr, ppStr, discStr);
         }
     }
 
@@ -291,7 +295,7 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("  Hunt           Grants food based on Hunter count");
         System.out.println("  ShamanicRitual Highest stars gain PP, lowest lose PP (ties apply)");
         System.out.println("  Sustenance     -1f per character (Collectors discount)");
-        System.out.println("                 if food insufficient: -2 pp per missing food");
+        System.out.println("                 if food insufficient: -N pp per missing food");
         System.out.println();
         System.out.println("── BUILDINGS ──────────────────────────────────────────────────");
         System.out.println("  Bought by spending food; grant prestige at the end of the game.");

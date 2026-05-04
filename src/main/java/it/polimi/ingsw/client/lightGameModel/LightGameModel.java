@@ -123,11 +123,12 @@ public class LightGameModel {
         notifyUI();
     }
 
-    public void updatePlayerResources(String nickname, int newFood, int newPrestige) {
+    public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
         LightPlayer player = players.get(nickname);
         if (player != null) {
             player.setFood(newFood);
             player.setPrestige(newPrestige);
+            player.setFoodDiscount(newFoodDiscount);
             notifyUI();
         }
     }

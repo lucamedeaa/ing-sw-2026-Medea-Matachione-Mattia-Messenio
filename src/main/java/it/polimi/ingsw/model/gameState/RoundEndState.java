@@ -1,9 +1,11 @@
 package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.updates.AvailableAction.*;
 import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.GameEvent;
 import it.polimi.ingsw.model.updates.GameEvent.*;
 
 
@@ -24,34 +26,41 @@ public class RoundEndState extends GameState {
 
         // Snapshot risorse pre-risoluzione
         java.util.Map<String, int[]> before = new java.util.HashMap<>();
-        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
+        for (Player p : game.getPlayers()) {
             before.put(p.getNickname(), new int[]{p.getFood(), p.getPrestigePoints()});
         }
 
         if (isGameOver()) {
-            game.getBoard().resolveFinalEvents(game.getPlayers());
+            List<GameEvent> finalEvents = game.getBoard().resolveFinalEvents(game.getPlayers());
+            for (GameEvent e : finalEvents) {
+                game.pushEvent(e);
+            }
             notifyChanges(before, "Eventi di Fine Partita");
             this.transition(new ScoringState(this.game));
         } else {
-            int eraBefore = game.getBoard().getCurrentEraNumber();
-            game.getBoard().cleanupForNextRound(game.getPlayers());
-            int eraAfter = game.getBoard().getCurrentEraNumber();
+        int eraBefore = game.getBoard().getCurrentEraNumber();
 
-            if (eraAfter > eraBefore) {
-                game.pushEvent(new EraTransitionEvent(eraAfter));
-            }
-
-            notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem/Eventi)");
-            notifyBoardState();
-            this.transition(new PlacementState(this.game));
+        List<GameEvent> resolutionEvents = game.getBoard().cleanupForNextRound(game.getPlayers());
+        for (GameEvent e : resolutionEvents) {
+            game.pushEvent(e);
         }
+
+        int eraAfter = game.getBoard().getCurrentEraNumber();
+        if (eraAfter > eraBefore) {
+            game.pushEvent(new EraTransitionEvent(eraAfter));
+        }
+
+        notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem/Eventi)");
+        notifyBoardState();
+        this.transition(new PlacementState(this.game));
+    }
     }
 
     private void notifyChanges(java.util.Map<String, int[]> before, String reason) {
-        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
+        for (Player p : game.getPlayers()) {
             // Invia l'evento per TUTTI, indipendentemente dai guadagni
             game.pushEvent(new PlayerResourcesChangedEvent(
-                    p.getNickname(), p.getFood(), p.getPrestigePoints(), reason
+                    p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), reason
             ));
         }
     }

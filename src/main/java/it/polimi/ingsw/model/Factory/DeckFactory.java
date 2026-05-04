@@ -121,7 +121,7 @@ public class DeckFactory {
 
             cards.add(new Sustenance(61,1, 1));
             cards.add(new Sustenance(62,2, 2));
-            cards.add(new Sustenance(63,2, 2));
+            cards.add(new Sustenance(63,3, 3));
 
 
 

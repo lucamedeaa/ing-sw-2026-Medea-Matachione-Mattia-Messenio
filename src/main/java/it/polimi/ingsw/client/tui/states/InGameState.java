@@ -102,7 +102,7 @@ public class InGameState implements UIState {
     private Map<String, int[]> captureState() {
         Map<String, int[]> snap = new HashMap<>();
         for (LightPlayer p : tui.getModel().getPlayers().values())
-            snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige()});
+            snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige(), p.getFoodDiscount()});
         return snap;
     }
 
@@ -110,15 +110,19 @@ public class InGameState implements UIState {
         Map<String, int[]> d = new HashMap<>();
         for (var e : curr.entrySet()) {
             int[] p = prev.getOrDefault(e.getKey(), e.getValue());
-            d.put(e.getKey(), new int[]{e.getValue()[0] - p[0], e.getValue()[1] - p[1]});
+            int discPrev = p.length > 2 ? p[2] : 0;
+            int discCurr = e.getValue().length > 2 ? e.getValue()[2] : 0;
+            d.put(e.getKey(), new int[]{e.getValue()[0] - p[0], e.getValue()[1] - p[1], discCurr - discPrev});
         }
         return d;
     }
 
     private void mergeInto(Map<String, int[]> acc, Map<String, int[]> step) {
         for (var e : step.entrySet()) {
-            int[] cur = acc.getOrDefault(e.getKey(), new int[]{0, 0});
-            acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1]});
+            int[] cur = acc.getOrDefault(e.getKey(), new int[]{0, 0, 0});
+            int stepDisc = e.getValue().length > 2 ? e.getValue()[2] : 0;
+            int curDisc = cur.length > 2 ? cur[2] : 0;
+            acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1], curDisc + stepDisc});
         }
     }
 

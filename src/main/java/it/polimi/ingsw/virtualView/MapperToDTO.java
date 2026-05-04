@@ -29,7 +29,7 @@ public class MapperToDTO {
                 new PlayerLeftGameDTO(p.nickname());
 
             case PlayerResourcesChangedEvent p ->
-                    new PlayerResourcesChangedEventDTO(p.nickname(), p.newFood(), p.newPrestige(), p.reason());
+                    new PlayerResourcesChangedEventDTO(p.nickname(), p.newFood(), p.newPrestige(),p.foodDiscount(), p.reason());
 
             case GameOverEvent g -> {
                 List<PlayerScoreDTO> dtoList = g.leaderboard().stream()
@@ -81,7 +81,7 @@ public class MapperToDTO {
     }
 
     public static PlayerDTO playerToDTO(PlayerUpdate player) {
-        return new PlayerDTO(player.nickname(), player.food(), player.prestige(), player.totemColor());
+        return new PlayerDTO(player.nickname(), player.food(), player.prestige(), player.totemColor(), player.foodDiscount());
     }
 
     public static BoardDTO   boardToDTO(BoardUpdate board) {

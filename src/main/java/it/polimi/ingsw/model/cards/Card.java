@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.enums.CharacterType;
 import it.polimi.ingsw.model.enums.InventorIcon;
+import it.polimi.ingsw.model.updates.GameEvent;
 
 import java.util.List;
 import java.util.Set;
@@ -44,7 +45,8 @@ public abstract class Card {
      * Executes the card effect.
      * @param players list of involved players
      */
-    public void execute(List<Player> players) {
+    public List<GameEvent> execute(List<Player> players) {
+        return List.of();
     }
 
     /**

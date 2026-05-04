@@ -93,14 +93,20 @@ public class ActionState extends GameState {
 
 
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
-        if (finalCost > 0) {
-            game.pushEvent(new PlayerResourcesChangedEvent(
-                    player.getNickname(),
-                    player.getFood(),
-                    player.getPrestigePoints(),
-                    "Acquisto Edificio (-" + finalCost + " cibo)"
-            ));
+        String reason = "";
+        if (purchasedCard.isPersistent()) {
+            reason = "Acquisto Edificio (-" + finalCost + " cibo)";
+        } else if (finalCost > 0) {
+            reason = "Reclutamento Personaggio (-" + finalCost + " cibo)";
         }
+
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                player.getFoodDiscount(),
+                reason
+        ));
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
         checkTurnConditions();
@@ -128,6 +134,7 @@ public class ActionState extends GameState {
                     this.currentPlayer.getNickname(),
                     this.currentPlayer.getFood(),
                     this.currentPlayer.getPrestigePoints(),
+                    this.currentPlayer.getFoodDiscount(),
                     "Piazzamento Turn Order Tile"
             ));
         }
@@ -231,6 +238,7 @@ public class ActionState extends GameState {
                 player.getNickname(),
                 player.getFood(),
                 player.getPrestigePoints(),
+                player.getFoodDiscount(),
                 "Ritorno Totem (Skip)"
         ));
     }

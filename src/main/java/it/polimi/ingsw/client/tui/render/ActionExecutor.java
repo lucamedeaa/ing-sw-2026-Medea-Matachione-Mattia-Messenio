@@ -18,16 +18,24 @@ public class ActionExecutor implements ActionVisitor {
 
     @Override
     public void visit(PlaceTotemActionDTO action) {
+        if (inputParts.length != 2) {
+            tui.print("Uso corretto: <id_azione> <indice_tessera>");
+            return;
+        }
         try {
             int tileIdx = Integer.parseInt(inputParts[1]);
             tui.getController().placeTotem(tileIdx);
-        } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            tui.print("Usage: <action_id> <tile_index>");
+        } catch (NumberFormatException e) {
+            tui.print("L'indice deve essere un numero.");
         }
     }
 
     @Override
     public void visit(TakeCardActionDTO action) {
+        if (inputParts.length != 3) {
+            tui.print("Uso corretto: <id_azione> <riga> <colonna>");
+            return;
+        }
         try {
             int row = Integer.parseInt(inputParts[1]);
             int col = Integer.parseInt(inputParts[2]);
