@@ -20,6 +20,7 @@ public class ScoringState extends GameState {
 
     @Override
     public void start() {
+        game.setEnded();
         calculateFinalScores();
         List<Player> winners = determineWinners();
         announceWinners(winners);

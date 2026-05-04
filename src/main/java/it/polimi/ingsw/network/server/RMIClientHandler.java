@@ -24,6 +24,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     private volatile VirtualView virtualView;
     private volatile MatchmakingState matchmakingState;
     private String nickname;
+    private Integer lastMatchPlayerCount;
 
     private final ScheduledExecutorService timeoutChecker;
 
@@ -96,8 +97,9 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         } else if (message instanceof DisconnectionMessage) {
             handleClientDisconnection();
         } else if (message instanceof MatchmakingMessage mm) {
-            if (matchmakingState != null) {
-                mm.accept(matchmakingState);
+            MatchmakingState currentMatchmaking = this.matchmakingState;
+            if (currentMatchmaking != null) {
+                mm.accept(currentMatchmaking);
             } else {
                 send(new ErrorMessageDTO("Already in game."));
             }
@@ -118,20 +120,34 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         }
 
         closeConnection();
-
-        if (virtualView != null) {
-            virtualView.handleDisconnection();
-        } else if (nickname != null) {
-            GameRoom room = gameManager.getGameRoomByPlayer(nickname);
+        VirtualView currentView = this.virtualView;
+        String currentNickname = this.nickname;
+        if (currentView != null) {
+            currentView.handleDisconnection();
+        } else if (currentNickname != null) {
+            GameRoom room = gameManager.getGameRoomByPlayer(currentNickname);
             if (room != null) {
                 try {
-                    room.removePlayer(nickname);
+                    room.removePlayer(currentNickname);
                 } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + currentNickname);
                 }
             }else{
-                gameManager.unregisterNickname(nickname);
+                gameManager.unregisterNickname(currentNickname);
             }
+        }
+    }
+
+    @Override
+    public void returnToLobby(int playerCount) {
+        synchronized (this) {
+            if (this.nickname != null) {
+                gameManager.unregisterNickname(this.nickname);
+                this.nickname = null;
+            }
+            this.virtualView = null;
+            this.lastMatchPlayerCount = playerCount;
+            this.matchmakingState = new MatchmakingState(this, gameManager);
         }
     }
 

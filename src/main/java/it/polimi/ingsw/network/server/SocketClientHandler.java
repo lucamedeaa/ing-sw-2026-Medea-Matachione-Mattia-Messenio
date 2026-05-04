@@ -25,6 +25,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     private AtomicBoolean active = new AtomicBoolean(true);
     private final Object streamLock = new Object();
     private String nickname;
+    private Integer lastMatchPlayerCount;
 
     private MatchmakingState matchmakingState;
 
@@ -92,14 +93,16 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                     handleClientDisconnection();
                 }
                 else if (input instanceof MatchmakingMessage mm) {
-                    if (matchmakingState != null) {
-                        mm.accept(matchmakingState);
+                    MatchmakingState currentMatchmaking = this.matchmakingState;
+                    if (currentMatchmaking != null) {
+                        mm.accept(currentMatchmaking);
                     } else {
                         send(new ErrorMessageDTO("Already in game. Cannot send matchmaking messages."));
                     }
                 } else if (input instanceof InGameMessage igm) {
-                    if (virtualView != null) {
-                        igm.accept(virtualView);
+                    VirtualView currentView = this.virtualView;
+                    if (currentView != null) {
+                        igm.accept(currentView);
                     } else {
                         send(new ErrorMessageDTO("Not in a game yet."));
                     }
@@ -122,25 +125,40 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
+    @Override
+    public void returnToLobby(int playerCount) {
+        synchronized (this) {
+            if (this.nickname != null) {
+                gameManager.unregisterNickname(this.nickname);
+                this.nickname = null;
+            }
+            this.virtualView = null;
+            this.lastMatchPlayerCount = playerCount;
+            this.matchmakingState = new MatchmakingState(this, gameManager);
+        }
+    }
+
     /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
     private void handleClientDisconnection() {
         if (!active.compareAndSet(true, false)) return;
 
         closeConnection();
+        VirtualView currentView = this.virtualView;
+        String currentNickname = this.nickname;
 
-        if (virtualView != null) {
-            virtualView.handleDisconnection();
-        } else if (nickname != null) {
-            GameRoom room = gameManager.getGameRoomByPlayer(nickname);
+        if (currentView != null) {
+            currentView.handleDisconnection();
+        } else if (currentNickname != null) {
+            GameRoom room = gameManager.getGameRoomByPlayer(currentNickname);
             if (room != null) {
                 try {
-                    room.removePlayer(nickname);
+                    room.removePlayer(currentNickname);
                 } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + currentNickname);
                 }
             }
             else{
-                gameManager.unregisterNickname(nickname);
+                gameManager.unregisterNickname(currentNickname);
             }
         }
     }

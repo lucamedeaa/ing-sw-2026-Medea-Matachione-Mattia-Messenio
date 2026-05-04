@@ -58,7 +58,7 @@ public class GameRoom {
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
         this.game = new Game(getPlayers());
-        this.controller = new GameController(game);
+        this.controller = new GameController(game, this);
         //everyone has a virtualview set, if one leaves the game everyone gets notified
         controller.getGameExecutor().submit(() -> {
             for (Map.Entry<String, ClientConnection> entry : players.entrySet()) {
@@ -96,6 +96,18 @@ public class GameRoom {
         } else if (successfullyRemoved) {
             broadcast("Il giocatore " + nickname + " ha abbandonato la stanza.");
         }
+    }
+
+    public void closeRoom(String reason) {
+        //TODO fare un metodo sia per player disconnesso che per partita temrminata correttamente. In uno trall'altro non fai set dei player ultimi
+        //GameTerminationMessage terminationMsg = new GameTerminationMessage(reason);
+        int finalPlayerCount = this.maxPlayers; // Serve per il DB
+
+        for (ClientConnection conn : players.values()) {
+            conn.returnToLobby(finalPlayerCount);
+            //conn.send(terminationMsg);
+        }
+        gameManager.removeGame(this.gameId);
     }
 
     public synchronized boolean isFull() {

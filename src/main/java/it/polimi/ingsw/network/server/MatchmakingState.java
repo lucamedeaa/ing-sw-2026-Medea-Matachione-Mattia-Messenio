@@ -20,6 +20,10 @@ public class MatchmakingState implements MatchmakingVisitor {
     @Override
     public void visit(CreateGameMessage msg) {
         String nickname = msg.nickname();
+        if (nickname == null || nickname.trim().isEmpty()) {
+            handler.send(new ErrorMessageDTO("Invalid nickname: cannot be empty or null."));
+            return;
+        }
         if (!gameManager.registerNickname(nickname)) {
             handler.send(new ErrorMessageDTO("Nickname already in use on the server."));
             return;
@@ -44,6 +48,10 @@ public class MatchmakingState implements MatchmakingVisitor {
     public void visit(JoinGameMessage msg) {
         String nickname = msg.nickname();
         GameRoom room = gameManager.getGame(msg.gameId());
+        if (nickname == null || nickname.trim().isEmpty()) {
+            handler.send(new ErrorMessageDTO("Invalid nickname: cannot be empty or null."));
+            return;
+        }
         if (room == null) {
             handler.send(new ErrorMessageDTO("Requested game does not exist."));
             return;

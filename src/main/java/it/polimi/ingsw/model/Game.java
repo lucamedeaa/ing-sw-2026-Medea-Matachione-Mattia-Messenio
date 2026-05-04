@@ -21,6 +21,7 @@ public class Game implements ModelControllerInterface {
     private int currentRound;
     private GameState currentState;
     private List<ModelObserver> observers = new ArrayList<>();
+    private boolean isEnded = false;
 
     private final List<GameEvent> pendingEvents = new ArrayList<>();
 
@@ -132,6 +133,14 @@ public class Game implements ModelControllerInterface {
 
     public int getCurrentRound() {
         return this.currentRound;
+    }
+
+    public boolean isEnded(){
+        return isEnded;
+    }
+
+    public void setEnded(){
+        this.isEnded = true;
     }
 
 }
