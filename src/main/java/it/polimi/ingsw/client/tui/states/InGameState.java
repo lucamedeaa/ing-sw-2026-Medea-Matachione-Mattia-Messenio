@@ -71,7 +71,7 @@ public class InGameState implements UIState {
         String key = parts[0].toLowerCase();
 
         GameCommand command;
-        if (key.matches("\\d+")) {
+        if (key.matches("0|[1-9]\\d*")) {
             command = new ActionCommand(tui, parts);
         } else {
             CommandFactory factory = commandRegistry.get(key);

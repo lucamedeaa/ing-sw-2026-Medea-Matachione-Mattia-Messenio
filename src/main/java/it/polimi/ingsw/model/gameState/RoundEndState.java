@@ -50,7 +50,7 @@ public class RoundEndState extends GameState {
             game.pushEvent(new EraTransitionEvent(eraAfter));
         }
 
-        notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem/Eventi)");
+        notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem Order Tile)");
         notifyBoardState();
         this.transition(new PlacementState(this.game));
     }

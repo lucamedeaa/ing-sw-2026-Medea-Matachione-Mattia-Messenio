@@ -204,11 +204,11 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     private void renderRows() {
-        System.out.println("── UPPER ROW ──");
-        CardBoxRenderer.printCardRow(model.getUpperRowCards());
+        System.out.println("  UPPER ROW");
+        CardBoxRenderer.printCardRow(model.getUpperRowCards(), true);
         System.out.println();
-        System.out.println("── LOWER ROW ──");
-        CardBoxRenderer.printCardRow(model.getLowerRowCards());
+        System.out.println("  LOWER ROW");
+        CardBoxRenderer.printCardRow(model.getLowerRowCards(), true);
     }
 
     private void renderPlayersBar() {
@@ -230,8 +230,8 @@ public class TUI implements ClientUI, UIObserver {
 
     public void renderPlayerTribe(String nickname) {
         List<Integer> tribe = model.getTribes().getOrDefault(nickname, List.of());
-        System.out.println("── " + nickname.toUpperCase() + "'S TRIBE ──");
-        CardBoxRenderer.printCardRow(tribe);
+        System.out.println("  " + nickname.toUpperCase() + "'S TRIBE");
+        CardBoxRenderer.printCardRow(tribe, false);
     }
 
 
@@ -262,11 +262,13 @@ public class TUI implements ClientUI, UIObserver {
 
             String foodStr = (df >= 0 ? "+" : "") + df;
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
-            String discStr = (dd >= 0 ? "+" : "") + dd;
+
+
+            String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
             String pColor = getTotemAnsiColor(e.getKey());
 
-            System.out.printf("  %s%-14s\033[0m  cibo: \033[1;32m%-3s\033[0m prestigio: \033[1;32m%-3s\033[0m sconto: \033[1;32m%-3s\033[0m%n",
+            System.out.printf("  %s%-14s\033[0m  cibo: %-3s prestigio: %-3s sconto: \033[1;32m%-3s\033[0m%n",
                     pColor, e.getKey(), foodStr, ppStr, discStr);
         }
     }

@@ -15,33 +15,36 @@ public class ActionExecutor implements ActionVisitor {
         this.tui = tui;
         this.inputParts = inputParts;
     }
+    private boolean isStrictInteger(String str) {
+        return str.matches("0|[1-9]\\d*");
+    }
 
     @Override
     public void visit(PlaceTotemActionDTO action) {
-        if (inputParts.length != 2) {
-            tui.print("Uso corretto: <id_azione> <indice_tessera>");
+        if (inputParts.length != 2 || !isStrictInteger(inputParts[1])) {
+            tui.print("Uso corretto: <id_azione> <indice_tessera> (senza zeri iniziali)");
             return;
         }
         try {
             int tileIdx = Integer.parseInt(inputParts[1]);
             tui.getController().placeTotem(tileIdx);
         } catch (NumberFormatException e) {
-            tui.print("L'indice deve essere un numero.");
+            tui.print("L'indice deve essere un numero valido.");
         }
     }
 
     @Override
     public void visit(TakeCardActionDTO action) {
-        if (inputParts.length != 3) {
-            tui.print("Uso corretto: <id_azione> <riga> <colonna>");
+        if (inputParts.length != 3 || !isStrictInteger(inputParts[1]) || !isStrictInteger(inputParts[2])) {
+            tui.print("Uso corretto: <id_azione> <riga> <colonna> (senza zeri iniziali)");
             return;
         }
         try {
             int row = Integer.parseInt(inputParts[1]);
             int col = Integer.parseInt(inputParts[2]);
             tui.getController().takeCard(row, col);
-        } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            tui.print("Usage: <action_id> <row> <column>");
+        } catch (NumberFormatException e) {
+            tui.print("Gli indici devono essere numeri validi.");
         }
     }
 
