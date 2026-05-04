@@ -139,6 +139,9 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                     System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
                 }
             }
+            else{
+                gameManager.unregisterNickname(nickname);
+            }
         }
     }
 

@@ -3,7 +3,6 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
-import it.polimi.ingsw.server.exceptions.NicknameTakenException;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
 import it.polimi.ingsw.virtualView.VirtualView;
 import it.polimi.ingsw.controller.GameController;
@@ -34,7 +33,7 @@ public class GameRoom {
     }
 
     /** Adds a player to the room and starts the game if full. */
-    public void addPlayer(String nickname, ClientConnection connection) throws RoomFullException, NicknameTakenException, IllegalStateException {
+    public void addPlayer(String nickname, ClientConnection connection) throws RoomFullException, IllegalStateException {
         boolean startNow = false;
         synchronized (this) {
             if (gameStarted) {
@@ -42,9 +41,6 @@ public class GameRoom {
             }
             if (isFull()) {
                 throw new RoomFullException("Game is full.");
-            }
-            if (isNicknameTaken(nickname)) {
-                throw new NicknameTakenException("Nickname already in use.");
             }
             connection.setNickname(nickname);
             players.put(nickname, connection);
@@ -92,7 +88,9 @@ public class GameRoom {
                 successfullyRemoved = true;
             }
         }
-
+        if (successfullyRemoved || roomIsEmpty) {
+            gameManager.unregisterNickname(nickname);
+        }
         if (roomIsEmpty) {
             gameManager.removeGame(gameId);
         } else if (successfullyRemoved) {

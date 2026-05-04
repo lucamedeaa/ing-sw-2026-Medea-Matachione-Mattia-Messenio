@@ -3,16 +3,24 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Manages active game rooms, handling creation, lookup, listing, and removal of games. */
 public class GameManager {
 
     private final Map<String, GameRoom> activeGames = new ConcurrentHashMap<>();
+    private final Set<String> activeNicknames = ConcurrentHashMap.newKeySet();
+
+    public boolean registerNickname(String nickname) {
+        return activeNicknames.add(nickname);
+    }
+
+    public void unregisterNickname(String nickname) {
+        if (nickname != null) {
+            activeNicknames.remove(nickname);
+        }
+    }
 
     /** Creates a new game room and registers it. @param creator nickname of the creator @param maxPlayers maximum number of players @return generated game identifier */
     public String createNewGame(String creator, int maxPlayers) throws InvalidPlayerCountException {

@@ -129,6 +129,8 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
                 } catch (IllegalStateException e) {
                     System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
                 }
+            }else{
+                gameManager.unregisterNickname(nickname);
             }
         }
     }

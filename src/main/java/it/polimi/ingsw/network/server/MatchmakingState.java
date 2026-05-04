@@ -5,7 +5,6 @@ import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
 import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
 import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
-import it.polimi.ingsw.server.exceptions.NicknameTakenException;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
 
 public class MatchmakingState implements MatchmakingVisitor {
@@ -20,15 +19,22 @@ public class MatchmakingState implements MatchmakingVisitor {
 
     @Override
     public void visit(CreateGameMessage msg) {
+        String nickname = msg.nickname();
+        if (!gameManager.registerNickname(nickname)) {
+            handler.send(new ErrorMessageDTO("Nickname already in use on the server."));
+            return;
+        }
         try {
-            String gameId = gameManager.createNewGame(msg.nickname(), msg.maxPlayers());
+            String gameId = gameManager.createNewGame(nickname, msg.maxPlayers());
             GameRoom room = gameManager.getGame(gameId);
-            room.addPlayer(msg.nickname(), handler);
+            room.addPlayer(nickname, handler);
             handler.send(new MatchmakingSuccessMessage("Game created. Waiting for other players..."));
-            room.broadcast("Il giocatore " + handler.getNickname() + " è entrato nella stanza.");
-        } catch (InvalidPlayerCountException | RoomFullException | NicknameTakenException | IllegalStateException e) {
+            room.broadcast("Il giocatore " + nickname + " è entrato nella stanza.");
+        } catch (InvalidPlayerCountException | RoomFullException | IllegalStateException e) {
+            gameManager.unregisterNickname(nickname);
             handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
+            gameManager.unregisterNickname(nickname);
             e.printStackTrace();
             handler.send(new ErrorMessageDTO("Internal server error during game creation."));
         }
@@ -36,20 +42,27 @@ public class MatchmakingState implements MatchmakingVisitor {
 
     @Override
     public void visit(JoinGameMessage msg) {
+        String nickname = msg.nickname();
+        GameRoom room = gameManager.getGame(msg.gameId());
+        if (room == null) {
+            handler.send(new ErrorMessageDTO("Requested game does not exist."));
+            return;
+        }
+        if (!gameManager.registerNickname(nickname)) {
+            handler.send(new ErrorMessageDTO("Nickname already in use on the server."));
+            return;
+        }
         try {
-            GameRoom room = gameManager.getGame(msg.gameId());
-            if (room == null) {
-                handler.send(new ErrorMessageDTO("Requested game does not exist."));
-                return;
-            }
-            room.addPlayer(msg.nickname(), handler);
+            room.addPlayer(nickname, handler);
             handler.send(new MatchmakingSuccessMessage("Joined game successfully. Waiting to start..."));
             if (!room.isGameStarted()) {
-                room.broadcast("Il giocatore " + msg.nickname() + " è entrato.");
+                room.broadcast("Il giocatore " + nickname + " è entrato.");
             }
-        } catch (RoomFullException | NicknameTakenException | IllegalStateException e) {
+        } catch (RoomFullException | IllegalStateException e) {
+            gameManager.unregisterNickname(nickname);
             handler.send(new ErrorMessageDTO(e.getMessage()));
         } catch (Exception e) {
+            gameManager.unregisterNickname(nickname);
             e.printStackTrace();
             handler.send(new ErrorMessageDTO("Internal server error during join."));
         }
