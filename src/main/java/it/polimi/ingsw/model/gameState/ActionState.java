@@ -155,7 +155,7 @@ public class ActionState extends GameState {
 
         return game.getBoard().getRow(rowIdx).stream()
                 .flatMap(Optional::stream)
-                .anyMatch(card -> !card.isPersistent()); // Personaggi
+                .anyMatch(card -> !card.isPersistent() && card.isPickable());
     }
 
     private boolean canAffordAnyBuildingInRow(int rowIdx) {

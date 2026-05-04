@@ -47,8 +47,11 @@ public class InGameState implements UIState {
 
     @Override
     public void render() {
-        tui.renderInGame(tui.getModel().getMyActions(), displayDeltas, lastError);
-        lastError = "";
+            tui.renderInGame(tui.getModel().getMyActions(), displayDeltas, lastError);
+            lastError = "";
+        if (tui.getModel().isGameOver()) {
+            tui.print("\033[1;33m  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══\033[0m");
+        }
     }
 
 
@@ -64,6 +67,10 @@ public class InGameState implements UIState {
 
     @Override
     public void handleInput(String input) {
+        if (tui.getModel().isGameOver()) {
+            tui.changeState(new GameEndedState(tui));
+            return;
+        }
         if (input == null || input.isBlank()) return;
         String[] parts = input.trim().split("\\s+");
         String key = parts[0].toLowerCase();

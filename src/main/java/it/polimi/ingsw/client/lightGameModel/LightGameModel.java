@@ -3,11 +3,7 @@ package it.polimi.ingsw.client.lightGameModel;
 import it.polimi.ingsw.network.dto.*;
 import it.polimi.ingsw.model.enums.TotemColor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 
 
 public class LightGameModel {
@@ -140,6 +136,11 @@ public class LightGameModel {
 
     public void setWinners(List<String> winners) {
         this.winners = new ArrayList<>(winners);
+        this.leaderboard = this.players.values().stream()
+                .sorted(Comparator.comparingInt(LightPlayer::getPrestige).reversed())
+                .map(p -> new PlayerScoreDTO(p.getNickname(), p.getPrestige(), p.getFood()))
+                .toList();
+        this.isGameOver = true;
         notifyUI();
     }
 

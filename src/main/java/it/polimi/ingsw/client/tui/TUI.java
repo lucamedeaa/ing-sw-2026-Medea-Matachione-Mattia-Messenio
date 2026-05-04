@@ -249,7 +249,8 @@ public class TUI implements ClientUI, UIObserver {
             System.out.printf("  %d. %-14s %d PP%n",
                     i + 1, leaderboard.get(i).nickname(), leaderboard.get(i).finalScore());
         System.out.println();
-        System.out.println("  Press ENTER to return to menu...");
+        System.out.println("  0. Torna al menu");
+        System.out.println("  d. Disconnetti");
     }
 
     public synchronized void renderTurnRecap(Map<String, int[]> deltas) {
