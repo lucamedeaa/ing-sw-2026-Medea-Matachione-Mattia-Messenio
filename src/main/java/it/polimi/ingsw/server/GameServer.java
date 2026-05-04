@@ -33,6 +33,20 @@ public class GameServer {
     /** Initializes and binds the RMI matchmaking service. */
     private void startRMIServer() {
         try {
+            //SUS
+            String myIp;
+            try (java.net.DatagramSocket socket = new java.net.DatagramSocket()) {
+                // Finta connessione UDP per forzare l'OS a esporre l'IP della rotta principale
+                socket.connect(java.net.InetAddress.getByName("8.8.8.8"), 10002);
+                myIp = socket.getLocalAddress().getHostAddress();
+            } catch (Exception e) {
+                // Fallback in caso di assenza totale di connessione
+                myIp = java.net.InetAddress.getLocalHost().getHostAddress();
+            }
+            System.setProperty("java.rmi.server.hostname", myIp);
+            System.out.println("[RMI] Configurazione hostname automatica: " + myIp);
+            //SUS
+
             RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind("MesosServer", entryPoint);
