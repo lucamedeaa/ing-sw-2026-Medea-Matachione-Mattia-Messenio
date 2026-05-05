@@ -4,6 +4,10 @@ import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.server.GameManager;
 import it.polimi.ingsw.server.GameRoom;
 import it.polimi.ingsw.virtualView.VirtualView;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.BoardDTO;
+import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.PlayerDTO;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -12,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
@@ -61,9 +66,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
-    /** Sends a server message to the client; handles disconnection on failure. @param message message to send */
-    @Override
-    public void send(ServerMessage message) {
+    private void sendMessage(ServerMessage message) {
         if (active.get()) {
             try {
                 synchronized (streamLock) {
@@ -78,6 +81,46 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         }
     }
 
+    @Override
+    public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+        sendMessage(new FullSyncMessage(board, players, activePlayer, actions));
+    }
+
+    @Override
+    public void deltaEvent(List<GameEventDTO> events, List<AvailableActionDTO> nextActions, String activePlayer) {
+        sendMessage(new DeltaEventMessage(events, nextActions, activePlayer));
+    }
+
+    @Override
+    public void error(String error) {
+        sendMessage(new ErrorMessage(error));
+    }
+
+    @Override
+    public void matchmakingSuccess(String text) {
+        sendMessage(new MatchmakingSuccessMessage(text));
+    }
+
+    @Override
+    public void availableGames(List<GameInfoDTO> games) {
+        sendMessage(new AvailableGamesResponseMessage(games));
+    }
+
+    @Override
+    public void gameAborted(String reason) {
+        sendMessage(new GameAbortedMessage(reason));
+    }
+
+    @Override
+    public void roomUpdate(String notification, List<String> currentPlayers) {
+        sendMessage(new RoomUpdateMessage(notification, currentPlayers));
+    }
+
+    @Override
+    public void gameLeftSuccess(String text) {
+        sendMessage(new GameLeftSuccessMessage(text));
+    }
+
     /** Main loop: receives client messages and routes them to matchmaking or game logic. */
     @Override
     public void run() {
@@ -86,7 +129,7 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 //TODO riscrivere con visitor per questo ed RMICLIENTHANDLER
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
-                    send(new PongMessage());
+                    sendMessage(new PongMessage());
                     continue;
                 }
                 if (input instanceof DisconnectionMessage ds) {
@@ -97,17 +140,17 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                     if (currentMatchmaking != null) {
                         mm.accept(currentMatchmaking);
                     } else {
-                        send(new ErrorMessageDTO("Already in game. Cannot send matchmaking messages."));
+                        error("Already in game. Cannot send matchmaking messages.");
                     }
                 } else if (input instanceof InGameMessage igm) {
                     VirtualView currentView = this.virtualView;
                     if (currentView != null) {
                         igm.accept(currentView);
                     } else {
-                        send(new ErrorMessageDTO("Not in a game yet."));
+                        error("Not in a game yet.");
                     }
                 } else {
-                    send(new ErrorMessageDTO("Unknown message type."));
+                    error("Unknown message type.");
                 }
             }
         } catch (SocketTimeoutException e) {

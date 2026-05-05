@@ -6,7 +6,7 @@ import it.polimi.ingsw.client.network.NetworkClientFactory;
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.client.view.UIFactory;
-import it.polimi.ingsw.network.client.VirtualServer;
+import it.polimi.ingsw.network.client.ServerProxy;
 
 import java.util.Scanner;
 
@@ -69,7 +69,7 @@ public class ClientMain {
         try {
             ClientUI ui = UIFactory.create(uiChoice, model);
             ClientMessageReceiver receiver = new ClientMessageReceiver(model, ui);
-            VirtualServer server = NetworkClientFactory.createConnection(type, ip, port, receiver);
+            ServerProxy server = NetworkClientFactory.createConnection(type, ip, port, receiver);
             ServerController controller = new ServerController(server);
             ui.setController(controller);
 

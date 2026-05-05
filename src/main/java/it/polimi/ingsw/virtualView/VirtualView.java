@@ -8,7 +8,7 @@ import it.polimi.ingsw.model.updates.PlayerUpdate;
 import it.polimi.ingsw.network.dto.*;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.visitor.InGameVisitor;
-import it.polimi.ingsw.network.server.ClientConnection;
+import it.polimi.ingsw.network.server.ClientProxy;
 import it.polimi.ingsw.controller.GameController;
 
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
 public class VirtualView implements ModelObserver, InGameVisitor {
 
     private final String nickname;
-    private final ClientConnection connection;
+    private final ClientProxy client;
     private final GameController controller;
 
     //TODO: check!
@@ -26,9 +26,9 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     // private ScheduledFuture<?> turnTimer;
     // private static final int TURN_TIMEOUT_SECONDS = 60;
 
-    public VirtualView(String nickname, ClientConnection connection, GameController controller) {
+    public VirtualView(String nickname, ClientProxy client, GameController controller) {
         this.nickname = nickname;
-        this.connection = connection;
+        this.client = client;
         this.controller = controller;
     }
 
@@ -48,7 +48,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
         }
 
         // Mando SEMPRE l'evento, così la UI degli altri si aggiorna
-        connection.send(new DeltaEventMessage(update.events(), myActions, update.activePlayerNickname()));
+        client.deltaEvent(update.events(), myActions, update.activePlayerNickname());
     }
 
     //Inviata solo all'inizio o riconness@Override
@@ -61,8 +61,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
         // Invia le azioni solo se il nickname della vista corrisponde al giocatore attivo
         List<AvailableActionDTO> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
 
-        FullSyncMessage message = new FullSyncMessage(board, players, activePlayer, myActions);
-        connection.send(message);
+        client.fullSync(board, players, activePlayer, myActions);
     }
 
     //Messaggi che arrivano dal giocatore verso il Server.
@@ -85,22 +84,34 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
     @Override
     public void visit(TakeCardMessage msg) {
-        controller.handleTakeCard(this.nickname, msg.row(), msg.col(), errorMessage -> {
-            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
-        });
+        takeCard(msg.row(), msg.col());
     }
 
     @Override
     public void visit(PlaceTotemMessage msg) {
-        controller.handlePlaceTotem(this.nickname, msg.positionIndex(), errorMessage -> {
-            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
-        });
+        placeTotem(msg.positionIndex());
     }
 
     @Override
     public void visit(SkipActionMessage msg) {
+        skipAction();
+    }
+
+    public void takeCard(int row, int col) {
+        controller.handleTakeCard(this.nickname, row, col, errorMessage -> {
+            client.error("Errore mossa: " + errorMessage);
+        });
+    }
+
+    public void placeTotem(int positionIndex) {
+        controller.handlePlaceTotem(this.nickname, positionIndex, errorMessage -> {
+            client.error("Errore mossa: " + errorMessage);
+        });
+    }
+
+    public void skipAction() {
         controller.handleSkipBonus(this.nickname, errorMessage -> {
-            connection.send(new ErrorMessage("Errore mossa: " + errorMessage));
+            client.error("Errore mossa: " + errorMessage);
         });
     }
 }

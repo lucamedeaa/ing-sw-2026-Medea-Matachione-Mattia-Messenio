@@ -4,11 +4,16 @@ import it.polimi.ingsw.client.lightGameModel.EventApplier;
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.view.ClientUI;
+import it.polimi.ingsw.network.client.ClientNetworkReceiver;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.PlayerDTO;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
-public class ClientMessageReceiver implements ClientMessageVisitor {
+import java.util.List;
+
+public class ClientMessageReceiver implements ClientNetworkReceiver {
     private final LightGameModel model;
     private final EventApplier applier;
     private final ClientUI ui;
@@ -21,61 +26,94 @@ public class ClientMessageReceiver implements ClientMessageVisitor {
 
     @Override
     public void visit(FullSyncMessage msg) {
-        model.setFullState(msg.board(), msg.players(), msg.activePlayer());
-        model.setAvailableActions(msg.actions());
-        ui.dispatch(UIState::onGameStarted);
+        fullSync(msg.board(), msg.players(), msg.activePlayer(), msg.actions());
     }
 
     @Override
     public void visit(DeltaEventMessage msg) {
-        model.startBatch();
-        for (GameEventDTO event : msg.events()) {
-            event.accept(applier);
-        }
-        model.setAvailableActions(msg.nextActions());
-        model.setActivePlayer(msg.activePlayer());
-        model.endBatch();
+        deltaEvent(msg.events(), msg.nextActions(), msg.activePlayer());
     }
 
     @Override
     public void visit(ErrorMessage message) {
-        //System.err.println("[SERVER ERROR] " + message.error());
-        ui.dispatch(state -> state.onError(message.error()));
+        error(message.error());
     }
 
     @Override
     public void visit(ErrorMessageDTO message) {
-        //System.err.println("[MATCHMAKING ERROR] " + message.error());
-        ui.dispatch(state -> state.onError(message.error()));
+        error(message.error());
     }
 
     @Override
     public void visit(MatchmakingSuccessMessage message) {
-        //System.out.println("[MATCHMAKING SUCCESS] " + message.text());
-        ui.dispatch(state -> state.onMatchmakingSuccess(message.text()));
+        matchmakingSuccess(message.text());
     }
 
     @Override
     public void visit(AvailableGamesResponseMessage message) {
-        //System.out.println("[AVAILABLE GAMES] " + message.games());
-        ui.dispatch(state -> state.onAvailableGames(message.games()));
+        availableGames(message.games());
     }
 
     @Override
     public void visit(GameAbortedMessage message) {
-        //System.err.println("[ERROR] Match Ended: " + message.reason());
-        // Qui la logica per chiudere la schermata di gioco e tornare al main menu
-        // Es: tui.showFatalErrorAndExit(message.reason());
-        ui.dispatch(state -> state.onGameAborted(message.reason()));
+        gameAborted(message.reason());
     }
 
     @Override
     public void visit(RoomUpdateMessage message) {
-        ui.dispatch(state -> state.onRoomUpdate(message.currentPlayers(), message.notification()));
-        //TODO
+        roomUpdate(message.notification(), message.currentPlayers());
     }
+
     @Override
     public void visit(GameLeftSuccessMessage message) {
+        gameLeftSuccess(message.text());
+    }
+
+    @Override
+    public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
+        model.setFullState(board, players, activePlayer);
+        model.setAvailableActions(actions);
+        ui.dispatch(UIState::onGameStarted);
+    }
+
+    @Override
+    public void deltaEvent(List<GameEventDTO> events, List<AvailableActionDTO> nextActions, String activePlayer) {
+        model.startBatch();
+        for (GameEventDTO event : events) {
+            event.accept(applier);
+        }
+        model.setAvailableActions(nextActions);
+        model.setActivePlayer(activePlayer);
+        model.endBatch();
+    }
+
+    @Override
+    public void error(String error) {
+        ui.dispatch(state -> state.onError(error));
+    }
+
+    @Override
+    public void matchmakingSuccess(String text) {
+        ui.dispatch(state -> state.onMatchmakingSuccess(text));
+    }
+
+    @Override
+    public void availableGames(List<GameInfoDTO> games) {
+        ui.dispatch(state -> state.onAvailableGames(games));
+    }
+
+    @Override
+    public void gameAborted(String reason) {
+        ui.dispatch(state -> state.onGameAborted(reason));
+    }
+
+    @Override
+    public void roomUpdate(String notification, List<String> currentPlayers) {
+        ui.dispatch(state -> state.onRoomUpdate(currentPlayers, notification));
+    }
+
+    @Override
+    public void gameLeftSuccess(String text) {
         ui.dispatch(UIState::onGameLeft);
     }
 }

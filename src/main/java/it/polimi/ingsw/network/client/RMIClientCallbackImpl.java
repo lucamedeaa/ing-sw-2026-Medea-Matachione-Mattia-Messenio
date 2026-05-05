@@ -1,12 +1,16 @@
 package it.polimi.ingsw.network.client;
 
-import it.polimi.ingsw.network.messages.ServerMessage;
+import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.network.dto.BoardDTO;
+import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
-import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 /**
  * Implementation of the RMI callback interface.
@@ -14,17 +18,51 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMIClientCallback {
 
-    private final ClientMessageVisitor viewObserver;
+    private final ServerNotificationReceiver receiver;
 
-    public RMIClientCallbackImpl(ClientMessageVisitor viewObserver) throws RemoteException {
+    public RMIClientCallbackImpl(ServerNotificationReceiver receiver) throws RemoteException {
         super();
-        this.viewObserver = viewObserver;
+        this.receiver = receiver;
     }
 
     @Override
-    public void onMessageReceived(ServerMessage message) throws RemoteException {
-        // Forward the incoming server message to the client's visitor.
-        message.accept(viewObserver);
+    public void onFullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) throws RemoteException {
+        receiver.fullSync(board, players, activePlayer, actions);
+    }
+
+    @Override
+    public void onDeltaEvent(List<GameEventDTO> events, List<AvailableActionDTO> nextActions, String activePlayer) throws RemoteException {
+        receiver.deltaEvent(events, nextActions, activePlayer);
+    }
+
+    @Override
+    public void onError(String error) throws RemoteException {
+        receiver.error(error);
+    }
+
+    @Override
+    public void onMatchmakingSuccess(String text) throws RemoteException {
+        receiver.matchmakingSuccess(text);
+    }
+
+    @Override
+    public void onAvailableGames(List<GameInfoDTO> games) throws RemoteException {
+        receiver.availableGames(games);
+    }
+
+    @Override
+    public void onGameAborted(String reason) throws RemoteException {
+        receiver.gameAborted(reason);
+    }
+
+    @Override
+    public void onRoomUpdate(String notification, List<String> currentPlayers) throws RemoteException {
+        receiver.roomUpdate(notification, currentPlayers);
+    }
+
+    @Override
+    public void onGameLeftSuccess(String text) throws RemoteException {
+        receiver.gameLeftSuccess(text);
     }
 
     public void disconnect() {

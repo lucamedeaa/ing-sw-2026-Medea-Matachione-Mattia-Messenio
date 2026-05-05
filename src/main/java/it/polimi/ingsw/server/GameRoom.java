@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
 import it.polimi.ingsw.virtualView.VirtualView;
@@ -105,7 +104,6 @@ public class GameRoom {
 
         for (ClientConnection conn : players.values()) {
             conn.returnToLobby(finalPlayerCount);
-            //conn.send(terminationMsg);
         }
         gameManager.removeGame(this.gameId);
     }
@@ -136,10 +134,10 @@ public class GameRoom {
 
     public void broadcast(String messageText) {
         List<ClientConnection> currentConnections = new ArrayList<>(players.values());
-        RoomUpdateMessage message = new RoomUpdateMessage(messageText, getPlayers());
+        List<String> currentPlayers = getPlayers();
 
         for (ClientConnection conn : currentConnections) {
-            conn.send(message);
+            conn.roomUpdate(messageText, currentPlayers);
         }
     }
 }

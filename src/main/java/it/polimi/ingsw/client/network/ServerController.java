@@ -1,57 +1,53 @@
 package it.polimi.ingsw.client.network;
-import it.polimi.ingsw.network.client.VirtualServer;
-import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.client.ServerProxy;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerController {
 
-    private final VirtualServer server;
+    private final ServerProxy server;
     private final ExecutorService networkExecutor;
 
-    public ServerController(VirtualServer server) {
+    public ServerController(ServerProxy server) {
         this.server = server;
         this.networkExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void sendAsync(ClientMessage message) {
-        networkExecutor.submit(() -> {
-            server.sendMessage(message);
-        });
+    private void runAsync(Runnable action) {
+        networkExecutor.submit(action);
     }
 
     public void createGame(String nickname, int maxPlayers) {
-        sendAsync(new CreateGameMessage(nickname, maxPlayers));
+        runAsync(() -> server.createGame(nickname, maxPlayers));
     }
 
     public void joinGame(String nickname, String gameId) {
-        sendAsync(new JoinGameMessage(nickname, gameId));
+        runAsync(() -> server.joinGame(nickname, gameId));
     }
 
     public void getAvailableGames() {
-        sendAsync(new GetAvailableGamesMessage());
+        runAsync(server::getAvailableGames);
     }
 
     public void leaveGame() {
-        sendAsync(new LeaveGameMessage());
+        runAsync(server::leaveGame);
     }
 
     public void placeTotem(int posIdx) {
-        sendAsync(new PlaceTotemMessage(posIdx));
+        runAsync(() -> server.placeTotem(posIdx));
     }
 
     public void takeCard(int row, int col) {
-        sendAsync(new TakeCardMessage(row, col));
+        runAsync(() -> server.takeCard(row, col));
     }
 
     public void skipAction() {
-        sendAsync(new SkipActionMessage());
+        runAsync(server::skipAction);
     }
 
     public void disconnect(Runnable completionCallback) {
         networkExecutor.submit(() -> {
-            server.sendMessage(new DisconnectionMessage());
             server.disconnect();
             if (completionCallback != null) completionCallback.run();
         });
