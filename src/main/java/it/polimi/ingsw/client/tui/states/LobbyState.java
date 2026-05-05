@@ -17,6 +17,7 @@ public class LobbyState implements UIState {
     private List<String> currentPlayers = new ArrayList<>();
     private String notification = "";
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
+    private boolean initialized = false;
 
     public LobbyState(TUI tui) {
         this.tui = tui;
@@ -30,6 +31,7 @@ public class LobbyState implements UIState {
 
     @Override
     public void render() {
+        if (!initialized) return;
         tui.renderLobby(currentPlayers, notification);
     }
 
@@ -57,6 +59,7 @@ public class LobbyState implements UIState {
 
     @Override
     public void onRoomUpdate(List<String> players, String notification) {
+        this.initialized = true;
         this.currentPlayers = players;
         this.notification = notification;
         this.render();
