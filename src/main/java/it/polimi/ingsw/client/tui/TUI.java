@@ -441,6 +441,15 @@ public class TUI implements ClientUI, UIObserver {
         int pad = width - s.length();
         return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
     }
+    public void renderViewTribe(String targetPlayer){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("════ MESOS — TRIBE INSPECTION ════");
+        System.out.println();
+        this.renderPlayerTribe(targetPlayer);
+        System.out.println();
+        System.out.print("  Premi Q per tornare alla partita > ");
+    }
 
     public synchronized void print(String msg)  { System.out.println(msg); }
     public synchronized void prompt(String msg) { System.out.print(msg); }
