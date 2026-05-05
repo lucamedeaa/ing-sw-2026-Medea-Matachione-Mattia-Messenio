@@ -34,7 +34,7 @@ public class VirtualView implements ModelObserver, InGameVisitor {
 
     @Override
     public void onModelUpdate(ModelUpdate modelUpdate) {
-        ModelUpdateDTO update =  MapperToDTO.modelToDTO(modelUpdate);
+        ModelUpdateDTO update =  modelUpdate.toDTO();
         List<AvailableActionDTO> myActions;
 
         // Il mio nickname è uguale a tizio a? Mando le azioni.
@@ -54,9 +54,9 @@ public class VirtualView implements ModelObserver, InGameVisitor {
     //Inviata solo all'inizio o riconness@Override
     @Override
     public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates) {
-        BoardDTO board = MapperToDTO.boardToDTO(boardUpdate);
-        List<PlayerDTO> players = playersUpdates.stream().map(MapperToDTO::playerToDTO).toList();
-        List<AvailableActionDTO> actions = actionsUpdates.stream().map(MapperToDTO::availableActionToDTO).toList();
+        BoardDTO board = boardUpdate.toDTO();
+        List<PlayerDTO> players = playersUpdates.stream().map(PlayerUpdate::toDTO).toList();
+        List<AvailableActionDTO> actions = actionsUpdates.stream().map(AvailableAction::toDTO).toList();
 
         // Invia le azioni solo se il nickname della vista corrisponde al giocatore attivo
         List<AvailableActionDTO> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
