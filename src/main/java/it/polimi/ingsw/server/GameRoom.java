@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.network.messages.GameAbortedMessage;
 import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.server.exceptions.NicknameTakenException;
@@ -31,6 +32,18 @@ public class GameRoom {
         this.gameManager = gameManager;
         this.players = new ConcurrentHashMap<>();
         this.gameStarted = false;
+    }
+
+
+    public void abortGame(String reason) {
+        it.polimi.ingsw.network.messages.GameAbortedMessage msg =
+                new it.polimi.ingsw.network.messages.GameAbortedMessage(reason);
+
+        for (it.polimi.ingsw.network.server.ClientConnection conn : players.values()) {
+            conn.send(msg);
+            conn.resetToMatchmaking(); // Ripristina il server per ricevere i comandi di lobby
+        }
+        gameManager.removeGame(this.gameId);
     }
 
     /** Adds a player to the room and starts the game if full. */

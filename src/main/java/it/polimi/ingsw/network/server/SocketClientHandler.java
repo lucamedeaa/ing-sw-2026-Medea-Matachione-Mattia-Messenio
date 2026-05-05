@@ -28,6 +28,8 @@ public class SocketClientHandler implements ClientConnection, Runnable {
 
     private MatchmakingState matchmakingState;
 
+
+
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
     public SocketClientHandler(Socket socket, GameManager gameManager) throws IOException {
         this.socket = socket;
@@ -47,6 +49,11 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         return this.nickname;
     }
 
+    @Override
+    public void resetToMatchmaking() {
+        this.virtualView = null;
+        this.matchmakingState = new MatchmakingState(this, gameManager);
+    }
 
     /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
@@ -94,6 +101,11 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 else if (input instanceof MatchmakingMessage mm) {
                     if (matchmakingState != null) {
                         mm.accept(matchmakingState);
+                    } else if (input instanceof LeaveGameMessage) {
+                        GameRoom room = gameManager.getGameRoomByPlayer(nickname);
+                        if (room != null && room.isGameStarted()) {
+                            room.abortGame("Il giocatore " + nickname + " ha abbandonato la partita.");
+                        }
                     } else {
                         send(new ErrorMessageDTO("Already in game. Cannot send matchmaking messages."));
                     }
@@ -125,18 +137,15 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
     private void handleClientDisconnection() {
         if (!active.compareAndSet(true, false)) return;
-
         closeConnection();
 
-        if (virtualView != null) {
-            virtualView.handleDisconnection();
-        } else if (nickname != null) {
+        if (nickname != null) {
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
-                try {
-                    room.removePlayer(nickname);
-                } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                if (room.isGameStarted()) {
+                    room.abortGame("Il giocatore " + nickname + " si è disconnesso improvvisamente.");
+                } else {
+                    try { room.removePlayer(nickname); } catch (IllegalStateException ignored) {}
                 }
             }
         }

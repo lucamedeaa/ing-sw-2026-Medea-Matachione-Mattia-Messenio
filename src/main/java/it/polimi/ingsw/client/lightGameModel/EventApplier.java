@@ -63,7 +63,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerLeftGameDTO event) {
-        //TODO disconnessione player
+        model.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
     }
 
     @Override

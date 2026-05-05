@@ -13,4 +13,6 @@ public interface ClientConnection {
 
     String getNickname();
 
+    void resetToMatchmaking();
+
 }

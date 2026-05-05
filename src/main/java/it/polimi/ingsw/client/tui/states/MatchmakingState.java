@@ -60,7 +60,9 @@ public class MatchmakingState implements UIState {
     public void render() {
         tui.renderMatchmaking(availableGames);
         if (!lastError.isEmpty()) {
-            tui.print("\033[31m[ERROR] " + lastError + "\033[0m");
+            System.out.println();
+            tui.print("\033[33m[INFO]\033[0m \033[3m" + lastError + "\033[0m");
+            System.out.print("\033[1;33mDigita il tuo destino > \033[0m");
             lastError = "";
         }
     }

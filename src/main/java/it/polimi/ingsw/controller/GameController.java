@@ -1,9 +1,11 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.updates.GameEvent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class GameController {
 
@@ -39,11 +41,17 @@ public class GameController {
 
     public void handlePlayerDisconnection(String nickname) {
         gameExecutor.submit(() -> {
-            // TODO: far zompare la partita
+            System.out.println("[CONTROLLER] Il giocatore " + nickname + " si è disconnesso. Partita annullata.");
+            try {
+                game.pushEvent(new GameEvent.PlayerLeftGame(nickname));
+                game.commitEvents();
+            } catch (Exception e) {
+                System.err.println("Errore durante la chiusura per disconnessione: " + e.getMessage());
+            }
         });
     }
 
-    public void handleTakeCard(String nickname, int row, int col, java.util.function.Consumer<String> onError) {
+    public void handleTakeCard(String nickname, int row, int col, Consumer<String> onError) {
         gameExecutor.submit(() -> {
             try {
                 Player player = game.getPlayerByNickname(nickname);
@@ -55,7 +63,7 @@ public class GameController {
         });
     }
 
-    public void handlePlaceTotem(String nickname, int positionIndex, java.util.function.Consumer<String> onError) {
+    public void handlePlaceTotem(String nickname, int positionIndex, Consumer<String> onError) {
         gameExecutor.submit(() -> {
             try {
                 Player player = game.getPlayerByNickname(nickname);

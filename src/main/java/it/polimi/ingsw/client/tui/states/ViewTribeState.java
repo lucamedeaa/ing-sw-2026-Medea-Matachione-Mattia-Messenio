@@ -27,6 +27,13 @@ public class ViewTribeState implements UIState {
     }
 
     @Override
+    public void onGameAborted(String reason) {
+        MatchmakingState menu = new MatchmakingState(tui);
+        tui.changeState(menu);
+        menu.onError("Partita interrotta: " + reason);
+    }
+
+    @Override
     public void onModelUpdated() {
         // no-op: ignora gli aggiornamenti in background per non interrompere la visualizzazione
     }

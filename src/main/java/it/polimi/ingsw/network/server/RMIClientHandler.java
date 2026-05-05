@@ -98,9 +98,15 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         } else if (message instanceof MatchmakingMessage mm) {
             if (matchmakingState != null) {
                 mm.accept(matchmakingState);
+            } else if (message instanceof LeaveGameMessage) {
+                GameRoom room = gameManager.getGameRoomByPlayer(nickname);
+                if (room != null && room.isGameStarted()) {
+                    room.abortGame("Il giocatore " + nickname + " ha abbandonato la partita.");
+                }
             } else {
                 send(new ErrorMessageDTO("Already in game."));
             }
+
         } else if (message instanceof InGameMessage igm) {
             if (virtualView != null) {
                 igm.accept(virtualView);
@@ -112,22 +118,23 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         }
     }
 
-    private void handleClientDisconnection() {
-        if (!active.compareAndSet(true, false)) {
-            return;
-        }
+    @Override
+    public void resetToMatchmaking() {
+        this.virtualView = null;
+        this.matchmakingState = new MatchmakingState(this, gameManager);
+    }
 
+    private void handleClientDisconnection() {
+        if (!active.compareAndSet(true, false)) return;
         closeConnection();
 
-        if (virtualView != null) {
-            virtualView.handleDisconnection();
-        } else if (nickname != null) {
+        if (nickname != null) {
             GameRoom room = gameManager.getGameRoomByPlayer(nickname);
             if (room != null) {
-                try {
-                    room.removePlayer(nickname);
-                } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + nickname);
+                if (room.isGameStarted()) {
+                    room.abortGame("Il giocatore " + nickname + " si è disconnesso improvvisamente.");
+                } else {
+                    try { room.removePlayer(nickname); } catch (IllegalStateException ignored) {}
                 }
             }
         }

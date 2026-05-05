@@ -31,6 +31,12 @@ public class InGameState implements UIState {
 
     @Override
     public void onModelUpdated() {
+
+        if (tui.getModel().getAbortReason() != null) {
+            tui.changeState(new MatchmakingState(tui));
+            tui.print("\n\033[1;41;37m FATAL \033[0m \033[31m" + tui.getModel().getAbortReason() + "\033[0m\n");
+            return;
+        }
         Map<String, int[]> curr      = captureState();
         Map<String, int[]> stepDelta = computeDeltas(prevState, curr);
         prevState = curr;
@@ -55,13 +61,14 @@ public class InGameState implements UIState {
 
 
     private void registerCommands() {
-        // Manteniamo la factory SOLO per i comandi testuali locali
         commandRegistry.put("v", args -> {
             if (args.length < 2) throw new IllegalArgumentException("Uso: v <nickname>");
             return new ViewTribeCommand(tui, args[1]);
         });
-
         commandRegistry.put("i", args -> new InfoCommand(tui));
+
+        commandRegistry.put("quit", args -> new DisconnectCommand(tui.getController()));
+        commandRegistry.put("leave", args -> new LeaveGameCommand(tui.getController(), tui));
     }
 
     @Override
@@ -82,6 +89,13 @@ public class InGameState implements UIState {
             command = factory.create(parts);
         }
         command.execute();
+    }
+
+    @Override
+    public void onGameAborted(String reason) {
+        MatchmakingState menu = new MatchmakingState(tui);
+        tui.changeState(menu);
+        menu.onError("Partita interrotta: " + reason);
     }
 
     @Override

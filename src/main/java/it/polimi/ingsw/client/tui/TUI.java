@@ -190,10 +190,12 @@ public class TUI implements ClientUI, UIObserver {
                 System.out.print("  \033[1;36m[ " + i + " ]\033[0m ");
                 actions.get(i).accept(renderer);
             }
-            System.out.println("  \033[1;36m[ i ]\033[0m Guida alle carte");
-            System.out.println("  \033[1;36m[ v <nome> ]\033[0m Guarda la tribù di un giocatore");
-        }
 
+        }
+        System.out.println("  \033[1;36m[ i ]\033[0m Guida alle carte");
+        System.out.println("  \033[1;36m[ v <nome> ]\033[0m Guarda la tribù di un giocatore");
+        System.out.println("  \033[1;31m[ quit ]\033[0m Chiudi definitivamente il gioco");
+        System.out.println("  \033[1;31m[ leave ]\033[0m Abbandona la partita e torna al menu");
         System.out.println();
 
         if (lastError != null && !lastError.isEmpty()) {
@@ -238,16 +240,20 @@ public class TUI implements ClientUI, UIObserver {
     public synchronized void renderGameEnded() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println("╔══════════════════════════╗");
-        System.out.println("║   MESOS — GAME OVER      ║");
-        System.out.println("╚══════════════════════════╝");
-        System.out.println("Winners: " + String.join(", ", model.getWinners()));
+        System.out.println("  ===================================");
+        System.out.println("           VINCITORE/I               ");
+        System.out.println("   🏆 " + String.join(", ", model.getWinners()) + " 🏆");
+        System.out.println("  ===================================");
         System.out.println();
-        System.out.println("Final leaderboard:");
+
+        System.out.println("  CLASSIFICA COMPLETA:");
         var leaderboard = model.getLeaderboard();
-        for (int i = 0; i < leaderboard.size(); i++)
-            System.out.printf("  %d. %-14s %d PP%n",
-                    i + 1, leaderboard.get(i).nickname(), leaderboard.get(i).finalScore());
+        for (int i = 0; i < leaderboard.size(); i++) {
+            boolean isMe = leaderboard.get(i).nickname().equals(myNickname);
+            String color = isMe ? "\033[1;32m" : "\033[1;37m";
+            System.out.printf("  %s%d. %-14s %d PP\033[0m%n",
+                    color, i + 1, leaderboard.get(i).nickname(), leaderboard.get(i).finalScore());
+        }
         System.out.println();
         System.out.println("  Press ENTER to return to menu...");
     }
