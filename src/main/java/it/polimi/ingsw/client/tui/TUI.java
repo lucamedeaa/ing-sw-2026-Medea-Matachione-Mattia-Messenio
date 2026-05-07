@@ -181,19 +181,21 @@ public class TUI implements ClientUI, UIObserver {
             System.out.println();
         }
 
-        System.out.println("── AVAILABLE ACTIONS ──");
+        System.out.println("\n\033[1;33m── AVAILABLE ACTIONS ──> \033[0m");
         if (actions.isEmpty()) {
             System.out.println("  Wait for your turn...");
         } else {
             ActionRender renderer = new ActionRender(this);
             for (int i = 0; i < actions.size(); i++) {
-                System.out.print("  " + i + ") ");
+                System.out.print("  \033[1;36m[ " + i + " ]\033[0m ");
                 actions.get(i).accept(renderer);
             }
-            System.out.println("  i) Card reference guide");
-            System.out.println("  v <nome>) View player's tribe");
-        }
 
+        }
+        System.out.println("  \033[1;36m[ i ]\033[0m Guida alle carte");
+        System.out.println("  \033[1;36m[ v <nome> ]\033[0m Guarda la tribù di un giocatore");
+        System.out.println("  \033[1;31m[ quit ]\033[0m Chiudi definitivamente il gioco");
+        System.out.println("  \033[1;31m[ leave ]\033[0m Abbandona la partita e torna al menu");
         System.out.println();
 
         if (lastError != null && !lastError.isEmpty()) {
@@ -204,11 +206,11 @@ public class TUI implements ClientUI, UIObserver {
     }
 
     private void renderRows() {
-        System.out.println("── UPPER ROW ──");
-        CardBoxRenderer.printCardRow(model.getUpperRowCards());
+        System.out.println("  UPPER ROW");
+        CardBoxRenderer.printCardRow(model.getUpperRowCards(), true);
         System.out.println();
-        System.out.println("── LOWER ROW ──");
-        CardBoxRenderer.printCardRow(model.getLowerRowCards());
+        System.out.println("  LOWER ROW");
+        CardBoxRenderer.printCardRow(model.getLowerRowCards(), true);
     }
 
     private void renderPlayersBar() {
@@ -223,31 +225,35 @@ public class TUI implements ClientUI, UIObserver {
 
             String pColor = getTotemAnsiColor(p.getNickname());
 
-            System.out.printf("%s %s%-14s\033[0m  food: %2d  prestige: %3d  [%d cards]%s%n",
-                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), tribeSize, tag);
+            System.out.printf("%s %s%-14s\033[0m  cibo: \033[1;32m%2d\033[0m  prestigio: \033[1;32m%3d\033[0m  sconto: \033[1;32m-%d\033[0m  [%d carte]%s%n",
+                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), tribeSize, tag);
         }
     }
 
     public void renderPlayerTribe(String nickname) {
         List<Integer> tribe = model.getTribes().getOrDefault(nickname, List.of());
-        System.out.println("── " + nickname.toUpperCase() + "'S TRIBE ──");
-        CardBoxRenderer.printCardRow(tribe);
+        System.out.println("  " + nickname.toUpperCase() + "'S TRIBE");
+        CardBoxRenderer.printCardRow(tribe, false);
     }
 
 
     public synchronized void renderGameEnded() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        System.out.println("╔══════════════════════════╗");
-        System.out.println("║   MESOS — GAME OVER      ║");
-        System.out.println("╚══════════════════════════╝");
-        System.out.println("Winners: " + String.join(", ", model.getWinners()));
+        System.out.println("  ===================================");
+        System.out.println("           VINCITORE/I               ");
+        System.out.println("   🏆 " + String.join(", ", model.getWinners()) + " 🏆");
+        System.out.println("  ===================================");
         System.out.println();
-        System.out.println("Final leaderboard:");
+
+        System.out.println("  CLASSIFICA COMPLETA:");
         var leaderboard = model.getLeaderboard();
-        for (int i = 0; i < leaderboard.size(); i++)
-            System.out.printf("  %d. %-14s %d PP%n",
-                    i + 1, leaderboard.get(i).nickname(), leaderboard.get(i).finalScore());
+        for (int i = 0; i < leaderboard.size(); i++) {
+            boolean isMe = leaderboard.get(i).nickname().equals(myNickname);
+            String color = isMe ? "\033[1;32m" : "\033[1;37m";
+            System.out.printf("  %s%d. %-14s %d PP\033[0m%n",
+                    color, i + 1, leaderboard.get(i).nickname(), leaderboard.get(i).finalScore());
+        }
         System.out.println();
         System.out.println("  0. Torna al menu");
         System.out.println("  d. Disconnetti");
@@ -257,14 +263,20 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println();
         System.out.println("\033[1;37m  TURN RECAP\033[0m");
         for (var e : deltas.entrySet()) {
-            int df = e.getValue()[0], dp = e.getValue()[1];
-            String foodStr = (df >= 0 ? "+" : "") + df + "f";
-            String ppStr   = (dp >= 0 ? "+" : "") + dp + "pp";
+            int df = e.getValue()[0];
+            int dp = e.getValue()[1];
+            int dd = e.getValue().length > 2 ? e.getValue()[2] : 0;
+
+            String foodStr = (df >= 0 ? "+" : "") + df;
+            String ppStr   = (dp >= 0 ? "+" : "") + dp;
+
+
+            String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
             String pColor = getTotemAnsiColor(e.getKey());
 
-            System.out.printf("  %s%-14s\033[0m  food %-4s prestige %s%n",
-                    pColor, e.getKey(), foodStr, ppStr);
+            System.out.printf("  %s%-14s\033[0m  cibo: %-3s prestigio: %-3s sconto: \033[1;32m%-3s\033[0m%n",
+                    pColor, e.getKey(), foodStr, ppStr, discStr);
         }
     }
 
@@ -292,7 +304,7 @@ public class TUI implements ClientUI, UIObserver {
         System.out.println("  Hunt           Grants food based on Hunter count");
         System.out.println("  ShamanicRitual Highest stars gain PP, lowest lose PP (ties apply)");
         System.out.println("  Sustenance     -1f per character (Collectors discount)");
-        System.out.println("                 if food insufficient: -2 pp per missing food");
+        System.out.println("                 if food insufficient: -N pp per missing food");
         System.out.println();
         System.out.println("── BUILDINGS ──────────────────────────────────────────────────");
         System.out.println("  Bought by spending food; grant prestige at the end of the game.");
@@ -435,6 +447,15 @@ public class TUI implements ClientUI, UIObserver {
         if (s.length() >= width) return s.substring(0, width);
         int pad = width - s.length();
         return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
+    }
+    public void renderViewTribe(String targetPlayer){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("════ MESOS — TRIBE INSPECTION ════");
+        System.out.println();
+        this.renderPlayerTribe(targetPlayer);
+        System.out.println();
+        System.out.print("  Premi Q per tornare alla partita > ");
     }
 
     public synchronized void print(String msg)  { System.out.println(msg); }

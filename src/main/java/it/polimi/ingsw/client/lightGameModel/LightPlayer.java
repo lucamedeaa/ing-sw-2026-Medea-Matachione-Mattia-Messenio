@@ -9,6 +9,7 @@ public class LightPlayer {
     private int food;
     private int prestige;
     private TotemColor totemColor;
+    private int foodDiscount;
 
 
     public LightPlayer(PlayerDTO dto) {
@@ -16,14 +17,16 @@ public class LightPlayer {
         this.food = dto.food();
         this.prestige = dto.prestige();
         this.totemColor = dto.totemColor();
-        // magari aggiungere fooddiscount se vogliamo renderlo un parametro visualizzabile
+        this.foodDiscount = dto.foodDiscount();
     }
 
     public String getNickname() { return nickname; }
     public int getFood() { return food; }
     public int getPrestige() { return prestige; }
     public TotemColor getTotemColor() { return totemColor; }
+    public int getFoodDiscount() { return foodDiscount; }
 
     public void setFood(int food) { this.food = food; }
     public void setPrestige(int prestige) { this.prestige = prestige; }
+    public void setFoodDiscount(int foodDiscount) { this.foodDiscount = foodDiscount; }
 }

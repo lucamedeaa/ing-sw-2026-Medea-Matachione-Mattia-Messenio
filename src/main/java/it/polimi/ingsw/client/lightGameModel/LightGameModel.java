@@ -29,6 +29,17 @@ public class LightGameModel {
 
     private final Map<String, Integer> playerReturnPositions = new HashMap<>();
 
+    private String abortReason = null;
+
+
+    public void setGameAborted(String reason) {
+        this.abortReason = reason;
+        notifyUI();
+    }
+
+    public String getAbortReason() {
+        return abortReason;
+    }
 
     public void returnTotemToTrack(String nickname, int returnIndex) {
         playerTotemPositions.remove(nickname);
@@ -119,11 +130,12 @@ public class LightGameModel {
         notifyUI();
     }
 
-    public void updatePlayerResources(String nickname, int newFood, int newPrestige) {
+    public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
         LightPlayer player = players.get(nickname);
         if (player != null) {
             player.setFood(newFood);
             player.setPrestige(newPrestige);
+            player.setFoodDiscount(newFoodDiscount);
             notifyUI();
         }
     }

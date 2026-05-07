@@ -115,13 +115,13 @@ public class DeckFactory {
             cards.add(new Hunt(56,1, 1, 1));
             cards.add(new Hunt(57,2, 1, 2));
 
-            cards.add(new ShamanicRitual(58,1, 5, 3));
-            cards.add(new ShamanicRitual(59,2, 10, 5));
-            cards.add(new ShamanicRitual(60,3, 15, 7));
+            cards.add(new ShamanicRitual(58,1, 5, -3));
+            cards.add(new ShamanicRitual(59,2, 10, -5));
+            cards.add(new ShamanicRitual(60,3, 15, -7));
 
             cards.add(new Sustenance(61,1, 1));
             cards.add(new Sustenance(62,2, 2));
-            cards.add(new Sustenance(63,2, 2));
+            cards.add(new Sustenance(63,3, 3));
 
 
 

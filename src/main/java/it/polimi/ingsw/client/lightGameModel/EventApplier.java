@@ -29,7 +29,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerResourcesChangedEventDTO event) {
-        model.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige());
+        model.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
         if (event.reason() != null && !event.reason().isEmpty()) {
             model.addGameLog("\033[33m[" + event.nickname() + "] " + event.reason() + "\033[0m");
         }
@@ -63,7 +63,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerLeftGameDTO event) {
-        //TODO disconnessione player
+        model.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
     }
 
     @Override

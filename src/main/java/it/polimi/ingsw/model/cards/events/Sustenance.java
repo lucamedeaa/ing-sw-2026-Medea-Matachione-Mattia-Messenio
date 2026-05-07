@@ -3,7 +3,9 @@ package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.CharacterType;
+import it.polimi.ingsw.model.updates.GameEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,10 +41,10 @@ public class Sustenance extends Event {
      * @param players list of involved players
      */
     @Override
-    public void execute(List<Player> players) {
+    public List<GameEvent> execute(List<Player> players) {
+        List<GameEvent> events = new ArrayList<>();
         for (Player player : players) {
             int discount = player.countCharactersOfType(CharacterType.COLLECTOR) * 3;
-
             for (Card card : player.getTribe()) {
                 discount += card.onSustenanceEvent(player);
             }
@@ -55,13 +57,33 @@ public class Sustenance extends Event {
                 }
             }
 
+            String reason = "";
             if (playerFood + discount < total) {
+                int foodLost = playerFood;
+                int missingFood = total - (playerFood + discount);
+                int ppLost = -numPrestRem * missingFood;
+
                 player.addFood(-playerFood);
-                player.addPrestige(-numPrestRem * (total - (playerFood + discount)));
+                player.addPrestige(ppLost);
+                reason = "Sostentamento fallito (mancano " + missingFood + " cibi): -" + foodLost + " cibo, " + ppLost + " PP";
+
             } else if (total > discount) {
-                player.addFood(-(total - discount));
+                int foodConsumed = total - discount;
+                player.addFood(-foodConsumed);
+                reason = "Sostentamento pagato: -" + foodConsumed + " cibo (sconto " + discount + ")";
+            } else {
+                reason = "Sostentamento gratuito (lo sconto " + discount + " copre tutto)";
             }
+
+            events.add(new GameEvent.PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    player.getFoodDiscount(),
+                    reason
+            ));
         }
+        return events;
     }
 
     /**

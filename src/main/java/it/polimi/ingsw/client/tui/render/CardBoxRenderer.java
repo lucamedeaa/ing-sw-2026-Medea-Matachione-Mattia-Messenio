@@ -53,11 +53,21 @@ public class CardBoxRenderer {
         };
     }
 
-    public static void printCardRow(List<Integer> cards) {
+    public static void printCardRow(List<Integer> cards, boolean showIndices) {
         if (cards == null || cards.isEmpty()) {
             System.out.println("  (no cards)");
             return;
         }
+
+        if (showIndices) {
+            StringBuilder idxBuilder = new StringBuilder("  ");
+            for (int i = 0; i < cards.size(); i++) {
+                idxBuilder.append("\033[1;30m").append(center("[" + i + "]", 15)).append("\033[0m");
+                if (i < cards.size() - 1) idxBuilder.append(" ");
+            }
+            System.out.println(idxBuilder);
+        }
+
         List<String[]> boxes = cards.stream().map(CardBoxRenderer::cardBox).toList();
         for (int line = 0; line < 7; line++) {
             StringBuilder sb = new StringBuilder("  ");

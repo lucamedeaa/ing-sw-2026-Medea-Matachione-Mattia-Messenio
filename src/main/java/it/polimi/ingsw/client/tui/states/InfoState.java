@@ -21,5 +21,12 @@ public class InfoState implements UIState {
     }
 
     @Override
+    public void onGameAborted(String reason) {
+        MatchmakingState menu = new MatchmakingState(tui);
+        tui.changeState(menu);
+        menu.onError("Partita interrotta: " + reason);
+    }
+
+    @Override
     public void onModelUpdated() { /* no-op: non interrompere la lettura */ }
 }

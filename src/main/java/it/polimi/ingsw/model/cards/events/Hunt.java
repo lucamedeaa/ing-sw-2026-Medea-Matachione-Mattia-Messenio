@@ -3,7 +3,9 @@ package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.CharacterType;
+import it.polimi.ingsw.model.updates.GameEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,16 +45,25 @@ public class Hunt extends Event {
      * @param players list of involved players
      */
     @Override
-    public void execute(List<Player> players) {
-        int num;
+    public List<GameEvent> execute(List<Player> players) {
+        List<GameEvent> events = new ArrayList<>();
         for (Player player : players) {
-            num = player.countCharactersOfType(CharacterType.HUNTER);
+            int num = player.countCharactersOfType(CharacterType.HUNTER);
             player.addFood(num * foodGiven);
             player.addPrestige(num * prestigeGiven);
+
+            events.add(new GameEvent.PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    player.getFoodDiscount(),
+                    "Evento Caccia: +" + (num * foodGiven) + " cibo, +" + (num * prestigeGiven) + " PP"
+            ));
 
             for (Card card : player.getTribe()) {
                 card.onHuntEvent(player);
             }
         }
+        return events;
     }
 }

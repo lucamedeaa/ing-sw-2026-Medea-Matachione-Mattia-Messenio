@@ -31,6 +31,12 @@ public class InGameState implements UIState {
 
     @Override
     public void onModelUpdated() {
+
+        if (tui.getModel().getAbortReason() != null) {
+            tui.changeState(new MatchmakingState(tui));
+            tui.print("\n\033[1;41;37m FATAL \033[0m \033[31m" + tui.getModel().getAbortReason() + "\033[0m\n");
+            return;
+        }
         Map<String, int[]> curr      = captureState();
         Map<String, int[]> stepDelta = computeDeltas(prevState, curr);
         prevState = curr;
@@ -56,13 +62,14 @@ public class InGameState implements UIState {
 
 
     private void registerCommands() {
-        // Manteniamo la factory SOLO per i comandi testuali locali
         commandRegistry.put("v", args -> {
             if (args.length < 2) throw new IllegalArgumentException("Uso: v <nickname>");
             return new ViewTribeCommand(tui, args[1]);
         });
-
         commandRegistry.put("i", args -> new InfoCommand(tui));
+
+        commandRegistry.put("quit", args -> new DisconnectCommand(tui.getController()));
+        commandRegistry.put("leave", args -> new LeaveGameCommand(tui.getController(), tui));
     }
 
     @Override
@@ -76,7 +83,7 @@ public class InGameState implements UIState {
         String key = parts[0].toLowerCase();
 
         GameCommand command;
-        if (key.matches("\\d+")) {
+        if (key.matches("0|[1-9]\\d*")) {
             command = new ActionCommand(tui, parts);
         } else {
             CommandFactory factory = commandRegistry.get(key);
@@ -87,6 +94,13 @@ public class InGameState implements UIState {
             command = factory.create(parts);
         }
         command.execute();
+    }
+
+    @Override
+    public void onGameAborted(String reason) {
+        MatchmakingState menu = new MatchmakingState(tui);
+        tui.changeState(menu);
+        menu.onError("Partita interrotta: " + reason);
     }
 
     @Override
@@ -107,7 +121,7 @@ public class InGameState implements UIState {
     private Map<String, int[]> captureState() {
         Map<String, int[]> snap = new HashMap<>();
         for (LightPlayer p : tui.getModel().getPlayers().values())
-            snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige()});
+            snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige(), p.getFoodDiscount()});
         return snap;
     }
 
@@ -115,15 +129,19 @@ public class InGameState implements UIState {
         Map<String, int[]> d = new HashMap<>();
         for (var e : curr.entrySet()) {
             int[] p = prev.getOrDefault(e.getKey(), e.getValue());
-            d.put(e.getKey(), new int[]{e.getValue()[0] - p[0], e.getValue()[1] - p[1]});
+            int discPrev = p.length > 2 ? p[2] : 0;
+            int discCurr = e.getValue().length > 2 ? e.getValue()[2] : 0;
+            d.put(e.getKey(), new int[]{e.getValue()[0] - p[0], e.getValue()[1] - p[1], discCurr - discPrev});
         }
         return d;
     }
 
     private void mergeInto(Map<String, int[]> acc, Map<String, int[]> step) {
         for (var e : step.entrySet()) {
-            int[] cur = acc.getOrDefault(e.getKey(), new int[]{0, 0});
-            acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1]});
+            int[] cur = acc.getOrDefault(e.getKey(), new int[]{0, 0, 0});
+            int stepDisc = e.getValue().length > 2 ? e.getValue()[2] : 0;
+            int curDisc = cur.length > 2 ? cur[2] : 0;
+            acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1], curDisc + stepDisc});
         }
     }
 

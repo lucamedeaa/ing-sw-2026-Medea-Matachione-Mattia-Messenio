@@ -3,7 +3,9 @@ package it.polimi.ingsw.model.cards.events;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.CharacterType;
+import it.polimi.ingsw.model.updates.GameEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,20 +49,33 @@ public class CavePaintings extends Event {
      * @param players list of involved players
      */
     @Override
-    public void execute(List<Player> players) {
-
+    public List<GameEvent> execute(List<Player> players) {
+        List<GameEvent> events = new ArrayList<>();
         for (Player player : players) {
             int artistNumber = player.countCharactersOfType(CharacterType.ARTIST);
+            String reason = "";
 
             if (artistNumber < upperNumArtists) {
                 player.addPrestige(decrPrestigePoints);
+                reason = "Pitture Rupestri: " + artistNumber + " Artisti (sotto soglia). " + decrPrestigePoints + " PP";
             } else {
-                player.addPrestige(incrPrestigePoints * artistNumber);
+                int earned = incrPrestigePoints * artistNumber;
+                player.addPrestige(earned);
+                reason = "Pitture Rupestri: " + artistNumber + " Artisti. +" + earned + " PP";
             }
+
+            events.add(new GameEvent.PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    player.getFoodDiscount(),
+                    reason
+            ));
 
             for (Card card : player.getTribe()) {
                 card.onCavePaintingsEvent(player);
             }
         }
+        return events;
     }
 }

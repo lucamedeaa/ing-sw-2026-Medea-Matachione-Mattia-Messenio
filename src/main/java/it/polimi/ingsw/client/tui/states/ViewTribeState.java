@@ -14,15 +14,7 @@ public class ViewTribeState implements UIState {
 
     @Override
     public void render() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-        System.out.println("════ MESOS — TRIBE INSPECTION ════");
-        System.out.println();
-
-        tui.renderPlayerTribe(targetPlayer);
-
-        System.out.println();
-        System.out.print("  Premi Q per tornare alla partita > ");
+        tui.renderViewTribe(targetPlayer);
     }
 
     @Override
@@ -32,6 +24,13 @@ public class ViewTribeState implements UIState {
         } else {
             tui.print("Input non valido. Premi Q per tornare alla partita.");
         }
+    }
+
+    @Override
+    public void onGameAborted(String reason) {
+        MatchmakingState menu = new MatchmakingState(tui);
+        tui.changeState(menu);
+        menu.onError("Partita interrotta: " + reason);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package it.polimi.ingsw.model.cards.events;
 
+import java.util.ArrayList;
 import java.util.List;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.updates.GameEvent;
 
 /**
  * "Shamanic Ritual" event.
@@ -45,11 +47,12 @@ public class ShamanicRitual extends Event {
      * @param players list of involved players
      */
     @Override
-    public void execute(List<Player> players) {
-
+    public List<GameEvent> execute(List<Player> players) {
+        List<GameEvent> events = new ArrayList<>();
         int[] stars = new int[players.size()];
         int max = 0, min;
 
+        // Calcolo delle stelle
         for (int i = 0; i < players.size(); i++) {
             stars[i] = players.get(i).getStarsNumber();
             for (Card card : players.get(i).getTribe()) {
@@ -57,25 +60,45 @@ public class ShamanicRitual extends Event {
             }
         }
 
+        // Ricerca max e min
         min = stars[0];
         for (int x : stars) {
             max = Math.max(max, x);
             min = Math.min(min, x);
         }
 
+        // Applicazione effetti
         for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            String reason = "Rituale Sciamanico: " + stars[i] + " stelle. Nessun bonus/malus.";
+
             if (stars[i] == max) {
-                players.get(i).addPrestige(incrPrestigePoints);
-                for (Card card : players.get(i).getTribe()) {
-                    card.onShamanicRitualEvent(players.get(i), incrPrestigePoints, 0);
+                player.addPrestige(incrPrestigePoints);
+                for (Card card : player.getTribe()) {
+                    card.onShamanicRitualEvent(player, incrPrestigePoints, 0);
                 }
+                reason = "Rituale Sciamanico: " + stars[i] + " stelle (MAX). +" + incrPrestigePoints + " PP";
             }
             if (stars[i] == min) {
-                players.get(i).addPrestige(decrPrestigePoints);
-                for (Card card : players.get(i).getTribe()) {
-                    card.onShamanicRitualEvent(players.get(i), 0, decrPrestigePoints);
+                player.addPrestige(decrPrestigePoints);
+                for (Card card : player.getTribe()) {
+                    card.onShamanicRitualEvent(player, 0, decrPrestigePoints);
+                }
+                if (max == min) {
+                    reason += " e (MIN) " + decrPrestigePoints + " PP"; // Caso estremo di pareggio totale
+                } else {
+                    reason = "Rituale Sciamanico: " + stars[i] + " stelle (MIN). " + decrPrestigePoints + " PP";
                 }
             }
+
+            events.add(new GameEvent.PlayerResourcesChangedEvent(
+                    player.getNickname(),
+                    player.getFood(),
+                    player.getPrestigePoints(),
+                    player.getFoodDiscount(),
+                    reason
+            ));
         }
+        return events;
     }
 }
