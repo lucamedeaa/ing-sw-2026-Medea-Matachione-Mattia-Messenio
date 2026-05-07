@@ -1,32 +1,33 @@
 package it.polimi.ingsw.client.tui.states;
 
+import it.polimi.ingsw.client.tui.NavigationPort;
+import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.TUI;
 import it.polimi.ingsw.client.tui.UIState;
+import it.polimi.ingsw.client.tui.render.InfoRenderer;
 
 public class InfoState implements UIState {
-    private final TUI tui;
+    private final NavigationPort nav;
+    private final OutputPort out;
+    private final InfoRenderer renderer;
 
-    public InfoState(TUI tui) { this.tui = tui; }
+    public InfoState(NavigationPort nav, OutputPort out) {
+        this.nav = nav;
+        this.out = out;
+        this.renderer = new InfoRenderer(out);
+    }
 
-    @Override
-    public void render() { tui.renderCheatSheet(); }
+    public void render() {
+        renderer.render(); // Mostra il cheat sheet
+    }
 
     @Override
     public void handleInput(String input) {
         if (input.trim().equalsIgnoreCase("q")) {
-            tui.changeState(new InGameState(tui));
+            nav.changeState(new InGameState(nav, out));
         } else {
-            tui.print("Invalid input. Press Q to return to game.");
+            out.print("Invalid input. Press Q to return to game.");
         }
     }
 
-    @Override
-    public void onGameAborted(String reason) {
-        MatchmakingState menu = new MatchmakingState(tui);
-        tui.changeState(menu);
-        menu.onError("Partita interrotta: " + reason);
-    }
-
-    @Override
-    public void onModelUpdated() { /* no-op: non interrompere la lettura */ }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.tui.render;
 
+import it.polimi.ingsw.client.tui.OutputPort;
 import java.util.List;
 
 public class CardBoxRenderer {
@@ -8,9 +9,12 @@ public class CardBoxRenderer {
 
     public static String ansiColor(Integer id) {
         if (id == null) return "\033[90m";
-        if (CardNameMapper.isEvent(id))    return "\033[93m";
-        if (CardNameMapper.isBuilding(id)) return "\033[96m";
-        return switch (CardNameMapper.characterType(id)) {
+        CardInfo info = CardNameMapper.getCard(id);
+
+        if (info.type().equals("Event"))    return "\033[93m";
+        if (info.type().equals("Building")) return "\033[96m";
+
+        return switch (info.type()) {
             case "Builder"   -> "\033[33m";
             case "Hunter"    -> "\033[31m";
             case "Artist"    -> "\033[35m";
@@ -34,28 +38,26 @@ public class CardBoxRenderer {
             };
         }
 
-        String name   = CardNameMapper.getName(id);
-        String detail = CardNameMapper.getDetail(id);
-        String costPp = buildingCostPp(CardNameMapper.getExtra(id), CardNameMapper.getExtra2(id));
-
-        String eraStr = "Era " + CardNameMapper.getEra(id);
-
-        String[] nameParts = splitName(name, 13);
+        // Usa un'unica estrazione dal DB Data-Driven
+        CardInfo info = CardNameMapper.getCard(id);
+        String costPp = buildingCostPp(info.cost(), info.extraPP());
+        String eraStr = "Era " + info.era();
+        String[] nameParts = splitName(info.name(), 13);
 
         return new String[]{
                 "┌─────────────┐",
                 "│" + center(nameParts[0], 13) + "│",
                 "│" + center(nameParts[1], 13) + "│",
-                "│" + center(detail,       13) + "│",
-                "│" + center(costPp,       13) + "│",
-                "│" + center(eraStr,       13) + "│",
+                "│" + center(info.detail(),  13) + "│",
+                "│" + center(costPp,         13) + "│",
+                "│" + center(eraStr,         13) + "│",
                 "└─────────────┘"
         };
     }
 
-    public static void printCardRow(List<Integer> cards, boolean showIndices) {
+    public static void printCardRow(OutputPort out, List<Integer> cards, boolean showIndices) {
         if (cards == null || cards.isEmpty()) {
-            System.out.println("  (no cards)");
+            out.print("  (no cards)");
             return;
         }
 
@@ -65,7 +67,7 @@ public class CardBoxRenderer {
                 idxBuilder.append("\033[1;30m").append(center("[" + i + "]", 15)).append("\033[0m");
                 if (i < cards.size() - 1) idxBuilder.append(" ");
             }
-            System.out.println(idxBuilder);
+            out.print(idxBuilder.toString());
         }
 
         List<String[]> boxes = cards.stream().map(CardBoxRenderer::cardBox).toList();
@@ -76,11 +78,10 @@ public class CardBoxRenderer {
                 sb.append(color).append(boxes.get(i)[line]).append(RESET);
                 if (i < boxes.size() - 1) sb.append(" ");
             }
-            System.out.println(sb);
+            out.print(sb.toString()); // Dipendenza invertita: usiamo il porto!
         }
     }
 
-    /** Combines "cost: 5f" + "+2 pp" → "5f +2pp", or "" if both empty. */
     private static String buildingCostPp(String extra, String extra2) {
         if (extra.isEmpty()) return "";
         String cost = extra.replace("cost: ", "");
@@ -89,10 +90,8 @@ public class CardBoxRenderer {
     }
 
     private static String[] splitName(String name, int width) {
-        // split sempre prima di '(' se presente
         int paren = name.indexOf('(');
         if (paren > 0) return new String[]{name.substring(0, paren), name.substring(paren)};
-        // altrimenti logica normale
         if (name.length() <= width) return new String[]{name, ""};
         int at = name.lastIndexOf(' ', width - 1);
         if (at > 0) return new String[]{name.substring(0, at), name.substring(at + 1)};

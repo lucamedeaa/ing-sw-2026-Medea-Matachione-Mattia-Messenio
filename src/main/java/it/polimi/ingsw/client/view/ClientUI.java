@@ -7,5 +7,4 @@ import java.util.function.Consumer;
 public interface ClientUI {
         void setController(ServerController controller);
         void start();
-        void dispatch(Consumer<UIState> action);
 }

@@ -1,31 +1,40 @@
 package it.polimi.ingsw.client.tui.states;
 
-import it.polimi.ingsw.client.tui.TUI;
+import it.polimi.ingsw.client.tui.NavigationPort;
+import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.tui.commands.CommandFactory;
 import it.polimi.ingsw.client.tui.commands.DisconnectCommand;
-import it.polimi.ingsw.client.tui.commands.GameCommand;
+import it.polimi.ingsw.client.tui.render.GameEndedRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class GameEndedState implements UIState {
-    private final TUI tui;
+    private final NavigationPort nav;
+    private final OutputPort out;
+    private final GameEndedRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
 
-    public GameEndedState(TUI tui) {
-        this.tui = tui;
+    public GameEndedState(NavigationPort nav, OutputPort out) {
+        this.nav = nav;
+        this.out = out;
+        this.renderer = new GameEndedRenderer(out);
         registerCommands();
     }
 
     private void registerCommands() {
-        commandRegistry.put("0", args -> (GameCommand) () -> tui.changeState(new MatchmakingState(tui)));
-        commandRegistry.put("d", args -> new DisconnectCommand(tui.getController()));
+        commandRegistry.put("0", args -> () -> nav.changeState(new MatchmakingState(nav, out)));
+        commandRegistry.put("d", args -> new DisconnectCommand(nav.getController()));
     }
 
     @Override
     public void render() {
-        tui.renderGameEnded();
+        renderer.render(
+                nav.getModel().getWinners(),
+                nav.getModel().getLeaderboard(),
+                nav.getMyNickname()
+        );
     }
 
     @Override
@@ -33,19 +42,17 @@ public class GameEndedState implements UIState {
         if (input == null || input.isBlank()) return;
 
         String[] parts = input.trim().split("\\s+");
-        String commandKey = parts[0].toLowerCase();
+        CommandFactory factory = commandRegistry.get(parts[0].toLowerCase());
 
-        CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
-            tui.print("Comando non valido. Usa '0' (menu) o 'd' (disconnetti).");
+            out.print("Comando non valido. Usa '0' (menu) o 'd' (disconnetti).");
             return;
         }
 
         try {
-            GameCommand command = factory.create(parts);
-            command.execute();
+            factory.create(parts).execute();
         } catch (Exception e) {
-            tui.print("Errore: " + e.getMessage());
+            out.print("Errore: " + e.getMessage());
         }
     }
 }

@@ -73,7 +73,7 @@ public class ClientMain {
         try {
             ClientUI ui = UIFactory.create(uiChoice, model);
             EventApplier eventApplier = new EventApplier(model);
-            ClientNotificationController receiver = new ClientNotificationController(model, eventApplier, ui);
+            ClientNotificationController receiver = new ClientNotificationController(model, eventApplier);
             NetworkClientFactory networkFactory = new NetworkClientFactory(List.of(
                     new SocketConnectionFactory(),
                     new RMIConnectionFactory()

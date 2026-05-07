@@ -1,21 +1,20 @@
 package it.polimi.ingsw.client.tui.commands;
 
 import it.polimi.ingsw.client.network.ServerController;
-import it.polimi.ingsw.client.tui.TUI;
+import it.polimi.ingsw.client.tui.OutputPort;
 
 public class LeaveGameCommand implements GameCommand {
     private final ServerController controller;
-    private final TUI tui;
+    private final OutputPort out;
 
-    public LeaveGameCommand(ServerController controller, TUI tui) {
+    public LeaveGameCommand(ServerController controller, OutputPort out) {
         this.controller = controller;
-        this.tui = tui;
+        this.out = out;
     }
 
     @Override
     public void execute() {
-        controller.leaveGame();
-
-        tui.print("Richiesta di uscita dalla lobby inviata...");
+        controller.leaveGame(); // o leaveMatch() se hai implementato la separazione
+        out.print("Richiesta di uscita inviata...");
     }
 }

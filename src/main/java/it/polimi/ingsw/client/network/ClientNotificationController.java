@@ -16,19 +16,17 @@ import java.util.List;
 public class ClientNotificationController implements ServerNotificationReceiver {
     private final LightGameModel model;
     private final EventApplier applier;
-    private final ClientUI ui;
 
-    public ClientNotificationController(LightGameModel model, EventApplier applier, ClientUI ui) {
+    // Nota: ho rimosso ClientUI dal costruttore, non ci serve più!
+    public ClientNotificationController(LightGameModel model, EventApplier applier) {
         this.model = model;
         this.applier = applier;
-        this.ui = ui;
     }
 
     @Override
     public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
         model.setFullState(board, players, activePlayer);
         model.setAvailableActions(actions);
-        ui.dispatch(UIState::onGameStarted);
     }
 
     @Override
@@ -44,31 +42,31 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void error(String error) {
-        ui.dispatch(state -> state.onError(error));
+        model.setGlobalError(error);
     }
 
     @Override
     public void matchmakingSuccess(String text) {
-        ui.dispatch(state -> state.onMatchmakingSuccess(text));
+        model.setLobbyData(model.getLobbyPlayers(), text);
     }
 
     @Override
     public void availableGames(List<GameInfoDTO> games) {
-        ui.dispatch(state -> state.onAvailableGames(games));
+        model.setAvailableGames(games);
     }
 
     @Override
     public void gameAborted(String reason) {
-        ui.dispatch(state -> state.onGameAborted(reason));
+        model.setGameAborted(reason);
     }
 
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
-        ui.dispatch(state -> state.onRoomUpdate(currentPlayers, notification));
+        model.setLobbyData(currentPlayers, notification);
     }
 
     @Override
     public void gameLeftSuccess(String text) {
-        ui.dispatch(UIState::onGameLeft);
+        model.setGameAborted(text); // Ricicliamo la logica di abort per far disconnettere agilmente la TUI e tornare al menu
     }
 }
