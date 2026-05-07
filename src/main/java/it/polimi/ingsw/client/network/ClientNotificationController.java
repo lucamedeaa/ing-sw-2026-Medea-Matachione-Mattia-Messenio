@@ -4,69 +4,24 @@ import it.polimi.ingsw.client.lightGameModel.EventApplier;
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.view.ClientUI;
-import it.polimi.ingsw.network.client.ClientNetworkReceiver;
+import it.polimi.ingsw.network.client.ServerNotificationReceiver;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
-import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.List;
 
-public class ClientMessageReceiver implements ClientNetworkReceiver {
+public class ClientNotificationController implements ServerNotificationReceiver {
     private final LightGameModel model;
     private final EventApplier applier;
     private final ClientUI ui;
 
-    public ClientMessageReceiver(LightGameModel model,ClientUI ui) {
+    public ClientNotificationController(LightGameModel model, EventApplier applier, ClientUI ui) {
         this.model = model;
-        this.applier = new EventApplier(model);
-        this.ui=ui;
-    }
-
-    @Override
-    public void visit(FullSyncMessage msg) {
-        fullSync(msg.board(), msg.players(), msg.activePlayer(), msg.actions());
-    }
-
-    @Override
-    public void visit(DeltaEventMessage msg) {
-        deltaEvent(msg.events(), msg.nextActions(), msg.activePlayer());
-    }
-
-    @Override
-    public void visit(ErrorMessage message) {
-        error(message.error());
-    }
-
-    @Override
-    public void visit(ErrorMessageDTO message) {
-        error(message.error());
-    }
-
-    @Override
-    public void visit(MatchmakingSuccessMessage message) {
-        matchmakingSuccess(message.text());
-    }
-
-    @Override
-    public void visit(AvailableGamesResponseMessage message) {
-        availableGames(message.games());
-    }
-
-    @Override
-    public void visit(GameAbortedMessage message) {
-        gameAborted(message.reason());
-    }
-
-    @Override
-    public void visit(RoomUpdateMessage message) {
-        roomUpdate(message.notification(), message.currentPlayers());
-    }
-
-    @Override
-    public void visit(GameLeftSuccessMessage message) {
-        gameLeftSuccess(message.text());
+        this.applier = applier;
+        this.ui = ui;
     }
 
     @Override

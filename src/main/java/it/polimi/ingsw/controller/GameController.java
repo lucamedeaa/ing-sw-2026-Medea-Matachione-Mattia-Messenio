@@ -1,30 +1,24 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.server.GameRoom;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class GameController {
 
     private final ModelControllerInterface game;
     private final ExecutorService gameExecutor;
-    private final GameRoom gameRoom;
+    private final GameLifecycleCallback lifecycleCallback;
 
-    public GameController(ModelControllerInterface game, GameRoom gameRoom) {
+    public GameController(
+            ModelControllerInterface game,
+            ExecutorService gameExecutor,
+            GameLifecycleCallback lifecycleCallback
+    ) {
         this.game = game;
-        this.gameRoom = gameRoom;
-        this.gameExecutor = Executors.newSingleThreadExecutor();
+        this.gameExecutor = gameExecutor;
+        this.lifecycleCallback = lifecycleCallback;
     }
-
-    public ExecutorService getGameExecutor() {
-        return gameExecutor;
-    }
-
-
-    //TODO: scrivere metodi con try catch ed eccezione da lanciare a virtualview
-
     public void handlePlayerDisconnection(String nickname) {
         gameExecutor.submit(() -> {
             if (game.isEnded()) return;
@@ -80,9 +74,9 @@ public class GameController {
     private void checkGameStateAndHandleEnd() {
         //TODO salvare dati nel database quando non è per disconnessione giocatori
         if (game.isEnded()) {
-            if (this.gameRoom != null) {
+            if (this.lifecycleCallback != null) {
                 //TODO aggiustare reason
-                this.gameRoom.closeRoom("Partita terminata.");
+                this.lifecycleCallback.closeRoom("Partita terminata.");
             }
         }
     }

@@ -1,7 +1,8 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.network.server.ClientConnection;
+import it.polimi.ingsw.controller.GameLifecycleCallback;
+import it.polimi.ingsw.network.server.RoomClientProxy;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
 import it.polimi.ingsw.virtualView.VirtualView;
 import it.polimi.ingsw.controller.GameController;
@@ -10,20 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /** Represents a game lobby that manages players, connections, and game lifecycle. */
-public class GameRoom {
+public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     private final String gameId;
     private final int maxPlayers;
-    private final GameManager gameManager;
-    private final Map<String, ClientConnection> players;
+    private final GameManagerInterface gameManager;
+    private final Map<String, RoomClientProxy> players;
     private boolean gameStarted;
     private Game game;
     private GameController controller;
+    private ExecutorService gameExecutor;
 
-    public GameRoom(String gameId, int maxPlayers, GameManager gameManager) {
+    public GameRoom(String gameId, int maxPlayers, GameManagerInterface gameManager) {
         this.gameId = gameId;
         this.maxPlayers = maxPlayers;
         this.gameManager = gameManager;
@@ -32,8 +36,9 @@ public class GameRoom {
     }
 
     /** Adds a player to the room and starts the game if full. */
-    public void addPlayer(String nickname, ClientConnection connection) throws RoomFullException, IllegalStateException {
+    public RoomAdmissionResult addPlayer(String nickname, RoomClientProxy connection) throws RoomFullException, IllegalStateException {
         boolean startNow = false;
+        // Only room state is mutated under this lock.
         synchronized (this) {
             if (gameStarted) {
                 throw new IllegalStateException("Game already started.");
@@ -41,7 +46,6 @@ public class GameRoom {
             if (isFull()) {
                 throw new RoomFullException("Game is full.");
             }
-            connection.setNickname(nickname);
             players.put(nickname, connection);
             if (isFull()) {
                 this.gameStarted = true;
@@ -49,22 +53,30 @@ public class GameRoom {
             }
         }
 
+        // Run network-visible effects only after matchmaking success.
+        RoomAdmissionResult broadcastJoin = new RoomAdmissionResult(
+                () -> broadcast("Il giocatore " + nickname + " è entrato.")
+        );
         if (startNow) {
-            startGame();
+            return new RoomAdmissionResult(() -> {
+                broadcastJoin.afterMatchmakingSuccess();
+                startGame();
+            });
         }
+        return broadcastJoin;
     }
 
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
         this.game = new Game(getPlayers());
-        this.controller = new GameController(game, this);
-        //everyone has a virtualview set, if one leaves the game everyone gets notified
-        controller.getGameExecutor().submit(() -> {
-            for (Map.Entry<String, ClientConnection> entry : players.entrySet()) {
+        this.gameExecutor = Executors.newSingleThreadExecutor();
+        this.controller = new GameController(game, gameExecutor, this);
+        gameExecutor.submit(() -> {
+            for (Map.Entry<String, RoomClientProxy> entry : players.entrySet()) {
                 String name = entry.getKey();
-                ClientConnection conn = entry.getValue();
-                VirtualView vv = new VirtualView(name, conn, controller);
-                conn.setVirtualView(vv);
+                RoomClientProxy conn = entry.getValue();
+                VirtualView vv = new VirtualView(name, conn);
+                conn.transitionToGameState(controller);
                 game.addObserver(vv);
             }
             game.start();
@@ -80,7 +92,7 @@ public class GameRoom {
                 throw new IllegalStateException("Game already started. Cannot leave now.");
             }
 
-            ClientConnection removed = players.remove(nickname);
+            RoomClientProxy removed = players.remove(nickname);
             if (players.isEmpty()) {
                 roomIsEmpty = true;
             } else if (removed != null) {
@@ -98,11 +110,9 @@ public class GameRoom {
     }
 
     public void closeRoom(String reason) {
-        //TODO fare un metodo sia per player disconnesso che per partita temrminata correttamente. In uno trall'altro non fai set dei player ultimi
-        //GameTerminationMessage terminationMsg = new GameTerminationMessage(reason);
         int finalPlayerCount = this.maxPlayers; // Serve per il DB
 
-        for (ClientConnection conn : players.values()) {
+        for (RoomClientProxy conn : players.values()) {
             conn.returnToLobby(finalPlayerCount);
         }
         gameManager.removeGame(this.gameId);
@@ -133,10 +143,10 @@ public class GameRoom {
     }
 
     public void broadcast(String messageText) {
-        List<ClientConnection> currentConnections = new ArrayList<>(players.values());
+        List<RoomClientProxy> currentConnections = new ArrayList<>(players.values());
         List<String> currentPlayers = getPlayers();
 
-        for (ClientConnection conn : currentConnections) {
+        for (RoomClientProxy conn : currentConnections) {
             conn.roomUpdate(messageText, currentPlayers);
         }
     }

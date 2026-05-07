@@ -1,14 +1,18 @@
 package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
-import it.polimi.ingsw.client.network.ClientMessageReceiver;
+import it.polimi.ingsw.client.lightGameModel.EventApplier;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.network.NetworkClientFactory;
+import it.polimi.ingsw.client.network.RMIConnectionFactory;
 import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.network.SocketConnectionFactory;
 import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.client.view.UIFactory;
 import it.polimi.ingsw.network.client.ServerProxy;
 
 import java.util.Scanner;
+import java.util.List;
 
 public class ClientMain {
     public static void main(String[] args) {
@@ -68,8 +72,13 @@ public class ClientMain {
         LightGameModel model = new LightGameModel();
         try {
             ClientUI ui = UIFactory.create(uiChoice, model);
-            ClientMessageReceiver receiver = new ClientMessageReceiver(model, ui);
-            ServerProxy server = NetworkClientFactory.createConnection(type, ip, port, receiver);
+            EventApplier eventApplier = new EventApplier(model);
+            ClientNotificationController receiver = new ClientNotificationController(model, eventApplier, ui);
+            NetworkClientFactory networkFactory = new NetworkClientFactory(List.of(
+                    new SocketConnectionFactory(),
+                    new RMIConnectionFactory()
+            ));
+            ServerProxy server = networkFactory.createConnection(type, ip, port, receiver);
             ServerController controller = new ServerController(server);
             ui.setController(controller);
 

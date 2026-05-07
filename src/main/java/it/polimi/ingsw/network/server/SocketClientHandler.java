@@ -1,9 +1,9 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.server.GameManager;
-import it.polimi.ingsw.server.GameRoom;
-import it.polimi.ingsw.virtualView.VirtualView;
+import it.polimi.ingsw.server.GameManagerInterface;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
@@ -20,25 +20,24 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
-public class SocketClientHandler implements ClientConnection, Runnable {
+public class SocketClientHandler implements ConnectionContext, Runnable {
 
     private final Socket socket;
-    private final GameManager gameManager;
+    private final GameManagerInterface gameManager;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private VirtualView virtualView;
     private AtomicBoolean active = new AtomicBoolean(true);
     private final Object streamLock = new Object();
     private String nickname;
     private Integer lastMatchPlayerCount;
 
-    private MatchmakingState matchmakingState;
+    private volatile ConnectionState connectionState;
 
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
-    public SocketClientHandler(Socket socket, GameManager gameManager) throws IOException {
+    public SocketClientHandler(Socket socket, GameManagerInterface gameManager) throws IOException {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.matchmakingState = new MatchmakingState(this, gameManager);
+        this.connectionState = createLobbyState();
 
         this.socket.setSoTimeout(10000);
         this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -53,16 +52,17 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         return this.nickname;
     }
 
-
-    /** Associates a VirtualView to forward in-game messages. @param virtualView virtual view */
     @Override
-    public void setVirtualView(VirtualView virtualView) {
-        this.virtualView = virtualView;
-        // When view is set, we are no longer in matchmaking.
-        this.matchmakingState = null;
-        //in case vView changed after check in handleDisconnection
+    public boolean isActive() {
+        return this.active.get();
+    }
+
+
+    @Override
+    public void transitionToGameState(GameController gameController) {
+        this.connectionState = new InGameConnectionState(this.nickname, this, gameController);
         if (!this.active.get()) {
-            virtualView.handleDisconnection();
+            this.connectionState.handleDisconnection();
         }
     }
 
@@ -126,29 +126,17 @@ public class SocketClientHandler implements ClientConnection, Runnable {
     public void run() {
         try {
             while (active.get()) {
-                //TODO riscrivere con visitor per questo ed RMICLIENTHANDLER
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
                     sendMessage(new PongMessage());
                     continue;
                 }
-                if (input instanceof DisconnectionMessage ds) {
+                if (input instanceof DisconnectionMessage) {
                     handleClientDisconnection();
+                    continue;
                 }
-                else if (input instanceof MatchmakingMessage mm) {
-                    MatchmakingState currentMatchmaking = this.matchmakingState;
-                    if (currentMatchmaking != null) {
-                        mm.accept(currentMatchmaking);
-                    } else {
-                        error("Already in game. Cannot send matchmaking messages.");
-                    }
-                } else if (input instanceof InGameMessage igm) {
-                    VirtualView currentView = this.virtualView;
-                    if (currentView != null) {
-                        igm.accept(currentView);
-                    } else {
-                        error("Not in a game yet.");
-                    }
+                if (input instanceof ClientMessage message) {
+                    message.dispatchTo(this.connectionState);
                 } else {
                     error("Unknown message type.");
                 }
@@ -175,9 +163,8 @@ public class SocketClientHandler implements ClientConnection, Runnable {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.virtualView = null;
             this.lastMatchPlayerCount = playerCount;
-            this.matchmakingState = new MatchmakingState(this, gameManager);
+            this.connectionState = createLobbyState();
         }
     }
 
@@ -186,24 +173,14 @@ public class SocketClientHandler implements ClientConnection, Runnable {
         if (!active.compareAndSet(true, false)) return;
 
         closeConnection();
-        VirtualView currentView = this.virtualView;
-        String currentNickname = this.nickname;
-
-        if (currentView != null) {
-            currentView.handleDisconnection();
-        } else if (currentNickname != null) {
-            GameRoom room = gameManager.getGameRoomByPlayer(currentNickname);
-            if (room != null) {
-                try {
-                    room.removePlayer(currentNickname);
-                } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + currentNickname);
-                }
-            }
-            else{
-                gameManager.unregisterNickname(currentNickname);
-            }
+        // Use the connection lock to serialize cleanup with lobby admission.
+        synchronized (this) {
+            this.connectionState.handleDisconnection();
         }
+    }
+
+    private ConnectionState createLobbyState() {
+        return new LobbyConnectionState(this, new LobbyController(gameManager));
     }
 
     /** Closes socket and associated streams. */

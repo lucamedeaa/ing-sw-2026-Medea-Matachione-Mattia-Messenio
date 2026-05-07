@@ -1,34 +1,38 @@
 package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.network.client.*;
-import it.polimi.ingsw.network.rmi.RMIConnectionServer;
-import it.polimi.ingsw.network.rmi.RMIServerSession;
+import it.polimi.ingsw.network.client.ServerNotificationReceiver;
+import it.polimi.ingsw.network.client.ServerProxy;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class NetworkClientFactory {
+
+    private final Map<NetworkType, NetworkConnectionFactory> factories;
+
+    public NetworkClientFactory(List<NetworkConnectionFactory> factories) {
+        this.factories = factories.stream()
+                .collect(Collectors.toMap(NetworkConnectionFactory::type, factory -> factory));
+    }
 
     public enum NetworkType {
         SOCKET,
         RMI
     }
 
-    public static ServerProxy createConnection(
+    public ServerProxy createConnection(
             NetworkType type,
             String ip,
             int port,
-            ClientNetworkReceiver receiver) throws Exception {
-        if (type == NetworkType.SOCKET) {
-            SocketServerConnection socketConn = new SocketServerConnection(ip, port, receiver);
-            new Thread(socketConn).start();
-            return new SocketServerProxy(socketConn);
-        } else {
-            Registry registry = LocateRegistry.getRegistry(ip, port);
-            RMIConnectionServer server = (RMIConnectionServer) registry.lookup("MesosServer");
-            RMIClientCallbackImpl callback = new RMIClientCallbackImpl(receiver);
-            RMIServerSession session = server.connect(callback);
-            return new RMIServerProxy(session, callback);
+            ServerNotificationReceiver receiver) throws Exception {
+        if (type == null) {
+            throw new IllegalArgumentException("Network type cannot be null.");
         }
+        NetworkConnectionFactory factory = factories.get(type);
+        if (factory == null) {
+            throw new IllegalArgumentException("Unsupported network type: " + type);
+        }
+        return factory.create(ip, port, receiver);
     }
 }

@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Manages active game rooms, handling creation, lookup, listing, and removal of games. */
-public class GameManager {
+public class GameManager implements GameManagerInterface {
 
     private final Map<String, GameRoom> activeGames = new ConcurrentHashMap<>();
     private final Set<String> activeNicknames = ConcurrentHashMap.newKeySet();
@@ -33,12 +33,12 @@ public class GameManager {
         return gameId;
     }
 
-    /** Retrieves a game room by its identifier. @param gameId game identifier @return corresponding GameRoom or null if not found */
-    public GameRoom getGame(String gameId) {
+    /** Retrieves a room connection port by its identifier. @param gameId game identifier @return room connection port or null if not found */
+    public RoomConnectionHandler getRoom(String gameId) {
         return activeGames.get(gameId);
     }
 
-    public GameRoom getGameRoomByPlayer(String nickname) {
+    public RoomConnectionHandler getRoomByPlayer(String nickname) {
         for (GameRoom room : activeGames.values()) {
             if (room.isNicknameTaken(nickname)) {
                 return room;

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
@@ -7,9 +9,7 @@ import it.polimi.ingsw.network.dto.PlayerDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
-import it.polimi.ingsw.server.GameManager;
-import it.polimi.ingsw.server.GameRoom;
-import it.polimi.ingsw.virtualView.VirtualView;
+import it.polimi.ingsw.server.GameManagerInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -21,12 +21,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** RMI client handler exposing native RPC methods for client actions. */
-public class RMIClientHandler extends UnicastRemoteObject implements ClientConnection, RMIServerSession {
+public class RMIClientHandler extends UnicastRemoteObject implements ConnectionContext, RMIServerSession {
 
-    private final GameManager gameManager;
+    private final GameManagerInterface gameManager;
     private final RMIClientCallback callback;
-    private volatile VirtualView virtualView;
-    private volatile MatchmakingState matchmakingState;
+    private volatile ConnectionState connectionState;
     private String nickname;
     private Integer lastMatchPlayerCount;
 
@@ -35,11 +34,11 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     private final AtomicBoolean active = new AtomicBoolean(true);
     private final AtomicLong lastPingTime = new AtomicLong();
 
-    public RMIClientHandler(GameManager gameManager, RMIClientCallback callback) throws RemoteException {
+    public RMIClientHandler(GameManagerInterface gameManager, RMIClientCallback callback) throws RemoteException {
         super();
         this.callback = callback;
         this.gameManager = gameManager;
-        this.matchmakingState = new MatchmakingState(this, gameManager);
+        this.connectionState = createLobbyState();
         this.lastPingTime.set(System.currentTimeMillis());
         this.timeoutChecker = Executors.newSingleThreadScheduledExecutor();
 
@@ -60,11 +59,15 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
     }
 
     @Override
-    public void setVirtualView(VirtualView virtualView) {
-        this.matchmakingState = null;
-        this.virtualView = virtualView;
+    public boolean isActive() {
+        return this.active.get();
+    }
+
+    @Override
+    public void transitionToGameState(GameController gameController) {
+        this.connectionState = new InGameConnectionState(this.nickname, this, gameController);
         if (!this.active.get()) {
-            virtualView.handleDisconnection();
+            this.connectionState.handleDisconnection();
         }
     }
 
@@ -81,58 +84,37 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
 
     @Override
     public void createGame(String nickname, int maxPlayers) {
-        MatchmakingState currentMatchmaking = currentMatchmaking();
-        if (currentMatchmaking != null) {
-            currentMatchmaking.createGame(nickname, maxPlayers);
-        }
+        currentState().createGame(nickname, maxPlayers);
     }
 
     @Override
     public void joinGame(String nickname, String gameId) {
-        MatchmakingState currentMatchmaking = currentMatchmaking();
-        if (currentMatchmaking != null) {
-            currentMatchmaking.joinGame(nickname, gameId);
-        }
+        currentState().joinGame(nickname, gameId);
     }
 
     @Override
     public void getAvailableGames() {
-        MatchmakingState currentMatchmaking = currentMatchmaking();
-        if (currentMatchmaking != null) {
-            currentMatchmaking.getAvailableGames();
-        }
+        currentState().getAvailableGames();
     }
 
     @Override
     public void leaveGame() {
-        MatchmakingState currentMatchmaking = currentMatchmaking();
-        if (currentMatchmaking != null) {
-            currentMatchmaking.leaveGame();
-        }
+        currentState().leaveGame();
     }
 
     @Override
     public void placeTotem(int positionIndex) {
-        VirtualView currentView = currentVirtualView();
-        if (currentView != null) {
-            currentView.placeTotem(positionIndex);
-        }
+        currentState().placeTotem(positionIndex);
     }
 
     @Override
     public void takeCard(int row, int col) {
-        VirtualView currentView = currentVirtualView();
-        if (currentView != null) {
-            currentView.takeCard(row, col);
-        }
+        currentState().takeCard(row, col);
     }
 
     @Override
     public void skipAction() {
-        VirtualView currentView = currentVirtualView();
-        if (currentView != null) {
-            currentView.skipAction();
-        }
+        currentState().skipAction();
     }
 
     @Override
@@ -182,28 +164,14 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.virtualView = null;
             this.lastMatchPlayerCount = playerCount;
-            this.matchmakingState = new MatchmakingState(this, gameManager);
+            this.connectionState = createLobbyState();
         }
     }
 
-    private MatchmakingState currentMatchmaking() {
+    private ConnectionState currentState() {
         touch();
-        MatchmakingState currentMatchmaking = this.matchmakingState;
-        if (currentMatchmaking == null) {
-            error("Already in game.");
-        }
-        return currentMatchmaking;
-    }
-
-    private VirtualView currentVirtualView() {
-        touch();
-        VirtualView currentView = this.virtualView;
-        if (currentView == null) {
-            error("Not in a game yet.");
-        }
-        return currentView;
+        return this.connectionState;
     }
 
     private void touch() {
@@ -228,22 +196,14 @@ public class RMIClientHandler extends UnicastRemoteObject implements ClientConne
         }
 
         closeConnection();
-        VirtualView currentView = this.virtualView;
-        String currentNickname = this.nickname;
-        if (currentView != null) {
-            currentView.handleDisconnection();
-        } else if (currentNickname != null) {
-            GameRoom room = gameManager.getGameRoomByPlayer(currentNickname);
-            if (room != null) {
-                try {
-                    room.removePlayer(currentNickname);
-                } catch (IllegalStateException e) {
-                    System.out.println("[RMI] Disconnessione tardiva in lobby per: " + currentNickname);
-                }
-            } else {
-                gameManager.unregisterNickname(currentNickname);
-            }
+        // Use the connection lock to serialize cleanup with lobby admission.
+        synchronized (this) {
+            this.connectionState.handleDisconnection();
         }
+    }
+
+    private ConnectionState createLobbyState() {
+        return new LobbyConnectionState(this, new LobbyController(gameManager));
     }
 
     private void closeConnection() {

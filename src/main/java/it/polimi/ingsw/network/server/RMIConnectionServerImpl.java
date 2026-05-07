@@ -2,16 +2,15 @@ package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
-import it.polimi.ingsw.network.server.ClientConnection;
 import it.polimi.ingsw.network.rmi.RMIConnectionServer;
-import it.polimi.ingsw.server.GameManager;
+import it.polimi.ingsw.server.GameManagerInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RMIConnectionServerImpl extends UnicastRemoteObject implements RMIConnectionServer {
-    private final GameManager gameManager;
-    public RMIConnectionServerImpl(GameManager gameManager) throws RemoteException {
+    private final GameManagerInterface gameManager;
+    public RMIConnectionServerImpl(GameManagerInterface gameManager) throws RemoteException {
         super();
         this.gameManager = gameManager;
     }
