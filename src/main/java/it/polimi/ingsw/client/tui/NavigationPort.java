@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.tui;
 
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.network.ServerController;
 
 public interface NavigationPort {
@@ -9,4 +10,6 @@ public interface NavigationPort {
     ServerController getController();
     void setMyNickname(String nickname);
     String getMyNickname();
+
+    ClientNotificationController getNotificationController();
 }

@@ -71,7 +71,7 @@ public class ClientMain {
 
         LightGameModel model = new LightGameModel();
         try {
-            ClientUI ui = UIFactory.create(uiChoice, model);
+            ClientUI ui = UIFactory.create(uiChoice, model, scanner);
             EventApplier eventApplier = new EventApplier(model);
             ClientNotificationController receiver = new ClientNotificationController(model, eventApplier);
             NetworkClientFactory networkFactory = new NetworkClientFactory(List.of(
@@ -81,7 +81,7 @@ public class ClientMain {
             ServerProxy server = networkFactory.createConnection(type, ip, port, receiver);
             ServerController controller = new ServerController(server);
             ui.setController(controller);
-
+            ui.setNotificationController(receiver);
             ui.start();
         } catch (Exception e) {
             System.err.println("\n \033[1;41;37m ERRORE FATALE \033[0m \033[1;31mImpossibile connettersi: " + e.getMessage() + "\033[0m");

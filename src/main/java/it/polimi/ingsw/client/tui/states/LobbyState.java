@@ -5,20 +5,26 @@ import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.tui.commands.*;
 import it.polimi.ingsw.client.tui.render.LobbyRenderer;
+import it.polimi.ingsw.client.view.listeners.LobbyView;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class LobbyState implements UIState {
+public class LobbyState implements UIState, LobbyView {
     private final NavigationPort nav;
     private final OutputPort out;
     private final LobbyRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
+    private boolean initialized = false;
 
     public LobbyState(NavigationPort nav, OutputPort out) {
         this.nav = nav;
         this.out = out;
         this.renderer = new LobbyRenderer(out);
+
         registerCommands();
+        nav.getNotificationController().setLobbyView(this);
     }
 
     private void registerCommands() {
@@ -28,16 +34,8 @@ public class LobbyState implements UIState {
 
     @Override
     public void render() {
-        renderer.render(
-                nav.getModel().getLobbyPlayers(),
-                nav.getModel().getLobbyNotification(),
-                nav.getMyNickname()
-        );
-
-        // Transizione automatica se il gioco inizia
-        if (!nav.getModel().getUpperRowCards().isEmpty()) {
-            nav.changeState(new InGameState(nav, out));
-        }
+        if(!initialized) {return;}
+        renderer.render(nav.getModel().getLobbyPlayers(), nav.getModel().getLobbyNotification(), nav.getMyNickname());
     }
 
     @Override
@@ -46,5 +44,25 @@ public class LobbyState implements UIState {
         String[] parts = input.trim().split("\\s+");
         CommandFactory factory = commandRegistry.get(parts[0].toLowerCase());
         if (factory != null) factory.create(parts).execute();
+    }
+
+    @Override
+    public void onRoomUpdate(String notification, List<String> currentPlayers) {
+        this.initialized = true;
+        render(); // Aggiorno lo schermo con il nuovo giocatore
+    }
+
+    @Override
+    public void onError(String error) {
+        // estisci l'errore in lobby
+    }
+
+    @Override
+    public void onGameStarted() {
+        //  Mi de-registro
+        nav.getNotificationController().setLobbyView(null);
+
+        // va in gioco
+        nav.changeState(new InGameState(nav, out));
     }
 }

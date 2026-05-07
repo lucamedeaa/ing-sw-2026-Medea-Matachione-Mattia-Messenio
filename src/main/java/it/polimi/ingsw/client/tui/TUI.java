@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.tui;
 
 import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.lightGameModel.UIObserver;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.tui.states.MatchmakingState;
 import it.polimi.ingsw.client.view.ClientUI;
@@ -11,12 +12,14 @@ import java.util.Scanner;
 public class TUI implements ClientUI, UIObserver, NavigationPort, OutputPort {
     private UIState currentState;
     private ServerController controller;
+    private ClientNotificationController notificationController;
     private final LightGameModel model;
     private String myNickname = "";
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner;
 
-    public TUI(LightGameModel model) {
+    public TUI(LightGameModel model, Scanner scanner) {
         this.model = model;
+        this.scanner = scanner;
         this.model.addObserver(this);
     }
 
@@ -24,6 +27,12 @@ public class TUI implements ClientUI, UIObserver, NavigationPort, OutputPort {
     public void setController(ServerController controller) {
         this.controller = controller;
     }
+
+    @Override
+    public void setNotificationController(ClientNotificationController nc) { this.notificationController = nc; }
+
+    @Override
+    public ClientNotificationController getNotificationController() { return this.notificationController; }
 
     @Override
     public void start() {

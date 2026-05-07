@@ -6,13 +6,14 @@ import it.polimi.ingsw.client.tui.TUI;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.tui.commands.*;
 import it.polimi.ingsw.client.tui.render.MatchmakingRenderer;
+import it.polimi.ingsw.client.view.listeners.MatchmakingView;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.*;
 
 import static java.util.Arrays.copyOfRange;
 
-public class MatchmakingState implements UIState {
+public class MatchmakingState implements UIState, MatchmakingView {
     private final NavigationPort nav;
     private final OutputPort out;
     private final MatchmakingRenderer renderer;
@@ -23,7 +24,9 @@ public class MatchmakingState implements UIState {
         this.nav = nav;
         this.out = out;
         this.renderer = new MatchmakingRenderer(out);
+
         registerCommands();
+        nav.getNotificationController().setMatchmakingView(this);
     }
 
     private void registerCommands() {
@@ -54,15 +57,8 @@ public class MatchmakingState implements UIState {
 
     @Override
     public void render() {
-        // Prende i dati puri dal model e li passa al renderer grafico
         String error = nav.getModel().consumeGlobalError();
         renderer.render(nav.getModel().getAvailableGames(), error);
-
-        // Se nel frattempo i dati della lobby si sono popolati (successo del join/create), cambia stato
-        if (!nav.getModel().getLobbyPlayers().isEmpty() || !nav.getModel().getLobbyNotification().isEmpty()) {
-            nav.setMyNickname(this.pendingNickname);
-            nav.changeState(new LobbyState(nav, out));
-        }
     }
 
     @Override
@@ -89,6 +85,26 @@ public class MatchmakingState implements UIState {
             nav.getModel().setGlobalError("Errore durante l'esecuzione: " + e.getMessage());
             render();
         }
+    }
+
+    @Override
+    public void onAvailableGames(List<GameInfoDTO> games) {
+        render(); // i sono nuove partite, ridisegno lo schermo
+    }
+
+    @Override
+    public void onError(String error) {
+        render();
+    }
+
+    @Override
+    public void onMatchmakingSuccess(String text) {
+        //  MI DE-REGISTRO prima di morire
+        nav.getNotificationController().setMatchmakingView(null);
+
+        //  va in Lobby
+        nav.setMyNickname(this.pendingNickname);
+        nav.changeState(new LobbyState(nav, out));
     }
 
 }
