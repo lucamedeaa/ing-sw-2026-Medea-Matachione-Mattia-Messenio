@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.network.messages.AfterGameMessage;
 import it.polimi.ingsw.network.messages.InGameMessage;
 import it.polimi.ingsw.network.messages.MatchmakingMessage;
 import it.polimi.ingsw.network.visitor.InGameVisitor;
@@ -8,20 +9,20 @@ import it.polimi.ingsw.network.visitor.InGameVisitor;
 public class InGameConnectionState implements ConnectionState {
 
     private final String nickname;
-    private final ClientProxy client;
+    private final ConnectionContext connection;
     private final GameController gameController;
     private final InGameVisitor socketGameActionVisitor;
 
-    public InGameConnectionState(String nickname, ClientProxy client, GameController gameController) {
+    public InGameConnectionState(String nickname, ConnectionContext connection, GameController gameController) {
         this.nickname = nickname;
-        this.client = client;
+        this.connection = connection;
         this.gameController = gameController;
         this.socketGameActionVisitor = new SocketGameActionVisitor(this);
     }
 
     @Override
     public void handle(MatchmakingMessage message) {
-        client.error("Already in game. Cannot send matchmaking messages.");
+        connection.error("Already in game. Cannot send matchmaking messages.");
     }
 
     @Override
@@ -30,23 +31,30 @@ public class InGameConnectionState implements ConnectionState {
     }
 
     @Override
+    public void handle(AfterGameMessage message) {
+        connection.error("Game is still running.");
+    }
+
+    @Override
     public void createGame(String nickname, int maxPlayers) {
-        client.error("Already in game.");
+        connection.error("Already in game.");
     }
 
     @Override
     public void joinGame(String nickname, String gameId) {
-        client.error("Already in game.");
+        connection.error("Already in game.");
     }
 
     @Override
     public void getAvailableGames() {
-        client.error("Already in game.");
+        connection.error("Already in game.");
     }
 
     @Override
     public void leaveGame() {
-        client.error("Already in game.");
+        connection.transitionToLobby();
+        connection.gameLeftSuccess("Returned to lobby.");
+        gameController.handlePlayerDisconnection(nickname);
     }
 
     @Override
@@ -65,11 +73,17 @@ public class InGameConnectionState implements ConnectionState {
     }
 
     @Override
+    public void getLeaderboard() {
+        connection.error("Game is still running.");
+    }
+
+    @Override
     public void handleDisconnection() {
+        connection.clearNickname();
         gameController.handlePlayerDisconnection(nickname);
     }
 
     private void sendMoveError(String errorMessage) {
-        client.error("Errore mossa: " + errorMessage);
+        connection.error("Errore mossa: " + errorMessage);
     }
 }

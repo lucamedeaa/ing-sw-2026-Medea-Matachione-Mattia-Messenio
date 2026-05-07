@@ -3,7 +3,9 @@ package it.polimi.ingsw.network.rmi;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.rmi.Remote;
@@ -28,4 +30,8 @@ public interface RMIClientCallback extends Remote {
     void onRoomUpdate(String notification, List<String> currentPlayers) throws RemoteException;
 
     void onGameLeftSuccess(String text) throws RemoteException;
+
+    void onGameCompleted(PlayerGameCompletedDTO completedGame) throws RemoteException;
+
+    void onLeaderboard(LeaderboardSnapshot leaderboard) throws RemoteException;
 }

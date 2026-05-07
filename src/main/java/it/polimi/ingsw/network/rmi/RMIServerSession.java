@@ -23,4 +23,6 @@ public interface RMIServerSession extends Remote {
     void takeCard(int row, int col) throws RemoteException;
 
     void skipAction() throws RemoteException;
+
+    void getLeaderboard() throws RemoteException;
 }

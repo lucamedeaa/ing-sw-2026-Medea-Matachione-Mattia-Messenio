@@ -4,13 +4,13 @@ import it.polimi.ingsw.controller.ModelControllerInterface;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.model.gameState.GameEndedState;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
 import it.polimi.ingsw.model.updates.*;
 
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Game implements ModelControllerInterface {
@@ -21,7 +21,7 @@ public class Game implements ModelControllerInterface {
     private int currentRound;
     private GameState currentState;
     private List<ModelObserver> observers = new ArrayList<>();
-    private boolean isEnded = false;
+    private GameCompletionHandler completionHandler = result -> {};
 
     private final List<GameEvent> pendingEvents = new ArrayList<>();
 
@@ -48,6 +48,18 @@ public class Game implements ModelControllerInterface {
     }
 
     public void addObserver(ModelObserver obs) { observers.add(obs); }
+
+    public void setCompletionHandler(GameCompletionHandler completionHandler) {
+        this.completionHandler = completionHandler != null ? completionHandler : result -> {};
+    }
+
+    public boolean abort(){
+        if (this.currentState.isEnded()) {
+            return false;
+        }
+        this.changeState(new GameEndedState(this));
+        return true;
+    }
 
     public void pushEvent(GameEvent event) {
         this.pendingEvents.add(event);
@@ -135,12 +147,12 @@ public class Game implements ModelControllerInterface {
         return this.currentRound;
     }
 
-    public boolean isEnded(){
-        return isEnded;
-    }
 
-    public void setEnded(){
-        this.isEnded = true;
+    public void completeNormally(CompletedGameResult result) {
+        if (this.currentState.isEnded()) {
+            return;
+        }
+        this.changeState(new GameEndedState(this));
+        completionHandler.onGameCompleted(result);
     }
-
 }

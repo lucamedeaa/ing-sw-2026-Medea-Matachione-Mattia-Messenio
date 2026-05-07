@@ -2,6 +2,7 @@ package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.messages.CreateGameMessage;
 import it.polimi.ingsw.network.messages.GetAvailableGamesMessage;
+import it.polimi.ingsw.network.messages.GetLeaderboardMessage;
 import it.polimi.ingsw.network.messages.JoinGameMessage;
 import it.polimi.ingsw.network.messages.LeaveGameMessage;
 import it.polimi.ingsw.network.messages.PlaceTotemMessage;
@@ -49,6 +50,11 @@ public class SocketServerProxy implements ServerProxy {
     @Override
     public void skipAction() {
         connection.sendMessage(new SkipActionMessage());
+    }
+
+    @Override
+    public void getLeaderboard() {
+        connection.sendMessage(new GetLeaderboardMessage());
     }
 
     @Override

@@ -1,15 +1,23 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.CompletedGameResult;
+import it.polimi.ingsw.model.PlayerGameResult;
 import it.polimi.ingsw.controller.GameLifecycleCallback;
+import it.polimi.ingsw.network.dto.LeaderboardEntryDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.server.RoomClientProxy;
 import it.polimi.ingsw.server.exceptions.RoomFullException;
+import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 import it.polimi.ingsw.virtualView.VirtualView;
 import it.polimi.ingsw.controller.GameController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,16 +29,16 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     private final String gameId;
     private final int maxPlayers;
     private final GameManagerInterface gameManager;
+    private final LeaderboardService leaderboardService;
     private final Map<String, RoomClientProxy> players;
     private boolean gameStarted;
-    private Game game;
-    private GameController controller;
     private ExecutorService gameExecutor;
 
-    public GameRoom(String gameId, int maxPlayers, GameManagerInterface gameManager) {
+    public GameRoom(String gameId, int maxPlayers, GameManagerInterface gameManager, LeaderboardService leaderboardService) {
         this.gameId = gameId;
         this.maxPlayers = maxPlayers;
         this.gameManager = gameManager;
+        this.leaderboardService = leaderboardService;
         this.players = new ConcurrentHashMap<>();
         this.gameStarted = false;
     }
@@ -68,9 +76,10 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
-        this.game = new Game(getPlayers());
+        Game game = new Game(getPlayers());
         this.gameExecutor = Executors.newSingleThreadExecutor();
-        this.controller = new GameController(game, gameExecutor, this);
+        GameController controller = new GameController(game, gameExecutor, this, leaderboardService);
+        game.setCompletionHandler(controller);
         gameExecutor.submit(() -> {
             for (Map.Entry<String, RoomClientProxy> entry : players.entrySet()) {
                 String name = entry.getKey();
@@ -109,13 +118,59 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         }
     }
 
-    public void closeRoom(String reason) {
-        int finalPlayerCount = this.maxPlayers; // Serve per il DB
+    @Override
+    public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDTO> personalBestEntries) {
+        Map<String, RoomClientProxy> connections = new HashMap<>(players);
+        int playerCount = completedGame.playerResults().size();
+        Map<String, PlayerGameResult> localResults = completedGame.playerResults().stream()
+                .collect(Collectors.toMap(PlayerGameResult::nickname, Function.identity()));
+        Map<String, LeaderboardEntryDTO> personalBestByNickname = personalBestEntries.stream()
+                .collect(Collectors.toMap(LeaderboardEntryDTO::nickname, Function.identity()));
 
-        for (RoomClientProxy conn : players.values()) {
-            conn.returnToLobby(finalPlayerCount);
+        for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+            String nickname = entry.getKey();
+            RoomClientProxy conn = entry.getValue();
+            PlayerGameResult localResult = localResults.get(nickname);
+            LeaderboardEntryDTO personalBestEntry = personalBestByNickname.get(nickname);
+            if (localResult == null || personalBestEntry == null) {
+                conn.error("Unable to build final leaderboard result.");
+                continue;
+            }
+
+            conn.transitionToAfterGameState(playerCount, leaderboardService);
+            conn.gameCompleted(new PlayerGameCompletedDTO(
+                    playerCount,
+                    localResult.position(),
+                    localResult.finalScore(),
+                    localResult.remainingFood(),
+                    personalBestEntry.position(),
+                    personalBestEntry.finalScore(),
+                    personalBestEntry.remainingFood()
+            ));
+        }
+
+        gameManager.removeGame(this.gameId);
+        if (gameExecutor != null) {
+            gameExecutor.shutdown();
+        }
+    }
+
+    @Override
+    public void closeAbortedRoom(String reason, String excludedNickname) {
+        Map<String, RoomClientProxy> connections = new HashMap<>(players);
+
+        for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+            if (entry.getKey().equals(excludedNickname)) {
+                continue;
+            }
+            RoomClientProxy conn = entry.getValue();
+            conn.gameAborted(reason);
+            conn.transitionToLobby();
         }
         gameManager.removeGame(this.gameId);
+        if (gameExecutor != null) {
+            gameExecutor.shutdown();
+        }
     }
 
     public synchronized boolean isFull() {

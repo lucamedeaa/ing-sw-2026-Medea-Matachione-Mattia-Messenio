@@ -2,12 +2,15 @@ package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.network.messages.InGameMessage;
 import it.polimi.ingsw.network.messages.MatchmakingMessage;
+import it.polimi.ingsw.network.messages.AfterGameMessage;
 
 public interface ConnectionState {
 
     void handle(MatchmakingMessage message);
 
     void handle(InGameMessage message);
+
+    void handle(AfterGameMessage message);
 
     void createGame(String nickname, int maxPlayers);
 
@@ -22,6 +25,8 @@ public interface ConnectionState {
     void takeCard(int row, int col);
 
     void skipAction();
+
+    void getLeaderboard();
 
     void handleDisconnection();
 }

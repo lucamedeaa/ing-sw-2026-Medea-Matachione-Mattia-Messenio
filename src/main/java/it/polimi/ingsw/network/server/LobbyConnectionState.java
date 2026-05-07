@@ -3,6 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.messages.InGameMessage;
 import it.polimi.ingsw.network.messages.MatchmakingMessage;
+import it.polimi.ingsw.network.messages.AfterGameMessage;
 import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
 import it.polimi.ingsw.server.RoomAdmissionResult;
 import it.polimi.ingsw.server.RoomConnectionHandler;
@@ -28,6 +29,11 @@ public class LobbyConnectionState implements ConnectionState {
     @Override
     public void handle(InGameMessage message) {
         connection.error("Not in a game yet.");
+    }
+
+    @Override
+    public void handle(AfterGameMessage message) {
+        connection.error("Not in an after-game state.");
     }
 
     @Override
@@ -96,6 +102,11 @@ public class LobbyConnectionState implements ConnectionState {
     @Override
     public void skipAction() {
         connection.error("Not in a game yet.");
+    }
+
+    @Override
+    public void getLeaderboard() {
+        connection.error("Not in an after-game state.");
     }
 
     @Override

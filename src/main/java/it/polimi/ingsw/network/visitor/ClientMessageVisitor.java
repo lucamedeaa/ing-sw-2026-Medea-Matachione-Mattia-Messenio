@@ -13,4 +13,6 @@ public interface ClientMessageVisitor {
     void visit(GameAbortedMessage message);
     void visit(RoomUpdateMessage message);
     void visit(GameLeftSuccessMessage message);
+    void visit(GameCompletedMessage message);
+    void visit(LeaderboardResponseMessage message);
 }

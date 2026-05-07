@@ -1,11 +1,15 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 public interface ConnectionContext extends RoomClientProxy {
 
     @Override
     void transitionToGameState(GameController gameController);
+
+    @Override
+    void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService);
 
     void setNickname(String nickname);
 
@@ -14,6 +18,8 @@ public interface ConnectionContext extends RoomClientProxy {
     boolean isActive();
 
     @Override
-    void returnToLobby(int playerCount);
+    void transitionToLobby();
+
+    void clearNickname();
 
 }

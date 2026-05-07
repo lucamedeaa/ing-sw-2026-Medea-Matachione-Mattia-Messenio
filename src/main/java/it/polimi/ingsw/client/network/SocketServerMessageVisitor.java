@@ -7,7 +7,9 @@ import it.polimi.ingsw.network.messages.ErrorMessage;
 import it.polimi.ingsw.network.messages.ErrorMessageDTO;
 import it.polimi.ingsw.network.messages.FullSyncMessage;
 import it.polimi.ingsw.network.messages.GameAbortedMessage;
+import it.polimi.ingsw.network.messages.GameCompletedMessage;
 import it.polimi.ingsw.network.messages.GameLeftSuccessMessage;
+import it.polimi.ingsw.network.messages.LeaderboardResponseMessage;
 import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
 import it.polimi.ingsw.network.messages.RoomUpdateMessage;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
@@ -52,6 +54,16 @@ public class SocketServerMessageVisitor implements ClientMessageVisitor {
     @Override
     public void visit(GameAbortedMessage message) {
         receiver.gameAborted(message.reason());
+    }
+
+    @Override
+    public void visit(GameCompletedMessage message) {
+        receiver.gameCompleted(message.completedGame());
+    }
+
+    @Override
+    public void visit(LeaderboardResponseMessage message) {
+        receiver.leaderboard(message.leaderboard());
     }
 
     @Override

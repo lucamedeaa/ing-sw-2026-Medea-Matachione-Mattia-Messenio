@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.network.server.SocketClientHandler;
 import it.polimi.ingsw.network.server.RMIConnectionServerImpl;
+import it.polimi.ingsw.server.leaderboard.InMemoryLeaderboardService;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,7 +21,7 @@ public class GameServer {
     public GameServer(int socketPort, int rmiPort) {
         this.socketPort = socketPort;
         this.rmiPort = rmiPort;
-        this.gameManager = new GameManager();
+        this.gameManager = new GameManager(new InMemoryLeaderboardService());
     }
 
     /** Starts the server by initializing both RMI and Socket services. */

@@ -16,5 +16,7 @@ public interface ServerProxy {
 
     void skipAction();
 
+    void getLeaderboard();
+
     void disconnect();
 }

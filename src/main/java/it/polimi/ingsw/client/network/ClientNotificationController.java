@@ -7,6 +7,8 @@ import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.network.client.ServerNotificationReceiver;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
@@ -70,5 +72,15 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     @Override
     public void gameLeftSuccess(String text) {
         ui.dispatch(UIState::onGameLeft);
+    }
+
+    @Override
+    public void gameCompleted(PlayerGameCompletedDTO completedGame) {
+        // TODO implement client-side completed-game handling.
+    }
+
+    @Override
+    public void leaderboard(LeaderboardSnapshot leaderboard) {
+        // TODO implement client-side leaderboard handling.
     }
 }

@@ -25,6 +25,10 @@ public abstract class GameState {
         this.game.changeState(newState);
     }
 
+    public boolean isEnded() {
+        return false;
+    }
+
     /** Attempts to place a totem; by default not allowed. @param player acting player @param tileIndex target tile index @throws IllegalStateException always */
     public void placeTotem(Player player, int tileIndex) {
         throw new IllegalStateException("Action not allowed: You cannot place a totem in this game phase.");

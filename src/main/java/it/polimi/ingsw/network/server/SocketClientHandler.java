@@ -6,8 +6,11 @@ import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.server.GameManagerInterface;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
+import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -29,7 +32,6 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     private AtomicBoolean active = new AtomicBoolean(true);
     private final Object streamLock = new Object();
     private String nickname;
-    private Integer lastMatchPlayerCount;
 
     private volatile ConnectionState connectionState;
 
@@ -64,6 +66,11 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
         if (!this.active.get()) {
             this.connectionState.handleDisconnection();
         }
+    }
+
+    @Override
+    public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
+        this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
     }
 
     private void sendMessage(ServerMessage message) {
@@ -121,6 +128,16 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
         sendMessage(new GameLeftSuccessMessage(text));
     }
 
+    @Override
+    public void gameCompleted(PlayerGameCompletedDTO completedGame) {
+        sendMessage(new GameCompletedMessage(completedGame));
+    }
+
+    @Override
+    public void leaderboard(LeaderboardSnapshot leaderboard) {
+        sendMessage(new LeaderboardResponseMessage(leaderboard));
+    }
+
     /** Main loop: receives client messages and routes them to matchmaking or game logic. */
     @Override
     public void run() {
@@ -157,14 +174,23 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     }
 
     @Override
-    public void returnToLobby(int playerCount) {
+    public void transitionToLobby() {
         synchronized (this) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.lastMatchPlayerCount = playerCount;
             this.connectionState = createLobbyState();
+        }
+    }
+
+    @Override
+    public void clearNickname() {
+        synchronized (this) {
+            if (this.nickname != null) {
+                gameManager.unregisterNickname(this.nickname);
+                this.nickname = null;
+            }
         }
     }
 

@@ -5,11 +5,14 @@ import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
 import it.polimi.ingsw.server.GameManagerInterface;
+import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -27,7 +30,6 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     private final RMIClientCallback callback;
     private volatile ConnectionState connectionState;
     private String nickname;
-    private Integer lastMatchPlayerCount;
 
     private final ScheduledExecutorService timeoutChecker;
 
@@ -69,6 +71,11 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         if (!this.active.get()) {
             this.connectionState.handleDisconnection();
         }
+    }
+
+    @Override
+    public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
+        this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
     }
 
     @Override
@@ -118,6 +125,11 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     }
 
     @Override
+    public void getLeaderboard() {
+        currentState().getLeaderboard();
+    }
+
+    @Override
     public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
         deliver(() -> callback.onFullSync(board, players, activePlayer, actions));
     }
@@ -158,14 +170,33 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     }
 
     @Override
-    public void returnToLobby(int playerCount) {
+    public void gameCompleted(PlayerGameCompletedDTO completedGame) {
+        deliver(() -> callback.onGameCompleted(completedGame));
+    }
+
+    @Override
+    public void leaderboard(LeaderboardSnapshot leaderboard) {
+        deliver(() -> callback.onLeaderboard(leaderboard));
+    }
+
+    @Override
+    public void transitionToLobby() {
         synchronized (this) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.lastMatchPlayerCount = playerCount;
             this.connectionState = createLobbyState();
+        }
+    }
+
+    @Override
+    public void clearNickname() {
+        synchronized (this) {
+            if (this.nickname != null) {
+                gameManager.unregisterNickname(this.nickname);
+                this.nickname = null;
+            }
         }
     }
 

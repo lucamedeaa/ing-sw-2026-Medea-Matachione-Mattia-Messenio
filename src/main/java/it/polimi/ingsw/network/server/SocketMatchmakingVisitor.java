@@ -3,7 +3,6 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.network.messages.CreateGameMessage;
 import it.polimi.ingsw.network.messages.GetAvailableGamesMessage;
 import it.polimi.ingsw.network.messages.JoinGameMessage;
-import it.polimi.ingsw.network.messages.LeaveGameMessage;
 import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
 
 public class SocketMatchmakingVisitor implements MatchmakingVisitor {
@@ -27,10 +26,5 @@ public class SocketMatchmakingVisitor implements MatchmakingVisitor {
     @Override
     public void visit(GetAvailableGamesMessage msg) {
         connectionState.getAvailableGames();
-    }
-
-    @Override
-    public void visit(LeaveGameMessage msg) {
-        connectionState.leaveGame();
     }
 }

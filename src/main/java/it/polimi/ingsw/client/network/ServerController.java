@@ -46,6 +46,10 @@ public class ServerController {
         runAsync(server::skipAction);
     }
 
+    public void getLeaderboard() {
+        runAsync(server::getLeaderboard);
+    }
+
     public void disconnect(Runnable completionCallback) {
         networkExecutor.submit(() -> {
             server.disconnect();

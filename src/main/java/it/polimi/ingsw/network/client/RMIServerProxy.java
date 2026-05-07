@@ -58,6 +58,11 @@ public class RMIServerProxy implements ServerProxy {
     }
 
     @Override
+    public void getLeaderboard() {
+        invoke(serverSession::getLeaderboard);
+    }
+
+    @Override
     public void disconnect() {
         if (active.compareAndSet(true, false)) {
             try {

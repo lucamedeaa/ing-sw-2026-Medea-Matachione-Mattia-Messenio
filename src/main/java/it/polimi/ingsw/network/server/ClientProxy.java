@@ -3,7 +3,9 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.List;
@@ -25,4 +27,8 @@ public interface ClientProxy {
     void roomUpdate(String notification, List<String> currentPlayers);
 
     void gameLeftSuccess(String text);
+
+    void gameCompleted(PlayerGameCompletedDTO completedGame);
+
+    void leaderboard(LeaderboardSnapshot leaderboard);
 }

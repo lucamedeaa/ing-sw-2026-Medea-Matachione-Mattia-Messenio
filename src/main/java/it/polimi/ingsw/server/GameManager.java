@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
+import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,11 @@ public class GameManager implements GameManagerInterface {
 
     private final Map<String, GameRoom> activeGames = new ConcurrentHashMap<>();
     private final Set<String> activeNicknames = ConcurrentHashMap.newKeySet();
+    private final LeaderboardService leaderboardService;
+
+    public GameManager(LeaderboardService leaderboardService) {
+        this.leaderboardService = leaderboardService;
+    }
 
     public boolean registerNickname(String nickname) {
         return activeNicknames.add(nickname);
@@ -28,7 +34,7 @@ public class GameManager implements GameManagerInterface {
             throw new InvalidPlayerCountException("Errore: inserire un numero di giocatori compreso tra 2 e 5.");
         }
         String gameId = UUID.randomUUID().toString().substring(0, 8);
-        GameRoom newRoom = new GameRoom(gameId, maxPlayers, this);
+        GameRoom newRoom = new GameRoom(gameId, maxPlayers, this, leaderboardService);
         activeGames.put(gameId, newRoom);
         return gameId;
     }

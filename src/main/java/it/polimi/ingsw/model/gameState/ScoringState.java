@@ -1,14 +1,14 @@
 package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.CompletedGameResult;
+import it.polimi.ingsw.model.PlayerGameResult;
 import it.polimi.ingsw.model.updates.AvailableAction;
-import it.polimi.ingsw.model.updates.GameEvent.*;
 
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /** Final game state responsible for computing scores and determining the winner. */
 public class ScoringState extends GameState {
@@ -20,47 +20,35 @@ public class ScoringState extends GameState {
 
     @Override
     public void start() {
-        game.setEnded();
-        calculateFinalScores();
-        List<Player> winners = determineWinners();
-        announceWinners(winners);
+        List<PlayerGameResult> leaderboard = calculateFinalScores();
+        game.completeNormally(new CompletedGameResult(leaderboard));
     }
 
-    private void calculateFinalScores() {
-        for (Player player : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEvent(player.getNickname(), player.getFood(), player.calculateTotalScore(), player.getFoodDiscount(), "Calcolo Punteggio Finale"));
+    private List<PlayerGameResult> calculateFinalScores() {
+        List<PlayerGameResult> orderedResults = game.getPlayers().stream()
+                .map(player -> new PlayerGameResult(0, player.getNickname(), player.calculateTotalScore(), player.getFood()))
+                .sorted(Comparator
+                        .comparingInt(PlayerGameResult::finalScore).reversed()
+                        .thenComparing(Comparator.comparingInt(PlayerGameResult::remainingFood).reversed())
+                        .thenComparing(PlayerGameResult::nickname))
+                .toList();
+
+        List<PlayerGameResult> rankedResults = new ArrayList<>();
+        int previousScore = Integer.MIN_VALUE;
+        int previousFood = Integer.MIN_VALUE;
+        int previousPosition = 0;
+        for (int i = 0; i < orderedResults.size(); i++) {
+            PlayerGameResult result = orderedResults.get(i);
+            int position = result.finalScore() == previousScore && result.remainingFood() == previousFood
+                    ? previousPosition
+                    : i + 1;
+            rankedResults.add(new PlayerGameResult(position, result.nickname(), result.finalScore(), result.remainingFood()));
+            previousScore = result.finalScore();
+            previousFood = result.remainingFood();
+            previousPosition = position;
         }
-    }
 
-    private void announceWinners(List<Player> winners) {
-        List<String> winnerNicknames = winners.stream()
-                .map(Player::getNickname)
-                .toList();
-
-        game.pushEvent(new WinnersAnnouncedEvent(winnerNicknames));
-    }
-
-    private List<Player> determineWinners() {
-        List<Player> players = game.getPlayers();
-        if (players == null || players.isEmpty()) return List.of();
-
-        int maxScore = players.stream()
-                .mapToInt(Player::calculateTotalScore)
-                .max()
-                .orElse(0);
-
-        List<Player> topScorers = players.stream()
-                .filter(p -> p.calculateTotalScore() == maxScore)
-                .toList();
-
-        int maxFood = topScorers.stream()
-                .mapToInt(Player::getFood)
-                .max()
-                .orElse(0);
-
-        return topScorers.stream()
-                .filter(p -> p.getFood() == maxFood)
-                .toList();
+        return rankedResults;
     }
 
 

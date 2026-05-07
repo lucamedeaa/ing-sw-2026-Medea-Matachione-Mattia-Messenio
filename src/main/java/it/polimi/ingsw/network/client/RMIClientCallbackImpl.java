@@ -3,7 +3,9 @@ package it.polimi.ingsw.network.client;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.GameEventDTO;
+import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 
@@ -63,6 +65,16 @@ public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMICli
     @Override
     public void onGameLeftSuccess(String text) throws RemoteException {
         receiver.gameLeftSuccess(text);
+    }
+
+    @Override
+    public void onGameCompleted(PlayerGameCompletedDTO completedGame) throws RemoteException {
+        receiver.gameCompleted(completedGame);
+    }
+
+    @Override
+    public void onLeaderboard(LeaderboardSnapshot leaderboard) throws RemoteException {
+        receiver.leaderboard(leaderboard);
     }
 
     public void disconnect() {
