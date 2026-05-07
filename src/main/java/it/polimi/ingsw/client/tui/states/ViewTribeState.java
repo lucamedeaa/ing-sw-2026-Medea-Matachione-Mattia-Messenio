@@ -1,40 +1,36 @@
 package it.polimi.ingsw.client.tui.states;
 
-import it.polimi.ingsw.client.tui.TUI;
+import it.polimi.ingsw.client.tui.NavigationPort;
+import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.UIState;
+import it.polimi.ingsw.client.tui.render.ViewTribeRenderer;
+
+import java.util.List;
 
 public class ViewTribeState implements UIState {
-    private final TUI tui;
+    private final NavigationPort nav;
+    private final OutputPort out;
+    private final ViewTribeRenderer renderer;
     private final String targetPlayer;
 
-    public ViewTribeState(TUI tui, String targetPlayer) {
-        this.tui = tui;
+    public ViewTribeState(NavigationPort nav, OutputPort out, String targetPlayer) {
+        this.nav = nav;
+        this.out = out;
         this.targetPlayer = targetPlayer;
+        this.renderer = new ViewTribeRenderer(out);
     }
 
-    @Override
     public void render() {
-        tui.renderViewTribe(targetPlayer);
+        var tribe = nav.getModel().getTribes().get(targetPlayer);
+        renderer.render(targetPlayer, tribe);
     }
 
     @Override
     public void handleInput(String input) {
         if (input.trim().equalsIgnoreCase("q")) {
-            tui.changeState(new InGameState(tui));
+            nav.changeState(new InGameState(nav, out));
         } else {
-            tui.print("Input non valido. Premi Q per tornare alla partita.");
+            out.print("Input non valido. Premi Q per tornare alla partita.");
         }
-    }
-
-    @Override
-    public void onGameAborted(String reason) {
-        MatchmakingState menu = new MatchmakingState(tui);
-        tui.changeState(menu);
-        menu.onError("Partita interrotta: " + reason);
-    }
-
-    @Override
-    public void onModelUpdated() {
-        // no-op: ignora gli aggiornamenti in background per non interrompere la visualizzazione
     }
 }

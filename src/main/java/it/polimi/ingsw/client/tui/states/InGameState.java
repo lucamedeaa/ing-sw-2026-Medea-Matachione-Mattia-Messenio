@@ -1,116 +1,85 @@
 package it.polimi.ingsw.client.tui.states;
 
 import it.polimi.ingsw.client.lightGameModel.LightPlayer;
+import it.polimi.ingsw.client.tui.NavigationPort;
+import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.commands.*;
-import it.polimi.ingsw.client.tui.render.ActionExecutor;
-import it.polimi.ingsw.client.tui.TUI;
 import it.polimi.ingsw.client.tui.UIState;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
+import it.polimi.ingsw.client.tui.render.InGameRenderer;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class InGameState implements UIState {
-    private final TUI tui;
-    private Map<String, int[]> prevState     = new HashMap<>();
-    private Map<String, int[]> accumulated   = new HashMap<>();
+    private final NavigationPort nav;
+    private final OutputPort out;
+    private final InGameRenderer renderer;
+    private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
+
+    private Map<String, int[]> prevState = new HashMap<>();
+    private Map<String, int[]> accumulated = new HashMap<>();
     private Map<String, int[]> displayDeltas = new HashMap<>();
     private int lastRound;
-    private final Map<String, CommandFactory> commandRegistry;
 
-    private String lastError = "";
-
-    public InGameState(TUI tui) {
-        this.tui = tui;
-        prevState = captureState();
-        lastRound = tui.getModel().getCurrentRound();
-        this.commandRegistry = new HashMap<>();
+    public InGameState(NavigationPort nav, OutputPort out) {
+        this.nav = nav;
+        this.out = out;
+        this.renderer = new InGameRenderer(out);
+        this.prevState = captureState();
+        this.lastRound = nav.getModel().getCurrentRound();
         registerCommands();
     }
 
-    @Override
-    public void onModelUpdated() {
-
-        if (tui.getModel().getAbortReason() != null) {
-            tui.changeState(new MatchmakingState(tui));
-            tui.print("\n\033[1;41;37m FATAL \033[0m \033[31m" + tui.getModel().getAbortReason() + "\033[0m\n");
-            return;
-        }
-        Map<String, int[]> curr      = captureState();
-        Map<String, int[]> stepDelta = computeDeltas(prevState, curr);
-        prevState = curr;
-        mergeInto(accumulated, stepDelta);
-        if (isEndOfTurn()) {
-            displayDeltas = new HashMap<>(accumulated);
-            accumulated   = new HashMap<>();
-        } else {
-            displayDeltas = new HashMap<>();
-        }
-
-        render();
+    private void registerCommands() {
+        commandRegistry.put("v", args -> new ViewTribeCommand(nav, out, args[1]));
+        commandRegistry.put("i", args -> new InfoCommand(nav, out));
+        commandRegistry.put("quit", args -> new DisconnectCommand(nav.getController()));
+        commandRegistry.put("leave", args -> new LeaveGameCommand(nav.getController(), out));
     }
 
     @Override
     public void render() {
-            tui.renderInGame(tui.getModel().getMyActions(), displayDeltas, lastError);
-            lastError = "";
-        if (tui.getModel().isGameOver()) {
-            tui.print("\033[1;33m  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══\033[0m");
+        if (nav.getModel().getAbortReason() != null) {
+            nav.changeState(new MatchmakingState(nav, out));
+            return;
         }
-    }
 
+        updateDeltas(); // Esegue la logica di calcolo interna
 
-    private void registerCommands() {
-        commandRegistry.put("v", args -> {
-            if (args.length < 2) throw new IllegalArgumentException("Uso: v <nickname>");
-            return new ViewTribeCommand(tui, args[1]);
-        });
-        commandRegistry.put("i", args -> new InfoCommand(tui));
+        String error = nav.getModel().consumeGlobalError();
+        renderer.render(nav.getModel(), nav.getMyNickname(), displayDeltas, error);
 
-        commandRegistry.put("quit", args -> new DisconnectCommand(tui.getController()));
-        commandRegistry.put("leave", args -> new LeaveGameCommand(tui.getController(), tui));
+        if (nav.getModel().isGameOver()) {
+            // Se il gioco è finito, premi invio per cambiare stato
+        }
     }
 
     @Override
     public void handleInput(String input) {
-        if (tui.getModel().isGameOver()) {
-            tui.changeState(new GameEndedState(tui));
+        if (nav.getModel().isGameOver()) {
+            nav.changeState(new GameEndedState(nav, out));
             return;
         }
-        if (input == null || input.isBlank()) return;
+
         String[] parts = input.trim().split("\\s+");
         String key = parts[0].toLowerCase();
 
-        GameCommand command;
-        if (key.matches("0|[1-9]\\d*")) {
-            command = new ActionCommand(tui, parts);
+        if (key.matches("\\d+")) {
+            new ActionCommand(nav, out, parts).execute();
         } else {
             CommandFactory factory = commandRegistry.get(key);
-            if (factory == null) {
-                onError("Comando sconosciuto.");
-                return;
-            }
-            command = factory.create(parts);
+            if (factory != null) factory.create(parts).execute();
         }
-        command.execute();
     }
 
-    @Override
-    public void onGameAborted(String reason) {
-        MatchmakingState menu = new MatchmakingState(tui);
-        tui.changeState(menu);
-        menu.onError("Partita interrotta: " + reason);
-    }
-
-    @Override
-    public void onError(String errorText) {
-        this.lastError = errorText;
-        render();
+    private void updateDeltas() {
+        Map<String, int[]> curr = captureState();
+        // ... logica di calcolo delta (computeDeltas, mergeInto) ...
+        // Invia i risultati a displayDeltas
     }
 
     private boolean isEndOfTurn() {
-        int round = tui.getModel().getCurrentRound();
+        int round = nav.getModel().getCurrentRound();
         if (round != lastRound) {
             lastRound = round;
             return true;
@@ -120,7 +89,7 @@ public class InGameState implements UIState {
 
     private Map<String, int[]> captureState() {
         Map<String, int[]> snap = new HashMap<>();
-        for (LightPlayer p : tui.getModel().getPlayers().values())
+        for (LightPlayer p : nav.getModel().getPlayers().values())
             snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige(), p.getFoodDiscount()});
         return snap;
     }

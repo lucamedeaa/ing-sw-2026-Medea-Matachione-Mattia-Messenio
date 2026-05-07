@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.lightGameModel;
 
 import it.polimi.ingsw.network.dto.*;
 import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.network.messages.GameInfoDTO;
 
 import java.util.*;
 
@@ -30,6 +31,11 @@ public class LightGameModel {
     private final Map<String, Integer> playerReturnPositions = new HashMap<>();
 
     private String abortReason = null;
+
+    private List<GameInfoDTO> availableGames = new ArrayList<>();
+    private List<String> lobbyPlayers = new ArrayList<>();
+    private String lobbyNotification = "";
+    private String globalError = "";
 
 
     public void setGameAborted(String reason) {
@@ -173,6 +179,43 @@ public class LightGameModel {
         List<String> copy = new ArrayList<>(this.gameLogs);
         this.gameLogs.clear();
         return copy;
+    }
+
+    public void setAvailableGames(List<GameInfoDTO> games) {
+        this.availableGames = games;
+        notifyUI();
+    }
+
+    public List<GameInfoDTO> getAvailableGames() {
+        return new ArrayList<>(this.availableGames);
+    }
+
+    public void setLobbyData(List<String> players, String notification) {
+        this.lobbyPlayers = new ArrayList<>(players);
+        this.lobbyNotification = notification;
+        notifyUI();
+    }
+
+    public List<String> getLobbyPlayers() {
+        return new ArrayList<>(this.lobbyPlayers);
+    }
+
+    public String getLobbyNotification() {
+        return this.lobbyNotification;
+    }
+
+    public void setGlobalError(String error) {
+        this.globalError = error;
+        notifyUI();
+    }
+
+     // Ritorna l'errore corrente e lo svuota immediatamente,
+     // per evitare che lo stesso errore venga stampato a ogni render successivo.
+
+    public String consumeGlobalError() {
+        String err = this.globalError;
+        this.globalError = "";
+        return err;
     }
     // Getter che la TUI userà per disegnare la schermata
     public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
