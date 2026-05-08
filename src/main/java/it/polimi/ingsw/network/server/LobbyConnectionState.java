@@ -20,14 +20,18 @@ public class LobbyConnectionState implements ConnectionState {
         try {
             RoomAdmissionResult admissionResult;
             // Serialize reservation and room admission with disconnect cleanup.
-            synchronized (connection) {
+            admissionResult = connection.withConnectionLock(() -> {
                 if (!connection.isActive()) {
-                    return;
+                    return null;
                 }
                 RoomConnectionHandler room = lobbyController.createGame(nickname, maxPlayers);
-                admissionResult = addPlayerToRoom(room, nickname);
+                return addPlayerToRoom(room, nickname);
+            });
+            if (admissionResult == null) {
+                return;
             }
             connection.matchmakingSuccess("Game created. Waiting for other players...");
+            // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
         } catch (Exception e) {
             connection.error(e.getMessage());
@@ -39,14 +43,18 @@ public class LobbyConnectionState implements ConnectionState {
         try {
             RoomAdmissionResult admissionResult;
             // Serialize reservation and room admission with disconnect cleanup.
-            synchronized (connection) {
+            admissionResult = connection.withConnectionLock(() -> {
                 if (!connection.isActive()) {
-                    return;
+                    return null;
                 }
                 RoomConnectionHandler room = lobbyController.joinGame(nickname, gameId);
-                admissionResult = addPlayerToRoom(room, nickname);
+                return addPlayerToRoom(room, nickname);
+            });
+            if (admissionResult == null) {
+                return;
             }
             connection.matchmakingSuccess("Joined game successfully. Waiting to start...");
+            // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
         } catch (Exception e) {
             connection.error(e.getMessage());

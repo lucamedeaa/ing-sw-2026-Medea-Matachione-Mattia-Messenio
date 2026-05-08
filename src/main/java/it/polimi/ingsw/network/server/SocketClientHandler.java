@@ -29,8 +29,10 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     private final GameManagerInterface gameManager;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private AtomicBoolean active = new AtomicBoolean(true);
+    private final AtomicBoolean active = new AtomicBoolean(true);
     private final Object streamLock = new Object();
+    // Lock order: lifecycleLock -> GameRoom room lock. Do not perform client I/O while holding it.
+    private final Object lifecycleLock = new Object();
     private String nickname;
 
     private volatile ConnectionState connectionState;
@@ -47,11 +49,15 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     }
 
     public void setNickname(String nickname) {
-        this.nickname = nickname;
+        synchronized (lifecycleLock) {
+            this.nickname = nickname;
+        }
     }
 
     public String getNickname(){
-        return this.nickname;
+        synchronized (lifecycleLock) {
+            return this.nickname;
+        }
     }
 
     @Override
@@ -62,15 +68,26 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     @Override
     public void transitionToGameState(GameController gameController) {
-        this.connectionState = new InGameConnectionState(this.nickname, this, gameController);
-        if (!this.active.get()) {
-            this.connectionState.handleDisconnection();
+        ConnectionState disconnectedState = null;
+
+        synchronized (lifecycleLock) {
+            ConnectionState newState = new InGameConnectionState(this.nickname, this, gameController);
+            this.connectionState = newState;
+            if (!this.active.get()) {
+                disconnectedState = newState;
+            }
+        }
+
+        if (disconnectedState != null) {
+            disconnectedState.handleDisconnection();
         }
     }
 
     @Override
     public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
-        this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
+        synchronized (lifecycleLock) {
+            this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
+        }
     }
 
     private void sendMessage(ServerMessage message) {
@@ -153,21 +170,21 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
                     continue;
                 }
                 if (input instanceof ClientMessage message) {
-                    message.dispatchTo(this.connectionState);
+                    message.dispatchTo(currentState());
                 } else {
                     error("Unknown message type.");
                 }
             }
         } catch (SocketTimeoutException e) {
-            System.err.println("[SOCKET] Timeout: Il client " + nickname + " non invia ping. Cavo staccato o freeze.");
+            System.err.println("[SOCKET] Timeout: Il client " + getNickname() + " non invia ping. Cavo staccato o freeze.");
         } catch (EOFException e) {
-            System.out.println("[SOCKET] Il client " + nickname + " ha chiuso la connessione in modo pulito (senza messaggio di disconnessione).");
+            System.out.println("[SOCKET] Il client " + getNickname() + " ha chiuso la connessione in modo pulito (senza messaggio di disconnessione).");
         } catch (SocketException e) {
-            System.err.println("[SOCKET] Connessione interrotta bruscamente per " + nickname + " (possibile Alt+F4 o crash). Dettaglio: " + e.getMessage());
+            System.err.println("[SOCKET] Connessione interrotta bruscamente per " + getNickname() + " (possibile Alt+F4 o crash). Dettaglio: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.err.println("[SOCKET] Ricevuto oggetto sconosciuto da " + nickname);
+            System.err.println("[SOCKET] Ricevuto oggetto sconosciuto da " + getNickname());
         } catch (IOException e) {
-            System.err.println("[SOCKET] Errore generico di I/O per " + nickname + ": " + e.getMessage());
+            System.err.println("[SOCKET] Errore generico di I/O per " + getNickname() + ": " + e.getMessage());
         } finally {
             handleClientDisconnection();
         }
@@ -175,7 +192,7 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     @Override
     public void transitionToLobby() {
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
@@ -186,7 +203,7 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     @Override
     public void clearNickname() {
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
@@ -196,17 +213,33 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
     private void handleClientDisconnection() {
-        if (!active.compareAndSet(true, false)) return;
+        ConnectionState stateToNotify;
+        synchronized (lifecycleLock) {
+            if (!active.compareAndSet(true, false)) {
+                return;
+            }
+            stateToNotify = this.connectionState;
+        }
 
         closeConnection();
-        // Use the connection lock to serialize cleanup with lobby admission.
-        synchronized (this) {
-            this.connectionState.handleDisconnection();
-        }
+        stateToNotify.handleDisconnection();
     }
 
     private ConnectionState createLobbyState() {
         return new LobbyConnectionState(this, new LobbyController(gameManager));
+    }
+
+    private ConnectionState currentState() {
+        synchronized (lifecycleLock) {
+            return this.connectionState;
+        }
+    }
+
+    @Override
+    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception {
+        synchronized (lifecycleLock) {
+            return operation.run();
+        }
     }
 
     /** Closes socket and associated streams. */

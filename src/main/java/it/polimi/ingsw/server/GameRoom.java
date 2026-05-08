@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +30,9 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     private final GameManagerInterface gameManager;
     private final LeaderboardService leaderboardService;
     private final Map<String, RoomClientProxy> players;
+    // Room state lock. External callbacks must run after releasing this lock.
+    // If both locks are needed, acquire the connection lifecycle lock before this one. (used to create game and add player)
+    private final Object roomLock = new Object();
     private boolean gameStarted;
     private ExecutorService gameExecutor;
 
@@ -39,7 +41,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         this.maxPlayers = maxPlayers;
         this.gameManager = gameManager;
         this.leaderboardService = leaderboardService;
-        this.players = new ConcurrentHashMap<>();
+        this.players = new HashMap<>();
         this.gameStarted = false;
     }
 
@@ -47,15 +49,15 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     public RoomAdmissionResult addPlayer(String nickname, RoomClientProxy connection) throws RoomFullException, IllegalStateException {
         boolean startNow = false;
         // Only room state is mutated under this lock.
-        synchronized (this) {
+        synchronized (roomLock) {
             if (gameStarted) {
                 throw new IllegalStateException("Game already started.");
             }
-            if (isFull()) {
+            if (players.size() >= maxPlayers) {
                 throw new RoomFullException("Game is full.");
             }
             players.put(nickname, connection);
-            if (isFull()) {
+            if (players.size() >= maxPlayers) {
                 this.gameStarted = true;
                 startNow = true;
             }
@@ -76,12 +78,19 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
-        Game game = new Game(getPlayers());
+        List<String> playerNames;
+        Map<String, RoomClientProxy> connections;
+        synchronized (roomLock) {
+            playerNames = new ArrayList<>(players.keySet());
+            connections = new HashMap<>(players);
+        }
+
+        Game game = new Game(playerNames);
         this.gameExecutor = Executors.newSingleThreadExecutor();
         GameController controller = new GameController(game, gameExecutor, this, leaderboardService);
         game.setCompletionHandler(controller);
         gameExecutor.submit(() -> {
-            for (Map.Entry<String, RoomClientProxy> entry : players.entrySet()) {
+            for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
                 String name = entry.getKey();
                 RoomClientProxy conn = entry.getValue();
                 VirtualView vv = new VirtualView(name, conn);
@@ -96,7 +105,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     public void removePlayer(String nickname) throws IllegalStateException {
         boolean roomIsEmpty = false;
         boolean successfullyRemoved = false;
-        synchronized (this) {
+        synchronized (roomLock) {
             if (gameStarted) {
                 throw new IllegalStateException("Game already started. Cannot leave now.");
             }
@@ -120,7 +129,10 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     @Override
     public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDTO> personalBestEntries) {
-        Map<String, RoomClientProxy> connections = new HashMap<>(players);
+        Map<String, RoomClientProxy> connections;
+        synchronized (roomLock) {
+            connections = new HashMap<>(players);
+        }
         int playerCount = completedGame.playerResults().size();
         Map<String, PlayerGameResult> localResults = completedGame.playerResults().stream()
                 .collect(Collectors.toMap(PlayerGameResult::nickname, Function.identity()));
@@ -157,7 +169,10 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     @Override
     public void closeAbortedRoom(String reason, String excludedNickname) {
-        Map<String, RoomClientProxy> connections = new HashMap<>(players);
+        Map<String, RoomClientProxy> connections;
+        synchronized (roomLock) {
+            connections = new HashMap<>(players);
+        }
 
         for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
             if (entry.getKey().equals(excludedNickname)) {
@@ -173,16 +188,22 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         }
     }
 
-    public synchronized boolean isFull() {
-        return players.size() >= maxPlayers;
+    public boolean isFull() {
+        synchronized (roomLock) {
+            return players.size() >= maxPlayers;
+        }
     }
 
-    public synchronized boolean isGameStarted() {
-        return gameStarted;
+    public boolean isGameStarted() {
+        synchronized (roomLock) {
+            return gameStarted;
+        }
     }
 
-    public synchronized boolean isNicknameTaken(String nickname) {
-        return players.containsKey(nickname);
+    public boolean isNicknameTaken(String nickname) {
+        synchronized (roomLock) {
+            return players.containsKey(nickname);
+        }
     }
 
     public String getGameId() {
@@ -193,13 +214,19 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         return maxPlayers;
     }
 
-    public synchronized List<String> getPlayers() {
-        return new ArrayList<>(players.keySet());
+    public List<String> getPlayers() {
+        synchronized (roomLock) {
+            return new ArrayList<>(players.keySet());
+        }
     }
 
     public void broadcast(String messageText) {
-        List<RoomClientProxy> currentConnections = new ArrayList<>(players.values());
-        List<String> currentPlayers = getPlayers();
+        List<RoomClientProxy> currentConnections;
+        List<String> currentPlayers;
+        synchronized (roomLock) {
+            currentConnections = new ArrayList<>(players.values());
+            currentPlayers = new ArrayList<>(players.keySet());
+        }
 
         for (RoomClientProxy conn : currentConnections) {
             conn.roomUpdate(messageText, currentPlayers);

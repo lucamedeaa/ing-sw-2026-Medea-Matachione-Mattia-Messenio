@@ -29,6 +29,8 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     private final GameManagerInterface gameManager;
     private final RMIClientCallback callback;
     private volatile ConnectionState connectionState;
+    // Lock order: lifecycleLock -> GameRoom room lock. Do not perform RMI callbacks while holding it.
+    private final Object lifecycleLock = new Object();
     private String nickname;
 
     private final ScheduledExecutorService timeoutChecker;
@@ -46,18 +48,22 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
         this.timeoutChecker.scheduleAtFixedRate(() -> {
             if (active.get() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
-                System.err.println("[RMI] Timeout: Il client " + nickname + " non invia ping. Ritenuto morto.");
+                System.err.println("[RMI] Timeout: Il client " + getNickname() + " non invia ping. Ritenuto morto.");
                 handleClientDisconnection();
             }
         }, 5, 5, TimeUnit.SECONDS);
     }
 
     public void setNickname(String nickname) {
-        this.nickname = nickname;
+        synchronized (lifecycleLock) {
+            this.nickname = nickname;
+        }
     }
 
     public String getNickname() {
-        return this.nickname;
+        synchronized (lifecycleLock) {
+            return this.nickname;
+        }
     }
 
     @Override
@@ -67,15 +73,26 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     @Override
     public void transitionToGameState(GameController gameController) {
-        this.connectionState = new InGameConnectionState(this.nickname, this, gameController);
-        if (!this.active.get()) {
-            this.connectionState.handleDisconnection();
+        ConnectionState disconnectedState = null;
+
+        synchronized (lifecycleLock) {
+            ConnectionState newState = new InGameConnectionState(this.nickname, this, gameController);
+            this.connectionState = newState;
+            if (!this.active.get()) {
+                disconnectedState = newState;
+            }
+        }
+
+        if (disconnectedState != null) {
+            disconnectedState.handleDisconnection();
         }
     }
 
     @Override
     public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
-        this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
+        synchronized (lifecycleLock) {
+            this.connectionState = new AfterGameConnectionState(this, playerCount, leaderboardService);
+        }
     }
 
     @Override
@@ -181,7 +198,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     @Override
     public void transitionToLobby() {
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
@@ -192,7 +209,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     @Override
     public void clearNickname() {
-        synchronized (this) {
+        synchronized (lifecycleLock) {
             if (this.nickname != null) {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
@@ -202,7 +219,9 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     private ConnectionState currentState() {
         touch();
-        return this.connectionState;
+        synchronized (lifecycleLock) {
+            return this.connectionState;
+        }
     }
 
     private void touch() {
@@ -216,25 +235,33 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         try {
             call.run();
         } catch (RemoteException e) {
-            System.err.println("[RMI] Disconnection detected on write for: " + nickname);
+            System.err.println("[RMI] Disconnection detected on write for: " + getNickname());
             handleClientDisconnection();
         }
     }
 
     private void handleClientDisconnection() {
-        if (!active.compareAndSet(true, false)) {
-            return;
+        ConnectionState stateToNotify;
+        synchronized (lifecycleLock) {
+            if (!active.compareAndSet(true, false)) {
+                return;
+            }
+            stateToNotify = this.connectionState;
         }
 
         closeConnection();
-        // Use the connection lock to serialize cleanup with lobby admission.
-        synchronized (this) {
-            this.connectionState.handleDisconnection();
-        }
+        stateToNotify.handleDisconnection();
     }
 
     private ConnectionState createLobbyState() {
         return new LobbyConnectionState(this, new LobbyController(gameManager));
+    }
+
+    @Override
+    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception {
+        synchronized (lifecycleLock) {
+            return operation.run();
+        }
     }
 
     private void closeConnection() {

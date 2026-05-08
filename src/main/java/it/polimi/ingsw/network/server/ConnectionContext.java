@@ -22,4 +22,11 @@ public interface ConnectionContext extends RoomClientProxy {
 
     void clearNickname();
 
+    <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception;
+
+    @FunctionalInterface
+    interface LockedConnectionOperation<T> {
+        T run() throws Exception;
+    }
+
 }
