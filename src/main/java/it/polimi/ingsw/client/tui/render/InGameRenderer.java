@@ -182,7 +182,7 @@ public class InGameRenderer {
 
             String player = centerString(returnOccupants[i], 7);
             String color = getTotemAnsiColor(matchModel, returnOccupants[i]);
-            mid3.append(color).append(player).append("AnsiColor.RESET");
+            mid3.append(color).append(player).append(AnsiColors.RESET);
 
             bot.append("───────");
 
@@ -211,7 +211,7 @@ public class InGameRenderer {
             top.append("┌───────┐ ");
             mid1.append("│").append(specs[0]).append("│ ");
             mid2.append("│").append(specs[1]).append("│ ");
-            mid3.append("│").append(color).append(player).append("AnsiColor.RESET│ ");
+            mid3.append("│").append(color).append(player).append(AnsiColors.RESET + "│ ");
             bot.append("└───────┘ ");
         }
 
