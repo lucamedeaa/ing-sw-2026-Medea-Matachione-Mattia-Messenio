@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.server.SocketClientHandler;
 import it.polimi.ingsw.network.server.RMIConnectionServerImpl;
 import it.polimi.ingsw.server.leaderboard.InMemoryLeaderboardService;
@@ -16,12 +17,14 @@ public class GameServer {
     private final int socketPort;
     private final int rmiPort;
     private final GameManager gameManager;
+    private final LobbyController lobbyController;
 
     /** Constructs the server with given ports. @param socketPort port for socket connections @param rmiPort port for RMI registry */
     public GameServer(int socketPort, int rmiPort) {
         this.socketPort = socketPort;
         this.rmiPort = rmiPort;
         this.gameManager = new GameManager(new InMemoryLeaderboardService());
+        this.lobbyController = new LobbyController(gameManager);
     }
 
     /** Starts the server by initializing both RMI and Socket services. */
@@ -48,7 +51,7 @@ public class GameServer {
             System.out.println("[RMI] Configurazione hostname automatica: " + myIp);
             //SUS
 
-            RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager);
+            RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager, lobbyController);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind("MesosServer", entryPoint);
             System.out.println("[RMI] Listening for connections on port " + rmiPort);
@@ -68,7 +71,7 @@ public class GameServer {
                 System.out.println("[SOCKET] New connection from: " + clientSocket.getInetAddress());
 
                 try {
-                    SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager);
+                    SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager, lobbyController);
                     new Thread(clientHandler).start();
                 } catch (IOException e) {
                     System.err.println("[SOCKET] Errore di I/O durante l'inizializzazione del client: " + e.getMessage());

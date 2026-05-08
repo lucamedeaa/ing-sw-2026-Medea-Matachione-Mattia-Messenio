@@ -1,5 +1,6 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
 import it.polimi.ingsw.network.rmi.RMIConnectionServer;
@@ -10,9 +11,12 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class RMIConnectionServerImpl extends UnicastRemoteObject implements RMIConnectionServer {
     private final GameManagerInterface gameManager;
-    public RMIConnectionServerImpl(GameManagerInterface gameManager) throws RemoteException {
+    private final LobbyController lobbyController;
+
+    public RMIConnectionServerImpl(GameManagerInterface gameManager, LobbyController lobbyController) throws RemoteException {
         super();
         this.gameManager = gameManager;
+        this.lobbyController = lobbyController;
     }
 
     @Override
@@ -20,7 +24,7 @@ public class RMIConnectionServerImpl extends UnicastRemoteObject implements RMIC
         System.out.println("[RMI] Nuova richiesta di connessione ricevuta. Generazione handler dedicato...");
 
         try {
-                RMIClientHandler clientHandler = new RMIClientHandler(gameManager, clientCallback);
+            RMIClientHandler clientHandler = new RMIClientHandler(gameManager, lobbyController, clientCallback);
             System.out.println("[RMI] Handler generato e restituito al client con successo.");
             return clientHandler;
 

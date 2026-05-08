@@ -27,6 +27,7 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     private final Socket socket;
     private final GameManagerInterface gameManager;
+    private final ConnectionState lobbyState;
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private final AtomicBoolean active = new AtomicBoolean(true);
@@ -35,13 +36,14 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     private final Object lifecycleLock = new Object();
     private String nickname;
 
-    private volatile ConnectionState connectionState;
+    private ConnectionState connectionState;
 
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
-    public SocketClientHandler(Socket socket, GameManagerInterface gameManager) throws IOException {
+    public SocketClientHandler(Socket socket, GameManagerInterface gameManager, LobbyController lobbyController) throws IOException {
         this.socket = socket;
         this.gameManager = gameManager;
-        this.connectionState = createLobbyState();
+        this.lobbyState = new LobbyConnectionState(this, lobbyController);
+        this.connectionState = lobbyState;
 
         this.socket.setSoTimeout(10000);
         this.out = new ObjectOutputStream(socket.getOutputStream());
@@ -197,7 +199,7 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.connectionState = createLobbyState();
+            this.connectionState = lobbyState;
         }
     }
 
@@ -223,10 +225,6 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
         closeConnection();
         stateToNotify.handleDisconnection();
-    }
-
-    private ConnectionState createLobbyState() {
-        return new LobbyConnectionState(this, new LobbyController(gameManager));
     }
 
     private ConnectionState currentState() {

@@ -28,7 +28,8 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     private final GameManagerInterface gameManager;
     private final RMIClientCallback callback;
-    private volatile ConnectionState connectionState;
+    private final ConnectionState lobbyState;
+    private ConnectionState connectionState;
     // Lock order: lifecycleLock -> GameRoom room lock. Do not perform RMI callbacks while holding it.
     private final Object lifecycleLock = new Object();
     private String nickname;
@@ -38,11 +39,12 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     private final AtomicBoolean active = new AtomicBoolean(true);
     private final AtomicLong lastPingTime = new AtomicLong();
 
-    public RMIClientHandler(GameManagerInterface gameManager, RMIClientCallback callback) throws RemoteException {
+    public RMIClientHandler(GameManagerInterface gameManager, LobbyController lobbyController, RMIClientCallback callback) throws RemoteException {
         super();
         this.callback = callback;
         this.gameManager = gameManager;
-        this.connectionState = createLobbyState();
+        this.lobbyState = new LobbyConnectionState(this, lobbyController);
+        this.connectionState = lobbyState;
         this.lastPingTime.set(System.currentTimeMillis());
         this.timeoutChecker = Executors.newSingleThreadScheduledExecutor();
 
@@ -203,7 +205,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
                 gameManager.unregisterNickname(this.nickname);
                 this.nickname = null;
             }
-            this.connectionState = createLobbyState();
+            this.connectionState = lobbyState;
         }
     }
 
@@ -251,10 +253,6 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
         closeConnection();
         stateToNotify.handleDisconnection();
-    }
-
-    private ConnectionState createLobbyState() {
-        return new LobbyConnectionState(this, new LobbyController(gameManager));
     }
 
     @Override
