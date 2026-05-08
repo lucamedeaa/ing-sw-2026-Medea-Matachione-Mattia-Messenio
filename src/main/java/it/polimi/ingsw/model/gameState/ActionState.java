@@ -48,6 +48,18 @@ public class ActionState extends GameState {
                 this.remainingUpperPicks = tile.getUpperRowPicks();
                 this.remainingLowerPicks = tile.getLowerRowPicks();
                 this.currentPlayer.addFood(tile.getFoodBonus());
+
+                int bonus = tile.getFoodBonus();
+                if (bonus != 0) {
+                    this.currentPlayer.addFood(bonus);
+                    game.pushEvent(new PlayerResourcesChangedEvent(
+                            this.currentPlayer.getNickname(),
+                            this.currentPlayer.getFood(),
+                            this.currentPlayer.getPrestigePoints(),
+                            this.currentPlayer.getFoodDiscount(),
+                            "Bonus tessera offerta: +" + bonus + " cibo"
+                    ));
+                }
                 return;
             }
             currentColumnIndex++;
@@ -129,13 +141,17 @@ public class ActionState extends GameState {
         game.pushEvent(new TotemReturnedEvent(this.currentPlayer.getNickname(), returnIdx));
 
         //  se le risorse sono cambiatemando SUBITO la notifica al client
-        if (foodBefore != this.currentPlayer.getFood() || ppBefore != this.currentPlayer.getPrestigePoints()) {
+        int foodDiff = this.currentPlayer.getFood() - foodBefore;
+        int prestigeDiff = this.currentPlayer.getPrestigePoints() - ppBefore;
+
+        if (foodDiff != 0 || prestigeDiff != 0) {
+            String msg = foodDiff < 0 ? "Penalità ordine turno" : "Bonus ordine turno";
             game.pushEvent(new PlayerResourcesChangedEvent(
                     this.currentPlayer.getNickname(),
                     this.currentPlayer.getFood(),
                     this.currentPlayer.getPrestigePoints(),
                     this.currentPlayer.getFoodDiscount(),
-                    "Piazzamento Turn Order Tile"
+                    msg
             ));
         }
 

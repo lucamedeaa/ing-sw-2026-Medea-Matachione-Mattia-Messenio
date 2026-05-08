@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.tui.render;
 
-import it.polimi.ingsw.client.lightGameModel.LightGameModel;
 import it.polimi.ingsw.client.lightGameModel.LightPlayer;
+import it.polimi.ingsw.client.lightGameModel.MatchModel;
 import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 
@@ -15,25 +15,25 @@ public class InGameRenderer {
         this.out = out;
     }
 
-    public void render(LightGameModel model, String myNickname, Map<String, int[]> deltas, String lastError) {
+    public void render(MatchModel matchModel, String myNickname, Map<String, int[]> deltas, String lastError) {
         out.clearScreen();
-        out.print("════ MESOS — Era " + model.getCurrentEra() + " / Round " + model.getCurrentRound() + " ════\n");
+        out.print("════ MESOS — Era " + matchModel.getCurrentEra() + " / Round " + matchModel.getCurrentRound() + " ════\n");
 
-        renderRows(model);
+        renderRows(matchModel);
         out.print("");
 
-        renderTracks(model);
-        renderPlayersBar(model, myNickname);
+        renderTracks(matchModel);
+        renderPlayersBar(matchModel, myNickname);
 
         if (!myNickname.isEmpty()) {
             out.print("");
-            renderPlayerTribe(model, myNickname);
+            renderPlayerTribe(matchModel, myNickname);
         }
 
-        renderTurnRecap(deltas, model);
+        renderTurnRecap(deltas, matchModel);
         out.print("");
 
-        List<String> logs = model.consumeGameLogs();
+        List<String> logs = matchModel.consumeGameLogs();
         if (!logs.isEmpty()) {
             out.print("── NOTIFICHE RECENTI ──");
             for (String log : logs) {
@@ -42,13 +42,13 @@ public class InGameRenderer {
             out.print("");
         }
 
-        printActions(model.getMyActions());
+        printActions(matchModel.getMyActions());
 
         if (lastError != null && !lastError.isEmpty()) {
             out.print("\033[31m[ERROR] " + lastError + "\033[0m");
         }
 
-        if (model.isGameOver()) {
+        if (matchModel.isGameOver()) {
             out.print("\033[1;33m  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══\033[0m");
         }
 
@@ -73,39 +73,39 @@ public class InGameRenderer {
     }
 
 
-    private void renderRows(LightGameModel model) {
+    private void renderRows(MatchModel matchModel) {
         out.print("  UPPER ROW");
         // TODO: CardBoxRenderer andrebbe rifattorizzato in futuro per usare OutputPort
-        CardBoxRenderer.printCardRow(out, model.getUpperRowCards(), true);
+        CardBoxRenderer.printCardRow(out, matchModel.getUpperRowCards(), true);
         out.print("");
         out.print("  LOWER ROW");
-        CardBoxRenderer.printCardRow(out, model.getLowerRowCards(), true);
+        CardBoxRenderer.printCardRow(out, matchModel.getLowerRowCards(), true);
     }
 
-    private void renderPlayersBar(LightGameModel model, String myNickname) {
+    private void renderPlayersBar(MatchModel matchModel, String myNickname) {
         out.print("\033[1;37m  PLAYERS\033[0m");
-        for (LightPlayer p : model.getPlayers().values()) {
+        for (LightPlayer p : matchModel.getPlayers().values()) {
             boolean isMe = p.getNickname().equals(myNickname);
-            boolean isActive = p.getNickname().equals(model.getActivePlayer());
+            boolean isActive = p.getNickname().equals(matchModel.getActivePlayer());
 
             String marker = isActive ? " \033[1;32m▶\033[0m" : "  ";
-            int tribeSize = model.getTribes().getOrDefault(p.getNickname(), List.of()).size();
+            int tribeSize = matchModel.getTribes().getOrDefault(p.getNickname(), List.of()).size();
             String tag = isMe ? " \033[3m(you)\033[0m" : "";
 
-            String pColor = getTotemAnsiColor(model, p.getNickname());
+            String pColor = getTotemAnsiColor(matchModel, p.getNickname());
 
             out.print(String.format("%s %s%-14s\033[0m  cibo: \033[1;32m%2d\033[0m  prestigio: \033[1;32m%3d\033[0m  sconto: \033[1;32m-%d\033[0m  [%d carte]%s",
                     marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), tribeSize, tag));
         }
     }
 
-    public void renderPlayerTribe(LightGameModel model, String nickname) {
+    public void renderPlayerTribe(MatchModel model, String nickname) {
         List<Integer> tribe = model.getTribes().getOrDefault(nickname, List.of());
         out.print("  " + nickname.toUpperCase() + "'S TRIBE");
         CardBoxRenderer.printCardRow(out, tribe, false);
     }
 
-    private void renderTurnRecap(Map<String, int[]> deltas, LightGameModel model) {
+    private void renderTurnRecap(Map<String, int[]> deltas, MatchModel matchModel) {
         out.print("");
         out.print("\033[1;37m  TURN RECAP\033[0m");
         for (var e : deltas.entrySet()) {
@@ -117,15 +117,15 @@ public class InGameRenderer {
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
             String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
-            String pColor = getTotemAnsiColor(model, e.getKey());
+            String pColor = getTotemAnsiColor(matchModel, e.getKey());
 
             out.print(String.format("  %s%-14s\033[0m  cibo: %-3s prestigio: %-3s sconto: \033[1;32m%-3s\033[0m",
                     pColor, e.getKey(), foodStr, ppStr, discStr));
         }
     }
 
-    private void renderTracks(LightGameModel model) {
-        int pCount = Math.max(2, model.getPlayers().size());
+    private void renderTracks(MatchModel matchModel) {
+        int pCount = Math.max(2, matchModel.getPlayers().size());
 
         int[] returnBonuses = switch(pCount) {
             case 2 -> new int[]{1, -1};
@@ -136,7 +136,7 @@ public class InGameRenderer {
 
         String[] returnOccupants = new String[pCount];
         java.util.Arrays.fill(returnOccupants, "free");
-        for (var e : model.getReturnPositions().entrySet()) {
+        for (var e : matchModel.getReturnPositions().entrySet()) {
             if (e.getValue() >= 0 && e.getValue() < pCount) {
                 returnOccupants[e.getValue()] = e.getKey();
             }
@@ -148,7 +148,7 @@ public class InGameRenderer {
 
         String[] offerOccupants = new String[offerLayout.length()];
         java.util.Arrays.fill(offerOccupants, "free");
-        for (var e : model.getTotemPositions().entrySet()) {
+        for (var e : matchModel.getTotemPositions().entrySet()) {
             if (e.getValue() >= 0 && e.getValue() < offerLayout.length()) {
                 offerOccupants[e.getValue()] = e.getKey();
             }
@@ -179,7 +179,7 @@ public class InGameRenderer {
             mid2.append(centerString(bonusStr, 7));
 
             String player = centerString(returnOccupants[i], 7);
-            String color = getTotemAnsiColor(model, returnOccupants[i]);
+            String color = getTotemAnsiColor(matchModel, returnOccupants[i]);
             mid3.append(color).append(player).append("\033[0m");
 
             bot.append("───────");
@@ -204,7 +204,7 @@ public class InGameRenderer {
             String[] specs = getTileSpecs(t);
 
             String player = centerString(offerOccupants[i], 7);
-            String color = getTotemAnsiColor(model, offerOccupants[i]);
+            String color = getTotemAnsiColor(matchModel, offerOccupants[i]);
 
             top.append("┌───────┐ ");
             mid1.append("│").append(specs[0]).append("│ ");
@@ -221,7 +221,7 @@ public class InGameRenderer {
         out.print("  * Nota: se non puoi pagare i malus in cibo, perdi 2pp per ogni cibo mancante.\n");
     }
 
-    private String getTotemAnsiColor(LightGameModel model, String nickname) {
+    private String getTotemAnsiColor(MatchModel model, String nickname) {
         if (nickname.equals("free")) return "\033[90m";
 
         LightPlayer player = model.getPlayers().get(nickname);

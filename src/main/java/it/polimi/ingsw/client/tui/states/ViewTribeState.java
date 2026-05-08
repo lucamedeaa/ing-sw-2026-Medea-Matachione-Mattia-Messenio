@@ -18,10 +18,11 @@ public class ViewTribeState implements UIState {
         this.out = out;
         this.targetPlayer = targetPlayer;
         this.renderer = new ViewTribeRenderer(out);
+        //render();
     }
 
     public void render() {
-        var tribe = nav.getModel().getTribes().get(targetPlayer);
+        var tribe = nav.getMatchModel().getTribes().get(targetPlayer);
         renderer.render(targetPlayer, tribe);
     }
 

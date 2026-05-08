@@ -1,10 +1,11 @@
 package it.polimi.ingsw.client.network;
+import it.polimi.ingsw.client.tui.ServerCommandPort;
 import it.polimi.ingsw.network.client.ServerProxy;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServerController {
+public class ServerController implements ServerCommandPort {
 
     private final ServerProxy server;
     private final ExecutorService networkExecutor;

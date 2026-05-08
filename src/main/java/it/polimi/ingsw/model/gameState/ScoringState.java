@@ -4,6 +4,8 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.CompletedGameResult;
 import it.polimi.ingsw.model.PlayerGameResult;
 import it.polimi.ingsw.model.updates.AvailableAction;
+import it.polimi.ingsw.model.updates.GameEvent;
+import it.polimi.ingsw.model.updates.PlayerScoreUpdate;
 
 
 import java.util.ArrayList;
@@ -21,6 +23,12 @@ public class ScoringState extends GameState {
     @Override
     public void start() {
         List<PlayerGameResult> leaderboard = calculateFinalScores();
+
+        List<PlayerScoreUpdate> scores = leaderboard.stream()
+                .map(r -> new PlayerScoreUpdate(r.nickname(), r.finalScore(), r.remainingFood()))
+                .toList();
+        game.pushEvent(new GameEvent.GameOverEvent(scores));
+
         game.completeNormally(new CompletedGameResult(leaderboard));
     }
 

@@ -1,7 +1,5 @@
 package it.polimi.ingsw.client.view.listeners;
 
-public interface InGameView {
-    void onDeltaEvent();
+public interface GameEndedView {
     void onReturnToMatchmaking(String reason);
-    void onError(String error);
 }

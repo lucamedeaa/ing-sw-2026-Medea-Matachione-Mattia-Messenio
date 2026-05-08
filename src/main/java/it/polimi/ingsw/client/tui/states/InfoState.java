@@ -15,6 +15,7 @@ public class InfoState implements UIState {
         this.nav = nav;
         this.out = out;
         this.renderer = new InfoRenderer(out);
+        //render();
     }
 
     public void render() {

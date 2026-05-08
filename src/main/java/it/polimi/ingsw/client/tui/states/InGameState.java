@@ -6,11 +6,12 @@ import it.polimi.ingsw.client.tui.OutputPort;
 import it.polimi.ingsw.client.tui.commands.*;
 import it.polimi.ingsw.client.tui.UIState;
 import it.polimi.ingsw.client.tui.render.InGameRenderer;
+import it.polimi.ingsw.client.view.listeners.InGameView;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class InGameState implements UIState {
+public class InGameState implements UIState, InGameView {
     private final NavigationPort nav;
     private final OutputPort out;
     private final InGameRenderer renderer;
@@ -26,8 +27,10 @@ public class InGameState implements UIState {
         this.out = out;
         this.renderer = new InGameRenderer(out);
         this.prevState = captureState();
-        this.lastRound = nav.getModel().getCurrentRound();
+        this.lastRound = nav.getMatchModel().getCurrentRound();
         registerCommands();
+
+        nav.getNotificationController().setInGameView(this);
     }
 
     private void registerCommands() {
@@ -39,24 +42,24 @@ public class InGameState implements UIState {
 
     @Override
     public void render() {
-        if (nav.getModel().getAbortReason() != null) {
-            nav.changeState(new MatchmakingState(nav, out));
+        if (nav.getMatchModel().isGameOver()) {
+            nav.changeState(new GameEndedState(nav, out));
             return;
         }
-
         updateDeltas(); // Esegue la logica di calcolo interna
 
-        String error = nav.getModel().consumeGlobalError();
-        renderer.render(nav.getModel(), nav.getMyNickname(), displayDeltas, error);
-
-        if (nav.getModel().isGameOver()) {
-            // Se il gioco è finito, premi invio per cambiare stato
+        String error = nav.getLobbyModel().consumeGlobalError();
+        if (error == null || error.isEmpty()) {
+            error = nav.getLobbyModel().consumeGlobalError();
         }
+
+        renderer.render(nav.getMatchModel(), nav.getMyNickname(), displayDeltas, error);
+
     }
 
     @Override
     public void handleInput(String input) {
-        if (nav.getModel().isGameOver()) {
+        if (nav.getMatchModel().isGameOver()) {
             nav.changeState(new GameEndedState(nav, out));
             return;
         }
@@ -73,13 +76,23 @@ public class InGameState implements UIState {
     }
 
     private void updateDeltas() {
-        Map<String, int[]> curr = captureState();
-        // ... logica di calcolo delta (computeDeltas, mergeInto) ...
-        // Invia i risultati a displayDeltas
+        Map<String, int[]> currState = captureState();
+
+        Map<String, int[]> stepDeltas = computeDeltas(prevState, currState);
+
+        if (isEndOfTurn()) {
+            accumulated.clear();
+        }
+
+        mergeInto(accumulated, stepDeltas);
+
+        displayDeltas = new HashMap<>(accumulated);
+
+        prevState = currState;
     }
 
     private boolean isEndOfTurn() {
-        int round = nav.getModel().getCurrentRound();
+        int round = nav.getMatchModel().getCurrentRound();
         if (round != lastRound) {
             lastRound = round;
             return true;
@@ -87,9 +100,24 @@ public class InGameState implements UIState {
         return false;
     }
 
+    @Override
+    public void onDeltaEvent() {
+    }
+    @Override
+    public void onError(String error) {
+
+    }
+
+    @Override
+    public void onReturnToMatchmaking(String reason) {
+        nav.getNotificationController().setInGameView(null);
+        //nav.getLobbyModel().setGlobalError(reason);
+        nav.changeState(new MatchmakingState(nav, out));
+    }
+
     private Map<String, int[]> captureState() {
         Map<String, int[]> snap = new HashMap<>();
-        for (LightPlayer p : nav.getModel().getPlayers().values())
+        for (LightPlayer p : nav.getMatchModel().getPlayers().values())
             snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige(), p.getFoodDiscount()});
         return snap;
     }
@@ -113,6 +141,7 @@ public class InGameState implements UIState {
             acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1], curDisc + stepDisc});
         }
     }
+
 
 
 }

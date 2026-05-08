@@ -40,7 +40,7 @@ public class GameController implements GameCompletionHandler {
                 return;
             }
             System.out.println("[CONTROLLER] Disconnessione di " + nickname + ". Partita terminata.");
-            lifecycleCallback.closeAbortedRoom("Partita terminata senza risultati finali.", nickname);
+            lifecycleCallback.closeAbortedRoom("Il giocatore " + nickname + " ha abbandonato la partita.", nickname);
         });
     }
 

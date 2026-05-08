@@ -6,72 +6,72 @@ import it.polimi.ingsw.network.visitor.EventVisitor;
 
 public class EventApplier implements EventVisitor {
 
-    private final LightGameModel model;
+    private final MatchModel matchModel;
 
-    public EventApplier(LightGameModel model) {
-        this.model = model;
+    public EventApplier(MatchModel matchModel) {
+        this.matchModel = matchModel;
     }
 
     @Override
     public void visit(CardTakenEventDTO event) {
-        model.removeCard(event.row(), event.col());
+        matchModel.removeCard(event.row(), event.col());
     }
 
     @Override
     public void visit(BoardRefilledEventDTO event) {
-        model.refillBoardRow(event.row(), event.newCardIds());
+        matchModel.refillBoardRow(event.row(), event.newCardIds());
     }
 
     @Override
     public void visit(TotemPlacedEventDTO event) {
-        model.updateTotemPosition(event.nickname(), event.positionIndex());
+        matchModel.updateTotemPosition(event.nickname(), event.positionIndex());
     }
 
     @Override
     public void visit(PlayerResourcesChangedEventDTO event) {
-        model.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
+        matchModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
         if (event.reason() != null && !event.reason().isEmpty()) {
-            model.addGameLog("\033[33m[" + event.nickname() + "] " + event.reason() + "\033[0m");
+            matchModel.addGameLog("\033[33m[" + event.nickname() + "] " + event.reason() + "\033[0m");
         }
     }
 
     @Override
     public void visit(CardAddedToTribeEventDTO event) {
-        model.addCardToPlayerTribe(event.nickname(), event.cardId());
+        matchModel.addCardToPlayerTribe(event.nickname(), event.cardId());
     }
 
     @Override
     public void visit(EraTransitionEventDTO event) {
-        model.updateEra(event.newEraNumber());
-        model.addGameLog("\033[1;36m[!] INIZIA L'ERA " + event.newEraNumber() + "!\033[0m");
+        matchModel.updateEra(event.newEraNumber());
+        matchModel.addGameLog("\033[1;36m[!] INIZIA L'ERA " + event.newEraNumber() + "!\033[0m");
     }
 
     @Override
     public void visit(RoundAdvancedEventDTO event) {
-        model.updateRound(event.newRound());
+        matchModel.updateRound(event.newRound());
     }
 
     @Override
     public void visit(TribeDTO tribe) {
-        model.updatePlayerTribe(tribe.nickname(), tribe.tribe());
+        matchModel.updatePlayerTribe(tribe.nickname(), tribe.tribe());
     }
 
     @Override
     public void visit(WinnersAnnouncedEventDTO event) {
-        model.setWinners(event.winnersNicknames());
+        matchModel.setWinners(event.winnersNicknames());
     }
 
     @Override
     public void visit(PlayerLeftGameDTO event) {
-        model.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
+        matchModel.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
     }
 
     @Override
     public void visit(GameOverEventDTO event) {
-        // mostrare i punteggi finali sulla TUI
+        matchModel.setGameOver(event.leaderboard());
     }
     @Override
     public void visit(TotemReturnedEventDTO event) {
-        model.returnTotemToTrack(event.nickname(), event.returnIndex());
+        matchModel.returnTotemToTrack(event.nickname(), event.returnIndex());
     }
 }

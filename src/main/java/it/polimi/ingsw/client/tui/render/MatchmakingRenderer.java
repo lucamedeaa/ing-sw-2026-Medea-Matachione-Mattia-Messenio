@@ -17,7 +17,9 @@ public class MatchmakingRenderer {
         printLogo();
         printHeader();
         printCommands();
-        printGames(availableGames);
+        if (availableGames != null) {
+            printGames(availableGames);
+        }
 
         if (lastError != null && !lastError.isEmpty()) {
             out.print("\n\033[33m[INFO]\033[0m \033[3m" + lastError + "\033[0m");

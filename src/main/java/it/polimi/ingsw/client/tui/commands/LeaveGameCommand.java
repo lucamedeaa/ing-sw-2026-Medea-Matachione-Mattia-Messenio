@@ -2,12 +2,13 @@ package it.polimi.ingsw.client.tui.commands;
 
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.tui.OutputPort;
+import it.polimi.ingsw.client.tui.ServerCommandPort;
 
 public class LeaveGameCommand implements GameCommand {
-    private final ServerController controller;
+    private final ServerCommandPort controller;
     private final OutputPort out;
 
-    public LeaveGameCommand(ServerController controller, OutputPort out) {
+    public LeaveGameCommand(ServerCommandPort controller, OutputPort out) {
         this.controller = controller;
         this.out = out;
     }

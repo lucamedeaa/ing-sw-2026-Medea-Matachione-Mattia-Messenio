@@ -17,7 +17,7 @@ public class ViewTribeCommand implements GameCommand {
 
     @Override
     public void execute() {
-        if (!nav.getModel().getTribes().containsKey(targetPlayer)) {
+        if (!nav.getMatchModel().getTribes().containsKey(targetPlayer)) {
             out.print("Giocatore '" + targetPlayer + "' non trovato.");
             return;
         }

@@ -1,11 +1,12 @@
 package it.polimi.ingsw.client.tui.commands;
 
 import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.tui.ServerCommandPort;
 
 public class DisconnectCommand implements GameCommand {
-    private final ServerController controller;
+    private final ServerCommandPort controller;
 
-    public DisconnectCommand(ServerController controller) {
+    public DisconnectCommand(ServerCommandPort controller) {
         this.controller = controller;
     }
 

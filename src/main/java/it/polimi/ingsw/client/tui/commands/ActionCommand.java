@@ -17,12 +17,10 @@ public class ActionCommand implements GameCommand {
     @Override
     public void execute() {
         // Uso nav per accedere al Model
-        var availableActions = nav.getModel().getMyActions();
+        var availableActions = nav.getMatchModel().getMyActions();
 
         if (availableActions.isEmpty()) {
-            // Uso out per stampare
-            out.print("\033[33m[ATTENZIONE] Non è il tuo turno! Aspetta che " +
-                    nav.getModel().getActivePlayer() + " finisca la sua mossa.\033[0m");
+            nav.getMatchModel().setGlobalError("Non è il tuo turno! Aspetta che " + nav.getMatchModel().getActivePlayer() + " finisca la sua mossa.");
             return;
         }
 
@@ -30,18 +28,18 @@ public class ActionCommand implements GameCommand {
             int actionIndex = Integer.parseInt(args[0]);
 
             if (actionIndex < 0 || actionIndex >= availableActions.size()) {
-                out.print("\033[31m[ERRORE] Indice non valido.\033[0m");
+                nav.getMatchModel().setGlobalError("Indice azione non valido.");
                 return;
             }
 
             var selectedAction = availableActions.get(actionIndex);
 
 
-            ActionExecutor executor = new ActionExecutor(nav, out, args);
+            ActionExecutor executor = new ActionExecutor(nav.getController(), nav.getMatchModel(), out, args);
             selectedAction.accept(executor);
 
         } catch (NumberFormatException e) {
-            out.print("\033[31m[ERRORE] '" + args[0] + "' non è un numero valido.\033[0m");
+            nav.getMatchModel().setGlobalError("'" + args[0] + "' non è un numero valido.");
         }
     }
 }

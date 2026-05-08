@@ -38,22 +38,23 @@ public class RoundEndState extends GameState {
             notifyChanges(before, "Eventi di Fine Partita");
             this.transition(new ScoringState(this.game));
         } else {
-        int eraBefore = game.getBoard().getCurrentEraNumber();
+            int eraBefore = game.getBoard().getCurrentEraNumber();
 
-        List<GameEvent> resolutionEvents = game.getBoard().cleanupForNextRound(game.getPlayers());
-        for (GameEvent e : resolutionEvents) {
-            game.pushEvent(e);
+            List<GameEvent> resolutionEvents = game.getBoard().cleanupForNextRound(game.getPlayers());
+            notifyBoardState();
+
+            for (GameEvent e : resolutionEvents) {
+                game.pushEvent(e);
+            }
+
+            int eraAfter = game.getBoard().getCurrentEraNumber();
+            if (eraAfter > eraBefore) {
+                game.pushEvent(new EraTransitionEvent(eraAfter));
+            }
+
+            notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem Order Tile)");
+            this.transition(new PlacementState(this.game));
         }
-
-        int eraAfter = game.getBoard().getCurrentEraNumber();
-        if (eraAfter > eraBefore) {
-            game.pushEvent(new EraTransitionEvent(eraAfter));
-        }
-
-        notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem Order Tile)");
-        notifyBoardState();
-        this.transition(new PlacementState(this.game));
-    }
     }
 
     private void notifyChanges(java.util.Map<String, int[]> before, String reason) {

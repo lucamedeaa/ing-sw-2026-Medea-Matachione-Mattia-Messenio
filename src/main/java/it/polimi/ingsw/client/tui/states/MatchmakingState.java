@@ -20,6 +20,8 @@ public class MatchmakingState implements UIState, MatchmakingView {
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private String pendingNickname = "";
 
+    private boolean showGamesList = false; //mi serve per evitare stampe fasulle
+
     public MatchmakingState(NavigationPort nav, OutputPort out) {
         this.nav = nav;
         this.out = out;
@@ -27,6 +29,8 @@ public class MatchmakingState implements UIState, MatchmakingView {
 
         registerCommands();
         nav.getNotificationController().setMatchmakingView(this);
+
+        //render();
     }
 
     private void registerCommands() {
@@ -57,8 +61,9 @@ public class MatchmakingState implements UIState, MatchmakingView {
 
     @Override
     public void render() {
-        String error = nav.getModel().consumeGlobalError();
-        renderer.render(nav.getModel().getAvailableGames(), error);
+        String error = nav.getLobbyModel().consumeGlobalError();
+        List<GameInfoDTO> gamesToDisplay = showGamesList ? nav.getLobbyModel().getAvailableGames() : null;
+        renderer.render(gamesToDisplay, error);
     }
 
     @Override
@@ -70,7 +75,7 @@ public class MatchmakingState implements UIState, MatchmakingView {
 
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
-            nav.getModel().setGlobalError("Comando sconosciuto. Usa: create, join, list, 0.");
+            nav.getLobbyModel().setGlobalError("Comando sconosciuto. Usa: create, join, list, 0.");
             render();
             return;
         }
@@ -79,17 +84,18 @@ public class MatchmakingState implements UIState, MatchmakingView {
             GameCommand command = factory.create(parts);
             command.execute();
         } catch (IllegalArgumentException e) {
-            nav.getModel().setGlobalError(e.getMessage());
+            nav.getLobbyModel().setGlobalError(e.getMessage());
             render();
         } catch (Exception e) {
-            nav.getModel().setGlobalError("Errore durante l'esecuzione: " + e.getMessage());
+            nav.getLobbyModel().setGlobalError("Errore durante l'esecuzione: " + e.getMessage());
             render();
         }
     }
 
     @Override
     public void onAvailableGames(List<GameInfoDTO> games) {
-        render(); // i sono nuove partite, ridisegno lo schermo
+        this.showGamesList = true;
+        render();
     }
 
     @Override
