@@ -1,5 +1,7 @@
 package it.polimi.ingsw.network.messages;
 
+import java.io.Serial;
+
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 import it.polimi.ingsw.network.dto.BoardDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
@@ -11,6 +13,9 @@ public record FullSyncMessage(BoardDTO board,
                               List<PlayerDTO> players,
                               String activePlayer,
                               List<AvailableActionDTO> actions) implements ServerMessage {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Override
     public void accept(ClientMessageVisitor visitor) {
         visitor.visit(this);

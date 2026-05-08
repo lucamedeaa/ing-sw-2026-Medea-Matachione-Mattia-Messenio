@@ -2,6 +2,7 @@ package it.polimi.ingsw.network.dto;
 
 import it.polimi.ingsw.network.visitor.ActionVisitor;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,6 +11,8 @@ public record BoardDTO(List<Integer> UpperRowCards,
                        List<Integer> LowerRowCards,
                        int currentEra,
                        int currentRound) implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /** Accepts a visitor to process this DTO. @param visitor handling the board data */
     public void accept(ActionVisitor visitor) {

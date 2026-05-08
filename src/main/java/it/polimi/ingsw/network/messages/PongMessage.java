@@ -1,10 +1,13 @@
 package it.polimi.ingsw.network.messages;
 
+import java.io.Serial;
+
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
-import java.io.Serializable;
+public record PongMessage() implements ServerMessage {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-public record PongMessage() implements ServerMessage, Serializable {
     @Override
     public void accept(ClientMessageVisitor view) {
     }

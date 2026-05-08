@@ -1,8 +1,12 @@
 package it.polimi.ingsw.network.messages;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class GameInfoDTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final String gameId;
     private final String creatorNickname;
     private final int currentPlayers;
