@@ -1,10 +1,9 @@
 package it.polimi.ingsw.modelTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.VictoryPoints;
-import it.polimi.ingsw.model.cards.drawableCards.characters.*;
-import it.polimi.ingsw.model.enums.CharacterType;
-import it.polimi.ingsw.model.enums.InventorIcon;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.building.VictoryPoints;
+import it.polimi.ingsw.server.model.card.character.*;
+import it.polimi.ingsw.server.model.enums.CharacterType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

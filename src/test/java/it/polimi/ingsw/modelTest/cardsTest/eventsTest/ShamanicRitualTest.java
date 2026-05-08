@@ -1,12 +1,12 @@
 package it.polimi.ingsw.modelTest.cardsTest.eventsTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.DoublePrestigeShaman;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.RitualShield;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.RitualStars;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Shaman;
-import it.polimi.ingsw.model.cards.events.ShamanicRitual;
-import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.building.DoublePrestigeShaman;
+import it.polimi.ingsw.server.model.card.building.RitualShield;
+import it.polimi.ingsw.server.model.card.building.RitualStars;
+import it.polimi.ingsw.server.model.card.character.Shaman;
+import it.polimi.ingsw.server.model.card.event.ShamanicRitual;
+import it.polimi.ingsw.server.model.enums.TotemColor;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

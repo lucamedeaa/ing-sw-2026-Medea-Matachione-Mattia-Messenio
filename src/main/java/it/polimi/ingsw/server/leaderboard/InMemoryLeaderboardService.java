@@ -1,9 +1,9 @@
 package it.polimi.ingsw.server.leaderboard;
 
-import it.polimi.ingsw.model.CompletedGameResult;
-import it.polimi.ingsw.model.PlayerGameResult;
-import it.polimi.ingsw.network.dto.LeaderboardEntryDTO;
-import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
+import it.polimi.ingsw.server.model.CompletedGameResult;
+import it.polimi.ingsw.server.model.PlayerGameResult;
+import it.polimi.ingsw.common.network.dto.LeaderboardEntryDto;
+import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     private final List<SavedGameResult> savedResults = new ArrayList<>();
 
     @Override
-    public synchronized List<LeaderboardEntryDTO> recordCompletedGame(CompletedGameResult result) {
+    public synchronized List<LeaderboardEntryDto> recordCompletedGame(CompletedGameResult result) {
         LocalDateTime playedAt = LocalDateTime.now();
         int playerCount = result.playerResults().size();
         Set<String> completedPlayerNicknames = new LinkedHashSet<>();
@@ -45,11 +45,11 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public synchronized LeaderboardSnapshot getLeaderboard(int playerCount) {
-        return new LeaderboardSnapshot(playerCount, personalBestLeaderboardEntries(playerCount));
+    public synchronized LeaderboardSnapshotDto getLeaderboard(int playerCount) {
+        return new LeaderboardSnapshotDto(playerCount, personalBestLeaderboardEntries(playerCount));
     }
 
-    private List<LeaderboardEntryDTO> personalBestLeaderboardEntries(int playerCount) {
+    private List<LeaderboardEntryDto> personalBestLeaderboardEntries(int playerCount) {
         Map<String, SavedGameResult> personalBestByNickname = savedResults.stream()
                 .filter(result -> result.playerCount() == playerCount)
                 .collect(Collectors.toMap(
@@ -62,7 +62,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
                 .sorted(BEST_RESULT_ORDER)
                 .toList();
 
-        List<LeaderboardEntryDTO> entries = new ArrayList<>();
+        List<LeaderboardEntryDto> entries = new ArrayList<>();
         int previousScore = Integer.MIN_VALUE;
         int previousFood = Integer.MIN_VALUE;
         int previousPosition = 0;
@@ -71,7 +71,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
             int position = result.finalScore() == previousScore && result.remainingFood() == previousFood
                     ? previousPosition
                     : i + 1;
-            entries.add(new LeaderboardEntryDTO(
+            entries.add(new LeaderboardEntryDto(
                     position,
                     result.nickname(),
                     result.finalScore(),

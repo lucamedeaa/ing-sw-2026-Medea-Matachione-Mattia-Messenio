@@ -1,0 +1,18 @@
+package it.polimi.ingsw.server.model.card.building;
+
+import it.polimi.ingsw.server.model.Player;
+
+/** Building that contributes additional stars during the Shamanic Ritual event. */
+public class RitualStars extends Building {
+
+    /** Constructs the RitualStars building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
+    public RitualStars(int idcard, int foodCost, int prestigePoints, int era) {
+        super(idcard, foodCost, prestigePoints, era);
+    }
+
+    /** Adds a fixed contribution to the ritual score. @param owner the owning player @param increment applied prestige increase @param decrement applied prestige decrease @return additional stars (3) */
+    @Override
+    public int onShamanicRitualEvent(Player owner, int increment, int decrement) {
+        return 3;
+    }
+}

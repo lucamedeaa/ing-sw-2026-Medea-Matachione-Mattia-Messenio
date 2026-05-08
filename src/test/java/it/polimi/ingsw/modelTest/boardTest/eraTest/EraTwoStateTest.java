@@ -1,8 +1,8 @@
 package it.polimi.ingsw.modelTest.boardTest.eraTest;
 
-import it.polimi.ingsw.model.board.Board;
-import it.polimi.ingsw.model.board.Era.EraThreeState;
-import it.polimi.ingsw.model.board.Era.EraTwoState;
+import it.polimi.ingsw.server.model.board.Board;
+import it.polimi.ingsw.server.model.board.era.EraThreeState;
+import it.polimi.ingsw.server.model.board.era.EraTwoState;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

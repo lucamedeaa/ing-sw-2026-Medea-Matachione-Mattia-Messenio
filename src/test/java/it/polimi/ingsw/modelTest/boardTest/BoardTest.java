@@ -1,11 +1,10 @@
 package it.polimi.ingsw.modelTest.boardTest;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.board.Board;
-import it.polimi.ingsw.model.board.OfferTile;
-import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.board.Board;
+import it.polimi.ingsw.server.model.board.OfferTile;
+import it.polimi.ingsw.server.model.card.Card;
+import it.polimi.ingsw.server.model.exception.InvalidGameActionException;
 import it.polimi.ingsw.modelTest.ModelTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,11 +20,11 @@ public class BoardTest extends ModelTest {
     // -----------------------------------------------------------------------
 
     private Board board(int n) {
-        List<it.polimi.ingsw.model.Player> players = newPlayers(n);
+        List<Player> players = newPlayers(n);
         return new Board(n, players);
     }
 
-    private List<it.polimi.ingsw.model.Player> players(int n) {
+    private List<Player> players(int n) {
         return newPlayers(n);
     }
 

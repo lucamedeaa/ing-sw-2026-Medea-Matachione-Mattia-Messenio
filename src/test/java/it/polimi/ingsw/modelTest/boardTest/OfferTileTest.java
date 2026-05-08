@@ -1,6 +1,6 @@
 package it.polimi.ingsw.modelTest.boardTest;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.board.TileTemplate;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.board.TileTemplate;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

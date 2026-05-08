@@ -1,6 +1,6 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
-import it.polimi.ingsw.model.cards.drawableCards.buildings.TurnBonus;
+import it.polimi.ingsw.server.model.card.building.TurnBonus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

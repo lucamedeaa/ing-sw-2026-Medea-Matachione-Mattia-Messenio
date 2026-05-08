@@ -1,7 +1,8 @@
 package it.polimi.ingsw.modelTest.boardTest.eraTest;
 
-import it.polimi.ingsw.model.board.Era.EraOneState;
-import it.polimi.ingsw.model.board.Era.EraTwoState;
+import it.polimi.ingsw.server.model.board.Board;
+import it.polimi.ingsw.server.model.board.era.EraOneState;
+import it.polimi.ingsw.server.model.board.era.EraTwoState;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,6 @@ public class EraOneStateTest extends ModelTest {
     @Test
     @DisplayName("transitionSetup does not throw")
     void transitionSetupDoesNotThrow() {
-        assertDoesNotThrow(() -> new EraOneState().transitionSetup(new it.polimi.ingsw.model.board.Board(2, newPlayers(2))));
+        assertDoesNotThrow(() -> new EraOneState().transitionSetup(new Board(2, newPlayers(2))));
     }
 }

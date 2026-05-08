@@ -1,17 +1,12 @@
 package it.polimi.ingsw.modelTest;
 
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.ModelObserver;
-import it.polimi.ingsw.model.board.Board;
-import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
-import it.polimi.ingsw.model.updates.AvailableAction;
-import it.polimi.ingsw.model.updates.BoardUpdate;
-import it.polimi.ingsw.model.updates.ModelUpdate;
-import it.polimi.ingsw.model.updates.PlayerUpdate;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.BoardDTO;
-import it.polimi.ingsw.network.dto.ModelUpdateDTO;
-import it.polimi.ingsw.network.dto.PlayerDTO;
+import it.polimi.ingsw.server.model.Game;
+import it.polimi.ingsw.server.model.ModelObserver;
+import it.polimi.ingsw.server.model.exception.InvalidGameActionException;
+import it.polimi.ingsw.server.model.update.AvailableAction;
+import it.polimi.ingsw.server.model.update.BoardUpdate;
+import it.polimi.ingsw.server.model.update.ModelUpdate;
+import it.polimi.ingsw.server.model.update.PlayerUpdate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

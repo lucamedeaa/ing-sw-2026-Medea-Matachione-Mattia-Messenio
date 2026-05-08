@@ -1,6 +1,6 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
-import it.polimi.ingsw.model.cards.drawableCards.buildings.LatePurchase;
+import it.polimi.ingsw.server.model.card.building.LatePurchase;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

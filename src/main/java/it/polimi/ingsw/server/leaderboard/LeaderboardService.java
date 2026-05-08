@@ -1,13 +1,13 @@
 package it.polimi.ingsw.server.leaderboard;
 
-import it.polimi.ingsw.model.CompletedGameResult;
-import it.polimi.ingsw.network.dto.LeaderboardEntryDTO;
-import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
+import it.polimi.ingsw.server.model.CompletedGameResult;
+import it.polimi.ingsw.common.network.dto.LeaderboardEntryDto;
+import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 
 import java.util.List;
 
 public interface LeaderboardService {
-    List<LeaderboardEntryDTO> recordCompletedGame(CompletedGameResult result);
+    List<LeaderboardEntryDto> recordCompletedGame(CompletedGameResult result);
 
-    LeaderboardSnapshot getLeaderboard(int playerCount);
+    LeaderboardSnapshotDto getLeaderboard(int playerCount);
 }

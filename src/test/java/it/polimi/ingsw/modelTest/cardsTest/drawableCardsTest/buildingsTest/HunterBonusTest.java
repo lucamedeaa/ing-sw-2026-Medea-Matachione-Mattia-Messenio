@@ -1,9 +1,9 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.HunterBonus;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Hunter;
-import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.building.HunterBonus;
+import it.polimi.ingsw.server.model.card.character.Hunter;
+import it.polimi.ingsw.server.model.enums.TotemColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

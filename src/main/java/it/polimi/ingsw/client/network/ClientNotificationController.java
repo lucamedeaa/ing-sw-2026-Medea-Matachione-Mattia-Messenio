@@ -1,26 +1,25 @@
 package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.client.lightGameModel.EventApplier;
-import it.polimi.ingsw.client.lightGameModel.LobbyModel;
-import it.polimi.ingsw.client.lightGameModel.MatchModel;
+import it.polimi.ingsw.client.model.EventApplier;
+import it.polimi.ingsw.client.model.LobbyModel;
+import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 import it.polimi.ingsw.client.view.listeners.MatchmakingView;
-import it.polimi.ingsw.network.client.ServerNotificationReceiver;
-import it.polimi.ingsw.network.dto.AvailableActionDTO;
-import it.polimi.ingsw.network.dto.BoardDTO;
-import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
-import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
-import it.polimi.ingsw.network.dto.GameEventDTO;
-import it.polimi.ingsw.network.dto.PlayerDTO;
-import it.polimi.ingsw.network.messages.GameInfoDTO;
+import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.common.network.dto.BoardDto;
+import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
+import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.event.GameEventDto;
+import it.polimi.ingsw.common.network.dto.PlayerDto;
+import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.util.List;
 
 public class ClientNotificationController implements ServerNotificationReceiver {
     private final LobbyModel lobbyModel;
-    private final MatchModel matchModel;
+    private final GameModel gameModel;
     private final EventApplier applier;
 
     private MatchmakingView matchmakingView;
@@ -28,9 +27,9 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     private InGameView inGameView;
     private GameEndedView gameEndedView;
 
-    public ClientNotificationController(LobbyModel lobbyModel, MatchModel matchModel, EventApplier applier) {
+    public ClientNotificationController(LobbyModel lobbyModel, GameModel gameModel, EventApplier applier) {
         this.lobbyModel = lobbyModel;
-        this.matchModel = matchModel;
+        this.gameModel = gameModel;
         this.applier = applier;
     }
 
@@ -41,14 +40,14 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     public void setGameEndedView(GameEndedView v) { this.gameEndedView = v; }
 
     @Override
-    public void availableGames(List<GameInfoDTO> games) {
+    public void availableGames(List<GameInfoDto> games) {
         lobbyModel.setAvailableGames(games); // Aggiorna sempre i dati
         if (matchmakingView != null) matchmakingView.onAvailableGames(games); // Avvisa la UI (se esiste)
     }
 
     @Override
     public void matchmakingSuccess(String text) {
-        matchModel.executeBatch(() -> {
+        gameModel.executeBatch(() -> {
             lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text);
             if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
         });
@@ -62,11 +61,11 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     }
 
     @Override
-    public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
-        matchModel.executeBatch(() -> {
-            matchModel.reset();
-            matchModel.setFullState(board, players, activePlayer);
-            matchModel.setAvailableActions(actions);
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
+        gameModel.executeBatch(() -> {
+            gameModel.reset();
+            gameModel.setFullState(board, players, activePlayer);
+            gameModel.setAvailableActions(actions);
         });
         if(lobbyView != null){
             lobbyView.onGameStarted();
@@ -74,13 +73,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     }
 
     @Override
-    public void deltaEvent(List<GameEventDTO> events, List<AvailableActionDTO> nextActions, String activePlayer) {
-        matchModel.executeBatch(() -> {
-            for (GameEventDTO event : events) {
+    public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
+        gameModel.executeBatch(() -> {
+            for (GameEventDto event : events) {
                 event.accept(applier);
             }
-            matchModel.setAvailableActions(nextActions);
-            matchModel.setActivePlayer(activePlayer);
+            gameModel.setAvailableActions(nextActions);
+            gameModel.setActivePlayer(activePlayer);
         });
     }
 
@@ -94,7 +93,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void gameAborted(String reason) {
-        matchModel.reset();
+        gameModel.reset();
         lobbyModel.setGlobalErrorSilent(reason);
 
         if (inGameView != null) inGameView.onReturnToMatchmaking(reason);
@@ -104,7 +103,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void gameLeftSuccess(String text) {
-        matchModel.reset();
+        gameModel.reset();
         lobbyModel.setGlobalErrorSilent(text);
 
         if (inGameView != null) inGameView.onReturnToMatchmaking(text);
@@ -114,13 +113,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     }
 
     @Override
-    public void gameCompleted(PlayerGameCompletedDTO completedGame) {
-        matchModel.setGameCompleted(completedGame);
+    public void gameCompleted(PlayerGameCompletedDto completedGame) {
+        gameModel.setGameCompleted(completedGame);
     }
 
     @Override
-    public void leaderboard(LeaderboardSnapshot leaderboard) {
-        matchModel.setGlobalLeaderboard(leaderboard);
+    public void leaderboard(LeaderboardSnapshotDto leaderboard) {
+        gameModel.setGlobalLeaderboard(leaderboard);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.charactersTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Artist;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Collector;
-import it.polimi.ingsw.model.cards.events.Sustenance;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.character.Artist;
+import it.polimi.ingsw.server.model.card.character.Collector;
+import it.polimi.ingsw.server.model.card.event.Sustenance;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

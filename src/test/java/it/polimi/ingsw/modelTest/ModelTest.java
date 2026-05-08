@@ -1,7 +1,7 @@
 package it.polimi.ingsw.modelTest;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.Card;
-import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.Card;
+import it.polimi.ingsw.server.model.enums.TotemColor;
 
 import java.util.ArrayList;
 import java.util.List;

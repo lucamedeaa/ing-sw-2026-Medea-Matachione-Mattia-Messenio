@@ -1,7 +1,7 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.charactersTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Shaman;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.character.Shaman;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,11 +1,11 @@
 package it.polimi.ingsw.modelTest.cardsTest.drawableCardsTest.buildingsTest;
 
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.SetScorer;
-import it.polimi.ingsw.model.cards.drawableCards.buildings.VictoryPoints;
-import it.polimi.ingsw.model.cards.drawableCards.characters.*;
-import it.polimi.ingsw.model.enums.InventorIcon;
-import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.building.SetScorer;
+import it.polimi.ingsw.server.model.card.building.VictoryPoints;
+import it.polimi.ingsw.server.model.card.character.*;
+import it.polimi.ingsw.server.model.enums.InventorIcon;
+import it.polimi.ingsw.server.model.enums.TotemColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

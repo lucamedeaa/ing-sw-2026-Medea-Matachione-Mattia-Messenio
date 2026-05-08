@@ -1,10 +1,10 @@
 package it.polimi.ingsw.modelTest;
 
-import it.polimi.ingsw.model.Deck;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Artist;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Hunter;
-import it.polimi.ingsw.model.cards.drawableCards.characters.Shaman;
-import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.server.model.Deck;
+import it.polimi.ingsw.server.model.card.character.Artist;
+import it.polimi.ingsw.server.model.card.character.Hunter;
+import it.polimi.ingsw.server.model.card.character.Shaman;
+import it.polimi.ingsw.server.model.card.Card;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

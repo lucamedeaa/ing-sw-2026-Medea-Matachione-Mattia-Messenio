@@ -1,19 +1,18 @@
 package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.network.client.ServerNotificationReceiver;
-import it.polimi.ingsw.network.messages.AvailableGamesResponseMessage;
-import it.polimi.ingsw.network.messages.DeltaEventMessage;
-import it.polimi.ingsw.network.messages.ErrorMessage;
-import it.polimi.ingsw.network.messages.ErrorMessageDTO;
-import it.polimi.ingsw.network.messages.FullSyncMessage;
-import it.polimi.ingsw.network.messages.GameAbortedMessage;
-import it.polimi.ingsw.network.messages.GameCompletedMessage;
-import it.polimi.ingsw.network.messages.GameLeftSuccessMessage;
-import it.polimi.ingsw.network.messages.LeaderboardResponseMessage;
-import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
-import it.polimi.ingsw.network.messages.RoomUpdateMessage;
-import it.polimi.ingsw.network.messages.ServerDisconnectedMessage;
-import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
+import it.polimi.ingsw.common.message.server.AvailableGamesResponseMessage;
+import it.polimi.ingsw.common.message.server.DeltaEventMessage;
+import it.polimi.ingsw.common.message.server.ErrorMessage;
+import it.polimi.ingsw.common.network.dto.event.ErrorDto;
+import it.polimi.ingsw.common.message.server.FullSyncMessage;
+import it.polimi.ingsw.common.message.server.GameAbortedMessage;
+import it.polimi.ingsw.common.message.server.GameCompletedMessage;
+import it.polimi.ingsw.common.message.server.GameLeftSuccessMessage;
+import it.polimi.ingsw.common.message.server.LeaderboardResponseMessage;
+import it.polimi.ingsw.common.message.server.MatchmakingSuccessMessage;
+import it.polimi.ingsw.common.message.server.RoomUpdateMessage;
+import it.polimi.ingsw.common.message.server.ServerDisconnectedMessage;
+import it.polimi.ingsw.common.visitor.ClientMessageVisitor;
 
 public class SocketServerMessageVisitor implements ClientMessageVisitor {
     private final ServerNotificationReceiver receiver;
@@ -38,7 +37,7 @@ public class SocketServerMessageVisitor implements ClientMessageVisitor {
     }
 
     @Override
-    public void visit(ErrorMessageDTO message) {
+    public void visit(ErrorDto message) {
         receiver.error(message.error());
     }
 

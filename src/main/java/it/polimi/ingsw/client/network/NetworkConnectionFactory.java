@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.network;
 
-import it.polimi.ingsw.network.client.ServerNotificationReceiver;
-import it.polimi.ingsw.network.client.ServerProxy;
+import it.polimi.ingsw.client.network.factory.NetworkClientFactory;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
