@@ -159,9 +159,9 @@ public class MatchModel extends ObservableModel {
 
     public void setGlobalLeaderboard(LeaderboardSnapshot snapshot) {
         this.globalLeaderboard = snapshot;
-        notifyUI();
+        endBatch();
     }
-/*
+
     public void reset() {
         this.upperRowCards.clear();
         this.lowerRowCards.clear();
@@ -173,7 +173,7 @@ public class MatchModel extends ObservableModel {
         this.currentEra = 1;
         this.currentRound = 1;
         this.activePlayer = "";
-        this.actions.clear();
+        this.actions = new ArrayList<>();
 
         // RESET DEI FLAG DI FINE PARTITA
         this.isGameOver = false;
@@ -183,7 +183,7 @@ public class MatchModel extends ObservableModel {
         this.localResult = null;
         this.globalLeaderboard = null;
     }
-*/
+
     // GETTERS
     public PlayerGameCompletedDTO getLocalResult() { return localResult; }
     public LeaderboardSnapshot getGlobalLeaderboard() { return globalLeaderboard; }

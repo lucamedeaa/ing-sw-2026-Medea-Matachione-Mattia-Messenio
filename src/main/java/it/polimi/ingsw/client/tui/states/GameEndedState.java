@@ -18,11 +18,18 @@ public class GameEndedState implements UIState, GameEndedView {
     private final OutputPort out;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
 
+    private final GameEndedRenderer renderer;
+    private boolean hasRendered = false;
+
+
     public GameEndedState(NavigationPort nav, OutputPort out) {
         this.nav = nav;
         this.out = out;
+        this.renderer = new GameEndedRenderer(out);
         nav.getNotificationController().setGameEndedView(this);
         registerCommands();
+
+        nav.getMatchModel().startBatch();
         new GetLeaderboardCommand(nav.getController()).execute();
     }
 
@@ -36,31 +43,14 @@ public class GameEndedState implements UIState, GameEndedView {
         var local = nav.getMatchModel().getLocalResult();
         var global = nav.getMatchModel().getGlobalLeaderboard();
 
-        if (local == null) {
+        // Grazie al batch, questo render() verrà chiamato SOLO quando arriverà la globalLeaderboard.
+        if (local == null || global == null) {
             return;
         }
+        if (hasRendered) return;
+        hasRendered = true;
 
-        out.clearScreen();
-        out.print("════ PARTITA CONCLUSA ════\n");
-
-
-            out.print("RISULTATI PERSONALI:");
-            out.print("  Punteggio: " + local.localScore() + " PP | Cibo: " + local.localRemainingFood());
-            out.print("  Miglior Punteggio Storico: " + local.personalBestScore() + " PP\n");
-
-
-        if (global != null) {
-            out.print("🏆 CLASSIFICA GLOBALE (" + global.playerCount() + " giocatori):");
-            for (var entry : global.entries()) {
-                out.print(String.format("  %d. %-15s | %d PP | %s",
-                        entry.position(), entry.nickname(), entry.finalScore(), entry.playedAt().toString().substring(0, 10)));
-            }
-        } else {
-            out.print("... Caricamento classifica globale ...");
-        }
-
-        out.print("\n[ 0 ] Torna al Menu | [ d ] Disconnetti");
-        out.prompt("> ");
+        renderer.render(local, global);
     }
 
     @Override

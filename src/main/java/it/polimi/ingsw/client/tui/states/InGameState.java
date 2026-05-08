@@ -42,17 +42,13 @@ public class InGameState implements UIState, InGameView {
 
     @Override
     public void render() {
-        if (nav.getMatchModel().isGameOver()) {
-            nav.changeState(new GameEndedState(nav, out));
-            return;
-        }
-        updateDeltas(); // Esegue la logica di calcolo interna
 
-        String error = nav.getLobbyModel().consumeGlobalError();
+        updateDeltas();
+
+        String error = nav.getMatchModel().consumeGlobalError();
         if (error == null || error.isEmpty()) {
             error = nav.getLobbyModel().consumeGlobalError();
         }
-
         renderer.render(nav.getMatchModel(), nav.getMyNickname(), displayDeltas, error);
 
     }

@@ -63,7 +63,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     @Override
     public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
         matchModel.startBatch();
-        //matchModel.reset();
+        matchModel.reset();
         matchModel.setFullState(board, players, activePlayer);
         matchModel.setAvailableActions(actions);
         matchModel.endBatch();
@@ -97,7 +97,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
        // lobbyModel.startBatch();
 
         lobbyModel.setGlobalError(reason);
-       // matchModel.reset();
+        matchModel.reset();
         if (inGameView != null) inGameView.onReturnToMatchmaking(reason);
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(reason);
 
@@ -110,7 +110,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
        // lobbyModel.startBatch();
 
         lobbyModel.setGlobalError(text);
-       // matchModel.reset();
+        matchModel.reset();
         if (inGameView != null) inGameView.onReturnToMatchmaking(text);
         if (gameEndedView != null) gameEndedView.onReturnToMatchmaking(text);
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(text);
