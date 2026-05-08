@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.network.messages.GameInfoDTO;
-import it.polimi.ingsw.server.exceptions.InvalidPlayerCountException;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public interface GameManagerInterface {
 
     void unregisterNickname(String nickname);
 
-    String createNewGame(String creatorNickname, int maxPlayers) throws InvalidPlayerCountException;
+    String createNewGame(String creatorNickname, int maxPlayers) throws LobbyActionException;
 
     RoomConnectionHandler getRoom(String gameId);
 

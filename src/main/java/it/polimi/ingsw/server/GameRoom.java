@@ -7,7 +7,7 @@ import it.polimi.ingsw.controller.GameLifecycleCallback;
 import it.polimi.ingsw.network.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
 import it.polimi.ingsw.network.server.RoomClientProxy;
-import it.polimi.ingsw.server.exceptions.RoomFullException;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 import it.polimi.ingsw.virtualView.VirtualView;
 import it.polimi.ingsw.controller.GameController;
@@ -20,10 +20,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** Represents a game lobby that manages players, connections, and game lifecycle. */
 public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(GameRoom.class.getName());
+    private static final String INTERNAL_ABORT_REASON = "The game was interrupted because of an internal server error.";
 
     private final String gameId;
     private final int maxPlayers;
@@ -46,15 +51,15 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     }
 
     /** Adds a player to the room and starts the game if full. */
-    public RoomAdmissionResult addPlayer(String nickname, RoomClientProxy connection) throws RoomFullException, IllegalStateException {
+    public RoomAdmissionResult addPlayer(String nickname, RoomClientProxy connection) throws LobbyActionException {
         boolean startNow = false;
         // Only room state is mutated under this lock.
         synchronized (roomLock) {
             if (gameStarted) {
-                throw new IllegalStateException("Game already started.");
+                throw new LobbyActionException("Game already started.");
             }
             if (players.size() >= maxPlayers) {
-                throw new RoomFullException("Game is full.");
+                throw new LobbyActionException("Game is full.");
             }
             players.put(nickname, connection);
             if (players.size() >= maxPlayers) {
@@ -90,24 +95,37 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         GameController controller = new GameController(game, gameExecutor, this, leaderboardService);
         game.setCompletionHandler(controller);
         gameExecutor.submit(() -> {
-            for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
-                String name = entry.getKey();
-                RoomClientProxy conn = entry.getValue();
-                VirtualView vv = new VirtualView(name, conn);
-                conn.transitionToGameState(controller);
-                game.addObserver(vv);
+            try {
+                for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+                    String name = entry.getKey();
+                    RoomClientProxy conn = entry.getValue();
+                    VirtualView vv = new VirtualView(name, conn);
+                    conn.transitionToGameState(controller);
+                    game.addObserver(vv);
+                }
+                game.start();
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.SEVERE, "[ROOM] Unexpected failure while starting game " + gameId, e);
+                closeRoomAfterUnexpectedFailure();
             }
-            game.start();
         });
     }
 
+    private void closeRoomAfterUnexpectedFailure() {
+        try {
+            closeAbortedRoom(INTERNAL_ABORT_REASON, null);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[ROOM] Failed to close room " + gameId + " after unexpected failure", e);
+        }
+    }
+
     /** Removes a player and handles cleanup or disconnection logic. */
-    public void removePlayer(String nickname) throws IllegalStateException {
+    public void removePlayer(String nickname) throws LobbyActionException {
         boolean roomIsEmpty = false;
         boolean successfullyRemoved = false;
         synchronized (roomLock) {
             if (gameStarted) {
-                throw new IllegalStateException("Game already started. Cannot leave now.");
+                throw new LobbyActionException("Game already started. Cannot leave now.");
             }
 
             RoomClientProxy removed = players.remove(nickname);

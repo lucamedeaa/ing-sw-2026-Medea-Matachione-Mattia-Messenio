@@ -8,8 +8,13 @@ import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameController implements GameCompletionHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
+    private static final String INTERNAL_ABORT_REASON = "The game was interrupted because of an internal server error.";
 
     private final ModelControllerInterface game;
     private final ExecutorService gameExecutor;
@@ -35,17 +40,17 @@ public class GameController implements GameCompletionHandler {
     }
 
     public void handlePlayerDisconnection(String nickname) {
-        gameExecutor.submit(() -> {
+        submitGameTask("player disconnection for " + nickname, () -> {
             if (!game.abort()) {
                 return;
             }
-            System.out.println("[CONTROLLER] Disconnessione di " + nickname + ". Partita terminata.");
+            LOGGER.info("[CONTROLLER] Disconnection of " + nickname + ". Game terminated.");
             lifecycleCallback.closeAbortedRoom("Il giocatore " + nickname + " ha abbandonato la partita.", nickname);
         });
     }
 
     public void handleTakeCard(String nickname, int row, int col, java.util.function.Consumer<String> onError) {
-        gameExecutor.submit(() -> {
+        submitGameTask("take card for " + nickname, () -> {
             try {
                 game.takeCard(nickname, row, col);
                 game.commitEvents();
@@ -56,7 +61,7 @@ public class GameController implements GameCompletionHandler {
     }
 
     public void handlePlaceTotem(String nickname, int positionIndex, java.util.function.Consumer<String> onError) {
-        gameExecutor.submit(() -> {
+        submitGameTask("place totem for " + nickname, () -> {
             try {
                 game.placeTotem(nickname, positionIndex);
                 game.commitEvents();
@@ -67,7 +72,7 @@ public class GameController implements GameCompletionHandler {
     }
 
     public void handleSkipBonus(String nickname, java.util.function.Consumer<String> onError) {
-        gameExecutor.submit(() -> {
+        submitGameTask("skip bonus for " + nickname, () -> {
             try {
                 game.skipBonus(nickname);
                 game.commitEvents();
@@ -75,5 +80,26 @@ public class GameController implements GameCompletionHandler {
                 onError.accept(e.getMessage());
             }
         });
+    }
+
+    private void submitGameTask(String description, Runnable task) {
+        gameExecutor.submit(() -> {
+            try {
+                task.run();
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.SEVERE, "[CONTROLLER] Unexpected failure during " + description, e);
+                abortAfterUnexpectedFailure();
+            }
+        });
+    }
+
+    private void abortAfterUnexpectedFailure() {
+        try {
+            if (game.abort()) {
+                lifecycleCallback.closeAbortedRoom(INTERNAL_ABORT_REASON, null);
+            }
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[CONTROLLER] Failed to abort game after unexpected failure", e);
+        }
     }
 }

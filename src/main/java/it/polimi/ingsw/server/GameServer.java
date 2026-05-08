@@ -5,14 +5,20 @@ import it.polimi.ingsw.network.server.SocketClientHandler;
 import it.polimi.ingsw.network.server.RMIConnectionServerImpl;
 import it.polimi.ingsw.server.leaderboard.InMemoryLeaderboardService;
 
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Main server class that starts both RMI and Socket services and manages incoming client connections. */
 public class GameServer {
+
+    private static final Logger LOGGER = Logger.getLogger(GameServer.class.getName());
 
     private final int socketPort;
     private final int rmiPort;
@@ -29,7 +35,7 @@ public class GameServer {
 
     /** Starts the server by initializing both RMI and Socket services. */
     public void start() {
-        System.out.println("=== Starting Mesos Server ===");
+        LOGGER.info("Starting Mesos Server");
         startRMIServer();
         startSocketServer();
     }
@@ -37,53 +43,57 @@ public class GameServer {
     /** Initializes and binds the RMI matchmaking service. */
     private void startRMIServer() {
         try {
-            //SUS
-            String myIp;
-            try (java.net.DatagramSocket socket = new java.net.DatagramSocket()) {
-                // Finta connessione UDP per forzare l'OS a esporre l'IP della rotta principale
-                socket.connect(java.net.InetAddress.getByName("8.8.8.8"), 10002);
-                myIp = socket.getLocalAddress().getHostAddress();
-            } catch (Exception e) {
-                // Fallback in caso di assenza totale di connessione
-                myIp = java.net.InetAddress.getLocalHost().getHostAddress();
-            }
+            String myIp = resolveRmiHostname();
             System.setProperty("java.rmi.server.hostname", myIp);
-            System.out.println("[RMI] Configurazione hostname automatica: " + myIp);
-            //SUS
+            LOGGER.info("[RMI] Automatic hostname configuration: " + myIp);
 
             RMIConnectionServerImpl entryPoint = new RMIConnectionServerImpl(gameManager, lobbyController);
             Registry registry = LocateRegistry.createRegistry(rmiPort);
             registry.rebind("MesosServer", entryPoint);
-            System.out.println("[RMI] Listening for connections on port " + rmiPort);
-        } catch (Exception e) {
-            System.err.println("[RMI] Fatal error during startup: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.info("[RMI] Listening for connections on port " + rmiPort);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "[RMI] Fatal error during startup", e);
+        }
+    }
+
+    private String resolveRmiHostname() throws IOException {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            return socket.getLocalAddress().getHostAddress();
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "[RMI] Could not detect route address; falling back to localhost", e);
+            return InetAddress.getLocalHost().getHostAddress();
         }
     }
 
     /** Starts the socket server and listens for incoming client connections. */
     private void startSocketServer() {
         try (ServerSocket serverSocket = new ServerSocket(socketPort)) {
-            System.out.println("[SOCKET] Listening for connections on port " + socketPort);
+            LOGGER.info("[SOCKET] Listening for connections on port " + socketPort);
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("[SOCKET] New connection from: " + clientSocket.getInetAddress());
+                LOGGER.info("[SOCKET] New connection from: " + clientSocket.getInetAddress());
 
                 try {
                     SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager, lobbyController);
                     new Thread(clientHandler).start();
                 } catch (IOException e) {
-                    System.err.println("[SOCKET] Errore di I/O durante l'inizializzazione del client: " + e.getMessage());
-                    try {
-                        clientSocket.close();
-                    } catch (IOException ignored) {}
+                    LOGGER.log(Level.WARNING, "[SOCKET] Error during client initialization", e);
+                    closeClientSocket(clientSocket);
                 }
             }
 
-        } catch (Exception e) {
-            System.err.println("[SOCKET] Fatal server error: " + e.getMessage());
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "[SOCKET] Fatal server error", e);
+        }
+    }
+
+    private void closeClientSocket(Socket clientSocket) {
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "[SOCKET] Error while closing client socket after initialization failure", e);
         }
     }
 

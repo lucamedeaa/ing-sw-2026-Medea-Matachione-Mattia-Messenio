@@ -10,8 +10,10 @@ import it.polimi.ingsw.network.dto.LeaderboardSnapshot;
 import it.polimi.ingsw.network.dto.GameEventDTO;
 import it.polimi.ingsw.network.dto.PlayerDTO;
 import it.polimi.ingsw.network.dto.PlayerGameCompletedDTO;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,9 +23,13 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
 public class SocketClientHandler implements ConnectionContext, Runnable {
+
+    private static final Logger LOGGER = Logger.getLogger(SocketClientHandler.class.getName());
 
     private final Socket socket;
     private final GameManagerInterface gameManager;
@@ -101,7 +107,11 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
                     out.flush();
                 }
             } catch (IOException e) {
-                System.err.println("[SOCKET] Disconnection detected on write for: " + getNickname());
+                LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
+                        + getNickname() + ": " + e.getMessage());
+                handleClientDisconnection();
+            } catch (RuntimeException e) {
+                LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while sending message to " + getNickname(), e);
                 handleClientDisconnection();
             }
         }
@@ -178,15 +188,20 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
                 }
             }
         } catch (SocketTimeoutException e) {
-            System.err.println("[SOCKET] Timeout: Il client " + getNickname() + " non invia ping. Cavo staccato o freeze.");
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Timeout for " + getNickname()
+                    + ": no ping received. Detail: " + e.getMessage());
         } catch (EOFException e) {
-            System.out.println("[SOCKET] Il client " + getNickname() + " ha chiuso la connessione in modo pulito (senza messaggio di disconnessione).");
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Client " + getNickname()
+                    + " closed the connection without a disconnection message. Detail: " + e.getMessage());
         } catch (SocketException e) {
-            System.err.println("[SOCKET] Connessione interrotta bruscamente per " + getNickname() + " (possibile Alt+F4 o crash). Dettaglio: " + e.getMessage());
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Connection interrupted for " + getNickname()
+                    + ". Detail: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.err.println("[SOCKET] Ricevuto oggetto sconosciuto da " + getNickname());
+            LOGGER.log(Level.WARNING, "[SOCKET] Received an unknown object from " + getNickname(), e);
         } catch (IOException e) {
-            System.err.println("[SOCKET] Errore generico di I/O per " + getNickname() + ": " + e.getMessage());
+            LOGGER.log(Level.WARNING, "[SOCKET] I/O error for " + getNickname(), e);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while handling client " + getNickname(), e);
         } finally {
             handleClientDisconnection();
         }
@@ -224,7 +239,11 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
         }
 
         closeConnection();
-        stateToNotify.handleDisconnection();
+        try {
+            stateToNotify.handleDisconnection();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[SOCKET] Disconnection cleanup failed for " + getNickname(), e);
+        }
     }
 
     private ConnectionState currentState() {
@@ -234,7 +253,7 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     }
 
     @Override
-    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception {
+    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException {
         synchronized (lifecycleLock) {
             return operation.run();
         }
@@ -242,10 +261,21 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
 
     /** Closes socket and associated streams. */
     private void closeConnection() {
+        closeResource(in, "input stream");
+        closeResource(out, "output stream");
+        if (socket != null && !socket.isClosed()) {
+            closeResource(socket, "socket");
+        }
+    }
+
+    private void closeResource(Closeable resource, String description) {
+        if (resource == null) {
+            return;
+        }
         try {
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null && !socket.isClosed()) socket.close();
-        } catch (IOException ignored) {}
+            resource.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "[SOCKET] Error while closing " + description + " for " + getNickname(), e);
+        }
     }
 }

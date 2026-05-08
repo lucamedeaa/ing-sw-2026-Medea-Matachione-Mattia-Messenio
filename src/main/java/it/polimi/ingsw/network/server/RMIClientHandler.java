@@ -12,8 +12,10 @@ import it.polimi.ingsw.network.messages.GameInfoDTO;
 import it.polimi.ingsw.network.rmi.RMIClientCallback;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
 import it.polimi.ingsw.server.GameManagerInterface;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -22,9 +24,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** RMI client handler exposing native RPC methods for client actions. */
 public class RMIClientHandler extends UnicastRemoteObject implements ConnectionContext, RMIServerSession {
+
+    private static final Logger LOGGER = Logger.getLogger(RMIClientHandler.class.getName());
 
     private final GameManagerInterface gameManager;
     private final RMIClientCallback callback;
@@ -50,7 +56,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
         this.timeoutChecker.scheduleAtFixedRate(() -> {
             if (active.get() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
-                System.err.println("[RMI] Timeout: Il client " + getNickname() + " non invia ping. Ritenuto morto.");
+                LOGGER.warning("[RMI] Timeout: client " + getNickname() + " did not send ping. Marked as disconnected.");
                 handleClientDisconnection();
             }
         }, 5, 5, TimeUnit.SECONDS);
@@ -99,53 +105,55 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
 
     @Override
     public void ping() {
-        touch();
+        handleClientAction("ping", this::touch);
     }
 
     @Override
     public void disconnect() {
-        touch();
-        handleClientDisconnection();
+        handleClientAction("disconnect", () -> {
+            touch();
+            handleClientDisconnection();
+        });
     }
 
     @Override
     public void createGame(String nickname, int maxPlayers) {
-        currentState().createGame(nickname, maxPlayers);
+        handleClientAction("create game", () -> currentState().createGame(nickname, maxPlayers));
     }
 
     @Override
     public void joinGame(String nickname, String gameId) {
-        currentState().joinGame(nickname, gameId);
+        handleClientAction("join game", () -> currentState().joinGame(nickname, gameId));
     }
 
     @Override
     public void getAvailableGames() {
-        currentState().getAvailableGames();
+        handleClientAction("get available games", () -> currentState().getAvailableGames());
     }
 
     @Override
     public void leaveGame() {
-        currentState().leaveGame();
+        handleClientAction("leave game", () -> currentState().leaveGame());
     }
 
     @Override
     public void placeTotem(int positionIndex) {
-        currentState().placeTotem(positionIndex);
+        handleClientAction("place totem", () -> currentState().placeTotem(positionIndex));
     }
 
     @Override
     public void takeCard(int row, int col) {
-        currentState().takeCard(row, col);
+        handleClientAction("take card", () -> currentState().takeCard(row, col));
     }
 
     @Override
     public void skipAction() {
-        currentState().skipAction();
+        handleClientAction("skip action", () -> currentState().skipAction());
     }
 
     @Override
     public void getLeaderboard() {
-        currentState().getLeaderboard();
+        handleClientAction("get leaderboard", () -> currentState().getLeaderboard());
     }
 
     @Override
@@ -230,6 +238,25 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         this.lastPingTime.set(System.currentTimeMillis());
     }
 
+    private void handleClientAction(String actionName, Runnable action) {
+        try {
+            action.run();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while handling " + actionName
+                    + " for " + getNickname(), e);
+            disconnectAfterUnexpectedFailure();
+        }
+    }
+
+    private void disconnectAfterUnexpectedFailure() {
+        try {
+            handleClientDisconnection();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[RMI] Failed to disconnect " + getNickname()
+                    + " after unexpected failure", e);
+        }
+    }
+
     private void deliver(RemoteCall call) {
         if (!active.get()) {
             return;
@@ -237,8 +264,12 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         try {
             call.run();
         } catch (RemoteException e) {
-            System.err.println("[RMI] Disconnection detected on write for: " + getNickname());
+            LOGGER.log(Level.INFO, () -> "[RMI] Disconnection detected on write for "
+                    + getNickname() + ": " + e.getMessage());
             handleClientDisconnection();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while delivering callback to " + getNickname(), e);
+            disconnectAfterUnexpectedFailure();
         }
     }
 
@@ -252,11 +283,15 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         }
 
         closeConnection();
-        stateToNotify.handleDisconnection();
+        try {
+            stateToNotify.handleDisconnection();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[RMI] Disconnection cleanup failed for " + getNickname(), e);
+        }
     }
 
     @Override
-    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception {
+    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException {
         synchronized (lifecycleLock) {
             return operation.run();
         }
@@ -268,8 +303,8 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
         }
         try {
             UnicastRemoteObject.unexportObject(this, true);
-        } catch (java.rmi.NoSuchObjectException e) {
-            System.err.println("[RMI] Impossibile eseguire l'unexport dell'oggetto: " + e.getMessage());
+        } catch (NoSuchObjectException e) {
+            LOGGER.log(Level.FINE, "[RMI] Handler already unexported for " + getNickname(), e);
         }
     }
 

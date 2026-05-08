@@ -3,7 +3,7 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.LobbyController;
 import it.polimi.ingsw.server.RoomAdmissionResult;
 import it.polimi.ingsw.server.RoomConnectionHandler;
-import it.polimi.ingsw.server.exceptions.RoomFullException;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 
 public class LobbyConnectionState implements ConnectionState {
 
@@ -33,7 +33,7 @@ public class LobbyConnectionState implements ConnectionState {
             connection.matchmakingSuccess("Game created. Waiting for other players...");
             // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
-        } catch (Exception e) {
+        } catch (LobbyActionException e) {
             connection.error(e.getMessage());
         }
     }
@@ -56,7 +56,7 @@ public class LobbyConnectionState implements ConnectionState {
             connection.matchmakingSuccess("Joined game successfully. Waiting to start...");
             // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
-        } catch (Exception e) {
+        } catch (LobbyActionException e) {
             connection.error(e.getMessage());
         }
     }
@@ -71,7 +71,7 @@ public class LobbyConnectionState implements ConnectionState {
         try {
             lobbyController.leaveGame(connection.getNickname());
             connection.gameLeftSuccess("You left the lobby.");
-        } catch (Exception e) {
+        } catch (LobbyActionException e) {
             connection.error(e.getMessage());
         }
     }
@@ -101,19 +101,21 @@ public class LobbyConnectionState implements ConnectionState {
         lobbyController.handleDisconnection(connection.getNickname());
     }
 
-    private RoomAdmissionResult addPlayerToRoom(RoomConnectionHandler room, String nickname) throws RoomFullException {
+    private RoomAdmissionResult addPlayerToRoom(RoomConnectionHandler room, String nickname) throws LobbyActionException {
+        boolean admitted = false;
         try {
             // Connection identity must be visible before room membership is added.
             connection.setNickname(nickname);
-            return room.addPlayer(nickname, connection);
-        } catch (RoomFullException e) {
-            connection.setNickname(null);
-            lobbyController.releaseNickname(nickname);
-            throw e;
-        } catch (RuntimeException e) {
-            connection.setNickname(null);
-            lobbyController.releaseNickname(nickname);
-            throw e;
+            RoomAdmissionResult admissionResult = room.addPlayer(nickname, connection);
+            admitted = true;
+            return admissionResult;
+        }
+        // We could catch LobbyActionException instead
+        finally {
+            if (!admitted) {
+                connection.setNickname(null);
+                lobbyController.releaseNickname(nickname);
+            }
         }
     }
 }

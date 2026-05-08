@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.server.exceptions.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 public interface ConnectionContext extends RoomClientProxy {
@@ -22,11 +23,11 @@ public interface ConnectionContext extends RoomClientProxy {
 
     void clearNickname();
 
-    <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws Exception;
+    <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException;
 
     @FunctionalInterface
     interface LockedConnectionOperation<T> {
-        T run() throws Exception;
+        T run() throws LobbyActionException;
     }
 
 }
