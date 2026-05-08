@@ -1,10 +1,10 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
+import it.polimi.ingsw.network.server.ConnectionState;
 
-public record GetAvailableGamesMessage() implements MatchmakingMessage {
+public record GetAvailableGamesMessage() implements ClientMessage {
     @Override
-    public void accept(MatchmakingVisitor visitor) {
-        visitor.visit(this);
+    public void dispatchTo(ConnectionState state) {
+        state.getAvailableGames();
     }
 }

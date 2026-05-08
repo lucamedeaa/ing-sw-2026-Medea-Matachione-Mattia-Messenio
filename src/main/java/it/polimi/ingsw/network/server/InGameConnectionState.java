@@ -1,38 +1,17 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.network.messages.AfterGameMessage;
-import it.polimi.ingsw.network.messages.InGameMessage;
-import it.polimi.ingsw.network.messages.MatchmakingMessage;
-import it.polimi.ingsw.network.visitor.InGameVisitor;
 
 public class InGameConnectionState implements ConnectionState {
 
     private final String nickname;
     private final ConnectionContext connection;
     private final GameController gameController;
-    private final InGameVisitor socketGameActionVisitor;
 
     public InGameConnectionState(String nickname, ConnectionContext connection, GameController gameController) {
         this.nickname = nickname;
         this.connection = connection;
         this.gameController = gameController;
-        this.socketGameActionVisitor = new SocketGameActionVisitor(this);
-    }
-
-    @Override
-    public void handle(MatchmakingMessage message) {
-        connection.error("Already in game. Cannot send matchmaking messages.");
-    }
-
-    @Override
-    public void handle(InGameMessage message) {
-        message.accept(socketGameActionVisitor);
-    }
-
-    @Override
-    public void handle(AfterGameMessage message) {
-        connection.error("Game is still running.");
     }
 
     @Override

@@ -1,16 +1,6 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.messages.InGameMessage;
-import it.polimi.ingsw.network.messages.MatchmakingMessage;
-import it.polimi.ingsw.network.messages.AfterGameMessage;
-
 public interface ConnectionState {
-
-    void handle(MatchmakingMessage message);
-
-    void handle(InGameMessage message);
-
-    void handle(AfterGameMessage message);
 
     void createGame(String nickname, int maxPlayers);
 

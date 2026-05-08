@@ -1,16 +1,11 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.messages.AfterGameMessage;
-import it.polimi.ingsw.network.messages.InGameMessage;
-import it.polimi.ingsw.network.messages.MatchmakingMessage;
-import it.polimi.ingsw.network.visitor.AfterGameVisitor;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 public class AfterGameConnectionState implements ConnectionState {
     private final ConnectionContext connection;
     private final LeaderboardService leaderboardService;
     private final int playerCount;
-    private final AfterGameVisitor afterGameVisitor;
 
     public AfterGameConnectionState(
             ConnectionContext connection,
@@ -20,22 +15,6 @@ public class AfterGameConnectionState implements ConnectionState {
         this.connection = connection;
         this.playerCount = playerCount;
         this.leaderboardService = leaderboardService;
-        this.afterGameVisitor = new SocketAfterGameVisitor(this);
-    }
-
-    @Override
-    public void handle(MatchmakingMessage message) {
-        connection.error("Return to lobby before matchmaking.");
-    }
-
-    @Override
-    public void handle(InGameMessage message) {
-        connection.error("Game has already ended.");
-    }
-
-    @Override
-    public void handle(AfterGameMessage message) {
-        message.accept(afterGameVisitor);
     }
 
     @Override

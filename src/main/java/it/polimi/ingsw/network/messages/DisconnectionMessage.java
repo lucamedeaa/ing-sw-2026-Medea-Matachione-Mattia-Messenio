@@ -1,4 +1,6 @@
 package it.polimi.ingsw.network.messages;
 
-public record DisconnectionMessage() implements ClientMessage{
+import java.io.Serializable;
+
+public record DisconnectionMessage() implements Serializable {
 }

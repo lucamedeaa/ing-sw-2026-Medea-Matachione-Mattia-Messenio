@@ -1,10 +1,10 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.network.visitor.AfterGameVisitor;
+import it.polimi.ingsw.network.server.ConnectionState;
 
-public record GetLeaderboardMessage() implements AfterGameMessage {
+public record GetLeaderboardMessage() implements ClientMessage {
     @Override
-    public void accept(AfterGameVisitor visitor) {
-        visitor.visit(this);
+    public void dispatchTo(ConnectionState state) {
+        state.getLeaderboard();
     }
 }

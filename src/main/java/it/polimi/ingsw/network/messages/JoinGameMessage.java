@@ -1,10 +1,10 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
+import it.polimi.ingsw.network.server.ConnectionState;
 
-public record JoinGameMessage(String nickname, String gameId) implements MatchmakingMessage {
+public record JoinGameMessage(String nickname, String gameId) implements ClientMessage {
     @Override
-    public void accept(MatchmakingVisitor visitor) {
-        visitor.visit(this);
+    public void dispatchTo(ConnectionState state) {
+        state.joinGame(nickname, gameId);
     }
 }

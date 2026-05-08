@@ -1,10 +1,10 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.network.visitor.MatchmakingVisitor;
+import it.polimi.ingsw.network.server.ConnectionState;
 
-public record CreateGameMessage(String nickname, int maxPlayers) implements MatchmakingMessage {
+public record CreateGameMessage(String nickname, int maxPlayers) implements ClientMessage {
     @Override
-    public void accept(MatchmakingVisitor visitor) {
-        visitor.visit(this);
+    public void dispatchTo(ConnectionState state) {
+        state.createGame(nickname, maxPlayers);
     }
 }

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.network.client;
 
-import it.polimi.ingsw.network.messages.ClientMessage;
 import it.polimi.ingsw.network.messages.DisconnectionMessage;
 import it.polimi.ingsw.network.messages.PingMessage;
 import it.polimi.ingsw.network.messages.ServerMessage;
@@ -10,6 +9,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.Executors;
@@ -47,9 +47,9 @@ public class SocketServerConnection implements Runnable {
     }
 
     /**
-     * Sends a generic client message to the server.
+     * Sends a serializable socket message to the server.
      */
-    public void sendMessage(ClientMessage message) {
+    public void sendMessage(Serializable message) {
         if (active.get()) {
             try {
                 synchronized (streamLock) {
