@@ -29,7 +29,6 @@ public class GameEndedState implements UIState, GameEndedView {
         nav.getNotificationController().setGameEndedView(this);
         registerCommands();
 
-        nav.getMatchModel().startBatch();
         new GetLeaderboardCommand(nav.getController()).execute();
     }
 
@@ -40,17 +39,23 @@ public class GameEndedState implements UIState, GameEndedView {
 
     @Override
     public void render() {
-        var local = nav.getMatchModel().getLocalResult();
-        var global = nav.getMatchModel().getGlobalLeaderboard();
+        nav.getMatchModel().getReadLock().lock();
+        try {
+            var local = nav.getMatchModel().getLocalResult();
+            var global = nav.getMatchModel().getGlobalLeaderboard();
 
-        // Grazie al batch, questo render() verrà chiamato SOLO quando arriverà la globalLeaderboard.
-        if (local == null || global == null) {
-            return;
+            if (local == null || global == null) {
+                out.clearScreen();
+                out.print("\n  \033[36;1mConsultando gli archivi della Valle di Mesos...\033[0m");
+                return;
+            }
+            if (hasRendered) return;
+            hasRendered = true;
+
+            renderer.render(local, global);
+        } finally {
+            nav.getMatchModel().getReadLock().unlock();
         }
-        if (hasRendered) return;
-        hasRendered = true;
-
-        renderer.render(local, global);
     }
 
     @Override
@@ -76,5 +81,10 @@ public class GameEndedState implements UIState, GameEndedView {
         } catch (Exception e) {
             out.print("Errore: " + e.getMessage());
         }
+    }
+    @Override
+    public void onServerDisconnected(String reason) {
+        nav.getNotificationController().setGameEndedView(null);
+        nav.changeState(new DisconnectedState(out, reason));
     }
 }

@@ -48,10 +48,11 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void matchmakingSuccess(String text) {
-        lobbyModel.startBatch();
-        lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text);
-        if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
-        lobbyModel.endBatch();
+        matchModel.executeBatch(() -> {
+            lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text);
+            if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
+        });
+
     }
 
     @Override
@@ -62,11 +63,11 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void fullSync(BoardDTO board, List<PlayerDTO> players, String activePlayer, List<AvailableActionDTO> actions) {
-        matchModel.startBatch();
-        matchModel.reset();
-        matchModel.setFullState(board, players, activePlayer);
-        matchModel.setAvailableActions(actions);
-        matchModel.endBatch();
+        matchModel.executeBatch(() -> {
+            matchModel.reset();
+            matchModel.setFullState(board, players, activePlayer);
+            matchModel.setAvailableActions(actions);
+        });
         if(lobbyView != null){
             lobbyView.onGameStarted();
         }
@@ -74,14 +75,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void deltaEvent(List<GameEventDTO> events, List<AvailableActionDTO> nextActions, String activePlayer) {
-        matchModel.startBatch();
-        for (GameEventDTO event : events) {
-            event.accept(applier);
-        }
-        matchModel.setAvailableActions(nextActions);
-        matchModel.setActivePlayer(activePlayer);
-        matchModel.endBatch();
-
+        matchModel.executeBatch(() -> {
+            for (GameEventDTO event : events) {
+                event.accept(applier);
+            }
+            matchModel.setAvailableActions(nextActions);
+            matchModel.setActivePlayer(activePlayer);
+        });
     }
 
     @Override
@@ -94,29 +94,23 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void gameAborted(String reason) {
-       // lobbyModel.startBatch();
-
-        lobbyModel.setGlobalError(reason);
         matchModel.reset();
+        lobbyModel.setGlobalErrorSilent(reason);
+
         if (inGameView != null) inGameView.onReturnToMatchmaking(reason);
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(reason);
 
-
-        //lobbyModel.endBatch();
     }
 
     @Override
     public void gameLeftSuccess(String text) {
-       // lobbyModel.startBatch();
-
-        lobbyModel.setGlobalError(text);
         matchModel.reset();
+        lobbyModel.setGlobalErrorSilent(text);
+
         if (inGameView != null) inGameView.onReturnToMatchmaking(text);
         if (gameEndedView != null) gameEndedView.onReturnToMatchmaking(text);
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(text);
 
-
-        //lobbyModel.endBatch();
     }
 
     @Override
@@ -131,6 +125,9 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void serverDisconnected(String reason) {
-        // TODO: scriverlo
+        if (matchmakingView != null) matchmakingView.onServerDisconnected(reason);
+        else if (lobbyView != null) lobbyView.onServerDisconnected(reason);
+        else if (inGameView != null) inGameView.onServerDisconnected(reason);
+        else if (gameEndedView != null) gameEndedView.onServerDisconnected(reason);
     }
 }

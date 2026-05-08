@@ -28,13 +28,25 @@ public class MatchModel extends ObservableModel {
     }
 
     public void setAvailableActions(List<AvailableActionDTO> actions) {
-        turn.setActions(actions);
+        lock.writeLock().lock();
+        try {
+            turn.setActions(actions);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void setActivePlayer(String activePlayer) {
-        turn.setActivePlayer(activePlayer);
+        lock.writeLock().lock();
+        try {
+            turn.setActivePlayer(activePlayer);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void removeCard(int row, int col) {
@@ -110,34 +122,63 @@ public class MatchModel extends ObservableModel {
     //  END GAME SETTERS
 
     public void setGameAborted(String reason) {
-        this.abortReason = reason;
+        lock.writeLock().lock();
+        try {
+            this.abortReason = reason;
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void setGameOver(List<PlayerScoreDTO> leaderboard) {
-        this.isGameOver = true;
-        this.leaderboard = new ArrayList<>(leaderboard);
+        lock.writeLock().lock();
+        try {
+            this.isGameOver = true;
+            this.leaderboard = new ArrayList<>(leaderboard);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void setWinners(List<String> winners) {
-        this.winners = new ArrayList<>(winners);
-        this.leaderboard = roster.getPlayers().values().stream()
-                .sorted(Comparator.comparingInt(LightPlayer::getPrestige).reversed())
-                .map(p -> new PlayerScoreDTO(p.getNickname(), p.getPrestige(), p.getFood()))
-                .toList();
-        this.isGameOver = true;
+        lock.writeLock().lock();
+        try {
+            this.winners = new ArrayList<>(winners);
+            this.leaderboard = roster.getPlayers().values().stream()
+                    .sorted(Comparator.comparingInt(LightPlayer::getPrestige).reversed())
+                    .map(p -> new PlayerScoreDTO(p.getNickname(), p.getPrestige(), p.getFood()))
+                    .toList();
+            this.isGameOver = true;
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void setGameCompleted(PlayerGameCompletedDTO result) {
-        this.localResult = result;
+        lock.writeLock().lock();
+        try {
+            this.localResult = result;
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
 
     public void setGlobalLeaderboard(LeaderboardSnapshot snapshot) {
-        this.globalLeaderboard = snapshot;
-        endBatch(); // Chiude il batch iniziato in GameEndedState
+        lock.writeLock().lock();
+        try {
+            this.globalLeaderboard = snapshot;
+        }finally {
+            lock.writeLock().unlock();
+        }
+        notifyUI();
     }
 
     public List<Integer> getUpperRowCards() { return board.getUpperRowCards(); }

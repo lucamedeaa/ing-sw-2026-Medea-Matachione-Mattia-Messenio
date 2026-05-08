@@ -7,6 +7,8 @@ import it.polimi.ingsw.network.client.ServerProxy;
 import it.polimi.ingsw.network.rmi.RMIConnectionServer;
 import it.polimi.ingsw.network.rmi.RMIServerSession;
 
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -18,7 +20,7 @@ public class RMIConnectionFactory implements NetworkConnectionFactory {
     }
 
     @Override
-    public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws Exception {
+    public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws IOException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(ip, port);
         RMIConnectionServer server = (RMIConnectionServer) registry.lookup("MesosServer");
         RMIClientCallbackImpl callback = new RMIClientCallbackImpl(receiver);

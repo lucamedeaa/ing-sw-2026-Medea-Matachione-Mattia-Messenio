@@ -13,6 +13,8 @@ import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.client.view.UIFactory;
 import it.polimi.ingsw.network.client.ServerProxy;
 
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.util.Scanner;
 import java.util.List;
 
@@ -106,11 +108,32 @@ public class ClientMain {
                 // UNICA CONNESSIONE: passiamo il receiver reale direttamente
                 server = networkFactory.createConnection(type, ip, port, receiver);
 
-            }  catch (Exception e) {
-            System.out.println("\n " + AnsiColors.BG_RED_WHITE_TEXT + " ERRORE DI RETE " + AnsiColors.RESET + " " + AnsiColors.RED_BOLD + "Impossibile connettersi: " + e.getMessage() + AnsiColors.RESET);
-            System.out.println(" " + AnsiColors.ITALIC + "Riprova a inserire i dati." + AnsiColors.RESET + "\n");
+            } catch (java.rmi.NotBoundException e) {
+                // Errore previsto: Il server c'è ma il servizio "MesosServer" non è registrato
+                System.out.println("\n " + AnsiColors.BG_RED_WHITE_TEXT + " ERRORE RMI " + AnsiColors.RESET + " Il servizio Mesos non è stato trovato sulle pietre antiche.");
                 server = null;
-                ip = "";            // Resetta per forzare il reinserimento
+                ip = "";
+                networkChoice = 0;
+                port = 0;
+            } catch (java.io.IOException e) {
+                // Errore previsto: Server spento, connessione rifiutata, timeout
+                System.out.println("\n " + AnsiColors.BG_RED_WHITE_TEXT + " ECO DISTANTE " + AnsiColors.RESET + " Impossibile contattare la porta: " + e.getMessage());
+                System.out.println(" " + AnsiColors.ITALIC + "Riprova a inserire i dati." + AnsiColors.RESET + "\n");
+                server = null;
+                ip = "";
+                networkChoice = 0;
+                port = 0;
+            } catch (RuntimeException e) {
+                // concetto di FAULT BARRIER: Cattura i crash interni di RMI o bug di programmazione.
+                System.out.println("\n " + AnsiColors.BG_RED_WHITE_TEXT + " ANOMALIA CRITICA O PROTOCOLLO ERRATO " + AnsiColors.RESET);
+                System.out.println(" Si è verificato un errore inaspettato (es. porta con protocollo incompatibile):");
+                System.out.println(" Dettaglio tecnico: " + e.getClass().getName() + " - " + e.getMessage());
+                System.out.print("\n Premi INVIO per ripristinare e riprovare > ");
+
+                scanner.nextLine();
+
+                server = null;
+                ip = "";
                 networkChoice = 0;
                 port = 0;
             }
@@ -120,7 +143,8 @@ public class ClientMain {
             ServerController controller = new ServerController(server);
             ui.setController(controller);
 
-            System.out.println(" " + AnsiColors.GREEN_BOLD + "✔ Connesso con successo!" + AnsiColors.RESET + "\n");            ui.start();
+            System.out.println(" " + AnsiColors.GREEN_BOLD + "✔ Connesso con successo!" + AnsiColors.RESET + "\n");
+            ui.start();
         } catch (Exception e) {
             System.err.println("Errore critico durante l'avvio della UI: " + e.getMessage());
             e.printStackTrace();

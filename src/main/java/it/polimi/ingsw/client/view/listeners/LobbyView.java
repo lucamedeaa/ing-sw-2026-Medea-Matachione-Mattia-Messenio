@@ -7,4 +7,5 @@ public interface LobbyView {
     void onGameStarted();
     void onReturnToMatchmaking(String reason);
     void onError(String error);
+    void onServerDisconnected(String reason);
 }

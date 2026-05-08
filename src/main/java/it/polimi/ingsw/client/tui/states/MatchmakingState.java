@@ -58,11 +58,20 @@ public class MatchmakingState implements UIState, MatchmakingView {
         commandRegistry.put("0", args -> new DisconnectCommand(nav.getController()));
     }
 
-
     @Override
     public void render() {
         String error = nav.getLobbyModel().consumeGlobalError();
-        List<GameInfoDTO> gamesToDisplay = showGamesList ? nav.getLobbyModel().getAvailableGames() : null;
+
+        List<GameInfoDTO> gamesToDisplay = null;
+        nav.getLobbyModel().getReadLock().lock();
+        try {
+            if (showGamesList) {
+                gamesToDisplay = nav.getLobbyModel().getAvailableGames();
+            }
+        } finally {
+            nav.getLobbyModel().getReadLock().unlock();
+        }
+
         renderer.render(gamesToDisplay, error);
     }
 
@@ -86,9 +95,6 @@ public class MatchmakingState implements UIState, MatchmakingView {
         } catch (IllegalArgumentException e) {
             nav.getLobbyModel().setGlobalError(e.getMessage());
             render();
-        } catch (Exception e) {
-            nav.getLobbyModel().setGlobalError("Errore durante l'esecuzione: " + e.getMessage());
-            render();
         }
     }
 
@@ -111,6 +117,12 @@ public class MatchmakingState implements UIState, MatchmakingView {
         //  va in Lobby
         nav.setMyNickname(this.pendingNickname);
         nav.changeState(new LobbyState(nav, out));
+    }
+
+    @Override
+    public void onServerDisconnected(String reason) {
+        nav.getNotificationController().setMatchmakingView(null);
+        nav.changeState(new DisconnectedState(out, reason));
     }
 
 }

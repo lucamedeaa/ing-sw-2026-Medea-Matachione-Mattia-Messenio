@@ -34,8 +34,18 @@ public class LobbyState implements UIState, LobbyView {
 
     @Override
     public void render() {
-        if(!initialized) {return;}
-        renderer.render(nav.getLobbyModel().getLobbyPlayers(), nav.getLobbyModel().getLobbyNotification(), nav.getMyNickname());
+        if(!initialized) { return; }
+
+        nav.getLobbyModel().getReadLock().lock();
+        try {
+            renderer.render(
+                    nav.getLobbyModel().getLobbyPlayers(),
+                    nav.getLobbyModel().getLobbyNotification(),
+                    nav.getMyNickname()
+            );
+        } finally {
+            nav.getLobbyModel().getReadLock().unlock();
+        }
     }
 
     @Override
@@ -70,5 +80,11 @@ public class LobbyState implements UIState, LobbyView {
     public void onReturnToMatchmaking(String reason) {
         nav.getNotificationController().setLobbyView(null);
         nav.changeState(new MatchmakingState(nav, out));
+    }
+
+    @Override
+    public void onServerDisconnected(String reason) {
+        nav.getNotificationController().setLobbyView(null);
+        nav.changeState(new DisconnectedState(out, reason));
     }
 }

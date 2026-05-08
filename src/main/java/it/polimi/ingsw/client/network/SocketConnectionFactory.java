@@ -5,6 +5,8 @@ import it.polimi.ingsw.network.client.ServerProxy;
 import it.polimi.ingsw.network.client.SocketServerConnection;
 import it.polimi.ingsw.network.client.SocketServerProxy;
 
+import java.io.IOException;
+
 public class SocketConnectionFactory implements NetworkConnectionFactory {
 
     @Override
@@ -13,7 +15,7 @@ public class SocketConnectionFactory implements NetworkConnectionFactory {
     }
 
     @Override
-    public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws Exception {
+    public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws IOException {
         SocketServerMessageVisitor socketVisitor = new SocketServerMessageVisitor(receiver);
         SocketServerConnection socketConn = new SocketServerConnection(ip, port, socketVisitor);
         new Thread(socketConn).start();

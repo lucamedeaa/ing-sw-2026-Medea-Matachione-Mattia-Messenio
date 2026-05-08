@@ -13,16 +13,26 @@ public class LobbyModel extends ObservableModel {
     private String globalError = "";
 
     public void setAvailableGames(List<GameInfoDTO> games) {
-        this.availableGames = games;
+        lock.writeLock().lock();
+        try {
+            this.availableGames = games;
+        }finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void setLobbyData(List<String> players, String notification) {
-        this.lobbyPlayers = new ArrayList<>(players);
-        this.lobbyNotification = notification;
+        lock.writeLock().lock();
+        try {
+            this.lobbyPlayers = new ArrayList<>(players);
+            this.lobbyNotification = notification;
+
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
+
     }
-
-
 
     public List<GameInfoDTO> getAvailableGames() { return new ArrayList<>(availableGames); }
     public List<String> getLobbyPlayers() { return new ArrayList<>(lobbyPlayers); }

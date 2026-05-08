@@ -22,8 +22,13 @@ public class ViewTribeState implements UIState {
     }
 
     public void render() {
-        var tribe = nav.getMatchModel().getTribes().get(targetPlayer);
-        renderer.render(targetPlayer, tribe);
+        nav.getMatchModel().getReadLock().lock();
+        try {
+            var tribe = nav.getMatchModel().getTribes().get(targetPlayer);
+            renderer.render(targetPlayer, tribe);
+        } finally {
+            nav.getMatchModel().getReadLock().unlock();
+        }
     }
 
     @Override
@@ -34,4 +39,5 @@ public class ViewTribeState implements UIState {
             out.print("Input non valido. Premi Q per tornare alla partita.");
         }
     }
+
 }

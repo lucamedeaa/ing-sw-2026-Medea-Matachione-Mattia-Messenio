@@ -84,13 +84,16 @@ public class SocketServerConnection implements Runnable {
                 }
             }
         } catch (SocketTimeoutException e) {
-            disconnectReason = "Timeout: Il server non risponde (crash o rete assente).";
+            disconnectReason = "Timeout: Il server non risponde.";
         } catch (EOFException e) {
             disconnectReason = "Il server ha chiuso la connessione in modo imprevisto.";
         } catch (SocketException e) {
-            disconnectReason = "Connessione al server interrotta (SocketException).";
-        } catch (Exception e) {
-            disconnectReason = "Errore imprevisto durante la comunicazione: " + e.getMessage();
+            disconnectReason = "Connessione al server interrotta.";
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "Errore di deserializzazione. Versione client incompatibile?", e);
+            disconnectReason = "Protocollo di rete incompatibile.";
+        } catch (IOException e) {
+            disconnectReason = "Errore di I/O durante la lettura: " + e.getMessage();
         } finally {
             handleServerDisconnection(disconnectReason);
         }

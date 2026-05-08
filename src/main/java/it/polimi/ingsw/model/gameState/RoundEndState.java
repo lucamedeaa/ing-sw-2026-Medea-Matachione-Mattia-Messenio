@@ -68,7 +68,7 @@ public class RoundEndState extends GameState {
 
     /** Checks whether the game has reached its end condition. @return true if the game is over */
     private boolean isGameOver() {
-        return game.getCurrentRound() > 10;
+        return game.getCurrentRound() > 1;
     }
 
     @Override

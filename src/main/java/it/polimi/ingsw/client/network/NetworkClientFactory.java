@@ -3,6 +3,8 @@ package it.polimi.ingsw.client.network;
 import it.polimi.ingsw.network.client.ServerNotificationReceiver;
 import it.polimi.ingsw.network.client.ServerProxy;
 
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ public class NetworkClientFactory {
             NetworkType type,
             String ip,
             int port,
-            ServerNotificationReceiver receiver) throws Exception {
+            ServerNotificationReceiver receiver) throws IOException, NotBoundException {
         if (type == null) {
             throw new IllegalArgumentException("Network type cannot be null.");
         }

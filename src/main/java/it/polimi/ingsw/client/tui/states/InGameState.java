@@ -42,20 +42,25 @@ public class InGameState implements UIState, InGameView {
 
     @Override
     public void render() {
-
-        updateDeltas();
-
         String error = nav.getMatchModel().consumeGlobalError();
         if (error == null || error.isEmpty()) {
             error = nav.getLobbyModel().consumeGlobalError();
         }
-        renderer.render(nav.getMatchModel(), nav.getMyNickname(), displayDeltas, error);
 
+        nav.getMatchModel().getReadLock().lock();
+        try {
+            updateDeltas();
+        } finally {
+            nav.getMatchModel().getReadLock().unlock();
+        }
+
+        renderer.render(nav.getMatchModel(), nav.getMyNickname(), displayDeltas, error);
     }
 
     @Override
     public void handleInput(String input) {
         if (nav.getMatchModel().isGameOver()) {
+            nav.getNotificationController().setInGameView(null);
             nav.changeState(new GameEndedState(nav, out));
             return;
         }
@@ -141,6 +146,11 @@ public class InGameState implements UIState, InGameView {
         }
     }
 
+    @Override
+    public void onServerDisconnected(String reason) {
+        nav.getNotificationController().setInGameView(null);
+        nav.changeState(new DisconnectedState(out, reason));
+    }
 
     public record PlayerResources(int food, int prestige, int discount) {}
 }
