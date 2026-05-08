@@ -2,8 +2,8 @@ package it.polimi.ingsw.modelTest;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.ModelObserver;
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.AvailableAction;
 import it.polimi.ingsw.model.updates.BoardUpdate;
 import it.polimi.ingsw.model.updates.ModelUpdate;
@@ -109,24 +109,17 @@ public class GameTest extends ModelTest {
         }
     }
 
-    // ── getPlayerByNickname
+    // ── Player lookup through commands
 
     @Nested
-    @DisplayName("getPlayerByNickname")
-    class GetPlayerByNickname {
+    @DisplayName("Player command lookup")
+    class PlayerCommandLookup {
 
         @Test
-        @DisplayName("returns correct player for existing nickname")
-        void returnsCorrectPlayer() {
-            Game g = game(3);
-            assertEquals("Player1", g.getPlayerByNickname("Player1").getNickname());
-        }
-
-        @Test
-        @DisplayName("throws IllegalArgumentException for unknown nickname")
+        @DisplayName("throws InvalidGameActionException for unknown nickname")
         void throwsForUnknownNickname() {
             Game g = game(2);
-            assertThrows(IllegalArgumentException.class, () -> g.getPlayerByNickname("Unknown"));
+            assertThrows(InvalidGameActionException.class, () -> g.takeCard("Unknown", 0, 0));
         }
     }
 

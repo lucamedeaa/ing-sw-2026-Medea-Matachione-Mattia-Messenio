@@ -3,6 +3,7 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.modelTest.ModelTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -197,31 +198,31 @@ public class BoardTest extends ModelTest {
         }
 
         @Test
-        @DisplayName("placeTotem on already-occupied tile throws IllegalStateException")
+        @DisplayName("placeTotem on already-occupied tile throws InvalidGameActionException")
         void placeTotemOnOccupiedThrows() {
             List<Player> ps = players(3);
             Board b = new Board(3, ps);
             Player p1 = ps.get(0);
             Player p2 = ps.get(1);
             b.placeTotem(0, p1);
-            assertThrows(IllegalStateException.class, () -> b.placeTotem(0, p2));
+            assertThrows(InvalidGameActionException.class, () -> b.placeTotem(0, p2));
         }
 
         @Test
-        @DisplayName("placeTotem with negative index throws IllegalArgumentException")
+        @DisplayName("placeTotem with negative index throws InvalidGameActionException")
         void placeTotemNegativeIndexThrows() {
             List<Player> ps = players(2);
             Board b = new Board(2, ps);
-            assertThrows(IllegalArgumentException.class, () -> b.placeTotem(-1, ps.get(0)));
+            assertThrows(InvalidGameActionException.class, () -> b.placeTotem(-1, ps.get(0)));
         }
 
         @Test
-        @DisplayName("placeTotem with out-of-bounds index throws IllegalArgumentException")
+        @DisplayName("placeTotem with out-of-bounds index throws InvalidGameActionException")
         void placeTotemOutOfBoundsThrows() {
             List<Player> ps = players(2);
             Board b = new Board(2, ps);
             int outOfBounds = b.getOfferTrack().size();
-            assertThrows(IllegalArgumentException.class, () -> b.placeTotem(outOfBounds, ps.get(0)));
+            assertThrows(InvalidGameActionException.class, () -> b.placeTotem(outOfBounds, ps.get(0)));
         }
     }
 
@@ -252,7 +253,7 @@ public class BoardTest extends ModelTest {
         void takeCardRemovesCard() {
             Board b = board(2);
             b.takeCard(0, 0);
-            assertThrows(IllegalStateException.class, () -> b.peekCard(0, 0));
+            assertThrows(InvalidGameActionException.class, () -> b.peekCard(0, 0));
         }
 
         @Test
@@ -265,11 +266,11 @@ public class BoardTest extends ModelTest {
         }
 
         @Test
-        @DisplayName("peekCard on already-taken slot throws IllegalStateException")
+        @DisplayName("peekCard on already-taken slot throws InvalidGameActionException")
         void peekOnTakenSlotThrows() {
             Board b = board(2);
             b.takeCard(1, 0);
-            assertThrows(IllegalStateException.class, () -> b.peekCard(1, 0));
+            assertThrows(InvalidGameActionException.class, () -> b.peekCard(1, 0));
         }
     }
 

@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.ModelControllerInterface;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.enums.TotemColor;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.gameState.GameEndedState;
 import it.polimi.ingsw.model.gameState.GameState;
 import it.polimi.ingsw.model.gameState.InitState;
@@ -106,29 +107,30 @@ public class Game implements ModelControllerInterface {
         this.currentState.start();
     }
 
-    public void placeTotem(Player player, int tileIndex) {
-        this.currentState.placeTotem(player, tileIndex);
+    @Override
+    public void placeTotem(String nickname, int tileIndex) {
+        this.currentState.placeTotem(getPlayerByNickname(nickname), tileIndex);
     }
 
-    public void takeCard(Player player, int rowIdx, int cardIdx) {
-        this.currentState.takeCard(player, rowIdx, cardIdx);
+    @Override
+    public void takeCard(String nickname, int rowIdx, int cardIdx) {
+        this.currentState.takeCard(getPlayerByNickname(nickname), rowIdx, cardIdx);
     }
 
-    public void skipBonus(Player player) {
-        this.currentState.skipBonus(player);
+    @Override
+    public void skipBonus(String nickname) {
+        this.currentState.skipBonus(getPlayerByNickname(nickname));
     }
 
     public void incrementRound() {
         this.currentRound++;
     }
 
-
-
-    public Player getPlayerByNickname(String nickname) {
+    private Player getPlayerByNickname(String nickname) {
         return players.stream()
                 .filter(p -> p.getNickname().equals(nickname))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Player not found: " + nickname));
+                .orElseThrow(() -> new InvalidGameActionException("Player not found: " + nickname));
     }
 
     public Board getBoard() {

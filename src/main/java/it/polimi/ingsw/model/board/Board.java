@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.board.Era.EraOneState;
 import it.polimi.ingsw.model.board.Era.EraState;
 import it.polimi.ingsw.model.cards.Card;
 import it.polimi.ingsw.model.Factory.DeckFactory;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.GameEvent;
 
 import java.util.Collections;
@@ -259,30 +260,41 @@ public class Board {
         player.addFood(bonus);
     }
 
-    /** Returns the card at the specified position without removing it. @param rowIndex 0 for upper row, any other value for lower row @param colIndex zero-based column index @return the card at the specified position @throws IllegalStateException if the slot is empty */
+    /** Returns the card at the specified position without removing it. @param rowIndex 0 for upper row, 1 for lower row @param colIndex zero-based column index @return the card at the specified position */
     public Card peekCard(int rowIndex, int colIndex) {
-        List<Optional<Card>> row = (rowIndex == 0) ? upperRow : lowerRow;
-        return row.get(colIndex).orElseThrow(() -> new IllegalStateException("Card already taken"));
+        List<Optional<Card>> row = getCardRow(rowIndex);
+        if (colIndex < 0 || colIndex >= row.size()) {
+            throw new InvalidGameActionException("Card position not valid.");
+        }
+        return row.get(colIndex).orElseThrow(() -> new InvalidGameActionException("Card already taken"));
     }
 
-    /** Removes and returns the card at the specified position. @param rowIndex 0 for upper row, any other value for lower row @param colIndex zero-based column index @return the removed card @throws IllegalStateException if the slot is already empty */
+    /** Removes and returns the card at the specified position. @param rowIndex 0 for upper row, 1 for lower row @param colIndex zero-based column index @return the removed card */
     public Card takeCard(int rowIndex, int colIndex) {
         Card takenCard = peekCard(rowIndex, colIndex);
-        List<Optional<Card>> row = (rowIndex == 0) ? upperRow : lowerRow;
+        List<Optional<Card>> row = getCardRow(rowIndex);
         row.set(colIndex, Optional.empty());
         return takenCard;
     }
 
-    /** Places a player's totem on the specified offer tile. @param idx index of the target tile @param player player placing the totem @throws IllegalArgumentException if the index is invalid @throws IllegalStateException if the tile is already occupied */
+    /** Places a player's totem on the specified offer tile. @param idx index of the target tile @param player player placing the totem */
     public void placeTotem(int idx, Player player) {
         if (idx < 0 || idx >= offerTrack.size()) {
-            throw new IllegalArgumentException("Position not valid.");
+            throw new InvalidGameActionException("Position not valid.");
         }
         OfferTile targetTile = offerTrack.get(idx);
         if (!targetTile.isFree()) {
-            throw new IllegalStateException("Already occupied space.");
+            throw new InvalidGameActionException("Already occupied space.");
         }
         targetTile.setOccupyingPlayer(player);
+    }
+
+    private List<Optional<Card>> getCardRow(int rowIndex) {
+        return switch (rowIndex) {
+            case 0 -> upperRow;
+            case 1 -> lowerRow;
+            default -> throw new InvalidGameActionException("Card row not valid.");
+        };
     }
 
     /** Returns the offer track. @return list of offer tiles */

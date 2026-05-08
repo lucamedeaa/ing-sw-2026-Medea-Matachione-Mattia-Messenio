@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.AvailableAction;
 import it.polimi.ingsw.model.updates.AvailableAction.*;
 import it.polimi.ingsw.model.updates.GameEvent.*;
@@ -24,13 +25,13 @@ public class PlacementState extends GameState {
     public void start() {
     }
 
-    /** Allows the current player to place their totem on a tile and advances the turn. @param player acting player @param tileIndex target tile index @throws IllegalStateException if it is not the player's turn */
+    /** Allows the current player to place their totem on a tile and advances the turn. @param player acting player @param tileIndex target tile index */
     @Override
     public void placeTotem(Player player, int tileIndex) {
         Board board = game.getBoard();
 
         if (!player.equals(board.getCurrentPlayer())) {
-            throw new IllegalStateException("It's not your turn to place the totem!");
+            throw new InvalidGameActionException("It's not your turn to place the totem!");
         }
 
         board.placeTotem(tileIndex, player);

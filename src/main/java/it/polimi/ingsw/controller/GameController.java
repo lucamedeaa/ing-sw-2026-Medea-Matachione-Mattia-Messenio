@@ -2,7 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.CompletedGameResult;
 import it.polimi.ingsw.model.GameCompletionHandler;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.network.dto.LeaderboardEntryDTO;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
@@ -47,10 +47,9 @@ public class GameController implements GameCompletionHandler {
     public void handleTakeCard(String nickname, int row, int col, java.util.function.Consumer<String> onError) {
         gameExecutor.submit(() -> {
             try {
-                Player player = game.getPlayerByNickname(nickname);
-                game.takeCard(player, row, col);
+                game.takeCard(nickname, row, col);
                 game.commitEvents();
-            } catch (Exception e) {
+            } catch (InvalidGameActionException e) {
                 onError.accept(e.getMessage());
             }
         });
@@ -59,10 +58,9 @@ public class GameController implements GameCompletionHandler {
     public void handlePlaceTotem(String nickname, int positionIndex, java.util.function.Consumer<String> onError) {
         gameExecutor.submit(() -> {
             try {
-                Player player = game.getPlayerByNickname(nickname);
-                game.placeTotem(player, positionIndex);
+                game.placeTotem(nickname, positionIndex);
                 game.commitEvents();
-            } catch (Exception e) {
+            } catch (InvalidGameActionException e) {
                 onError.accept(e.getMessage());
             }
         });
@@ -71,10 +69,9 @@ public class GameController implements GameCompletionHandler {
     public void handleSkipBonus(String nickname, java.util.function.Consumer<String> onError) {
         gameExecutor.submit(() -> {
             try {
-                Player player = game.getPlayerByNickname(nickname);
-                game.skipBonus(player);
+                game.skipBonus(nickname);
                 game.commitEvents();
-            } catch (Exception e) {
+            } catch (InvalidGameActionException e) {
                 onError.accept(e.getMessage());
             }
         });

@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.gameState;
 
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.AvailableAction;
 
 import java.util.List;
@@ -25,17 +26,17 @@ public class GameEndedState extends GameState {
 
     @Override
     public void placeTotem(Player player, int tileIndex) {
-        throw new IllegalStateException("Game has already ended.");
+        throw new InvalidGameActionException("Game has already ended.");
     }
 
     @Override
     public void takeCard(Player player, int rowIdx, int cardIdx) {
-        throw new IllegalStateException("Game has already ended.");
+        throw new InvalidGameActionException("Game has already ended.");
     }
 
     @Override
     public void skipBonus(Player player) {
-        throw new IllegalStateException("Game has already ended.");
+        throw new InvalidGameActionException("Game has already ended.");
     }
 
     @Override

@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.AvailableAction;
 import it.polimi.ingsw.model.updates.AvailableAction.*;
 import it.polimi.ingsw.model.updates.GameEvent.*;
@@ -50,29 +51,29 @@ public class AdditionalPickState extends GameState {
     @Override
     public void takeCard(Player player, int rowIdx, int cardIdx) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Not your bonus turn");
+            throw new InvalidGameActionException("Not your bonus turn");
         }
 
         if (rowIdx != 0) {
-            throw new IllegalStateException("Bonus picks are allowed only from the upper row");
+            throw new InvalidGameActionException("Bonus picks are allowed only from the upper row");
         }
 
         if (remainingUpperPicks <= 0) {
-            throw new IllegalStateException("No bonus picks left");
+            throw new InvalidGameActionException("No bonus picks left");
         }
 
         Board board = game.getBoard();
         Card targetCard = board.peekCard(rowIdx, cardIdx);
 
         if (!targetCard.isPickable()) {
-            throw new IllegalStateException("Cannot take event cards with bonus picks");
+            throw new InvalidGameActionException("Cannot take event cards with bonus picks");
         }
 
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
 
 
         if (player.getFood() < finalCost) {
-            throw new IllegalStateException("Insufficient food");
+            throw new InvalidGameActionException("Insufficient food");
         }
 
         player.addFood(-finalCost);
@@ -104,7 +105,7 @@ public class AdditionalPickState extends GameState {
     @Override
     public void skipBonus(Player player) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Not your turn");
+            throw new InvalidGameActionException("Not your turn");
         }
         goToNextPlayer();
     }

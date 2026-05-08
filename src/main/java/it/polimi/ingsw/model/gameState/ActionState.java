@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.board.Board;
 import it.polimi.ingsw.model.board.OfferTile;
 import it.polimi.ingsw.model.cards.Card;
+import it.polimi.ingsw.model.exceptions.InvalidGameActionException;
 import it.polimi.ingsw.model.updates.AvailableAction;
 import it.polimi.ingsw.model.updates.AvailableAction.*;
 import it.polimi.ingsw.model.updates.GameEvent.*;
@@ -71,27 +72,27 @@ public class ActionState extends GameState {
     @Override
     public void takeCard(Player player, int rowIdx, int cardIdx) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Not your turn");
+            throw new InvalidGameActionException("Not your turn");
         }
 
         if (rowIdx == 0 && remainingUpperPicks <= 0) {
-            throw new IllegalStateException("No upper picks left");
+            throw new InvalidGameActionException("No upper picks left");
         }
         if (rowIdx == 1 && remainingLowerPicks <= 0) {
-            throw new IllegalStateException("No lower picks left");
+            throw new InvalidGameActionException("No lower picks left");
         }
 
         Board board = game.getBoard();
 
         Card targetCard = board.peekCard(rowIdx, cardIdx);
         if (!targetCard.isPickable()) {
-            throw new IllegalStateException("Can't take event card");
+            throw new InvalidGameActionException("Can't take event card");
         }
         int finalCost = Math.max(targetCard.getFoodCost() - player.getFoodDiscount(), 0);
 
 
         if (player.getFood() < finalCost) {
-            throw new IllegalStateException("Unsufficient food");
+            throw new InvalidGameActionException("Unsufficient food");
         }
 
         player.addFood(-finalCost);
@@ -235,12 +236,12 @@ public class ActionState extends GameState {
     @Override
     public void skipBonus(Player player) {
         if (!player.equals(this.currentPlayer)) {
-            throw new IllegalStateException("Not your turn");
+            throw new InvalidGameActionException("Not your turn");
         }
 
         boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
         if (mustPickCharacter) {
-            throw new IllegalStateException("You cannot skip, you must pick a character.");
+            throw new InvalidGameActionException("You cannot skip, you must pick a character.");
         }
 
         // Azzera i pick rimanenti per forzare la fine del turno
