@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.lightGameModel;
 
+import it.polimi.ingsw.client.tui.render.AnsiColors;
 import it.polimi.ingsw.network.dto.TribeDTO;
 import it.polimi.ingsw.network.dto.events.*;
 import it.polimi.ingsw.network.visitor.EventVisitor;
@@ -31,7 +32,7 @@ public class EventApplier implements EventVisitor {
     public void visit(PlayerResourcesChangedEventDTO event) {
         matchModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
         if (event.reason() != null && !event.reason().isEmpty()) {
-            matchModel.addGameLog("\033[33m[" + event.nickname() + "] " + event.reason() + "\033[0m");
+            matchModel.addGameLog(AnsiColors.YELLOW + "[" + event.nickname() + "] " + event.reason() + AnsiColors.RESET);
         }
     }
 
@@ -43,7 +44,7 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(EraTransitionEventDTO event) {
         matchModel.updateEra(event.newEraNumber());
-        matchModel.addGameLog("\033[1;36m[!] INIZIA L'ERA " + event.newEraNumber() + "!\033[0m");
+        matchModel.addGameLog(AnsiColors.CYAN_BOLD + "[!] INIZIA L'ERA " + event.newEraNumber() + "!" + AnsiColors.RESET);
     }
 
     @Override

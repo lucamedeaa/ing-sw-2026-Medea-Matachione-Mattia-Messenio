@@ -5,131 +5,109 @@ import java.util.*;
 
 public class MatchModel extends ObservableModel {
 
-    //  BOARD STATE
-    private final List<Integer> upperRowCards = new ArrayList<>();
-    private final List<Integer> lowerRowCards = new ArrayList<>();
-    private int currentEra = 1;
-    private int currentRound = 1;
+    // Composizione dei sotto-stati
+    private BoardState board = new BoardState();
+    private RosterState roster = new RosterState();
+    private TurnState turn = new TurnState();
 
-    // PLAYER STATE
-    private final Map<String, LightPlayer> players = new HashMap<>();
-    private final Map<String, Integer> playerTotemPositions = new HashMap<>();
-    private final Map<String, List<Integer>> playerTribes = new HashMap<>();
-    private final Map<String, Integer> playerReturnPositions = new HashMap<>();
-
-    //  TURN STATE
-    private String activePlayer = "";
-    private List<AvailableActionDTO> actions = new ArrayList<>();
-
-    //  END GAME STATE
+    // End Game State (rimane qui perché è statico e terminale)
     private boolean isGameOver = false;
     private List<PlayerScoreDTO> leaderboard = new ArrayList<>();
     private List<String> winners = new ArrayList<>();
     private String abortReason = null;
-    private PlayerGameCompletedDTO localResult = null; // Risultati personali
-    private LeaderboardSnapshot globalLeaderboard = null; // Classifica globale
+    private PlayerGameCompletedDTO localResult = null;
+    private LeaderboardSnapshot globalLeaderboard = null;
 
-
-    private final List<String> gameLogs = new ArrayList<>();
-
-
-    //  SETTERS
-
-    public void setFullState(BoardDTO board, List<PlayerDTO> playersList, String activePlayer) {
-        this.upperRowCards.clear();
-        this.upperRowCards.addAll(board.UpperRowCards());
-        this.lowerRowCards.clear();
-        this.lowerRowCards.addAll(board.LowerRowCards());
-        this.currentEra = board.currentEra();
-        this.currentRound = board.currentRound();
-
-        this.players.clear();
-        this.playerReturnPositions.clear();
-        this.playerTotemPositions.clear();
-
-        for (PlayerDTO p : playersList) {
-            this.players.put(p.nickname(), new LightPlayer(p));
-            this.playerTribes.putIfAbsent(p.nickname(), new ArrayList<>());
-        }
-        this.activePlayer = activePlayer;
+    public void setFullState(BoardDTO boardDTO, List<PlayerDTO> playersList, String activePlayer) {
+        board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
+        board.setEra(boardDTO.currentEra());
+        board.setRound(boardDTO.currentRound());
+        roster.initPlayers(playersList);
+        turn.setActivePlayer(activePlayer);
         notifyUI();
     }
 
     public void setAvailableActions(List<AvailableActionDTO> actions) {
-        this.actions = actions;
+        turn.setActions(actions);
         notifyUI();
     }
 
     public void setActivePlayer(String activePlayer) {
-        this.activePlayer = activePlayer;
+        turn.setActivePlayer(activePlayer);
         notifyUI();
     }
 
     public void removeCard(int row, int col) {
-        if (row == 0) upperRowCards.set(col, null);
-        else lowerRowCards.set(col, null);
+        board.removeCard(row, col);
         notifyUI();
     }
 
     public void refillBoardRow(int row, List<Integer> newCardIds) {
-        List<Integer> targetRow = (row == 0) ? upperRowCards : lowerRowCards;
-        targetRow.clear();
-        targetRow.addAll(newCardIds);
+        board.refillRow(row, newCardIds);
         notifyUI();
     }
 
     public void updateTotemPosition(String nickname, int positionIndex) {
-        playerTotemPositions.put(nickname, positionIndex);
+        roster.updateTotemPosition(nickname, positionIndex);
         notifyUI();
     }
 
     public void returnTotemToTrack(String nickname, int returnIndex) {
-        playerTotemPositions.remove(nickname);
-        playerReturnPositions.put(nickname, returnIndex);
+        roster.returnTotemToTrack(nickname, returnIndex);
         notifyUI();
     }
 
     public void addCardToPlayerTribe(String nickname, Integer cardId) {
-        playerTribes.computeIfAbsent(nickname, k -> new ArrayList<>()).add(cardId);
+        roster.addCardToTribe(nickname, cardId);
         notifyUI();
     }
 
     public void updatePlayerTribe(String nickname, List<Integer> newTribeCards) {
-        playerTribes.put(nickname, new ArrayList<>(newTribeCards));
+        roster.updateTribe(nickname, newTribeCards);
         notifyUI();
     }
 
     public void updateEra(int newEra) {
-        this.currentEra = newEra;
+        board.setEra(newEra);
         notifyUI();
     }
 
     public void updateRound(int newRound) {
-        this.currentRound = newRound;
-        this.playerReturnPositions.clear();
+        board.setRound(newRound);
+        roster.clearReturnPositions();
         notifyUI();
     }
 
     public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
-        LightPlayer player = players.get(nickname);
-        if (player != null) {
-            player.setFood(newFood);
-            player.setPrestige(newPrestige);
-            player.setFoodDiscount(newFoodDiscount);
-            notifyUI();
-        }
+        roster.updatePlayerResources(nickname, newFood, newPrestige, newFoodDiscount);
+        notifyUI();
     }
 
     public void addGameLog(String log) {
-        this.gameLogs.add(log);
+        turn.addGameLog(log);
         notifyUI();
     }
 
     public List<String> consumeGameLogs() {
-        List<String> copy = new ArrayList<>(this.gameLogs);
-        this.gameLogs.clear();
-        return copy;
+
+        return turn.consumeGameLogs();
     }
+
+
+    public void reset() {
+        this.board = new BoardState();
+        this.roster = new RosterState();
+        this.turn = new TurnState();
+
+        this.isGameOver = false;
+        this.leaderboard = new ArrayList<>();
+        this.winners = new ArrayList<>();
+        this.abortReason = null;
+        this.localResult = null;
+        this.globalLeaderboard = null;
+    }
+
+    //  END GAME SETTERS
 
     public void setGameAborted(String reason) {
         this.abortReason = reason;
@@ -144,7 +122,7 @@ public class MatchModel extends ObservableModel {
 
     public void setWinners(List<String> winners) {
         this.winners = new ArrayList<>(winners);
-        this.leaderboard = this.players.values().stream()
+        this.leaderboard = roster.getPlayers().values().stream()
                 .sorted(Comparator.comparingInt(LightPlayer::getPrestige).reversed())
                 .map(p -> new PlayerScoreDTO(p.getNickname(), p.getPrestige(), p.getFood()))
                 .toList();
@@ -159,44 +137,24 @@ public class MatchModel extends ObservableModel {
 
     public void setGlobalLeaderboard(LeaderboardSnapshot snapshot) {
         this.globalLeaderboard = snapshot;
-        endBatch();
+        endBatch(); // Chiude il batch iniziato in GameEndedState
     }
 
-    public void reset() {
-        this.upperRowCards.clear();
-        this.lowerRowCards.clear();
-        this.players.clear();
-        this.playerTotemPositions.clear();
-        this.playerTribes.clear();
-        this.playerReturnPositions.clear();
-        this.gameLogs.clear();
-        this.currentEra = 1;
-        this.currentRound = 1;
-        this.activePlayer = "";
-        this.actions = new ArrayList<>();
+    public List<Integer> getUpperRowCards() { return board.getUpperRowCards(); }
+    public List<Integer> getLowerRowCards() { return board.getLowerRowCards(); }
+    public int getCurrentEra() { return board.getCurrentEra(); }
+    public int getCurrentRound() { return board.getCurrentRound(); }
 
-        // RESET DEI FLAG DI FINE PARTITA
-        this.isGameOver = false;
-        this.leaderboard = new ArrayList<>();
-        this.winners = new ArrayList<>();
-        this.abortReason = null;
-        this.localResult = null;
-        this.globalLeaderboard = null;
-    }
+    public Map<String, LightPlayer> getPlayers() { return roster.getPlayers(); }
+    public Map<String, Integer> getTotemPositions() { return roster.getTotemPositions(); }
+    public Map<String, Integer> getReturnPositions() { return roster.getReturnPositions(); }
+    public Map<String, List<Integer>> getTribes() { return roster.getTribes(); }
 
-    // GETTERS
+    public String getActivePlayer() { return turn.getActivePlayer(); }
+    public List<AvailableActionDTO> getMyActions() { return turn.getActions(); }
+
     public PlayerGameCompletedDTO getLocalResult() { return localResult; }
     public LeaderboardSnapshot getGlobalLeaderboard() { return globalLeaderboard; }
-    public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
-    public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
-    public Map<String, LightPlayer> getPlayers() { return new HashMap<>(players); }
-    public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
-    public Map<String, Integer> getReturnPositions() { return new HashMap<>(playerReturnPositions); }
-    public Map<String, List<Integer>> getTribes() { return new HashMap<>(playerTribes); }
-    public int getCurrentEra() { return currentEra; }
-    public int getCurrentRound() { return currentRound; }
-    public List<AvailableActionDTO> getMyActions() { return new ArrayList<>(actions); }
-    public String getActivePlayer() { return activePlayer; }
     public String getAbortReason() { return abortReason; }
     public boolean isGameOver() { return isGameOver; }
     public List<PlayerScoreDTO> getLeaderboard() { return new ArrayList<>(leaderboard); }

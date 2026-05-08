@@ -11,7 +11,7 @@ public class InfoRenderer {
 
     public void render() {
         out.clearScreen();
-        System.out.print("\033[H\033[2J");
+        System.out.print(AnsiColors.CLEAR);
         System.out.flush();
         out.print("┌─────────────────────────────────────────────────────────────┐");
         out.print("│                  MESOS — CARD REFERENCE                     │");

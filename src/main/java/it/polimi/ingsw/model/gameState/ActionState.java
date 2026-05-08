@@ -44,7 +44,8 @@ public class ActionState extends GameState {
         while (currentColumnIndex < track.size()) {
             OfferTile tile = track.get(currentColumnIndex);
             if (!tile.isFree()) {
-                this.currentPlayer = tile.getOccupyingPlayer().get();
+                this.currentPlayer = tile.getOccupyingPlayer()
+                        .orElseThrow(() -> new IllegalStateException("Tile markata come non libera, ma occupante assente."));
                 this.currentTile = tile;
                 this.remainingUpperPicks = tile.getUpperRowPicks();
                 this.remainingLowerPicks = tile.getLowerRowPicks();

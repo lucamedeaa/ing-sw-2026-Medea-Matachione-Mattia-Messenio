@@ -17,9 +17,9 @@ public class InGameState implements UIState, InGameView {
     private final InGameRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
 
-    private Map<String, int[]> prevState = new HashMap<>();
-    private Map<String, int[]> accumulated = new HashMap<>();
-    private Map<String, int[]> displayDeltas = new HashMap<>();
+    private Map<String, PlayerResources> prevState = new HashMap<>();
+    private Map<String, PlayerResources> accumulated = new HashMap<>();
+    private Map<String, PlayerResources> displayDeltas = new HashMap<>();
     private int lastRound;
 
     public InGameState(NavigationPort nav, OutputPort out) {
@@ -72,18 +72,15 @@ public class InGameState implements UIState, InGameView {
     }
 
     private void updateDeltas() {
-        Map<String, int[]> currState = captureState();
-
-        Map<String, int[]> stepDeltas = computeDeltas(prevState, currState);
+        Map<String, PlayerResources> currState = captureState();
+        Map<String, PlayerResources> stepDeltas = computeDeltas(prevState, currState);
 
         if (isEndOfTurn()) {
             accumulated.clear();
         }
 
         mergeInto(accumulated, stepDeltas);
-
         displayDeltas = new HashMap<>(accumulated);
-
         prevState = currState;
     }
 
@@ -111,33 +108,39 @@ public class InGameState implements UIState, InGameView {
         nav.changeState(new MatchmakingState(nav, out));
     }
 
-    private Map<String, int[]> captureState() {
-        Map<String, int[]> snap = new HashMap<>();
-        for (LightPlayer p : nav.getMatchModel().getPlayers().values())
-            snap.put(p.getNickname(), new int[]{p.getFood(), p.getPrestige(), p.getFoodDiscount()});
+    private Map<String, PlayerResources> captureState() {
+        Map<String, PlayerResources> snap = new HashMap<>();
+        for (LightPlayer p : nav.getMatchModel().getPlayers().values()) {
+            snap.put(p.getNickname(), new PlayerResources(p.getFood(), p.getPrestige(), p.getFoodDiscount()));
+        }
         return snap;
     }
 
-    private Map<String, int[]> computeDeltas(Map<String, int[]> prev, Map<String, int[]> curr) {
-        Map<String, int[]> d = new HashMap<>();
+    private Map<String, PlayerResources> computeDeltas(Map<String, PlayerResources> prev, Map<String, PlayerResources> curr) {
+        Map<String, PlayerResources> d = new HashMap<>();
         for (var e : curr.entrySet()) {
-            int[] p = prev.getOrDefault(e.getKey(), e.getValue());
-            int discPrev = p.length > 2 ? p[2] : 0;
-            int discCurr = e.getValue().length > 2 ? e.getValue()[2] : 0;
-            d.put(e.getKey(), new int[]{e.getValue()[0] - p[0], e.getValue()[1] - p[1], discCurr - discPrev});
+            PlayerResources p = prev.getOrDefault(e.getKey(), new PlayerResources(0, 0, 0));
+            PlayerResources c = e.getValue();
+            d.put(e.getKey(), new PlayerResources(
+                    c.food() - p.food(),
+                    c.prestige() - p.prestige(),
+                    c.discount() - p.discount()
+            ));
         }
         return d;
     }
-
-    private void mergeInto(Map<String, int[]> acc, Map<String, int[]> step) {
+    private void mergeInto(Map<String, PlayerResources> acc, Map<String, PlayerResources> step) {
         for (var e : step.entrySet()) {
-            int[] cur = acc.getOrDefault(e.getKey(), new int[]{0, 0, 0});
-            int stepDisc = e.getValue().length > 2 ? e.getValue()[2] : 0;
-            int curDisc = cur.length > 2 ? cur[2] : 0;
-            acc.put(e.getKey(), new int[]{cur[0] + e.getValue()[0], cur[1] + e.getValue()[1], curDisc + stepDisc});
+            PlayerResources cur = acc.getOrDefault(e.getKey(), new PlayerResources(0, 0, 0));
+            PlayerResources s = e.getValue();
+            acc.put(e.getKey(), new PlayerResources(
+                    cur.food() + s.food(),
+                    cur.prestige() + s.prestige(),
+                    cur.discount() + s.discount()
+            ));
         }
     }
 
 
-
+    public record PlayerResources(int food, int prestige, int discount) {}
 }

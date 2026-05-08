@@ -14,7 +14,7 @@ public class MatchmakingRenderer {
 
     public void render(List<GameInfoDTO> availableGames, String lastError) {
         out.clearScreen();
-        printLogo();
+        AnsiColors.printLogo(out::print);
         printHeader();
         printCommands();
         if (availableGames != null) {
@@ -22,49 +22,34 @@ public class MatchmakingRenderer {
         }
 
         if (lastError != null && !lastError.isEmpty()) {
-            out.print("\n\033[33m[INFO]\033[0m \033[3m" + lastError + "\033[0m");
+            out.print(AnsiColors.YELLOW + "\n[INFO]" + AnsiColors.RESET + " " + AnsiColors.ITALIC + lastError + AnsiColors.RESET);
         }
-        out.prompt("\n\033[1;33mDigita il tuo destino > \033[0m");
+        out.prompt(AnsiColors.YELLOW_BOLD +"\nDigita il tuo destino > " + AnsiColors.RESET);
     }
 
-    private void printLogo() {
-        String[] logoLines = {
-
-                "███╗   ███╗███████╗███████╗ ██████╗ ███████╗",
-                "████╗ ████║██╔════╝██╔════╝██╔═══██╗██╔════╝",
-                "██╔████╔██║█████╗  ███████╗██║   ██║███████╗",
-                "██║╚██╔╝██║██╔══╝  ╚════██║██║   ██║╚════██║",
-                "██║ ╚═╝ ██║███████╗███████║╚██████╔╝███████║",
-                "╚═╝     ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚══════╝"
-        };
-        String[] colors = {"\033[38;5;226m", "\033[38;5;220m", "\033[38;5;214m", "\033[38;5;208m", "\033[38;5;202m", "\033[38;5;166m"};
-        for (int i = 0; i < logoLines.length; i++) {
-            out.print(colors[i] + logoLines[i] + "\033[0m");
-        }
-    }
 
     private void printHeader() {
-        out.print("\033[1;30m" + "━".repeat(52) + "\033[0m");
-        out.print("\033[1;37mBenvenuto Capotribù. Incidi la tua storia nel tempo.\033[0m");
-        out.print("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
+        out.print(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET);
+        out.print(AnsiColors.WHITE_BOLD + "Benvenuto Capotribù. Incidi la tua storia nel tempo." + AnsiColors.RESET);
+        out.print(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET);
     }
 
     private void printCommands() {
-        out.print("   \033[1;33m•\033[0m \033[1mlist\033[0m       \033[90m| Osserva le Cronache (Partite disponibili)\033[0m");
-        out.print("   \033[1;33m•\033[0m \033[1mcreate <nickname> <players>\033[0m     \033[90m| Fonda un nuovo Insediamento\033[0m");
-        out.print("   \033[1;33m•\033[0m \033[1mjoin <nickname> <gameID>\033[0m       \033[90m| Unisciti a una Tribù esistente\033[0m");
-        out.print("   \033[1;33m•\033[0m \033[1m0\033[0m          \033[90m| Abbandona la Storia ed esci\033[0m\n");
+        out.print("   " + AnsiColors.YELLOW_BOLD + "•" + AnsiColors.RESET + " " + AnsiColors.BOLD + "list" + AnsiColors.RESET + "       " + AnsiColors.GRAY + "| Osserva le Cronache (Partite disponibili)" + AnsiColors.RESET);
+        out.print("   " + AnsiColors.YELLOW_BOLD + "•" + AnsiColors.RESET + " " + AnsiColors.BOLD + "create <nickname> <players>" + AnsiColors.RESET + "     " + AnsiColors.GRAY + "| Fonda un nuovo Insediamento" + AnsiColors.RESET);
+        out.print("   " + AnsiColors.YELLOW_BOLD + "•" + AnsiColors.RESET + " " + AnsiColors.BOLD + "join <nickname> <gameID>" + AnsiColors.RESET + "       " + AnsiColors.GRAY + "| Unisciti a una Tribù esistente" + AnsiColors.RESET);
+        out.print("   " + AnsiColors.YELLOW_BOLD + "•" + AnsiColors.RESET + " " + AnsiColors.BOLD + "0" + AnsiColors.RESET + "          " + AnsiColors.GRAY + "| Abbandona la Storia ed esci" + AnsiColors.RESET + "\n");
     }
 
     private void printGames(List<GameInfoDTO> availableGames) {
         if (!availableGames.isEmpty()) {
-            out.print("   \033[1;32mCRONACHE ATTIVE:\033[0m");
+            out.print("   " + AnsiColors.GREEN_BOLD + "CRONACHE ATTIVE:" + AnsiColors.RESET);
             for (GameInfoDTO g : availableGames) {
-                out.print(String.format("   \033[33m▶\033[0m \033[1mID: %-8s\033[0m \033[90m| Fondatore:\033[0m %-12s \033[90m| Popolazione:\033[0m [%d/%d]",
+                out.print(String.format("   " + AnsiColors.YELLOW + "▶" + AnsiColors.RESET + " " + AnsiColors.BOLD + "ID: %-8s" + AnsiColors.RESET + " " + AnsiColors.GRAY + "| Fondatore:" + AnsiColors.RESET + " %-12s " + AnsiColors.GRAY + "| Popolazione:" + AnsiColors.RESET + " [%d/%d]",
                         g.getGameId(), g.getCreatorNickname(), g.getCurrentPlayers(), g.getMaxPlayers()));
             }
         } else {
-            out.print("   \033[3mNessuna storia iniziata. Sii il primo a incidere la pietra.\033[0m");
+            out.print("   " + AnsiColors.ITALIC + "Nessuna storia iniziata. Sii il primo a incidere la pietra." + AnsiColors.RESET);
         }
     }
 }

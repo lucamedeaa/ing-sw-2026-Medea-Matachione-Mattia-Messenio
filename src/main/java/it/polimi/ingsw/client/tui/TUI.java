@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.lightGameModel.MatchModel;
 import it.polimi.ingsw.client.lightGameModel.UIObserver;
 import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.network.ServerController;
+import it.polimi.ingsw.client.tui.render.AnsiColors;
 import it.polimi.ingsw.client.tui.states.MatchmakingState;
 import it.polimi.ingsw.client.view.ClientUI;
 
@@ -99,7 +100,7 @@ public class TUI implements ClientUI, UIObserver, NavigationPort, OutputPort {
 
     @Override
     public synchronized void clearScreen() {
-        System.out.print("\033[H\033[2J");
+        System.out.print(AnsiColors.CLEAR);
         System.out.flush();
     }
 }

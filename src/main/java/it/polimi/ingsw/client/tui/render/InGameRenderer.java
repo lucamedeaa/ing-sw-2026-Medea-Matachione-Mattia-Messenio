@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.tui.render;
 import it.polimi.ingsw.client.lightGameModel.LightPlayer;
 import it.polimi.ingsw.client.lightGameModel.MatchModel;
 import it.polimi.ingsw.client.tui.OutputPort;
+import it.polimi.ingsw.client.tui.states.InGameState;
 import it.polimi.ingsw.network.dto.AvailableActionDTO;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class InGameRenderer {
         this.out = out;
     }
 
-    public void render(MatchModel matchModel, String myNickname, Map<String, int[]> deltas, String lastError) {
+    public void render(MatchModel matchModel, String myNickname, Map<String, InGameState.PlayerResources> deltas, String lastError) {
         out.clearScreen();
         out.print("════ MESOS — Era " + matchModel.getCurrentEra() + " / Round " + matchModel.getCurrentRound() + " ════\n");
 
@@ -45,37 +46,37 @@ public class InGameRenderer {
         printActions(matchModel.getMyActions());
 
         if (lastError != null && !lastError.isEmpty()) {
-            out.print("\033[31m[ERROR] " + lastError + "\033[0m");
+            out.print(AnsiColors.RED + "[ERROR] " + lastError + AnsiColors.RESET);
         }
 
         if (matchModel.isGameOver()) {
-            out.print("\033[1;33m  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══\033[0m");
+            out.print(AnsiColors.YELLOW_BOLD + "  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══" + AnsiColors.RESET);
         }
 
         out.prompt("> ");
+
     }
 
     private void printActions(List<AvailableActionDTO> actions) {
-        out.print("\n\033[1;33m── AVAILABLE ACTIONS ──> \033[0m");
+        out.print("\n" + AnsiColors.YELLOW_BOLD + "── AVAILABLE ACTIONS ──> " + AnsiColors.RESET);
         if (actions.isEmpty()) {
             out.print("  Wait for your turn...");
         } else {
             ActionRender renderer = new ActionRender(out);
             for (int i = 0; i < actions.size(); i++) {
-                out.prompt("  \033[1;36m[ " + i + " ]\033[0m ");
+                out.prompt("  " + AnsiColors.CYAN_BOLD + "[ " + i + " ]" + AnsiColors.RESET + " ");
                 actions.get(i).accept(renderer);
             }
         }
-        out.print("  \033[1;36m[ i ]\033[0m Guida alle carte");
-        out.print("  \033[1;36m[ v <nome> ]\033[0m Guarda la tribù di un giocatore");
-        out.print("  \033[1;31m[ quit ]\033[0m Chiudi definitivamente il gioco");
-        out.print("  \033[1;31m[ leave ]\033[0m Abbandona la partita e torna al menu\n");
+        out.print("  " + AnsiColors.CYAN_BOLD + "[ i ]" + AnsiColors.RESET + " Guida alle carte");
+        out.print("  " + AnsiColors.CYAN_BOLD + "[ v <nome> ]" + AnsiColors.RESET + " Guarda la tribù di un giocatore");
+        out.print("  " + AnsiColors.RED_BOLD + "[ quit ]" + AnsiColors.RESET + " Chiudi definitivamente il gioco");
+        out.print("  " + AnsiColors.RED_BOLD + "[ leave ]" + AnsiColors.RESET + " Abbandona la partita e torna al menu\n");
     }
 
 
     private void renderRows(MatchModel matchModel) {
         out.print("  UPPER ROW");
-        // TODO: CardBoxRenderer andrebbe rifattorizzato in futuro per usare OutputPort
         CardBoxRenderer.printCardRow(out, matchModel.getUpperRowCards(), true);
         out.print("");
         out.print("  LOWER ROW");
@@ -83,18 +84,18 @@ public class InGameRenderer {
     }
 
     private void renderPlayersBar(MatchModel matchModel, String myNickname) {
-        out.print("\033[1;37m  PLAYERS\033[0m");
+        out.print(AnsiColors.WHITE_BOLD + "  PLAYERS" + AnsiColors.RESET);
         for (LightPlayer p : matchModel.getPlayers().values()) {
             boolean isMe = p.getNickname().equals(myNickname);
             boolean isActive = p.getNickname().equals(matchModel.getActivePlayer());
 
-            String marker = isActive ? " \033[1;32m▶\033[0m" : "  ";
+            String marker = isActive ? " " + AnsiColors.GREEN_BOLD + "▶" + AnsiColors.RESET : "  ";
             int tribeSize = matchModel.getTribes().getOrDefault(p.getNickname(), List.of()).size();
-            String tag = isMe ? " \033[3m(you)\033[0m" : "";
+            String tag = isMe ? " " + AnsiColors.ITALIC + "(you)" + AnsiColors.RESET : "";
 
             String pColor = getTotemAnsiColor(matchModel, p.getNickname());
 
-            out.print(String.format("%s %s%-14s\033[0m  cibo: \033[1;32m%2d\033[0m  prestigio: \033[1;32m%3d\033[0m  sconto: \033[1;32m-%d\033[0m  [%d carte]%s",
+            out.print(String.format("%s %s%-14s" + AnsiColors.RESET + "  cibo: " + AnsiColors.GREEN_BOLD + "%2d" + AnsiColors.RESET + "  prestigio: " + AnsiColors.GREEN_BOLD + "%3d" + AnsiColors.RESET + "  sconto: " + AnsiColors.GREEN_BOLD + "-%d" + AnsiColors.RESET + "  [%d carte]%s",
                     marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), tribeSize, tag));
         }
     }
@@ -105,13 +106,14 @@ public class InGameRenderer {
         CardBoxRenderer.printCardRow(out, tribe, false);
     }
 
-    private void renderTurnRecap(Map<String, int[]> deltas, MatchModel matchModel) {
+    private void renderTurnRecap(Map<String, InGameState.PlayerResources> deltas, MatchModel matchModel) {
         out.print("");
-        out.print("\033[1;37m  TURN RECAP\033[0m");
+        out.print(AnsiColors.WHITE_BOLD + "  TURN RECAP" + AnsiColors.RESET);
         for (var e : deltas.entrySet()) {
-            int df = e.getValue()[0];
-            int dp = e.getValue()[1];
-            int dd = e.getValue().length > 2 ? e.getValue()[2] : 0;
+            InGameState.PlayerResources res = e.getValue();
+            int df = res.food();
+            int dp = res.prestige();
+            int dd = res.discount();
 
             String foodStr = (df >= 0 ? "+" : "") + df;
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
@@ -119,7 +121,7 @@ public class InGameRenderer {
 
             String pColor = getTotemAnsiColor(matchModel, e.getKey());
 
-            out.print(String.format("  %s%-14s\033[0m  cibo: %-3s prestigio: %-3s sconto: \033[1;32m%-3s\033[0m",
+            out.print(String.format("  %s%-14s" + AnsiColors.RESET + "  cibo: %-3s prestigio: %-3s sconto: " + AnsiColors.GREEN_BOLD + "%-3s" + AnsiColors.RESET,
                     pColor, e.getKey(), foodStr, ppStr, discStr));
         }
     }
@@ -180,7 +182,7 @@ public class InGameRenderer {
 
             String player = centerString(returnOccupants[i], 7);
             String color = getTotemAnsiColor(matchModel, returnOccupants[i]);
-            mid3.append(color).append(player).append("\033[0m");
+            mid3.append(color).append(player).append("AnsiColor.RESET");
 
             bot.append("───────");
 
@@ -209,7 +211,7 @@ public class InGameRenderer {
             top.append("┌───────┐ ");
             mid1.append("│").append(specs[0]).append("│ ");
             mid2.append("│").append(specs[1]).append("│ ");
-            mid3.append("│").append(color).append(player).append("\033[0m│ ");
+            mid3.append("│").append(color).append(player).append("AnsiColor.RESET│ ");
             bot.append("└───────┘ ");
         }
 
@@ -222,17 +224,17 @@ public class InGameRenderer {
     }
 
     private String getTotemAnsiColor(MatchModel model, String nickname) {
-        if (nickname.equals("free")) return "\033[90m";
+        if (nickname.equals("free")) return AnsiColors.GRAY;
 
         LightPlayer player = model.getPlayers().get(nickname);
-        if (player == null || player.getTotemColor() == null) return "\033[1;37m";
+        if (player == null || player.getTotemColor() == null) return AnsiColors.WHITE_BOLD;
 
         return switch (player.getTotemColor()) {
-            case ORANGE -> "\033[38;5;208m";
-            case WHITE  -> "\033[1;37m";
-            case BLUE   -> "\033[1;34m";
-            case YELLOW -> "\033[1;33m";
-            case BLACK  -> "\033[1;30m";
+            case ORANGE -> AnsiColors.ORANGE;
+            case WHITE  -> AnsiColors.WHITE_BOLD;
+            case BLUE   -> AnsiColors.BLUE_BOLD;
+            case YELLOW -> AnsiColors.YELLOW_BOLD;
+            case BLACK  -> AnsiColors.BLACK_BOLD;
         };
     }
 

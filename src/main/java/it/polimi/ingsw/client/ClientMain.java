@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.network.NetworkClientFactory;
 import it.polimi.ingsw.client.network.RMIConnectionFactory;
 import it.polimi.ingsw.client.network.ServerController;
 import it.polimi.ingsw.client.network.SocketConnectionFactory;
+import it.polimi.ingsw.client.tui.render.AnsiColors;
 import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.client.view.UIFactory;
 import it.polimi.ingsw.network.client.ServerProxy;
@@ -19,23 +20,23 @@ public class ClientMain {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("\033[H\033[2J");
+        System.out.print(AnsiColors.CLEAR);
         System.out.flush();
         printLogo();
 
-        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m");
-        System.out.println("   \033[1;37mCONFIGURAZIONE INIZIALE DEL VIAGGIO\033[0m");
-        System.out.println("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
+        System.out.println(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET);
+        System.out.println("   " + AnsiColors.WHITE_BOLD + "CONFIGURAZIONE INIZIALE DEL VIAGGIO" + AnsiColors.RESET);
+        System.out.println(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET + "\n");
 
         int uiChoice = 0;
         while (uiChoice != 1 && uiChoice != 2) {
-            System.out.println(" \033[1;37mCome desideri visualizzare il mondo di Mesos?\033[0m");
-            System.out.println(" \033[1;33m[ 1 ]\033[0m \033[3mPergamena\033[0m (TUI)   \033[1;33m[ 2 ]\033[0m \033[3mVisione Magica\033[0m (GUI)");
-            System.out.print(" \033[1;32m>\033[0m ");
+            System.out.println(" " + AnsiColors.WHITE_BOLD + "Come desideri visualizzare il mondo di Mesos?" + AnsiColors.RESET);
+            System.out.println(" " + AnsiColors.YELLOW_BOLD + "[ 1 ]" + AnsiColors.RESET + " " + AnsiColors.ITALIC + "Pergamena" + AnsiColors.RESET + " (TUI)   " + AnsiColors.YELLOW_BOLD + "[ 2 ]" + AnsiColors.RESET + " " + AnsiColors.ITALIC + "Visione Magica" + AnsiColors.RESET + " (GUI)");
+            System.out.print(" " + AnsiColors.GREEN_BOLD + ">" + AnsiColors.RESET + " ");
             try {
                 uiChoice = Integer.parseInt(scanner.nextLine().trim());
             } catch (NumberFormatException e) {
-                System.out.println(" \033[1;31m✖ Scelta non valida. Inserisci 1 o 2.\033[0m\n");
+                System.out.println(" " + AnsiColors.RED_BOLD + "✖ Scelta non valida. Inserisci 1 o 2." + AnsiColors.RESET + "\n");
             }
         }
         System.out.println();
@@ -57,8 +58,8 @@ public class ClientMain {
         while (server == null) {
             // Richiesta IP
             if (ip.isEmpty()) {
-                System.out.println(" \033[1;37mInserisci le coordinate del Server (IP):");
-                System.out.print(" \033[1;32m>\033[0m ");
+                System.out.println(" " + AnsiColors.WHITE_BOLD + "Inserisci le coordinate del Server (IP):" + AnsiColors.RESET);
+                System.out.print(" " + AnsiColors.GREEN_BOLD + ">" + AnsiColors.RESET + " ");
                 ip = scanner.nextLine().trim();
                 if (ip.isEmpty() || !ip.matches("[a-zA-Z0-9.]+")) {
                     ip = "";
@@ -68,9 +69,9 @@ public class ClientMain {
 
             // Scelta Rete
             if (networkChoice == 0) {
-                System.out.println(" \033[1;37mQuale sentiero di rete vuoi percorrere?\033[0m");
-                System.out.println(" \033[1;33m[ 1 ]\033[0m \033[3mSocket [TCP]\033[0m          \033[1;33m[ 2 ]\033[0m \033[3mRMI\033[0m");
-                System.out.print(" \033[1;32m>\033[0m ");
+                System.out.println(" " + AnsiColors.WHITE_BOLD + "Quale sentiero di rete vuoi percorrere?" + AnsiColors.RESET);
+                System.out.println(" " + AnsiColors.YELLOW_BOLD + "[ 1 ]" + AnsiColors.RESET + " " + AnsiColors.ITALIC + "Socket [TCP]" + AnsiColors.RESET + "          " + AnsiColors.YELLOW_BOLD + "[ 2 ]" + AnsiColors.RESET + " " + AnsiColors.ITALIC + "RMI" + AnsiColors.RESET);
+                System.out.print(" " + AnsiColors.GREEN_BOLD + ">" + AnsiColors.RESET + " ");
                 try {
                     networkChoice = Integer.parseInt(scanner.nextLine().trim());
                 } catch (NumberFormatException e) {
@@ -81,8 +82,8 @@ public class ClientMain {
 
             // Richiesta Porta
             if (port <= 0 || port > 65535) {
-                System.out.println(" \033[1;37mA quale varco vuoi bussare? (Porta):");
-                System.out.print(" \033[1;32m>\033[0m ");
+                System.out.println(" " + AnsiColors.WHITE_BOLD + "A quale varco vuoi bussare? (Porta):" + AnsiColors.RESET);
+                System.out.print(" " + AnsiColors.GREEN_BOLD + ">" + AnsiColors.RESET + " ");
                 try {
                     port = Integer.parseInt(scanner.nextLine().trim());
                 } catch (NumberFormatException e) {
@@ -91,8 +92,7 @@ public class ClientMain {
                 }
             }
 
-            System.out.println("\n \033[1;36mConnessione al server in corso...\033[0m");
-
+            System.out.println("\n " + AnsiColors.CYAN_BOLD + "Connessione al server in corso..." + AnsiColors.RESET);
             try {
                 NetworkClientFactory.NetworkType type = (networkChoice == 1)
                         ? NetworkClientFactory.NetworkType.SOCKET
@@ -106,9 +106,9 @@ public class ClientMain {
                 // UNICA CONNESSIONE: passiamo il receiver reale direttamente
                 server = networkFactory.createConnection(type, ip, port, receiver);
 
-            } catch (Exception e) {
-                System.out.println("\n \033[1;41;37m ERRORE DI RETE \033[0m \033[1;31mImpossibile connettersi: " + e.getMessage() + "\033[0m");
-                System.out.println(" \033[3mRiprova a inserire i dati.\033[0m\n");
+            }  catch (Exception e) {
+            System.out.println("\n " + AnsiColors.BG_RED_WHITE_TEXT + " ERRORE DI RETE " + AnsiColors.RESET + " " + AnsiColors.RED_BOLD + "Impossibile connettersi: " + e.getMessage() + AnsiColors.RESET);
+            System.out.println(" " + AnsiColors.ITALIC + "Riprova a inserire i dati." + AnsiColors.RESET + "\n");
                 server = null;
                 ip = "";            // Resetta per forzare il reinserimento
                 networkChoice = 0;
@@ -120,8 +120,7 @@ public class ClientMain {
             ServerController controller = new ServerController(server);
             ui.setController(controller);
 
-            System.out.println(" \033[1;32m✔ Connesso con successo!\033[0m\n");
-            ui.start();
+            System.out.println(" " + AnsiColors.GREEN_BOLD + "✔ Connesso con successo!" + AnsiColors.RESET + "\n");            ui.start();
         } catch (Exception e) {
             System.err.println("Errore critico durante l'avvio della UI: " + e.getMessage());
             e.printStackTrace();
@@ -129,18 +128,6 @@ public class ClientMain {
     }
 
     private static void printLogo() {
-        String[] logoLines = {
-                "███╗   ███╗███████╗███████╗ ██████╗ ███████╗",
-                "████╗ ████║██╔════╝██╔════╝██╔═══██╗██╔════╝",
-                "██╔████╔██║█████╗  ███████╗██║   ██║███████╗",
-                "██║╚██╔╝██║██╔══╝  ╚════██║██║   ██║╚════██║",
-                "██║ ╚═╝ ██║███████╗███████║╚██████╔╝███████║",
-                "╚═╝     ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚══════╝"
-        };
-        String[] colors = {"\033[38;5;226m", "\033[38;5;220m", "\033[38;5;214m", "\033[38;5;208m", "\033[38;5;202m", "\033[38;5;166m"};
-
-        for (int i = 0; i < logoLines.length; i++) {
-            System.out.println(colors[i] + logoLines[i] + "\033[0m");
-        }
+        AnsiColors.printLogo(System.out::println);
     }
 }

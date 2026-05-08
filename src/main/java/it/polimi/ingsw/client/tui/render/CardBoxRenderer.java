@@ -5,23 +5,23 @@ import java.util.List;
 
 public class CardBoxRenderer {
 
-    private static final String RESET = "\033[0m";
+    private static final String RESET = "AnsiColor.RESET";
 
     public static String ansiColor(Integer id) {
-        if (id == null) return "\033[90m";
+        if (id == null) return AnsiColors.GRAY;
         CardInfo info = CardNameMapper.getCard(id);
 
-        if (info.type().equals("Event"))    return "\033[93m";
-        if (info.type().equals("Building")) return "\033[96m";
+        if (info.type().equals("Event"))    return AnsiColors.YELLOW;
+        if (info.type().equals("Building")) return AnsiColors.CYAN;
 
         return switch (info.type()) {
-            case "Builder"   -> "\033[33m";
-            case "Hunter"    -> "\033[31m";
-            case "Artist"    -> "\033[35m";
-            case "Shaman"    -> "\033[36m";
-            case "Inventor"  -> "\033[34m";
-            case "Collector" -> "\033[32m";
-            default          -> "\033[0m";
+            case "Builder"   -> AnsiColors.YELLOW;
+            case "Hunter"    -> AnsiColors.RED;
+            case "Artist"    -> AnsiColors.MAGENTA;
+            case "Shaman"    -> AnsiColors.CYAN;
+            case "Inventor"  -> AnsiColors.BLUE;
+            case "Collector" -> AnsiColors.GREEN;
+            default          -> AnsiColors.RESET;
         };
     }
 
@@ -64,7 +64,7 @@ public class CardBoxRenderer {
         if (showIndices) {
             StringBuilder idxBuilder = new StringBuilder("  ");
             for (int i = 0; i < cards.size(); i++) {
-                idxBuilder.append("\033[1;30m").append(center("[" + i + "]", 15)).append("\033[0m");
+                idxBuilder.append(AnsiColors.BLACK_BOLD).append(center("[" + i + "]", 15)).append(AnsiColors.RESET);
                 if (i < cards.size() - 1) idxBuilder.append(" ");
             }
             out.print(idxBuilder.toString());
@@ -75,10 +75,10 @@ public class CardBoxRenderer {
             StringBuilder sb = new StringBuilder("  ");
             for (int i = 0; i < boxes.size(); i++) {
                 String color = ansiColor(cards.get(i));
-                sb.append(color).append(boxes.get(i)[line]).append(RESET);
+                sb.append(color).append(boxes.get(i)[line]).append(AnsiColors.RESET);
                 if (i < boxes.size() - 1) sb.append(" ");
             }
-            out.print(sb.toString()); // Dipendenza invertita: usiamo il porto!
+            out.print(sb.toString());
         }
     }
 

@@ -12,31 +12,31 @@ public class LobbyRenderer {
 
     public void render(List<String> currentPlayers, String notification, String myNickname) {
         out.clearScreen();
-        out.print("\033[1;33m" + "█".repeat(52) + "\033[0m");
-        out.print("\033[1;37m   MESOS   \033[0m| \033[1;32mLOBBY DELL'INSEDIAMENTO\033[0m");
-        out.print("\033[1;30m" + "━".repeat(52) + "\033[0m\n");
+        out.print(AnsiColors.YELLOW_BOLD + "█".repeat(52) + AnsiColors.RESET);
+        out.print(AnsiColors.WHITE_BOLD + "   MESOS   " + AnsiColors.RESET + "| " + AnsiColors.GREEN_BOLD + "LOBBY DELL'INSEDIAMENTO" + AnsiColors.RESET);
+        out.print(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET + "\n");
 
-        out.print("\033[1;37mEsploratori pronti al viaggio:\033[0m");
+        out.print(AnsiColors.WHITE_BOLD + "Esploratori pronti al viaggio:" + AnsiColors.RESET);
         if (currentPlayers.isEmpty()) {
-            out.print(" \033[90m  Nessun membro trovato nell'accampamento...\033[0m");
+            out.print(" " + AnsiColors.GRAY + "  Nessun membro trovato nell'accampamento..." + AnsiColors.RESET);
         } else {
             for (String p : currentPlayers) {
                 boolean isMe = p.equals(myNickname);
-                String color = isMe ? "\033[1;32m" : "\033[1;37m";
-                String marker = isMe ? " \033[1;32m(tu)\033[0m" : "";
-                out.print(" \033[33m▶\033[0m " + color + String.format("%-15s", p) + marker + "\033[0m");
+                String color = isMe ? AnsiColors.GREEN_BOLD : AnsiColors.WHITE_BOLD;
+                String marker = isMe ? " " + AnsiColors.GREEN_BOLD + "(tu)" + AnsiColors.RESET : "";
+                out.print(" " + AnsiColors.YELLOW + "▶" + AnsiColors.RESET + " " + color + String.format("%-15s", p) + marker + AnsiColors.RESET);
             }
         }
 
         if (notification != null && !notification.isEmpty()) {
-            out.print("\n\033[1;34mℹ ECO DALLA VALLE:\033[0m \033[3m" + notification + "\033[0m");
+            out.print("\n" + AnsiColors.BLUE_BOLD + "ℹ ECO DALLA VALLE:" + AnsiColors.RESET + " " + AnsiColors.ITALIC + notification + AnsiColors.RESET);
         }
 
-        out.print("\n\033[1;30m" + "━".repeat(52) + "\033[0m");
-        out.print(" \033[1;33m[ 0 ]\033[0m \033[1;37mAbbandona\033[0m \033[90m| Torna alla ricerca di altre storie\033[0m");
-        out.print(" \033[1;31m[ d ]\033[0m \033[1;37mSvanisci\033[0m  \033[90m| Disconnettiti dal mondo di Mesos\033[0m");
-        out.print("\033[1;30m" + "━".repeat(52) + "\033[0m");
+        out.print("\n" + AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET);
+        out.print(" " + AnsiColors.YELLOW_BOLD + "[ 0 ]" + AnsiColors.RESET + " " + AnsiColors.WHITE_BOLD + "Abbandona" + AnsiColors.RESET + " " + AnsiColors.GRAY + "| Torna alla ricerca di altre storie" + AnsiColors.RESET);
+        out.print(" " + AnsiColors.RED_BOLD + "[ d ]" + AnsiColors.RESET + " " + AnsiColors.WHITE_BOLD + "Svanisci" + AnsiColors.RESET + "  " + AnsiColors.GRAY + "| Disconnettiti dal mondo di Mesos" + AnsiColors.RESET);
+        out.print(AnsiColors.BLACK_BOLD + "━".repeat(52) + AnsiColors.RESET);
 
-        out.prompt("\n\033[1;33mIn attesa che la tribù sia al completo > \033[0m");
+        out.prompt("\n" + AnsiColors.YELLOW_BOLD + "In attesa che la tribù sia al completo > " + AnsiColors.RESET);
     }
 }
