@@ -7,8 +7,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RMIServerProxy implements ServerProxy {
+
+    private static final Logger LOGGER = Logger.getLogger(RMIServerProxy.class.getName());
+    private static final String SERVER_DISCONNECTED_REASON = "Disconnessione dal server inaspettata.";
 
     private final RMIServerSession serverSession;
     private final AtomicBoolean active = new AtomicBoolean(true);
@@ -67,7 +72,8 @@ public class RMIServerProxy implements ServerProxy {
         if (active.compareAndSet(true, false)) {
             try {
                 serverSession.disconnect();
-            } catch (RemoteException ignored) {
+            } catch (RemoteException e) {
+                LOGGER.log(Level.FINE, "Could not notify the RMI server before closing the connection.", e);
             } finally {
                 closeConnection();
             }
@@ -81,24 +87,24 @@ public class RMIServerProxy implements ServerProxy {
         try {
             call.run();
         } catch (RemoteException e) {
-            handleServerDisconnection();
+            handleServerDisconnection(e);
         }
     }
 
-    private void handleServerDisconnection() {
+    private void handleServerDisconnection(RemoteException cause) {
         if (active.compareAndSet(true, false)) {
-            closeConnection();
-            // TODO notificare UI della disconnessione inaspettata.
+            LOGGER.log(Level.INFO, "RMI server connection lost.", cause);
+            try {
+                callback.serverDisconnected(SERVER_DISCONNECTED_REASON);
+            } finally {
+                closeConnection();
+            }
         }
     }
 
     private void closeConnection() {
-        if (pinger != null && !pinger.isShutdown()) {
-            pinger.shutdownNow();
-        }
-        if (callback != null) {
-            callback.disconnect();
-        }
+        pinger.shutdownNow();
+        callback.disconnect();
     }
 
     @FunctionalInterface

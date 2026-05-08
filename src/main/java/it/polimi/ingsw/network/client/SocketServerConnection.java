@@ -2,9 +2,11 @@ package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.network.messages.DisconnectionMessage;
 import it.polimi.ingsw.network.messages.PingMessage;
+import it.polimi.ingsw.network.messages.ServerDisconnectedMessage;
 import it.polimi.ingsw.network.messages.ServerMessage;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
+import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,9 +19,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Socket-based connection that handles bidirectional communication with the server. */
 public class SocketServerConnection implements Runnable {
+
+    private static final Logger LOGGER = Logger.getLogger(SocketServerConnection.class.getName());
 
     private final Socket socket;
     private final ObjectInputStream in;
@@ -58,6 +64,7 @@ public class SocketServerConnection implements Runnable {
                     out.flush();
                 }
             } catch (IOException e) {
+                LOGGER.log(Level.INFO, "I/O error while sending a message to the server.", e);
                 handleServerDisconnection("Errore durante l'invio di un messaggio al server.");
             }
         }
@@ -98,7 +105,8 @@ public class SocketServerConnection implements Runnable {
                     out.flush();
                     out.reset();
                 }
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Could not notify the server before closing the socket connection.", e);
             } finally {
                 closeConnection();
             }
@@ -111,10 +119,7 @@ public class SocketServerConnection implements Runnable {
     private void handleServerDisconnection(String reason) {
         if (active.compareAndSet(true, false)) {
             closeConnection();
-            //TODO: notificare la view del crash del server
-            if (view != null) {
-                //view.showNetworkError(reason);
-            }
+            new ServerDisconnectedMessage(reason).accept(view);
         }
     }
 
@@ -122,12 +127,17 @@ public class SocketServerConnection implements Runnable {
      * Closes streams and socket safely.
      */
     private void closeConnection() {
+        pinger.shutdownNow();
+        closeResource(in, "input stream");
+        closeResource(out, "output stream");
+        closeResource(socket, "socket");
+    }
+
+    private void closeResource(Closeable resource, String description) {
         try {
-            if (pinger != null) pinger.shutdownNow();
-            if (in != null) in.close();
-            if (out != null) out.close();
-            if (socket != null && !socket.isClosed()) socket.close();
-        } catch (IOException ignored) {
+            resource.close();
+        } catch (IOException e) {
+            LOGGER.log(Level.FINE, "Error while closing client " + description + ".", e);
         }
     }
 }

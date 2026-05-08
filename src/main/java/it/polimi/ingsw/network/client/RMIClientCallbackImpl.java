@@ -13,12 +13,16 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the RMI callback interface.
  * Receives messages from the server and forwards them to the view/model observer.
  */
 public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMIClientCallback {
+
+    private static final Logger LOGGER = Logger.getLogger(RMIClientCallbackImpl.class.getName());
 
     private final ServerNotificationReceiver receiver;
 
@@ -77,10 +81,15 @@ public class RMIClientCallbackImpl extends UnicastRemoteObject implements RMICli
         receiver.leaderboard(leaderboard);
     }
 
+    void serverDisconnected(String reason) {
+        receiver.serverDisconnected(reason);
+    }
+
     public void disconnect() {
         try {
             UnicastRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException e) {
+            LOGGER.log(Level.FINE, "RMI callback was already unexported.", e);
         }
     }
 }

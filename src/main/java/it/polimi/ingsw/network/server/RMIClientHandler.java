@@ -298,9 +298,7 @@ public class RMIClientHandler extends UnicastRemoteObject implements ConnectionC
     }
 
     private void closeConnection() {
-        if (timeoutChecker != null && !timeoutChecker.isShutdown()) {
-            timeoutChecker.shutdownNow();
-        }
+        timeoutChecker.shutdownNow();
         try {
             UnicastRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException e) {

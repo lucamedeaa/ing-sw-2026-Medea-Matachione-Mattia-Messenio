@@ -130,4 +130,9 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     public void leaderboard(LeaderboardSnapshot leaderboard) {
         matchModel.setGlobalLeaderboard(leaderboard);
     }
+
+    @Override
+    public void serverDisconnected(String reason) {
+        // TODO: scriverlo
+    }
 }

@@ -31,4 +31,6 @@ public interface ServerNotificationReceiver {
     void gameCompleted(PlayerGameCompletedDTO completedGame);
 
     void leaderboard(LeaderboardSnapshot leaderboard);
+
+    void serverDisconnected(String reason);
 }

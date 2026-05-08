@@ -15,4 +15,5 @@ public interface ClientMessageVisitor {
     void visit(GameLeftSuccessMessage message);
     void visit(GameCompletedMessage message);
     void visit(LeaderboardResponseMessage message);
+    void visit(ServerDisconnectedMessage message);
 }

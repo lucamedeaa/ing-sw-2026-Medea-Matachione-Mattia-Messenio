@@ -12,6 +12,7 @@ import it.polimi.ingsw.network.messages.GameLeftSuccessMessage;
 import it.polimi.ingsw.network.messages.LeaderboardResponseMessage;
 import it.polimi.ingsw.network.messages.MatchmakingSuccessMessage;
 import it.polimi.ingsw.network.messages.RoomUpdateMessage;
+import it.polimi.ingsw.network.messages.ServerDisconnectedMessage;
 import it.polimi.ingsw.network.visitor.ClientMessageVisitor;
 
 public class SocketServerMessageVisitor implements ClientMessageVisitor {
@@ -74,5 +75,10 @@ public class SocketServerMessageVisitor implements ClientMessageVisitor {
     @Override
     public void visit(GameLeftSuccessMessage message) {
         receiver.gameLeftSuccess(message.text());
+    }
+
+    @Override
+    public void visit(ServerDisconnectedMessage message) {
+        receiver.serverDisconnected(message.reason());
     }
 }

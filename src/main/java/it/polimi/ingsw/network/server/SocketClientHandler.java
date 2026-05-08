@@ -263,15 +263,10 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     private void closeConnection() {
         closeResource(in, "input stream");
         closeResource(out, "output stream");
-        if (socket != null && !socket.isClosed()) {
-            closeResource(socket, "socket");
-        }
+        closeResource(socket, "socket");
     }
 
     private void closeResource(Closeable resource, String description) {
-        if (resource == null) {
-            return;
-        }
         try {
             resource.close();
         } catch (IOException e) {
