@@ -59,7 +59,7 @@ public class GameManager implements GameManagerInterface {
         for (GameRoom room : activeGames.values()) {
             if (!room.isFull() && !room.isGameStarted()) {
                 List<String> currentPlayers = room.getPlayers();
-                String creatorName = currentPlayers.isEmpty() ? "Unknown" : currentPlayers.get(0);
+                String creatorName = currentPlayers.isEmpty() ? "Unknown" : currentPlayers.getFirst();
 
                 available.add(new GameInfoDTO(
                         room.getGameId(),

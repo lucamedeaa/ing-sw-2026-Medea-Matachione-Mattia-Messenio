@@ -34,8 +34,8 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     private final Socket socket;
     private final GameManagerInterface gameManager;
     private final ConnectionState lobbyState;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final AtomicBoolean active = new AtomicBoolean(true);
     private final Object streamLock = new Object();
     // Lock order: lifecycleLock -> GameRoom room lock. Do not perform client I/O while holding it.
