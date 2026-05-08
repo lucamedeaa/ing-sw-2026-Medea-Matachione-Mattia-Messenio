@@ -3,8 +3,6 @@ package it.polimi.ingsw.client.network;
 import it.polimi.ingsw.client.lightGameModel.EventApplier;
 import it.polimi.ingsw.client.lightGameModel.LobbyModel;
 import it.polimi.ingsw.client.lightGameModel.MatchModel;
-import it.polimi.ingsw.client.tui.UIState;
-import it.polimi.ingsw.client.view.ClientUI;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
