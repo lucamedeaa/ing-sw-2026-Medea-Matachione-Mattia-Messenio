@@ -49,7 +49,6 @@ public class ActionState extends GameState {
                 this.currentTile = tile;
                 this.remainingUpperPicks = tile.getUpperRowPicks();
                 this.remainingLowerPicks = tile.getLowerRowPicks();
-                this.currentPlayer.addFood(tile.getFoodBonus());
 
                 int bonus = tile.getFoodBonus();
                 if (bonus != 0) {
