@@ -37,6 +37,6 @@ public class GameInfoDto implements Serializable {
 
     @Override
     public String toString() {
-        return "Partita [" + gameId + "] - Creatore: " + creatorNickname + " (" + currentPlayers + "/" + maxPlayers + ")";
+        return "Game [" + gameId + "] - Founder: " + creatorNickname + " (" + currentPlayers + "/" + maxPlayers + ")";
     }
 }

@@ -70,7 +70,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
         // Run network-visible effects only after matchmaking success.
         RoomAdmissionResult broadcastJoin = new RoomAdmissionResult(
-                () -> broadcast("Il giocatore " + nickname + " è entrato.")
+                () -> broadcast("The player " + nickname + " has joined.")
         );
         if (startNow) {
             return new RoomAdmissionResult(() -> {
@@ -141,7 +141,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         if (roomIsEmpty) {
             gameManager.removeGame(gameId);
         } else if (successfullyRemoved) {
-            broadcast("Il giocatore " + nickname + " ha abbandonato la stanza.");
+            broadcast("The player " + nickname + " left the room.");
         }
     }
 

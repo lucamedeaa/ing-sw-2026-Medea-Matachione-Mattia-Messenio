@@ -28,21 +28,21 @@ public class ActionExecutor implements ActionVisitor {
     @Override
     public void visit(PlaceTotemActionDto action) {
         if (inputParts.length != 2 || !isStrictInteger(inputParts[1])) {
-            gameModel.setGlobalError("Uso corretto: <id_azione> <indice_tessera> (senza zeri iniziali)");
+            gameModel.setGlobalError("Correct usage: <action_id> <card_number> (without leading zeros)");
             return;
         }
         try {
             int tileIdx = Integer.parseInt(inputParts[1]);
             server.placeTotem(tileIdx);
         } catch (NumberFormatException e) {
-            out.print("L'indice deve essere un numero valido.");
+            out.print("The index must be a valid number.");
         }
     }
 
     @Override
     public void visit(TakeCardActionDto action) {
         if (inputParts.length != 3 || !isStrictInteger(inputParts[1]) || !isStrictInteger(inputParts[2])) {
-            gameModel.setGlobalError("L'indice deve essere un numero valido.");
+            gameModel.setGlobalError("The index must be a valid number.");
             return;
         }
         try {
@@ -50,7 +50,7 @@ public class ActionExecutor implements ActionVisitor {
             int col = Integer.parseInt(inputParts[2]);
             server.takeCard(row, col);
         } catch (NumberFormatException e) {
-            gameModel.setGlobalError("Gli indici devono essere numeri validi.");
+            gameModel.setGlobalError("Indexes must be valid numbers.");
         }
     }
 

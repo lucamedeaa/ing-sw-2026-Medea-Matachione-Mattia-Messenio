@@ -31,7 +31,7 @@ public class GameManager implements GameManagerInterface {
     /** Creates a new game room and registers it. @param creator nickname of the creator @param maxPlayers maximum number of players @return generated game identifier */
     public String createNewGame(String creator, int maxPlayers) throws LobbyActionException {
         if (maxPlayers < 2 || maxPlayers > 5) {
-            throw new LobbyActionException("Errore: inserire un numero di giocatori compreso tra 2 e 5.");
+            throw new LobbyActionException("Error: Please enter a number of players between 2 and 5.");
         }
         String gameId = UUID.randomUUID().toString().substring(0, 8);
         GameRoom newRoom = new GameRoom(gameId, maxPlayers, this, leaderboardService);

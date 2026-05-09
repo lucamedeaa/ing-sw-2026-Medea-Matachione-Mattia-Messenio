@@ -10,7 +10,7 @@ public class UiFactory {
         return switch (choice) {
             case 1 -> new TextUserInterface(lobbyModel, gameModel, scanner);
             //case 2 -> new GUI(model);
-            default -> throw new IllegalArgumentException("Scelta UI non valida: " + choice);
+            default -> throw new IllegalArgumentException("Invalid UI selection: " + choice);
         };
     }
 }

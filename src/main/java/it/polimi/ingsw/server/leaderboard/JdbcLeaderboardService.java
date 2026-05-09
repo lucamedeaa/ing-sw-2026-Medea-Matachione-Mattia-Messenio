@@ -4,6 +4,7 @@ import it.polimi.ingsw.common.network.dto.LeaderboardEntryDto;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.server.model.CompletedGameResult;
 import it.polimi.ingsw.server.model.PlayerGameResult;
+import it.polimi.ingsw.server.model.exception.LeaderboardStorageException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

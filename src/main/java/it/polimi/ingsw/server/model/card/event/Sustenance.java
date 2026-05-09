@@ -62,14 +62,14 @@ public class Sustenance extends Event {
 
                 player.addFood(-playerFood);
                 player.addPrestige(ppLost);
-                reason = "Sostentamento fallito (mancano " + missingFood + " cibi): -" + foodLost + " cibo, " + ppLost + " PP";
+                reason = "Failed sustenance (There is " + missingFood + " food left): -" + foodLost + " food, " + ppLost + " PP";
 
             } else if (total > discount) {
                 int foodConsumed = total - discount;
                 player.addFood(-foodConsumed);
-                reason = "Sostentamento pagato: -" + foodConsumed + " cibo (sconto " + discount + ")";
+                reason = "Sustenance paid: -" + foodConsumed + " food (discount " + discount + ")";
             } else {
-                reason = "Sostentamento gratuito (lo sconto " + discount + " copre tutto)";
+                reason = "Free sustenance (The " + discount + " discount covers everything)";
             }
 
             events.add(new GameEvent.PlayerResourcesChangedEvent(

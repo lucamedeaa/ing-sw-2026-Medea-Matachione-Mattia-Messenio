@@ -44,13 +44,13 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(EraTransitionDto event) {
         gameModel.updateEra(event.newEraNumber());
-        gameModel.addGameLog(ColorAnsi.CYAN_BOLD + "[!] INIZIA L'ERA " + event.newEraNumber() + "!" + ColorAnsi.RESET);
+        gameModel.addGameLog(ColorAnsi.CYAN_BOLD + "[!] THE ERA BEGINS " + event.newEraNumber() + "!" + ColorAnsi.RESET);
     }
 
     @Override
     public void visit(RoundAdvancedDto event) {
         //gameModel.clearTurnDeltas();
-        gameModel.addGameLog(ColorAnsi.YELLOW_BOLD + "=== FINE ROUND " + (event.newRound() - 1) + " ===" + ColorAnsi.RESET);
+        gameModel.addGameLog(ColorAnsi.YELLOW_BOLD + "=== END OF ROUND " + (event.newRound() - 1) + " ===" + ColorAnsi.RESET);
         gameModel.updateRound(event.newRound());
     }
 
@@ -66,7 +66,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerLeftGameDto event) {
-        gameModel.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
+        gameModel.setGameAborted("The player " + event.nickname() + " disconnected. The match has been cancelled");
     }
 
     @Override

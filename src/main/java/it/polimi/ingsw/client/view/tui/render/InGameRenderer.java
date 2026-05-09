@@ -37,7 +37,7 @@ public class InGameRenderer {
 
         List<String> logs = gameModel.consumeGameLogs();
         if (!logs.isEmpty()) {
-            out.print("── NOTIFICHE RECENTI ──");
+            out.print("── RECENT NOTIFICATIONS ──");
             for (String log : logs) {
                 out.print("  " + log);
             }
@@ -51,7 +51,7 @@ public class InGameRenderer {
         }
 
         if (gameModel.isGameOver()) {
-            out.print(ColorAnsi.YELLOW_BOLD + "  ══ PARTITA TERMINATA — Premi INVIO per vedere i risultati ══" + ColorAnsi.RESET);
+            out.print(ColorAnsi.YELLOW_BOLD + "  ══ MATCH OVER — Press ENTER to see the results ══" + ColorAnsi.RESET);
         }
 
         out.prompt("> ");
@@ -69,10 +69,10 @@ public class InGameRenderer {
                 actions.get(i).accept(renderer);
             }
         }
-        out.print("  " + ColorAnsi.CYAN_BOLD + "[ i ]" + ColorAnsi.RESET + " Guida alle carte");
-        out.print("  " + ColorAnsi.CYAN_BOLD + "[ v <nome> ]" + ColorAnsi.RESET + " Guarda la tribù di un giocatore");
-        out.print("  " + ColorAnsi.RED_BOLD + "[ quit ]" + ColorAnsi.RESET + " Chiudi definitivamente il gioco");
-        out.print("  " + ColorAnsi.RED_BOLD + "[ leave ]" + ColorAnsi.RESET + " Abbandona la partita e torna al menu\n");
+        out.print("  " + ColorAnsi.CYAN_BOLD + "[ i ]" + ColorAnsi.RESET + " Guide to the cards");
+        out.print("  " + ColorAnsi.CYAN_BOLD + "[ v <nome> ]" + ColorAnsi.RESET + " View a player's tribe");
+        out.print("  " + ColorAnsi.RED_BOLD + "[ quit ]" + ColorAnsi.RESET + " Exit the game completely");
+        out.print("  " + ColorAnsi.RED_BOLD + "[ leave ]" + ColorAnsi.RESET + " Exit the game and return to the menu\n");
     }
 
 
@@ -96,7 +96,7 @@ public class InGameRenderer {
 
             String pColor = getTotemAnsiColor(gameModel, p.getNickname());
 
-            out.print(String.format("%s %s%-14s" + ColorAnsi.RESET + "  cibo: " + ColorAnsi.GREEN_BOLD + "%2d" + ColorAnsi.RESET + "  prestigio: " + ColorAnsi.GREEN_BOLD + "%3d" + ColorAnsi.RESET + "  sc. Edifici: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  sc. Cibo: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  [%d carte]%s",
+            out.print(String.format("%s %s%-14s" + ColorAnsi.RESET + "  food: " + ColorAnsi.GREEN_BOLD + "%2d" + ColorAnsi.RESET + "  prestige: " + ColorAnsi.GREEN_BOLD + "%3d" + ColorAnsi.RESET + "  sc. Buildings: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  sc. Food: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  [%d cards]%s",
                     marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), p.getSustenanceDiscount(), tribeSize, tag));
         }
     }
@@ -125,7 +125,7 @@ public class InGameRenderer {
             String discStr = res.discount() == 0 ? "0" : (res.discount() > 0 ? "-" + res.discount() : "+" + Math.abs(res.discount()));
             String sustStr = res.sustenanceDiscount() == 0 ? "0" : (res.sustenanceDiscount() > 0 ? "-" + res.sustenanceDiscount() : "+" + Math.abs(res.sustenanceDiscount()));
 
-            out.print(String.format("  %s%-14s" + ColorAnsi.RESET + "  cibo: %-3s prestigio: %-3s sc. Edifici: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET + " sc. Cibo: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET,
+            out.print(String.format("  %s%-14s" + ColorAnsi.RESET + "  food: %-3s prestige: %-3s sc. Buildings: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET + " sc. Food: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET,
                     pColor, nickname, foodStr, ppStr, discStr, sustStr));
         }
     }
@@ -224,7 +224,7 @@ public class InGameRenderer {
         out.print(mid2.toString());
         out.print(mid3.toString());
         out.print(bot.toString());
-        out.print("  * Nota: se non puoi pagare i malus in cibo, perdi 2pp per ogni cibo mancante.\n");
+        out.print("  * Note: if you cannot pay the penalties in food, you lose 2pp for each missing food item.\n");
     }
 
     private String getTotemAnsiColor(GameModel model, String nickname) {

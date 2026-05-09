@@ -18,6 +18,6 @@ public class CreateGameCommand implements GameCommand {
     @Override
     public void execute() {
         controller.createGame(nickname, maxPlayers);
-        out.print("Richiesta di creazione partita inviata. In attesa del server...");
+        out.print("Request to create a game has been sent. Waiting for the server...");
     }
 }

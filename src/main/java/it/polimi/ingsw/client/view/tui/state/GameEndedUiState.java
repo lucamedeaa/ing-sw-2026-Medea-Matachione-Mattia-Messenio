@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
+import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.tui.render.GameEndedRenderer;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 
@@ -50,7 +51,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
             if (local == null || global == null) {
                 out.clearScreen();
-                out.print("\n  \033[36;1mConsultando gli archivi della Valle di Mesos...\033[0m");
+                out.print(ColorAnsi.CYAN_BOLD + "\n Looking through the archives of the Mesos Valley..." + ColorAnsi.RESET);
                 return;
             }
             if (hasRendered) return;
@@ -76,14 +77,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
         CommandFactory factory = commandRegistry.get(parts[0].toLowerCase());
 
         if (factory == null) {
-            out.print("Comando non valido. Usa '0' (menu) o 'd' (disconnetti).");
+            out.print("Invalid command. Use “0” (menu) or “d” (log out).");
             return;
         }
 
         try {
             factory.create(parts).execute();
         } catch (Exception e) {
-            out.print("Errore: " + e.getMessage());
+            out.print("Error: " + e.getMessage());
         }
     }
     @Override

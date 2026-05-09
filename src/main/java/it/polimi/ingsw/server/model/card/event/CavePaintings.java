@@ -57,11 +57,11 @@ public class CavePaintings extends Event {
 
             if (artistNumber < upperNumArtists) {
                 player.addPrestige(decrPrestigePoints);
-                reason = "Pitture Rupestri: " + artistNumber + " Artisti (sotto soglia). " + decrPrestigePoints + " PP";
+                reason = "Cave paintings: " + artistNumber + " Artists (below the threshold). " + decrPrestigePoints + " PP";
             } else {
                 int earned = incrPrestigePoints * artistNumber;
                 player.addPrestige(earned);
-                reason = "Pitture Rupestri: " + artistNumber + " Artisti. +" + earned + " PP";
+                reason = "Cave paintings: " + artistNumber + " Artists. +" + earned + " PP";
             }
 
             events.add(new GameEvent.PlayerResourcesChangedEvent(

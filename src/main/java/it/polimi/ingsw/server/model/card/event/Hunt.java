@@ -58,7 +58,7 @@ public class Hunt extends Event {
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
                     player.getPrestigePoints(),
-                    "Evento Caccia: +" + (num * foodGiven) + " cibo, +" + (num * prestigeGiven) + " PP"
+                    "Hunt event: +" + (num * foodGiven) + " food, +" + (num * prestigeGiven) + " PP"
             ));
 
             for (Card card : player.getTribe()) {

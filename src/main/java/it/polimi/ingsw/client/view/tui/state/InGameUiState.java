@@ -39,10 +39,10 @@ public class InGameUiState implements UIState, InGameView {
     private void registerCommands() {
         commandRegistry.put("v", args -> {
             if (args.length < 2) {
-                throw new IllegalArgumentException("Specifica un giocatore. Uso: v <nickname>");
+                throw new IllegalArgumentException("Specify a player. Usage: v <nickname>");
             }
             if (!gameModel.getPlayers().containsKey(args[1])) {
-                throw new IllegalArgumentException("Giocatore non trovato: " + args[1]);
+                throw new IllegalArgumentException("Player not found: " + args[1]);
             }
             return new ViewTribeCommand(navigator, out, args[1]);
         });
@@ -79,7 +79,7 @@ public class InGameUiState implements UIState, InGameView {
                 if (factory != null) {
                     factory.create(parts).execute();
                 } else {
-                    gameModel.setGlobalError("Comando sconosciuto.");
+                    gameModel.setGlobalError("Unknown command.");
                 }
             }
         } catch (IllegalArgumentException e) {

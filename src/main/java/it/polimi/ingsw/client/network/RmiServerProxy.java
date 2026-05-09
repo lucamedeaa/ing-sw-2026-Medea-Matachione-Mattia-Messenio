@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 public class RmiServerProxy implements ServerProxy {
 
     private static final Logger LOGGER = Logger.getLogger(RmiServerProxy.class.getName());
-    private static final String SERVER_DISCONNECTED_REASON = "Disconnessione dal server inaspettata.";
+    private static final String SERVER_DISCONNECTED_REASON = "Unexpected disconnection from the server.";
 
     private final RMIServerSession serverSession;
     private final AtomicBoolean active = new AtomicBoolean(true);

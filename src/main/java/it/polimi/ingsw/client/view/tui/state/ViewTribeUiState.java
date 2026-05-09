@@ -34,7 +34,7 @@ public class ViewTribeUiState implements UIState {
         if (input.trim().equalsIgnoreCase("q")) {
             navigator.toInGame();
         } else {
-            out.print("Input non valido. Premi Q per tornare alla partita.");
+            out.print("Invalid input. Press Q to return to the game.");
         }
     }
 

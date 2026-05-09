@@ -20,6 +20,6 @@ public class JoinGameCommand implements GameCommand {
     public void execute() {
 
         controller.joinGame(nickname, gameId);
-        out.print("Richiesta di unione alla partita " + gameId + " inviata...");
+        out.print("Request to be added to the register " + gameId + " sent...");
     }
 }

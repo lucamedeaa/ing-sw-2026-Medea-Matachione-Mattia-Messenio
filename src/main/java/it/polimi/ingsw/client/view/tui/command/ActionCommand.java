@@ -21,7 +21,7 @@ public class ActionCommand implements GameCommand {
         var availableActions = gameModel.getMyActions();
 
         if (availableActions.isEmpty()) {
-            gameModel.setGlobalError("Non è il tuo turno! Aspetta che " + gameModel.getActivePlayer() + " finisca la sua mossa.");
+            gameModel.setGlobalError("It's not your turn! Wait until " + gameModel.getActivePlayer() + " has finished his move.");
             return;
         }
 
@@ -29,7 +29,7 @@ public class ActionCommand implements GameCommand {
             int actionIndex = Integer.parseInt(args[0]);
 
             if (actionIndex < 0 || actionIndex >= availableActions.size()) {
-                gameModel.setGlobalError("Indice azione non valido.");
+                gameModel.setGlobalError("Invalid action index.");
                 return;
             }
 
@@ -40,7 +40,7 @@ public class ActionCommand implements GameCommand {
             selectedAction.accept(executor);
 
         } catch (NumberFormatException e) {
-            gameModel.setGlobalError("'" + args[0] + "' non è un numero valido.");
+            gameModel.setGlobalError("'" + args[0] + "' this is not a valid number.");
         }
     }
 }

@@ -45,7 +45,7 @@ public class ActionState extends GameState {
             OfferTile tile = track.get(currentColumnIndex);
             if (!tile.isFree()) {
                 this.currentPlayer = tile.getOccupyingPlayer()
-                        .orElseThrow(() -> new IllegalStateException("Tile markata come non libera, ma occupante assente."));
+                        .orElseThrow(() -> new IllegalStateException("The tile is marked as occupied, but the occupant is absent."));
                 this.currentTile = tile;
                 this.remainingUpperPicks = tile.getUpperRowPicks();
                 this.remainingLowerPicks = tile.getLowerRowPicks();
@@ -59,7 +59,7 @@ public class ActionState extends GameState {
                             this.currentPlayer.getPrestigePoints(),
                             this.currentPlayer.getFoodDiscount(),
                             this.currentPlayer.getSustenanceDiscount(),
-                            "Bonus tessera offerta: +" + bonus + " cibo"
+                            "Card bonus offer: +" + bonus + " food"
                     ));
                 }
                 checkTurnConditions();
@@ -110,9 +110,9 @@ public class ActionState extends GameState {
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
         String reason = "";
         if (purchasedCard.isPersistent()) {
-            reason = "Acquisto Edificio (-" + finalCost + " cibo)";
+            reason = "Buildings Purchase (-" + finalCost + " food)";
         } else if (finalCost > 0) {
-            reason = "Reclutamento Personaggio (-" + finalCost + " cibo)";
+            reason = "Character Recruitment (-" + finalCost + " food)";
         }
 
         game.pushEvent(new PlayerResourcesChangedEvent(
@@ -149,7 +149,7 @@ public class ActionState extends GameState {
         int prestigeDiff = this.currentPlayer.getPrestigePoints() - ppBefore;
 
         if (foodDiff != 0 || prestigeDiff != 0) {
-            String msg = (foodDiff < 0 || prestigeDiff < 0) ? "Penalità ordine turno" : "Bonus ordine turno";
+            String msg = (foodDiff < 0 || prestigeDiff < 0) ? "Order Tile Penalty" : "Order Tile Bonus";
             game.pushEvent(new PlayerResourcesChangedEvent(
                     this.currentPlayer.getNickname(),
                     this.currentPlayer.getFood(),
