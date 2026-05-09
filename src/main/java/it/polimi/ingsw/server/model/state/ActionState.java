@@ -200,10 +200,10 @@ public class ActionState extends GameState {
     private void checkTurnConditions() {
         if (currentPlayer == null) return;
 
-        // 1. Condizione base: ha finito i pick?
+        // Condizione base: ha finito i pick?
         boolean picksExhausted = (remainingUpperPicks <= 0 && remainingLowerPicks <= 0);
 
-        // 2. Condizione di stallo: può ancora fare mosse legali?
+        // Condizione di stallo: può ancora fare mosse legali?
         boolean canDoMandatory = existsCharacterToPick(0) || existsCharacterToPick(1);
         boolean canDoOptional = canAffordAnyBuildingInRow(0) || canAffordAnyBuildingInRow(1);
 
