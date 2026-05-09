@@ -1,11 +1,10 @@
 package it.polimi.ingsw.client.view.tui.state;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.GameModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.client.view.tui.command.CommandFactory;
-import it.polimi.ingsw.client.view.tui.command.DisconnectCommand;
-import it.polimi.ingsw.client.view.tui.command.GetLeaderboardCommand;
-import it.polimi.ingsw.client.view.tui.command.LeaveGameCommand;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
+import it.polimi.ingsw.client.view.tui.command.*;
 import it.polimi.ingsw.client.view.tui.render.GameEndedRenderer;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 
@@ -13,35 +12,41 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameEndedUiState implements UIState, GameEndedView {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
+    private final GameModel gameModel;
+    private final ServerCommandPort controller;
     private final OutputPort out;
-    private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
+    private final ClientNotificationController notificationController;
 
+    private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private final GameEndedRenderer renderer;
     private boolean hasRendered = false;
 
 
-    public GameEndedUiState(NavigationPort nav, OutputPort out) {
-        this.nav = nav;
+    public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, OutputPort out, ClientNotificationController notificationController) {
+        this.navigator = navigator;
+        this.gameModel = gameModel;
+        this.controller = controller;
         this.out = out;
+        this.notificationController = notificationController;
         this.renderer = new GameEndedRenderer(out);
-        nav.getNotificationController().setGameEndedView(this);
-        registerCommands();
 
-        new GetLeaderboardCommand(nav.getController()).execute();
+        this.notificationController.setGameEndedView(this);
+        registerCommands();
+        new GetLeaderboardCommand(controller).execute();
     }
 
     private void registerCommands() {
-        commandRegistry.put("0", args -> new LeaveGameCommand(nav.getController(), out));
-        commandRegistry.put("d", args -> new DisconnectCommand(nav.getController()));
+        commandRegistry.put("0", args -> new LeaveGameCommand(controller, out));
+        commandRegistry.put("d", args -> new DisconnectCommand(controller));
     }
 
     @Override
     public void render() {
-        nav.getMatchModel().getReadLock().lock();
+        gameModel.getReadLock().lock();
         try {
-            var local = nav.getMatchModel().getLocalResult();
-            var global = nav.getMatchModel().getGlobalLeaderboard();
+            var local = gameModel.getLocalResult();
+            var global = gameModel.getGlobalLeaderboard();
 
             if (local == null || global == null) {
                 out.clearScreen();
@@ -53,14 +58,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
             renderer.render(local, global);
         } finally {
-            nav.getMatchModel().getReadLock().unlock();
+            gameModel.getReadLock().unlock();
         }
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        nav.getNotificationController().setGameEndedView(null);
-        nav.changeState(new MatchmakingUiState(nav, out));
+        notificationController.setGameEndedView(null);
+        navigator.toMatchmaking();
     }
 
     @Override
@@ -83,7 +88,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
     }
     @Override
     public void onServerDisconnected(String reason) {
-        nav.getNotificationController().setGameEndedView(null);
-        nav.changeState(new DisconnectedUiState(out, reason));
+        notificationController.setGameEndedView(null);
+        navigator.toDisconnected(reason);
     }
 }

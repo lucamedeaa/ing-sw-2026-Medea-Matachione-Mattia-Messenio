@@ -1,10 +1,14 @@
 package it.polimi.ingsw.client.view.tui.state;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.ClientSession;
+import it.polimi.ingsw.client.model.LobbyModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.CommandFactory;
 import it.polimi.ingsw.client.view.tui.command.DisconnectCommand;
 import it.polimi.ingsw.client.view.tui.command.LeaveGameCommand;
+import it.polimi.ingsw.client.view.tui.command.ServerCommandPort;
 import it.polimi.ingsw.client.view.tui.render.LobbyRenderer;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 
@@ -13,39 +17,48 @@ import java.util.List;
 import java.util.Map;
 
 public class LobbyUiState implements UIState, LobbyView {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
+    private final LobbyModel lobbyModel;
+    private final ServerCommandPort controller;
+    private final ClientSession session;
     private final OutputPort out;
+    private final ClientNotificationController notificationController;
+
     private final LobbyRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private boolean initialized = false;
 
-    public LobbyUiState(NavigationPort nav, OutputPort out) {
-        this.nav = nav;
+    public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+        this.navigator = navigator;
+        this.lobbyModel = lobbyModel;
+        this.controller = controller;
+        this.session = session;
         this.out = out;
+        this.notificationController = notificationController;
         this.renderer = new LobbyRenderer(out);
 
         registerCommands();
-        nav.getNotificationController().setLobbyView(this);
+        this.notificationController.setLobbyView(this);
     }
 
     private void registerCommands() {
-        commandRegistry.put("0", args -> new LeaveGameCommand(nav.getController(), out));
-        commandRegistry.put("d", args -> new DisconnectCommand(nav.getController()));
+        commandRegistry.put("0", args -> new LeaveGameCommand(controller, out));
+        commandRegistry.put("d", args -> new DisconnectCommand(controller));
     }
 
     @Override
     public void render() {
         if(!initialized) { return; }
 
-        nav.getLobbyModel().getReadLock().lock();
+        lobbyModel.getReadLock().lock();
         try {
             renderer.render(
-                    nav.getLobbyModel().getLobbyPlayers(),
-                    nav.getLobbyModel().getLobbyNotification(),
-                    nav.getMyNickname()
+                    lobbyModel.getLobbyPlayers(),
+                    lobbyModel.getLobbyNotification(),
+                    session.getNickname()
             );
         } finally {
-            nav.getLobbyModel().getReadLock().unlock();
+            lobbyModel.getReadLock().unlock();
         }
     }
 
@@ -71,21 +84,21 @@ public class LobbyUiState implements UIState, LobbyView {
     @Override
     public void onGameStarted() {
         //  Mi de-registro
-        nav.getNotificationController().setLobbyView(null);
+        notificationController.setLobbyView(null);
 
         // va in gioco
-        nav.changeState(new InGameUiState(nav, out));
+        navigator.toInGame();
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        nav.getNotificationController().setLobbyView(null);
-        nav.changeState(new MatchmakingUiState(nav, out));
+        notificationController.setLobbyView(null);
+        navigator.toMatchmaking();
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        nav.getNotificationController().setLobbyView(null);
-        nav.changeState(new DisconnectedUiState(out, reason));
+        notificationController.setLobbyView(null);
+        navigator.toLobby();
     }
 }

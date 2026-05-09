@@ -1,8 +1,10 @@
 package it.polimi.ingsw.client.view.tui.state;
 
-import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.ClientSession;
+import it.polimi.ingsw.client.model.GameModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
 import it.polimi.ingsw.client.view.tui.render.InGameRenderer;
 import it.polimi.ingsw.client.view.listeners.InGameView;
@@ -11,90 +13,67 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InGameUiState implements UIState, InGameView {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
+    private final GameModel gameModel;
+    private final ServerCommandPort controller;
+    private final ClientSession session;
     private final OutputPort out;
+    private final ClientNotificationController notificationController;
+
     private final InGameRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
 
-    private Map<String, PlayerResources> prevState = new HashMap<>();
-    private Map<String, PlayerResources> accumulated = new HashMap<>();
-    private Map<String, PlayerResources> displayDeltas = new HashMap<>();
-    private int lastRound;
-
-    public InGameUiState(NavigationPort nav, OutputPort out) {
-        this.nav = nav;
+    public InGameUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+        this.navigator = navigator;
+        this.gameModel = gameModel;
+        this.controller = controller;
+        this.session = session;
         this.out = out;
+        this.notificationController = notificationController;
         this.renderer = new InGameRenderer(out);
-        this.prevState = captureState();
-        this.lastRound = nav.getMatchModel().getCurrentRound();
-        registerCommands();
 
-        nav.getNotificationController().setInGameView(this);
+        registerCommands();
+        this.notificationController.setInGameView(this);
     }
 
     private void registerCommands() {
-        commandRegistry.put("v", args -> new ViewTribeCommand(nav, out, args[1]));
-        commandRegistry.put("i", args -> new InfoCommand(nav, out));
-        commandRegistry.put("quit", args -> new DisconnectCommand(nav.getController()));
-        commandRegistry.put("leave", args -> new LeaveGameCommand(nav.getController(), out));
+        commandRegistry.put("v", args -> new ViewTribeCommand(navigator, out, args[1]));
+        commandRegistry.put("i", args -> new InfoCommand(navigator, out));
+        commandRegistry.put("quit", args -> new DisconnectCommand(controller));
+        commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
     }
 
     @Override
     public void render() {
-        String error = nav.getMatchModel().consumeGlobalError();
-        if (error == null || error.isEmpty()) {
-            error = nav.getLobbyModel().consumeGlobalError();
-        }
-
-        nav.getMatchModel().getReadLock().lock();
-        try {
-            updateDeltas();
-        } finally {
-            nav.getMatchModel().getReadLock().unlock();
-        }
-
-        renderer.render(nav.getMatchModel(), nav.getMyNickname(), displayDeltas, error);
+        String error = gameModel.consumeGlobalError();
+        renderer.render(gameModel, session.getNickname(), gameModel.getTurnDeltas(), error);
     }
 
     @Override
     public void handleInput(String input) {
-        if (nav.getMatchModel().isGameOver()) {
-            nav.getNotificationController().setInGameView(null);
-            nav.changeState(new GameEndedUiState(nav, out));
+        if (gameModel.isGameOver()) {
+            notificationController.setInGameView(null);
+            navigator.toGameEnded();
             return;
         }
 
         String[] parts = input.trim().split("\\s+");
         String key = parts[0].toLowerCase();
 
-        if (key.matches("\\d+")) {
-            new ActionCommand(nav, out, parts).execute();
-        } else {
-            CommandFactory factory = commandRegistry.get(key);
-            if (factory != null) factory.create(parts).execute();
+        try {
+            if (key.matches("\\d+")) {
+                new ActionCommand(gameModel, controller, out, parts).execute();
+            } else {
+                CommandFactory factory = commandRegistry.get(key);
+                if (factory != null) {
+                    factory.create(parts).execute();
+                } else {
+                    gameModel.setGlobalError("Comando sconosciuto.");
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            gameModel.setGlobalError(e.getMessage());
         }
-    }
-
-    private void updateDeltas() {
-        Map<String, PlayerResources> currState = captureState();
-        Map<String, PlayerResources> stepDeltas = computeDeltas(prevState, currState);
-
-        if (isEndOfTurn()) {
-            accumulated.clear();
-        }
-
-        mergeInto(accumulated, stepDeltas);
-        displayDeltas = new HashMap<>(accumulated);
-        prevState = currState;
-    }
-
-    private boolean isEndOfTurn() {
-        int round = nav.getMatchModel().getCurrentRound();
-        if (round != lastRound) {
-            lastRound = round;
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -102,54 +81,20 @@ public class InGameUiState implements UIState, InGameView {
     }
     @Override
     public void onError(String error) {
-
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        nav.getNotificationController().setInGameView(null);
-        //nav.getLobbyModel().setGlobalError(reason);
-        nav.changeState(new MatchmakingUiState(nav, out));
-    }
-
-    private Map<String, PlayerResources> captureState() {
-        Map<String, PlayerResources> snap = new HashMap<>();
-        for (PlayerSnapshot p : nav.getMatchModel().getPlayers().values()) {
-            snap.put(p.getNickname(), new PlayerResources(p.getFood(), p.getPrestige(), p.getFoodDiscount()));
-        }
-        return snap;
-    }
-
-    private Map<String, PlayerResources> computeDeltas(Map<String, PlayerResources> prev, Map<String, PlayerResources> curr) {
-        Map<String, PlayerResources> d = new HashMap<>();
-        for (var e : curr.entrySet()) {
-            PlayerResources p = prev.getOrDefault(e.getKey(), new PlayerResources(0, 0, 0));
-            PlayerResources c = e.getValue();
-            d.put(e.getKey(), new PlayerResources(
-                    c.food() - p.food(),
-                    c.prestige() - p.prestige(),
-                    c.discount() - p.discount()
-            ));
-        }
-        return d;
-    }
-    private void mergeInto(Map<String, PlayerResources> acc, Map<String, PlayerResources> step) {
-        for (var e : step.entrySet()) {
-            PlayerResources cur = acc.getOrDefault(e.getKey(), new PlayerResources(0, 0, 0));
-            PlayerResources s = e.getValue();
-            acc.put(e.getKey(), new PlayerResources(
-                    cur.food() + s.food(),
-                    cur.prestige() + s.prestige(),
-                    cur.discount() + s.discount()
-            ));
-        }
+        notificationController.setInGameView(null);
+        navigator.toMatchmaking();
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        nav.getNotificationController().setInGameView(null);
-        nav.changeState(new DisconnectedUiState(out, reason));
+        notificationController.setInGameView(null);
+        navigator.toDisconnected(reason);
     }
+
 
     public record PlayerResources(int food, int prestige, int discount) {}
 }

@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.model.snapshot.RosterSnapshot;
 import it.polimi.ingsw.client.model.snapshot.TurnSnapshot;
 import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.client.view.tui.state.InGameUiState.PlayerResources;
 
 import java.util.*;
 
@@ -23,6 +24,7 @@ public class GameModel extends ObservableModel {
     private String abortReason = null;
     private PlayerGameCompletedDto localResult = null;
     private LeaderboardSnapshotDto globalLeaderboard = null;
+    private final Map<String, PlayerResources> turnDeltas = new HashMap<>();
 
     public void setFullState(BoardDto boardDTO, List<PlayerDto> playersList, String activePlayer) {
         board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
@@ -97,9 +99,35 @@ public class GameModel extends ObservableModel {
     }
 
     public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
-        roster.updatePlayerResources(nickname, newFood, newPrestige, newFoodDiscount);
+        lock.writeLock().lock();
+        try {
+            PlayerSnapshot old = roster.getPlayers().get(nickname);
+            if (old != null) {
+                PlayerResources currentDelta = turnDeltas.getOrDefault(nickname, new PlayerResources(0, 0, 0));
+                turnDeltas.put(nickname, new PlayerResources(
+                        currentDelta.food() + (newFood - old.getFood()),
+                        currentDelta.prestige() + (newPrestige - old.getPrestige()),
+                        currentDelta.discount() + (newFoodDiscount - old.getFoodDiscount())
+                ));
+            }
+            roster.updatePlayerResources(nickname, newFood, newPrestige, newFoodDiscount);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
+    public Map<String, PlayerResources> getTurnDeltas() {
+        return new HashMap<>(turnDeltas);
+    }
+    public void clearTurnDeltas() {
+        lock.writeLock().lock();
+        try {
+            turnDeltas.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
 
     public void addGameLog(String log) {
         turn.addGameLog(log);
@@ -113,16 +141,23 @@ public class GameModel extends ObservableModel {
 
 
     public void reset() {
-        this.board = new BoardSnapshot();
-        this.roster = new RosterSnapshot();
-        this.turn = new TurnSnapshot();
+        lock.writeLock().lock();
+        try {
+            this.board = new BoardSnapshot();
+            this.roster = new RosterSnapshot();
+            this.turn = new TurnSnapshot();
 
-        this.isGameOver = false;
-        this.leaderboard = new ArrayList<>();
-        this.winners = new ArrayList<>();
-        this.abortReason = null;
-        this.localResult = null;
-        this.globalLeaderboard = null;
+            this.turnDeltas.clear();
+
+            this.isGameOver = false;
+            this.leaderboard = new ArrayList<>();
+            this.winners = new ArrayList<>();
+            this.abortReason = null;
+            this.localResult = null;
+            this.globalLeaderboard = null;
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     //  END GAME SETTERS

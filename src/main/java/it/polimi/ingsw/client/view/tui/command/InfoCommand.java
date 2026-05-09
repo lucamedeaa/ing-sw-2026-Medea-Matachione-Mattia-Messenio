@@ -1,20 +1,19 @@
 package it.polimi.ingsw.client.view.tui.command;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.client.view.tui.state.InfoUiState;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
 
 public class InfoCommand implements GameCommand {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
     private final OutputPort out;
 
-    public InfoCommand(NavigationPort nav, OutputPort out) {
-        this.nav = nav;
+    public InfoCommand(TuiNavigator navigator, OutputPort out) {
+        this.navigator = navigator;
         this.out = out;
     }
 
     @Override
     public void execute() {
-        nav.changeState(new InfoUiState(nav, out));
+        navigator.toInfo();
     }
 }

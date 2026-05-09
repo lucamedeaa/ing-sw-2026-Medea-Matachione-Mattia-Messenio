@@ -1,37 +1,38 @@
 package it.polimi.ingsw.client.view.tui.state;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.render.ViewTribeRenderer;
 
 public class ViewTribeUiState implements UIState {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
+    private final GameModel gameModel;
     private final OutputPort out;
     private final ViewTribeRenderer renderer;
     private final String targetPlayer;
 
-    public ViewTribeUiState(NavigationPort nav, OutputPort out, String targetPlayer) {
-        this.nav = nav;
+    public ViewTribeUiState(TuiNavigator navigator, GameModel gameModel, OutputPort out, String targetPlayer) {
+        this.navigator = navigator;
+        this.gameModel = gameModel;
         this.out = out;
         this.targetPlayer = targetPlayer;
         this.renderer = new ViewTribeRenderer(out);
-        //render();
     }
 
+    @Override
     public void render() {
-        nav.getMatchModel().getReadLock().lock();
+        gameModel.getReadLock().lock();
         try {
-            var tribe = nav.getMatchModel().getTribes().get(targetPlayer);
+            var tribe = gameModel.getTribes().get(targetPlayer);
             renderer.render(targetPlayer, tribe);
-        } finally {
-            nav.getMatchModel().getReadLock().unlock();
-        }
+        } finally { gameModel.getReadLock().unlock(); }
     }
 
     @Override
     public void handleInput(String input) {
         if (input.trim().equalsIgnoreCase("q")) {
-            nav.changeState(new InGameUiState(nav, out));
+            navigator.toInGame();
         } else {
             out.print("Input non valido. Premi Q per tornare alla partita.");
         }

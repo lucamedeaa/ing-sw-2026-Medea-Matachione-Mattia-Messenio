@@ -49,6 +49,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(RoundAdvancedDto event) {
+        gameModel.clearTurnDeltas();
         gameModel.updateRound(event.newRound());
     }
 

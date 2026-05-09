@@ -1,26 +1,27 @@
 package it.polimi.ingsw.client.view.tui.command;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 
 public class ActionCommand implements GameCommand {
-    private final NavigationPort nav;
+    private final GameModel gameModel;
+    private final ServerCommandPort controller;
     private final OutputPort out;
     private final String[] args;
 
-    public ActionCommand(NavigationPort nav, OutputPort out, String[] args) {
-        this.nav = nav;
+    public ActionCommand(GameModel gameModel, ServerCommandPort controller, OutputPort out, String[] args) {
+        this.gameModel = gameModel;
+        this.controller = controller;
         this.out = out;
         this.args = args;
     }
 
     @Override
     public void execute() {
-        // Uso nav per accedere al Model
-        var availableActions = nav.getMatchModel().getMyActions();
+        var availableActions = gameModel.getMyActions();
 
         if (availableActions.isEmpty()) {
-            nav.getMatchModel().setGlobalError("Non è il tuo turno! Aspetta che " + nav.getMatchModel().getActivePlayer() + " finisca la sua mossa.");
+            gameModel.setGlobalError("Non è il tuo turno! Aspetta che " + gameModel.getActivePlayer() + " finisca la sua mossa.");
             return;
         }
 
@@ -28,18 +29,18 @@ public class ActionCommand implements GameCommand {
             int actionIndex = Integer.parseInt(args[0]);
 
             if (actionIndex < 0 || actionIndex >= availableActions.size()) {
-                nav.getMatchModel().setGlobalError("Indice azione non valido.");
+                gameModel.setGlobalError("Indice azione non valido.");
                 return;
             }
 
             var selectedAction = availableActions.get(actionIndex);
 
 
-            ActionExecutor executor = new ActionExecutor(nav.getController(), nav.getMatchModel(), out, args);
+            ActionExecutor executor = new ActionExecutor(controller, gameModel, out, args);
             selectedAction.accept(executor);
 
         } catch (NumberFormatException e) {
-            nav.getMatchModel().setGlobalError("'" + args[0] + "' non è un numero valido.");
+            gameModel.setGlobalError("'" + args[0] + "' non è un numero valido.");
         }
     }
 }

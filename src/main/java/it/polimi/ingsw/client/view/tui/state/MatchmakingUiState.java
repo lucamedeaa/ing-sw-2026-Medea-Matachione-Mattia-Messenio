@@ -1,7 +1,10 @@
 package it.polimi.ingsw.client.view.tui.state;
 
-import it.polimi.ingsw.client.view.tui.NavigationPort;
+import it.polimi.ingsw.client.model.ClientSession;
+import it.polimi.ingsw.client.model.LobbyModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
+import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
 import it.polimi.ingsw.client.view.tui.render.MatchmakingRenderer;
 import it.polimi.ingsw.client.view.listeners.MatchmakingView;
@@ -12,21 +15,30 @@ import java.util.*;
 import static java.util.Arrays.copyOfRange;
 
 public class MatchmakingUiState implements UIState, MatchmakingView {
-    private final NavigationPort nav;
+    private final TuiNavigator navigator;
+    private final LobbyModel lobbyModel;
+    private final ServerCommandPort controller;
+    private final ClientSession session;
     private final OutputPort out;
+    private final ClientNotificationController notificationController;
+
     private final MatchmakingRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private String pendingNickname = "";
+    private boolean showGamesList = false;
 
-    private boolean showGamesList = false; //mi serve per evitare stampe fasulle
-
-    public MatchmakingUiState(NavigationPort nav, OutputPort out) {
-        this.nav = nav;
+    public MatchmakingUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out,ClientNotificationController notificationController) {
+        this.navigator = navigator;
+        this.lobbyModel = lobbyModel;
+        this.controller = controller;
+        this.session = session;
         this.out = out;
+        this.notificationController = notificationController;
         this.renderer = new MatchmakingRenderer(out);
 
         registerCommands();
-        nav.getNotificationController().setMatchmakingView(this);
+
+        this.notificationController.setMatchmakingView(this);
 
         //render();
     }
@@ -40,7 +52,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             if (maxPlayers < 2 || maxPlayers > 5) throw new IllegalArgumentException("Errore: max_players deve essere tra 2 e 5.");
             String nickname = String.join(" ", copyOfRange(args, 1, args.length - 1));
             this.pendingNickname = nickname;
-            return new CreateGameCommand(nav.getController(), out, nickname, maxPlayers);
+            return new CreateGameCommand(controller, out, nickname, maxPlayers);
         });
 
         commandRegistry.put("join", args -> {
@@ -48,26 +60,26 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             String gameId = args[args.length - 1];
             String nickname = String.join(" ", copyOfRange(args, 1, args.length - 1));
             this.pendingNickname = nickname;
-            return new JoinGameCommand(nav.getController(), out, nickname, gameId);
+            return new JoinGameCommand(controller, out, nickname, gameId);
         });
 
-        commandRegistry.put("list", args -> new AvailableGamesCommand(nav.getController(), out));
-        commandRegistry.put("disconnect", args -> new DisconnectCommand(nav.getController()));
-        commandRegistry.put("0", args -> new DisconnectCommand(nav.getController()));
+        commandRegistry.put("list", args -> new AvailableGamesCommand(controller, out));
+        commandRegistry.put("disconnect", args -> new DisconnectCommand(controller));
+        commandRegistry.put("0", args -> new DisconnectCommand(controller));
     }
 
     @Override
     public void render() {
-        String error = nav.getLobbyModel().consumeGlobalError();
+        String error = lobbyModel.consumeGlobalError();
 
         List<GameInfoDto> gamesToDisplay = null;
-        nav.getLobbyModel().getReadLock().lock();
+        lobbyModel.getReadLock().lock();
         try {
             if (showGamesList) {
-                gamesToDisplay = nav.getLobbyModel().getAvailableGames();
+                gamesToDisplay = lobbyModel.getAvailableGames();
             }
         } finally {
-            nav.getLobbyModel().getReadLock().unlock();
+            lobbyModel.getReadLock().unlock();
         }
 
         renderer.render(gamesToDisplay, error);
@@ -82,7 +94,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
-            nav.getLobbyModel().setGlobalError("Comando sconosciuto. Usa: create, join, list, 0.");
+            lobbyModel.setGlobalError("Comando sconosciuto. Usa: create, join, list, 0.");
             render();
             return;
         }
@@ -91,7 +103,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             GameCommand command = factory.create(parts);
             command.execute();
         } catch (IllegalArgumentException e) {
-            nav.getLobbyModel().setGlobalError(e.getMessage());
+            lobbyModel.setGlobalError(e.getMessage());
             render();
         }
     }
@@ -110,17 +122,17 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
     @Override
     public void onMatchmakingSuccess(String text) {
         //  MI DE-REGISTRO prima di morire
-        nav.getNotificationController().setMatchmakingView(null);
+        notificationController.setMatchmakingView(null);
 
         //  va in Lobby
-        nav.setMyNickname(this.pendingNickname);
-        nav.changeState(new LobbyUiState(nav, out));
+        session.setNickname(this.pendingNickname);
+        navigator.toLobby();
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        nav.getNotificationController().setMatchmakingView(null);
-        nav.changeState(new DisconnectedUiState(out, reason));
+        notificationController.setMatchmakingView(null);
+        navigator.toLobby();
     }
 
 }

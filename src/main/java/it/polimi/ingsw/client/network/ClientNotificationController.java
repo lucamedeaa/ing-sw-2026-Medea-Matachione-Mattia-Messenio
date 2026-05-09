@@ -85,10 +85,15 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void error(String error) {
-        lobbyModel.setGlobalError(error);
-        if (matchmakingView != null) matchmakingView.onError(error);
-        if (lobbyView != null) lobbyView.onError(error);
-        if (inGameView != null) inGameView.onError(error);
+        if (inGameView != null) {
+            gameModel.setGlobalError(error);
+            inGameView.onError(error);
+        }
+        else {
+            lobbyModel.setGlobalError(error);
+            if (matchmakingView != null) matchmakingView.onError(error);
+            if (lobbyView != null) lobbyView.onError(error);
+        }
     }
 
     @Override
