@@ -19,6 +19,9 @@ import it.polimi.ingsw.server.network.state.PostGameConnectionState;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +36,7 @@ public class ConnectionSession implements ConnectionContext {
     private final Logger logger;
     private final String logPrefix;
     private final AtomicBoolean active = new AtomicBoolean(true);
+    private final ExecutorService outboundExecutor;
 
     // Lock order: lifecycleLock -> GameRoom room lock. Do not perform client I/O while holding it.
     private final Object lifecycleLock = new Object();
@@ -53,6 +57,11 @@ public class ConnectionSession implements ConnectionContext {
         this.closeConnection = Objects.requireNonNull(closeConnection);
         this.logger = Objects.requireNonNull(logger);
         this.logPrefix = Objects.requireNonNull(logPrefix);
+        this.outboundExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread thread = new Thread(r, logPrefix + "-outbound");
+            thread.setDaemon(true);
+            return thread;
+        });
         this.lobbyState = new LobbyConnectionState(this, Objects.requireNonNull(lobbyController));
         this.connectionState = lobbyState;
     }
@@ -146,6 +155,7 @@ public class ConnectionSession implements ConnectionContext {
         }
 
         closeConnection.run();
+        outboundExecutor.shutdownNow();
         try {
             stateToNotify.handleDisconnection();
         } catch (RuntimeException e) {
@@ -156,51 +166,74 @@ public class ConnectionSession implements ConnectionContext {
 
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        client.fullSync(board, players, activePlayer, actions);
+        enqueueOutbound("full sync", () -> client.fullSync(board, players, activePlayer, actions));
     }
 
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
-        client.deltaEvent(events, nextActions, activePlayer);
+        enqueueOutbound("delta event", () -> client.deltaEvent(events, nextActions, activePlayer));
     }
 
     @Override
     public void error(String error) {
-        client.error(error);
+        enqueueOutbound("error", () -> client.error(error));
     }
 
     @Override
     public void matchmakingSuccess(String text) {
-        client.matchmakingSuccess(text);
+        enqueueOutbound("matchmaking success", () -> client.matchmakingSuccess(text));
     }
 
     @Override
     public void availableGames(List<GameInfoDto> games) {
-        client.availableGames(games);
+        enqueueOutbound("available games", () -> client.availableGames(games));
     }
 
     @Override
     public void gameAborted(String reason) {
-        client.gameAborted(reason);
+        enqueueOutbound("game aborted", () -> client.gameAborted(reason));
     }
 
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
-        client.roomUpdate(notification, currentPlayers);
+        enqueueOutbound("room update", () -> client.roomUpdate(notification, currentPlayers));
     }
 
     @Override
     public void gameLeftSuccess(String text) {
-        client.gameLeftSuccess(text);
+        enqueueOutbound("game left success", () -> client.gameLeftSuccess(text));
     }
 
     @Override
     public void gameCompleted(PlayerGameCompletedDto completedGame) {
-        client.gameCompleted(completedGame);
+        enqueueOutbound("game completed", () -> client.gameCompleted(completedGame));
     }
 
     @Override
     public void leaderboard(LeaderboardSnapshotDto leaderboard) {
-        client.leaderboard(leaderboard);
+        enqueueOutbound("leaderboard", () -> client.leaderboard(leaderboard));
+    }
+
+    private void enqueueOutbound(String description, Runnable delivery) {
+        if (!active.get()) {
+            return;
+        }
+        try {
+            outboundExecutor.submit(() -> {
+                if (!active.get()) {
+                    return;
+                }
+                try {
+                    delivery.run();
+                } catch (RuntimeException e) {
+                    logger.log(Level.SEVERE, "[" + logPrefix + "] Unexpected failure while delivering "
+                            + description + " to " + getNickname(), e);
+                    handleClientDisconnection();
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            logger.log(Level.FINE, "[" + logPrefix + "] Dropped outbound " + description
+                    + " for closed connection " + getNickname(), e);
+        }
     }
 }
