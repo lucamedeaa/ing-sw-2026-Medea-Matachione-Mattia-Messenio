@@ -3,31 +3,17 @@ package it.polimi.ingsw.server.network.state;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.network.ConnectionContext;
 
-public class InGameConnectionState implements ConnectionState {
+public class InGameConnectionState extends UnsupportedConnectionCommands {
 
     private final String nickname;
     private final ConnectionContext connection;
     private final GameController gameController;
 
     public InGameConnectionState(String nickname, ConnectionContext connection, GameController gameController) {
+        super(connection);
         this.nickname = nickname;
         this.connection = connection;
         this.gameController = gameController;
-    }
-
-    @Override
-    public void createGame(String nickname, int maxPlayers) {
-        connection.error("Already in game.");
-    }
-
-    @Override
-    public void joinGame(String nickname, String gameId) {
-        connection.error("Already in game.");
-    }
-
-    @Override
-    public void getAvailableGames() {
-        connection.error("Already in game.");
     }
 
     @Override
@@ -50,11 +36,6 @@ public class InGameConnectionState implements ConnectionState {
     @Override
     public void skipAction() {
         gameController.handleSkipBonus(nickname, this::sendMoveError);
-    }
-
-    @Override
-    public void getLeaderboard() {
-        connection.error("Game is still running.");
     }
 
     @Override

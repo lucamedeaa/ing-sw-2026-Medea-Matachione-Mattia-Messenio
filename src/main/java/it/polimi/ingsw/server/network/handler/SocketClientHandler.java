@@ -1,26 +1,31 @@
 package it.polimi.ingsw.server.network.handler;
 
 import it.polimi.ingsw.common.message.DisconnectionMessage;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
-import it.polimi.ingsw.common.message.server.*;
-import it.polimi.ingsw.server.controller.GameController;
-import it.polimi.ingsw.server.controller.LobbyController;
 import it.polimi.ingsw.common.message.client.ClientMessage;
 import it.polimi.ingsw.common.message.client.PingMessage;
-import it.polimi.ingsw.server.lobby.GameManagerInterface;
-import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.common.message.server.AvailableGamesResponseMessage;
+import it.polimi.ingsw.common.message.server.DeltaEventMessage;
+import it.polimi.ingsw.common.message.server.ErrorMessage;
+import it.polimi.ingsw.common.message.server.FullSyncMessage;
+import it.polimi.ingsw.common.message.server.GameAbortedMessage;
+import it.polimi.ingsw.common.message.server.GameCompletedMessage;
+import it.polimi.ingsw.common.message.server.GameLeftSuccessMessage;
+import it.polimi.ingsw.common.message.server.LeaderboardResponseMessage;
+import it.polimi.ingsw.common.message.server.MatchmakingSuccessMessage;
+import it.polimi.ingsw.common.message.server.PongMessage;
+import it.polimi.ingsw.common.message.server.RoomUpdateMessage;
+import it.polimi.ingsw.common.message.server.ServerMessage;
 import it.polimi.ingsw.common.network.dto.BoardDto;
+import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 import it.polimi.ingsw.common.network.dto.PlayerDto;
 import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.server.model.exception.LobbyActionException;
-import it.polimi.ingsw.server.leaderboard.LeaderboardService;
-import it.polimi.ingsw.server.network.ConnectionContext;
-import it.polimi.ingsw.server.network.state.ConnectionState;
-import it.polimi.ingsw.server.network.state.InGameConnectionState;
-import it.polimi.ingsw.server.network.state.LobbyConnectionState;
-import it.polimi.ingsw.server.network.state.PostGameConnectionState;
+import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.common.network.dto.event.GameEventDto;
+import it.polimi.ingsw.server.controller.LobbyController;
+import it.polimi.ingsw.server.lobby.GameManagerInterface;
+import it.polimi.ingsw.server.network.ClientProxy;
+import it.polimi.ingsw.server.network.ConnectionSession;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -31,98 +36,54 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Socket-based client handler that manages communication, matchmaking, and in-game message forwarding. */
-public class SocketClientHandler implements ConnectionContext, Runnable {
+/** Socket-based client handler that manages socket I/O and delegates connection lifecycle to ConnectionSession. */
+public class SocketClientHandler implements ClientProxy, Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(SocketClientHandler.class.getName());
 
     private final Socket socket;
-    private final GameManagerInterface gameManager;
-    private final ConnectionState lobbyState;
     private final ObjectInputStream in;
     private final ObjectOutputStream out;
-    private final AtomicBoolean active = new AtomicBoolean(true);
+    private final ConnectionSession session;
     private final Object streamLock = new Object();
-    // Lock order: lifecycleLock -> GameRoom room lock. Do not perform client I/O while holding it.
-    private final Object lifecycleLock = new Object();
-    private String nickname;
-
-    private ConnectionState connectionState;
 
     /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
     public SocketClientHandler(Socket socket, GameManagerInterface gameManager, LobbyController lobbyController) throws IOException {
         this.socket = socket;
-        this.gameManager = gameManager;
-        this.lobbyState = new LobbyConnectionState(this, lobbyController);
-        this.connectionState = lobbyState;
-
         this.socket.setSoTimeout(10000);
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
-    }
-
-    public void setNickname(String nickname) {
-        synchronized (lifecycleLock) {
-            this.nickname = nickname;
-        }
-    }
-
-    public String getNickname(){
-        synchronized (lifecycleLock) {
-            return this.nickname;
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        return this.active.get();
-    }
-
-
-    @Override
-    public void transitionToGameState(GameController gameController) {
-        ConnectionState disconnectedState = null;
-
-        synchronized (lifecycleLock) {
-            ConnectionState newState = new InGameConnectionState(this.nickname, this, gameController);
-            this.connectionState = newState;
-            if (!this.active.get()) {
-                disconnectedState = newState;
-            }
-        }
-
-        if (disconnectedState != null) {
-            disconnectedState.handleDisconnection();
-        }
-    }
-
-    @Override
-    public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
-        synchronized (lifecycleLock) {
-            this.connectionState = new PostGameConnectionState(this, playerCount, leaderboardService);
-        }
+        this.session = new ConnectionSession(
+                this,
+                gameManager,
+                lobbyController,
+                this::closeConnection,
+                LOGGER,
+                "SOCKET"
+        );
     }
 
     private void sendMessage(ServerMessage message) {
-        if (active.get()) {
-            try {
-                synchronized (streamLock) {
-                    out.writeObject(message);
-                    out.reset();
-                    out.flush();
-                }
-            } catch (IOException e) {
-                LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
-                        + getNickname() + ": " + e.getMessage());
-                handleClientDisconnection();
-            } catch (RuntimeException e) {
-                LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while sending message to " + getNickname(), e);
-                handleClientDisconnection();
+        if (!session.isActive()) {
+            return;
+        }
+        try {
+            synchronized (streamLock) {
+                out.writeObject(message);
+                out.reset();
+                out.flush();
             }
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
+                    + session.getNickname() + ": " + e.getMessage());
+            session.handleClientDisconnection();
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while sending message to "
+                    + session.getNickname(), e);
+            session.handleClientDisconnection();
         }
     }
 
@@ -180,91 +141,40 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
     @Override
     public void run() {
         try {
-            while (active.get()) {
+            while (session.isActive()) {
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
                     sendMessage(new PongMessage());
                     continue;
                 }
                 if (input instanceof DisconnectionMessage) {
-                    handleClientDisconnection();
+                    session.handleClientDisconnection();
                     continue;
                 }
                 if (input instanceof ClientMessage message) {
-                    message.dispatchTo(currentState());
+                    message.dispatchTo(session.currentState());
                 } else {
                     error("Unknown message type.");
                 }
             }
         } catch (SocketTimeoutException e) {
-            LOGGER.log(Level.INFO, () -> "[SOCKET] Timeout for " + getNickname()
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Timeout for " + session.getNickname()
                     + ": no ping received. Detail: " + e.getMessage());
         } catch (EOFException e) {
-            LOGGER.log(Level.INFO, () -> "[SOCKET] Client " + getNickname()
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Client " + session.getNickname()
                     + " closed the connection without a disconnection message. Detail: " + e.getMessage());
         } catch (SocketException e) {
-            LOGGER.log(Level.INFO, () -> "[SOCKET] Connection interrupted for " + getNickname()
+            LOGGER.log(Level.INFO, () -> "[SOCKET] Connection interrupted for " + session.getNickname()
                     + ". Detail: " + e.getMessage());
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.WARNING, "[SOCKET] Received an unknown object from " + getNickname(), e);
+            LOGGER.log(Level.WARNING, "[SOCKET] Received an unknown object from " + session.getNickname(), e);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "[SOCKET] I/O error for " + getNickname(), e);
+            LOGGER.log(Level.WARNING, "[SOCKET] I/O error for " + session.getNickname(), e);
         } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while handling client " + getNickname(), e);
+            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while handling client "
+                    + session.getNickname(), e);
         } finally {
-            handleClientDisconnection();
-        }
-    }
-
-    @Override
-    public void transitionToLobby() {
-        synchronized (lifecycleLock) {
-            if (this.nickname != null) {
-                gameManager.unregisterNickname(this.nickname);
-                this.nickname = null;
-            }
-            this.connectionState = lobbyState;
-        }
-    }
-
-    @Override
-    public void clearNickname() {
-        synchronized (lifecycleLock) {
-            if (this.nickname != null) {
-                gameManager.unregisterNickname(this.nickname);
-                this.nickname = null;
-            }
-        }
-    }
-
-    /** Handles client disconnection, notifying game logic or cleaning matchmaking state. */
-    private void handleClientDisconnection() {
-        ConnectionState stateToNotify;
-        synchronized (lifecycleLock) {
-            if (!active.compareAndSet(true, false)) {
-                return;
-            }
-            stateToNotify = this.connectionState;
-        }
-
-        closeConnection();
-        try {
-            stateToNotify.handleDisconnection();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[SOCKET] Disconnection cleanup failed for " + getNickname(), e);
-        }
-    }
-
-    private ConnectionState currentState() {
-        synchronized (lifecycleLock) {
-            return this.connectionState;
-        }
-    }
-
-    @Override
-    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException {
-        synchronized (lifecycleLock) {
-            return operation.run();
+            session.handleClientDisconnection();
         }
     }
 
@@ -279,7 +189,8 @@ public class SocketClientHandler implements ConnectionContext, Runnable {
         try {
             resource.close();
         } catch (IOException e) {
-            LOGGER.log(Level.FINE, "[SOCKET] Error while closing " + description + " for " + getNickname(), e);
+            LOGGER.log(Level.FINE, "[SOCKET] Error while closing " + description + " for "
+                    + session.getNickname(), e);
         }
     }
 }

@@ -6,12 +6,13 @@ import it.polimi.ingsw.server.lobby.RoomConnectionHandler;
 import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import it.polimi.ingsw.server.network.ConnectionContext;
 
-public class LobbyConnectionState implements ConnectionState {
+public class LobbyConnectionState extends UnsupportedConnectionCommands {
 
     private final ConnectionContext connection;
     private final LobbyController lobbyController;
 
     public LobbyConnectionState(ConnectionContext connection, LobbyController lobbyController) {
+        super(connection);
         this.connection = connection;
         this.lobbyController = lobbyController;
     }
@@ -75,26 +76,6 @@ public class LobbyConnectionState implements ConnectionState {
         } catch (LobbyActionException e) {
             connection.error(e.getMessage());
         }
-    }
-
-    @Override
-    public void placeTotem(int positionIndex) {
-        connection.error("Not in a game yet.");
-    }
-
-    @Override
-    public void takeCard(int row, int col) {
-        connection.error("Not in a game yet.");
-    }
-
-    @Override
-    public void skipAction() {
-        connection.error("Not in a game yet.");
-    }
-
-    @Override
-    public void getLeaderboard() {
-        connection.error("Not in an after-game state.");
     }
 
     @Override

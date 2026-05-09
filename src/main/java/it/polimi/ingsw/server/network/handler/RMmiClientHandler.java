@@ -1,24 +1,18 @@
 package it.polimi.ingsw.server.network.handler;
 
-import it.polimi.ingsw.server.controller.GameController;
-import it.polimi.ingsw.server.controller.LobbyController;
-import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.event.GameEventDto;
+import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.common.network.dto.PlayerDto;
 import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
+import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 import it.polimi.ingsw.common.rmi.RMIClientCallback;
 import it.polimi.ingsw.common.rmi.RMIServerSession;
+import it.polimi.ingsw.server.controller.LobbyController;
 import it.polimi.ingsw.server.lobby.GameManagerInterface;
-import it.polimi.ingsw.server.model.exception.LobbyActionException;
-import it.polimi.ingsw.server.leaderboard.LeaderboardService;
-import it.polimi.ingsw.server.network.ConnectionContext;
-import it.polimi.ingsw.server.network.state.ConnectionState;
-import it.polimi.ingsw.server.network.state.InGameConnectionState;
-import it.polimi.ingsw.server.network.state.LobbyConnectionState;
-import it.polimi.ingsw.server.network.state.PostGameConnectionState;
+import it.polimi.ingsw.server.network.ClientProxy;
+import it.polimi.ingsw.server.network.ConnectionSession;
 
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -27,85 +21,45 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** RMI client handler exposing native RPC methods for client actions. */
-public class RMmiClientHandler extends UnicastRemoteObject implements ConnectionContext, RMIServerSession {
+public class RMmiClientHandler extends UnicastRemoteObject implements ClientProxy, RMIServerSession {
 
     private static final Logger LOGGER = Logger.getLogger(RMmiClientHandler.class.getName());
 
-    private final GameManagerInterface gameManager;
     private final RMIClientCallback callback;
-    private final ConnectionState lobbyState;
-    private ConnectionState connectionState;
-    // Lock order: lifecycleLock -> GameRoom room lock. Do not perform RMI callbacks while holding it.
-    private final Object lifecycleLock = new Object();
-    private String nickname;
-
+    private final ConnectionSession session;
     private final ScheduledExecutorService timeoutChecker;
-
-    private final AtomicBoolean active = new AtomicBoolean(true);
     private final AtomicLong lastPingTime = new AtomicLong();
 
-    public RMmiClientHandler(GameManagerInterface gameManager, LobbyController lobbyController, RMIClientCallback callback) throws RemoteException {
+    public RMmiClientHandler(
+            GameManagerInterface gameManager,
+            LobbyController lobbyController,
+            RMIClientCallback callback
+    ) throws RemoteException {
         super();
         this.callback = callback;
-        this.gameManager = gameManager;
-        this.lobbyState = new LobbyConnectionState(this, lobbyController);
-        this.connectionState = lobbyState;
         this.lastPingTime.set(System.currentTimeMillis());
         this.timeoutChecker = Executors.newSingleThreadScheduledExecutor();
+        this.session = new ConnectionSession(
+                this,
+                gameManager,
+                lobbyController,
+                this::closeConnection,
+                LOGGER,
+                "RMI"
+        );
 
         this.timeoutChecker.scheduleAtFixedRate(() -> {
-            if (active.get() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
-                LOGGER.warning("[RMI] Timeout: client " + getNickname() + " did not send ping. Marked as disconnected.");
-                handleClientDisconnection();
+            if (session.isActive() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
+                LOGGER.warning("[RMI] Timeout: client " + session.getNickname()
+                        + " did not send ping. Marked as disconnected.");
+                session.handleClientDisconnection();
             }
         }, 5, 5, TimeUnit.SECONDS);
-    }
-
-    public void setNickname(String nickname) {
-        synchronized (lifecycleLock) {
-            this.nickname = nickname;
-        }
-    }
-
-    public String getNickname() {
-        synchronized (lifecycleLock) {
-            return this.nickname;
-        }
-    }
-
-    @Override
-    public boolean isActive() {
-        return this.active.get();
-    }
-
-    @Override
-    public void transitionToGameState(GameController gameController) {
-        ConnectionState disconnectedState = null;
-
-        synchronized (lifecycleLock) {
-            ConnectionState newState = new InGameConnectionState(this.nickname, this, gameController);
-            this.connectionState = newState;
-            if (!this.active.get()) {
-                disconnectedState = newState;
-            }
-        }
-
-        if (disconnectedState != null) {
-            disconnectedState.handleDisconnection();
-        }
-    }
-
-    @Override
-    public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
-        synchronized (lifecycleLock) {
-            this.connectionState = new PostGameConnectionState(this, playerCount, leaderboardService);
-        }
     }
 
     @Override
@@ -117,48 +71,48 @@ public class RMmiClientHandler extends UnicastRemoteObject implements Connection
     public void disconnect() {
         handleClientAction("disconnect", () -> {
             touch();
-            handleClientDisconnection();
+            session.handleClientDisconnection();
         });
     }
 
     @Override
     public void createGame(String nickname, int maxPlayers) {
-        handleClientAction("create game", () -> currentState().createGame(nickname, maxPlayers));
+        handleClientAction("create game", () -> session.currentState().createGame(nickname, maxPlayers));
     }
 
     @Override
     public void joinGame(String nickname, String gameId) {
-        handleClientAction("join game", () -> currentState().joinGame(nickname, gameId));
+        handleClientAction("join game", () -> session.currentState().joinGame(nickname, gameId));
     }
 
     @Override
     public void getAvailableGames() {
-        handleClientAction("get available games", () -> currentState().getAvailableGames());
+        handleClientAction("get available games", () -> session.currentState().getAvailableGames());
     }
 
     @Override
     public void leaveGame() {
-        handleClientAction("leave game", () -> currentState().leaveGame());
+        handleClientAction("leave game", () -> session.currentState().leaveGame());
     }
 
     @Override
     public void placeTotem(int positionIndex) {
-        handleClientAction("place totem", () -> currentState().placeTotem(positionIndex));
+        handleClientAction("place totem", () -> session.currentState().placeTotem(positionIndex));
     }
 
     @Override
     public void takeCard(int row, int col) {
-        handleClientAction("take card", () -> currentState().takeCard(row, col));
+        handleClientAction("take card", () -> session.currentState().takeCard(row, col));
     }
 
     @Override
     public void skipAction() {
-        handleClientAction("skip action", () -> currentState().skipAction());
+        handleClientAction("skip action", () -> session.currentState().skipAction());
     }
 
     @Override
     public void getLeaderboard() {
-        handleClientAction("get leaderboard", () -> currentState().getLeaderboard());
+        handleClientAction("get leaderboard", () -> session.currentState().getLeaderboard());
     }
 
     @Override
@@ -211,94 +165,44 @@ public class RMmiClientHandler extends UnicastRemoteObject implements Connection
         deliver(() -> callback.onLeaderboard(leaderboard));
     }
 
-    @Override
-    public void transitionToLobby() {
-        synchronized (lifecycleLock) {
-            if (this.nickname != null) {
-                gameManager.unregisterNickname(this.nickname);
-                this.nickname = null;
-            }
-            this.connectionState = lobbyState;
-        }
-    }
-
-    @Override
-    public void clearNickname() {
-        synchronized (lifecycleLock) {
-            if (this.nickname != null) {
-                gameManager.unregisterNickname(this.nickname);
-                this.nickname = null;
-            }
-        }
-    }
-
-    private ConnectionState currentState() {
-        touch();
-        synchronized (lifecycleLock) {
-            return this.connectionState;
-        }
-    }
-
     private void touch() {
         this.lastPingTime.set(System.currentTimeMillis());
     }
 
     private void handleClientAction(String actionName, Runnable action) {
         try {
+            touch();
             action.run();
         } catch (RuntimeException e) {
             LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while handling " + actionName
-                    + " for " + getNickname(), e);
+                    + " for " + session.getNickname(), e);
             disconnectAfterUnexpectedFailure();
         }
     }
 
     private void disconnectAfterUnexpectedFailure() {
         try {
-            handleClientDisconnection();
+            session.handleClientDisconnection();
         } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Failed to disconnect " + getNickname()
+            LOGGER.log(Level.SEVERE, "[RMI] Failed to disconnect " + session.getNickname()
                     + " after unexpected failure", e);
         }
     }
 
     private void deliver(RemoteCall call) {
-        if (!active.get()) {
+        if (!session.isActive()) {
             return;
         }
         try {
             call.run();
         } catch (RemoteException e) {
             LOGGER.log(Level.INFO, () -> "[RMI] Disconnection detected on write for "
-                    + getNickname() + ": " + e.getMessage());
-            handleClientDisconnection();
+                    + session.getNickname() + ": " + e.getMessage());
+            session.handleClientDisconnection();
         } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while delivering callback to " + getNickname(), e);
+            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while delivering callback to "
+                    + session.getNickname(), e);
             disconnectAfterUnexpectedFailure();
-        }
-    }
-
-    private void handleClientDisconnection() {
-        ConnectionState stateToNotify;
-        synchronized (lifecycleLock) {
-            if (!active.compareAndSet(true, false)) {
-                return;
-            }
-            stateToNotify = this.connectionState;
-        }
-
-        closeConnection();
-        try {
-            stateToNotify.handleDisconnection();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Disconnection cleanup failed for " + getNickname(), e);
-        }
-    }
-
-    @Override
-    public <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException {
-        synchronized (lifecycleLock) {
-            return operation.run();
         }
     }
 
@@ -307,7 +211,7 @@ public class RMmiClientHandler extends UnicastRemoteObject implements Connection
         try {
             UnicastRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException e) {
-            LOGGER.log(Level.FINE, "[RMI] Handler already unexported for " + getNickname(), e);
+            LOGGER.log(Level.FINE, "[RMI] Handler already unexported for " + session.getNickname(), e);
         }
     }
 
