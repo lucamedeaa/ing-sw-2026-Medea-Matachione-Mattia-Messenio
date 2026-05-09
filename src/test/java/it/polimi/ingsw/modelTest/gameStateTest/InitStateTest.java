@@ -1,4 +1,118 @@
 package it.polimi.ingsw.modelTest.gameStateTest;
 
-public class InitStateTest {
+import it.polimi.ingsw.modelTest.ModelTest;
+import it.polimi.ingsw.server.model.Game;
+import it.polimi.ingsw.server.model.ModelObserver;
+import it.polimi.ingsw.server.model.state.InitState;
+import it.polimi.ingsw.server.model.state.PlacementState;
+import it.polimi.ingsw.server.model.update.AvailableAction;
+import it.polimi.ingsw.server.model.update.BoardUpdate;
+import it.polimi.ingsw.server.model.update.ModelUpdate;
+import it.polimi.ingsw.server.model.update.PlayerUpdate;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class InitStateTest extends ModelTest {
+
+    private Game game(int n) {
+        return new Game(playerNames(n));
+    }
+
+    private List<String> playerNames(int n) {
+        return java.util.stream.IntStream.rangeClosed(1, n)
+                .mapToObj(i -> "Player" + i)
+                .toList();
+    }
+
+    private InitState initState(Game game) {
+        return new InitState(game);
+    }
+
+    @Nested
+    @DisplayName("InitState start")
+    class StartTests {
+
+        @Test
+        @DisplayName("start transitions to PlacementState")
+        void startTransitionsToPlacementState() {
+            Game game = game(2);
+            InitState state = initState(game);
+
+            state.start();
+
+            assertTrue(game.getCurrentState() instanceof PlacementState);
+        }
+
+        @Test
+        @DisplayName("start sends a full sync to observers")
+        void startSendsFullSync() {
+            Game game = game(2);
+            InitState state = initState(game);
+            TestObserver observer = new TestObserver();
+
+            game.addObserver(observer);
+
+            state.start();
+
+            assertTrue(observer.fullSyncReceived);
+            assertNotNull(observer.boardUpdate);
+            assertNotNull(observer.playersUpdates);
+            assertEquals(2, observer.playersUpdates.size());
+        }
+    }
+
+    @Nested
+    @DisplayName("Available actions")
+    class AvailableActionsTests {
+
+        @Test
+        @DisplayName("getAvailableActions returns empty list")
+        void getAvailableActionsReturnsEmptyList() {
+            Game game = game(2);
+            InitState state = initState(game);
+
+            assertTrue(state.getAvailableActions("Player1").isEmpty());
+        }
+    }
+
+    @Nested
+    @DisplayName("Active player")
+    class ActivePlayerTests {
+
+        @Test
+        @DisplayName("getActivePlayerNickname returns null")
+        void getActivePlayerNicknameReturnsNull() {
+            Game game = game(2);
+            InitState state = initState(game);
+
+            assertNull(state.getActivePlayerNickname());
+        }
+    }
+
+    private static class TestObserver implements ModelObserver {
+        private boolean fullSyncReceived = false;
+        private BoardUpdate boardUpdate;
+        private List<PlayerUpdate> playersUpdates;
+
+        @Override
+        public void onModelUpdate(ModelUpdate update) {
+            // Not needed for InitState tests
+        }
+
+        @Override
+        public void onFullSync(BoardUpdate board,
+                               List<PlayerUpdate> players,
+                               String activePlayer,
+                               List<AvailableAction> actions) {
+            this.fullSyncReceived = true;
+            this.boardUpdate = board;
+            this.playersUpdates = players;
+        }
+    }
 }
