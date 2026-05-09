@@ -69,6 +69,7 @@ public class CavePaintings extends Event {
                     player.getFood(),
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
+                    player.getSustenanceDiscount(),
                     reason
             ));
 

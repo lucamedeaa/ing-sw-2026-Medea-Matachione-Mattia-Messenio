@@ -10,7 +10,6 @@ public class LobbyModel extends ObservableModel {
     private List<GameInfoDto> availableGames = new ArrayList<>();
     private List<String> lobbyPlayers = new ArrayList<>();
     private String lobbyNotification = "";
-    private String globalError = "";
 
     public void setAvailableGames(List<GameInfoDto> games) {
         lock.writeLock().lock();

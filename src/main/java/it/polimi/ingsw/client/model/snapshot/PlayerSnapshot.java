@@ -10,6 +10,7 @@ public class PlayerSnapshot {
     private int prestige;
     private TotemColor totemColor;
     private int foodDiscount;
+    private int sustenanceDiscount;
 
 
     public PlayerSnapshot(PlayerDto dto) {
@@ -18,6 +19,7 @@ public class PlayerSnapshot {
         this.prestige = dto.prestige();
         this.totemColor = dto.totemColor();
         this.foodDiscount = dto.foodDiscount();
+        this.sustenanceDiscount = dto.sustenanceDiscount();
     }
 
     public String getNickname() { return nickname; }
@@ -25,8 +27,11 @@ public class PlayerSnapshot {
     public int getPrestige() { return prestige; }
     public TotemColor getTotemColor() { return totemColor; }
     public int getFoodDiscount() { return foodDiscount; }
+    public int getSustenanceDiscount() { return sustenanceDiscount; }
 
     public void setFood(int food) { this.food = food; }
     public void setPrestige(int prestige) { this.prestige = prestige; }
     public void setFoodDiscount(int foodDiscount) { this.foodDiscount = foodDiscount; }
+    public void setSustenanceDiscount(int sustenanceDiscount) { this.sustenanceDiscount = sustenanceDiscount; }
+
 }

@@ -107,5 +107,4 @@ public class InGameUiState implements UIState, InGameView {
     }
 
 
-    public record PlayerResources(int food, int prestige, int discount) {}
 }

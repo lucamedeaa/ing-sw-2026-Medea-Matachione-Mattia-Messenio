@@ -90,6 +90,7 @@ public class AdditionalPickState extends GameState {
                     player.getFood(),
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
+                    player.getSustenanceDiscount(),
                     "Acquisto Edificio (-" + finalCost + " cibo)"
             ));
         //}

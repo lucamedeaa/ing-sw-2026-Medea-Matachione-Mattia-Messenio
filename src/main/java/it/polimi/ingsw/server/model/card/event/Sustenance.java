@@ -44,10 +44,7 @@ public class Sustenance extends Event {
     public List<GameEvent> execute(List<Player> players) {
         List<GameEvent> events = new ArrayList<>();
         for (Player player : players) {
-            int discount = player.countCharactersOfType(CharacterType.COLLECTOR) * 3;
-            for (Card card : player.getTribe()) {
-                discount += card.onSustenanceEvent(player);
-            }
+            int discount = player.getSustenanceDiscount();
 
             int total = 0;
             int playerFood = player.getFood();
@@ -80,6 +77,7 @@ public class Sustenance extends Event {
                     player.getFood(),
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
+                    player.getSustenanceDiscount(),
                     reason
             ));
         }

@@ -60,7 +60,7 @@ public class RoundEndState extends GameState {
         for (Player p : game.getPlayers()) {
             // Invia l'evento per TUTTI, indipendentemente dai guadagni
             game.pushEvent(new PlayerResourcesChangedEvent(
-                    p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), reason
+                    p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), p.getSustenanceDiscount(),reason
             ));
         }
     }

@@ -58,6 +58,7 @@ public class ActionState extends GameState {
                             this.currentPlayer.getFood(),
                             this.currentPlayer.getPrestigePoints(),
                             this.currentPlayer.getFoodDiscount(),
+                            this.currentPlayer.getSustenanceDiscount(),
                             "Bonus tessera offerta: +" + bonus + " cibo"
                     ));
                 }
@@ -119,6 +120,7 @@ public class ActionState extends GameState {
                 player.getFood(),
                 player.getPrestigePoints(),
                 player.getFoodDiscount(),
+                player.getSustenanceDiscount(),
                 reason
         ));
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
@@ -153,6 +155,7 @@ public class ActionState extends GameState {
                     this.currentPlayer.getFood(),
                     this.currentPlayer.getPrestigePoints(),
                     this.currentPlayer.getFoodDiscount(),
+                    this.currentPlayer.getSustenanceDiscount(),
                     msg
             ));
         }

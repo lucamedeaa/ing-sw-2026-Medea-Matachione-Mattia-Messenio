@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.state.InGameUiState;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class InGameRenderer {
         this.out = out;
     }
 
-    public void render(GameModel gameModel, String myNickname, Map<String, InGameUiState.PlayerResources> deltas, String lastError) {
+    public void render(GameModel gameModel, String myNickname, Map<String, PlayerResources> deltas, String lastError) {
         out.clearScreen();
         out.print("════ MESOS — Era " + gameModel.getCurrentEra() + " / Round " + gameModel.getCurrentRound() + " ════\n");
 
@@ -95,8 +96,8 @@ public class InGameRenderer {
 
             String pColor = getTotemAnsiColor(gameModel, p.getNickname());
 
-            out.print(String.format("%s %s%-14s" + ColorAnsi.RESET + "  cibo: " + ColorAnsi.GREEN_BOLD + "%2d" + ColorAnsi.RESET + "  prestigio: " + ColorAnsi.GREEN_BOLD + "%3d" + ColorAnsi.RESET + "  sconto: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  [%d carte]%s",
-                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), tribeSize, tag));
+            out.print(String.format("%s %s%-14s" + ColorAnsi.RESET + "  cibo: " + ColorAnsi.GREEN_BOLD + "%2d" + ColorAnsi.RESET + "  prestigio: " + ColorAnsi.GREEN_BOLD + "%3d" + ColorAnsi.RESET + "  sc. Edifici: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  sc. Cibo: " + ColorAnsi.GREEN_BOLD + "-%d" + ColorAnsi.RESET + "  [%d carte]%s",
+                    marker, pColor, p.getNickname(), p.getFood(), p.getPrestige(), p.getFoodDiscount(), p.getSustenanceDiscount(), tribeSize, tag));
         }
     }
 
@@ -106,23 +107,26 @@ public class InGameRenderer {
         CardBoxRenderer.printCardRow(out, tribe, false);
     }
 
-    private void renderTurnRecap(Map<String, InGameUiState.PlayerResources> deltas, GameModel gameModel) {
+    private void renderTurnRecap(Map<String, PlayerResources> deltas, GameModel gameModel)  {
         out.print("");
         out.print(ColorAnsi.WHITE_BOLD + "  TURN RECAP" + ColorAnsi.RESET);
         for (String nickname : gameModel.getPlayers().keySet()) {
-            InGameUiState.PlayerResources res = deltas.getOrDefault(nickname, new InGameUiState.PlayerResources(0, 0, 0));
+            PlayerResources res = deltas.getOrDefault(nickname, new PlayerResources(0, 0, 0, 0));
             int df = res.food();
             int dp = res.prestige();
             int dd = res.discount();
 
             String foodStr = (df >= 0 ? "+" : "") + df;
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
-            String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
+            //String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
             String pColor = getTotemAnsiColor(gameModel, nickname);
 
-            out.print(String.format("  %s%-14s" + ColorAnsi.RESET + "  cibo: %-3s prestigio: %-3s sconto: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET,
-                    pColor, nickname, foodStr, ppStr, discStr));
+            String discStr = res.discount() == 0 ? "0" : (res.discount() > 0 ? "-" + res.discount() : "+" + Math.abs(res.discount()));
+            String sustStr = res.sustenanceDiscount() == 0 ? "0" : (res.sustenanceDiscount() > 0 ? "-" + res.sustenanceDiscount() : "+" + Math.abs(res.sustenanceDiscount()));
+
+            out.print(String.format("  %s%-14s" + ColorAnsi.RESET + "  cibo: %-3s prestigio: %-3s sc. Edifici: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET + " sc. Cibo: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET,
+                    pColor, nickname, foodStr, ppStr, discStr, sustStr));
         }
     }
 

@@ -30,7 +30,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerResourcesChangedDto event) {
-        gameModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
+        gameModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount(), event.sustenanceDiscount());
         if (event.reason() != null && !event.reason().isEmpty()) {
             gameModel.addGameLog(ColorAnsi.YELLOW + "[" + event.nickname() + "] " + event.reason() + ColorAnsi.RESET);
         }
@@ -49,7 +49,8 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(RoundAdvancedDto event) {
-        gameModel.clearTurnDeltas();
+        //gameModel.clearTurnDeltas();
+        gameModel.addGameLog(ColorAnsi.YELLOW_BOLD + "=== FINE ROUND " + (event.newRound() - 1) + " ===" + ColorAnsi.RESET);
         gameModel.updateRound(event.newRound());
     }
 
@@ -76,4 +77,6 @@ public class EventApplier implements EventVisitor {
     public void visit(TotemReturnedDto event) {
         gameModel.returnTotemToTrack(event.nickname(), event.returnIndex());
     }
+
+
 }

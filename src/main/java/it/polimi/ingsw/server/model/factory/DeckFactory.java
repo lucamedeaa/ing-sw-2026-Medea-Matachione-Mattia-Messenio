@@ -188,21 +188,30 @@ public class DeckFactory {
         List<Card> era1 = new ArrayList<>();
         List<Card> era2 = new ArrayList<>();
         List<Card> era3 = new ArrayList<>();
+        List<Card> finalEvents = new ArrayList<>();
 
         for (Card c : cards) {
             if (c.getEra() == 1) era1.add(c);
             else if (c.getEra() == 2) era2.add(c);
-            else if (c.getEra() == 3) era3.add(c);
+            else if (c.getEra() == 3) {
+                if (c instanceof Sustenance || c instanceof ShamanicRitual) {
+                    finalEvents.add(c);
+                } else {
+                    era3.add(c);
+                }
+            }
         }
 
         Collections.shuffle(era1);
         Collections.shuffle(era2);
         Collections.shuffle(era3);
+        Collections.shuffle(finalEvents);
 
         List<Card> stackedDeck = new ArrayList<>();
         stackedDeck.addAll(era1);
         stackedDeck.addAll(era2);
         stackedDeck.addAll(era3);
+        stackedDeck.addAll(finalEvents);
 
         return new Deck(stackedDeck);
     }

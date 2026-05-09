@@ -16,4 +16,5 @@ public interface EventVisitor {
     void visit(PlayerLeftGameDto event);
     void visit(GameOverDto event);
     void visit(TotemReturnedDto event);
+
 }
