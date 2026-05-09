@@ -73,7 +73,7 @@ public class LobbyUiState implements UIState, LobbyView {
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
         this.initialized = true;
-        render(); // Aggiorno lo schermo con il nuovo giocatore
+        //render(); //gia fatto in chiusura del batch
     }
 
     @Override

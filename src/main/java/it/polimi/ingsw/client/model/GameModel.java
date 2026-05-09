@@ -49,7 +49,9 @@ public class GameModel extends ObservableModel {
     public void setActivePlayer(String activePlayer) {
         lock.writeLock().lock();
         try {
-            turn.setActivePlayer(activePlayer);
+            if (activePlayer != null && !activePlayer.equals(turn.getActivePlayer())) {
+                turnDeltas.remove(activePlayer);
+            }
         }finally {
             lock.writeLock().unlock();
         }

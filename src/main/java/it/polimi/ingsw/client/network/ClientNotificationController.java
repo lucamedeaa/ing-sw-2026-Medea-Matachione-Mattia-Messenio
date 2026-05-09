@@ -47,29 +47,34 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void matchmakingSuccess(String text) {
-        gameModel.executeBatch(() -> {
+        if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
+
+        lobbyModel.executeBatch(() -> {
             lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text);
-            if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
         });
 
     }
 
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
-        lobbyModel.setLobbyData(currentPlayers, notification);
-        if (lobbyView != null) lobbyView.onRoomUpdate(notification, currentPlayers);
+        lobbyModel.executeBatch(() -> {
+            lobbyModel.setLobbyData(currentPlayers, notification);
+
+            if (lobbyView != null) lobbyView.onRoomUpdate(notification, currentPlayers);
+        });
     }
 
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
+        if (lobbyView != null) {
+            lobbyView.onGameStarted();
+        }
+
         gameModel.executeBatch(() -> {
             gameModel.reset();
             gameModel.setFullState(board, players, activePlayer);
             gameModel.setAvailableActions(actions);
         });
-        if(lobbyView != null){
-            lobbyView.onGameStarted();
-        }
     }
 
     @Override

@@ -37,7 +37,15 @@ public class InGameUiState implements UIState, InGameView {
     }
 
     private void registerCommands() {
-        commandRegistry.put("v", args -> new ViewTribeCommand(navigator, out, args[1]));
+        commandRegistry.put("v", args -> {
+            if (args.length < 2) {
+                throw new IllegalArgumentException("Specifica un giocatore. Uso: v <nickname>");
+            }
+            if (!gameModel.getPlayers().containsKey(args[1])) {
+                throw new IllegalArgumentException("Giocatore non trovato: " + args[1]);
+            }
+            return new ViewTribeCommand(navigator, out, args[1]);
+        });
         commandRegistry.put("i", args -> new InfoCommand(navigator, out));
         commandRegistry.put("quit", args -> new DisconnectCommand(controller));
         commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
@@ -45,6 +53,9 @@ public class InGameUiState implements UIState, InGameView {
 
     @Override
     public void render() {
+        if (gameModel.getPlayers().isEmpty()) {
+            return;
+        }
         String error = gameModel.consumeGlobalError();
         renderer.render(gameModel, session.getNickname(), gameModel.getTurnDeltas(), error);
     }

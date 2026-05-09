@@ -84,7 +84,7 @@ public class AdditionalPickState extends GameState {
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
 
 
-        if (finalCost > 0) {
+        //if (finalCost > 0) {
             game.pushEvent(new PlayerResourcesChangedEvent(
                     player.getNickname(),
                     player.getFood(),
@@ -92,7 +92,7 @@ public class AdditionalPickState extends GameState {
                     player.getFoodDiscount(),
                     "Acquisto Edificio (-" + finalCost + " cibo)"
             ));
-        }
+        //}
 
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 

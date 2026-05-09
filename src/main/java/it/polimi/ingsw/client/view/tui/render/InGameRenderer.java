@@ -109,8 +109,8 @@ public class InGameRenderer {
     private void renderTurnRecap(Map<String, InGameUiState.PlayerResources> deltas, GameModel gameModel) {
         out.print("");
         out.print(ColorAnsi.WHITE_BOLD + "  TURN RECAP" + ColorAnsi.RESET);
-        for (var e : deltas.entrySet()) {
-            InGameUiState.PlayerResources res = e.getValue();
+        for (String nickname : gameModel.getPlayers().keySet()) {
+            InGameUiState.PlayerResources res = deltas.getOrDefault(nickname, new InGameUiState.PlayerResources(0, 0, 0));
             int df = res.food();
             int dp = res.prestige();
             int dd = res.discount();
@@ -119,10 +119,10 @@ public class InGameRenderer {
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
             String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
-            String pColor = getTotemAnsiColor(gameModel, e.getKey());
+            String pColor = getTotemAnsiColor(gameModel, nickname);
 
             out.print(String.format("  %s%-14s" + ColorAnsi.RESET + "  cibo: %-3s prestigio: %-3s sconto: " + ColorAnsi.GREEN_BOLD + "%-3s" + ColorAnsi.RESET,
-                    pColor, e.getKey(), foodStr, ppStr, discStr));
+                    pColor, nickname, foodStr, ppStr, discStr));
         }
     }
 

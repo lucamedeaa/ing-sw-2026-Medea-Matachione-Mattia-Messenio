@@ -61,6 +61,7 @@ public class ActionState extends GameState {
                             "Bonus tessera offerta: +" + bonus + " cibo"
                     ));
                 }
+                checkTurnConditions();
                 return;
             }
             currentColumnIndex++;
@@ -146,7 +147,7 @@ public class ActionState extends GameState {
         int prestigeDiff = this.currentPlayer.getPrestigePoints() - ppBefore;
 
         if (foodDiff != 0 || prestigeDiff != 0) {
-            String msg = foodDiff < 0 ? "Penalità ordine turno" : "Bonus ordine turno";
+            String msg = (foodDiff < 0 || prestigeDiff < 0) ? "Penalità ordine turno" : "Bonus ordine turno";
             game.pushEvent(new PlayerResourcesChangedEvent(
                     this.currentPlayer.getNickname(),
                     this.currentPlayer.getFood(),
@@ -251,13 +252,15 @@ public class ActionState extends GameState {
         endPlayerTurn();
 
         // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
-        game.pushEvent(new PlayerResourcesChangedEvent(
+       /* game.pushEvent(new PlayerResourcesChangedEvent(
                 player.getNickname(),
                 player.getFood(),
                 player.getPrestigePoints(),
                 player.getFoodDiscount(),
                 "Ritorno Totem (Skip)"
         ));
+
+        */
     }
 
 }
