@@ -1,42 +1,100 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
+import it.polimi.ingsw.client.controller.ServerController;
+import it.polimi.ingsw.client.model.ClientSession;
+import it.polimi.ingsw.client.model.LobbyModel;
+import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.view.gui.GuiContext;
+import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 
+import static it.polimi.ingsw.client.view.gui.GuiFxApp.*;
+
 public class LobbyScreen implements LobbyView, RefreshableScreen {
+
+    private final GuiContext ctx;
+    private final GuiNavigator navigator;
+    private boolean initialized = false;
+
+    @FXML private VBox playersContainer;
+    @FXML private Label statusLabel;
+
+    // Nuovo costruttore per la Factory
+    public LobbyScreen(GuiContext ctx, GuiNavigator navigator) {
+        this.ctx = ctx;
+        this.navigator = navigator;
+    }
+
+    @FXML
+    public void initialize() {
+        // Registrazione al caricamento
+        ctx.notificationController().setLobbyView(this);
+    }
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
-
+        // Ignoriamo i parametri per evitare doppia fonte di verità.
+        // Accendiamo solo il flag per autorizzare il refresh().
+        this.initialized = true;
     }
 
     @Override
     public void onGameStarted() {
-
+        ctx.notificationController().setLobbyView(null);
+        Platform.runLater(() -> navigator.toInGame());
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-
+        ctx.notificationController().setLobbyView(null);
+        Platform.runLater(() -> navigator.toMatchmaking());
+        // Nota: il motivo del ritorno andrebbe idealmente mostrato in MatchmakingScreen
     }
 
     @Override
     public void onError(String error) {
-
+        // Aggiorna direttamente l'UI, quindi serve Platform.runLater
+        Platform.runLater(() -> statusLabel.setText(error));
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-
+        ctx.notificationController().setLobbyView(null);
+        Platform.runLater(() -> navigator.toDisconnected(reason));
     }
 
     @Override
     public void refresh() {
+        if (!initialized) return;
 
+        // Il rendering legge esclusivamente dal model
+        playersContainer.getChildren().clear();
+        List<String> players = ctx.lobbyModel().getLobbyPlayers();
+
+        for (String player : players) {
+            Label playerLabel = new Label(player);
+            if (player.equals(ctx.session().getNickname())) {
+                playerLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+            }
+            playersContainer.getChildren().add(playerLabel);
+        }
+
+        String notification = ctx.lobbyModel().getLobbyNotification();
+        if (notification != null) {
+            statusLabel.setText(notification);
+        }
     }
-    //TODO:  Controller FXML della sala d'attesa. Implementa LobbyView.
-    // Mostra la lista giocatori e la notifica di sala ricevuta via onRoomUpdate.
-    // Su onGameStarted naviga a toInGame(), su onReturnToMatchmaking torna al matchmaking.
-    // De-registra sempre prima di navigare. Tutti i callback arrivano dal thread di rete — Platform.runLater obbligatorio.
+
+    @FXML
+    private void handleLeave() {
+        ctx.controller().leaveGame();
+        ctx.notificationController().setLobbyView(null);
+        navigator.toMatchmaking();
+    }
 }

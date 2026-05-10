@@ -1,9 +1,20 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
+import it.polimi.ingsw.client.view.gui.GuiContext;
+import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 
 public class GameEndedScreen implements GameEndedView, RefreshableScreen {
+    private final GuiContext ctx;
+    private final GuiNavigator navigator;
+
+
+    public GameEndedScreen(GuiContext ctx, GuiNavigator navigator) {
+        this.ctx = ctx;
+        this.navigator = navigator;
+    }
+
     @Override
     public void onReturnToMatchmaking(String reason) {
 

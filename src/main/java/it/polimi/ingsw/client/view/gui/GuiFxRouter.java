@@ -96,9 +96,9 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
 //Le tre linee commentate sono per non introdurre errori, togliere il commento una volta fatta la classe corrispondente
     private void registerControllers() {
         factories.put(MatchmakingScreen.class, () -> new MatchmakingScreen(ctx, this));
-        //factories.put(LobbyScreen.class,       () -> new LobbyScreen(ctx, this));
-        //factories.put(InGameScreen.class,      () -> new InGameScreen(ctx, this));
-        //factories.put(GameEndedScreen.class,   () -> new GameEndedScreen(ctx, this));
+        factories.put(LobbyScreen.class,       () -> new LobbyScreen(ctx, this));
+        factories.put(InGameScreen.class,      () -> new InGameScreen(ctx, this));
+        factories.put(GameEndedScreen.class,   () -> new GameEndedScreen(ctx, this));
         factories.put(DisconnectedScreen.class, DisconnectedScreen::new);
         factories.put(BoardPanelController.class, BoardPanelController::new);
         factories.put(PlayersPanelController.class, PlayersPanelController::new);
