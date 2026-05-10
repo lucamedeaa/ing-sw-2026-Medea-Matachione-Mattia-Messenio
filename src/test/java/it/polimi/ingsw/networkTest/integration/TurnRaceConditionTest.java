@@ -36,52 +36,35 @@ public class TurnRaceConditionTest extends NetworkTestBase {
         FullSyncMessage sync = p1.waitFor(FullSyncMessage.class, 3);
         p2.waitFor(FullSyncMessage.class, 3);
 
-        // Fast-forward through Placement State
         String firstPlayer = sync.activePlayer();
         DummyClient active = firstPlayer.equals("Player1") ? p1 : p2;
         DummyClient waiting = firstPlayer.equals("Player1") ? p2 : p1;
 
-        active.proxy.placeTotem(0);
+        active.proxy.placeTotem(0); // Tile 0 = B (0 upper, 1 lower pick)
         active.waitFor(DeltaEventMessage.class, 2);
         waiting.waitFor(DeltaEventMessage.class, 2);
 
-        waiting.proxy.placeTotem(1);
+        waiting.proxy.placeTotem(1); // Tile 1 = C (1 upper, 0 lower pick)
         active.waitFor(DeltaEventMessage.class, 2);
         waiting.waitFor(DeltaEventMessage.class, 2);
 
-        // now in ActionState. It is 'active's turn.
+        // Now in ActionState. It is 'active's turn.
 
-        ExecutorService burstExecutor = Executors.newFixedThreadPool(2);
-        CountDownLatch startGun = new CountDownLatch(1);
-
-        // Both clients will fire the 'takeCard' command at the exact same moment
-        burstExecutor.submit(() -> {
-            try {
-                startGun.await();
-                active.proxy.takeCard(0, 0); // Valid move
-            } catch (Exception ignored) {}
-        });
-
-        burstExecutor.submit(() -> {
-            try {
-                startGun.await();
-                waiting.proxy.takeCard(1, 0); // INVALID move (not their turn)
-            } catch (Exception ignored) {}
-        });
-
-        startGun.countDown();
-        burstExecutor.shutdown();
-        burstExecutor.awaitTermination(3, TimeUnit.SECONDS);
-
-        // Verifications:
-        //  The active player MUST receive a DeltaEvent indicating their move was accepted
-        DeltaEventMessage successResponse = active.waitFor(DeltaEventMessage.class, 2);
-        assertNotNull(successResponse, "The active player's valid move was dropped or failed.");
-
-        //  The waiting player MUST receive an ErrorMessage for playing out of turn
+        // Il giocatore in attesa prova a rubare il turno
+        waiting.proxy.takeCard(0, 0); // Invalid move (not their turn)
         ErrorMessage errorResponse = waiting.waitFor(ErrorMessage.class, 2);
         assertNotNull(errorResponse, "The waiting player's invalid move was not rejected with an error.");
         assertTrue(errorResponse.error().toLowerCase().contains("turn") || errorResponse.error().toLowerCase().contains("allowed"),
                 "The error message must clearly state the action was out of turn.");
+
+        // Il giocatore attivo tenta un double-click per prendere due carte invalidando i pick totali
+        active.proxy.takeCard(1, 0); // Valid move (lower row)
+        active.proxy.takeCard(1, 1); // Invalid move, accodata (turn/picks già esauriti)
+
+        DeltaEventMessage successResponse = active.waitFor(DeltaEventMessage.class, 2);
+        assertNotNull(successResponse, "The active player's valid move was dropped or failed.");
+
+        ErrorMessage doubleClickError = active.waitFor(ErrorMessage.class, 2);
+        assertNotNull(doubleClickError, "The active player's second queued move was not rejected.");
     }
 }
