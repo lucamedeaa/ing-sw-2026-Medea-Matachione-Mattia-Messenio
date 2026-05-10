@@ -11,42 +11,46 @@ import javafx.stage.Stage;
 
 public class GuiFxApp extends Application implements ClientUi{
     private static ServerController staticController;
-    private GameModel gameModel;
-    private ClientSession session;
-    private LobbyModel lobbyModel;
+    private static GameModel gameModel;
+    private static ClientSession session;
+    private static LobbyModel lobbyModel;
+    private static ClientNotificationController notificationController;
 
     public GuiFxApp() {
         // Required by JavaFX
     }
 
     public GuiFxApp(LobbyModel lobbyModel, GameModel gameModel) {
-        this.gameModel = gameModel;
-        this.session = new ClientSession();
-        this.lobbyModel = lobbyModel;
+        GuiFxApp.gameModel = gameModel;
+        session = new ClientSession();
+        GuiFxApp.lobbyModel = lobbyModel;
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
+        GuiContext ctx = new GuiContext(staticController, lobbyModel, gameModel, session, notificationController);
+        GuiFxRouter router = new GuiFxRouter(primaryStage, ctx);
+        primaryStage.setTitle("Mesos");
+        router.toMatchmaking();
+        primaryStage.show();
     }
 
     @Override
     public void setController(ServerController controller) {
-
+        staticController = controller;
     }
 
     @Override
     public void start() {
-
+        Application.launch(GuiFxApp.class);
     }
 
     @Override
     public void setNotificationController(ClientNotificationController notificationController) {
-
+        GuiFxApp.notificationController = notificationController;
     }
-    //TODO:Entry point della GUI. Estende Application, implementa ClientUi.
+    //Entry point della GUI. Estende Application, implementa ClientUi.
     // Crea ClientSession internamente. Salva tutte le dipendenze in campi statici perché JavaFX instanzia una seconda copia via reflection;
     // start(Stage) le legge e costruisce il router. Chiamare start() lancia la finestra e blocca il thread fino alla chiusura.
-
 
 }

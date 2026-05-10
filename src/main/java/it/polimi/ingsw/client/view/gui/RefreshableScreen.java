@@ -3,7 +3,7 @@ package it.polimi.ingsw.client.view.gui;
 public interface RefreshableScreen {
     void refresh();
 
-    // Contratto di refresh interno usato esclusivamente da GuiFxRouter.
+// Contratto di refresh interno usato esclusivamente da GuiFxRouter.
 // Le screen che implementano questa interfaccia (MatchmakingScreen, LobbyScreen,
 // InGameScreen, GameEndedScreen) non sono observer del model: non chiamano mai
 // addObserver() su nessun modello. Implementano RefreshableScreen solo per
