@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,9 +23,9 @@ public class TimeoutTest extends NetworkTestBase {
         Socket idleClient = new Socket("localhost", serverPort);
         clientSockets.add(idleClient);
 
-        // The timeout in SocketClientHandler is 10000ms.
-        // We wait slightly longer to ensure the timeout exception is triggered.
-        Thread.sleep(11000);
+        ObjectOutputStream out = new ObjectOutputStream(idleClient.getOutputStream());
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(idleClient.getInputStream());
 
         int readByte = idleClient.getInputStream().read();
         assertEquals(-1, readByte, "Server should have closed the socket due to read timeout.");

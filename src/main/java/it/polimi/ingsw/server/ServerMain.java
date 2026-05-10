@@ -83,25 +83,12 @@ public class ServerMain {
                 Socket clientSocket = serverSocket.accept();
                 LOGGER.info("[SOCKET] New connection from: " + clientSocket.getInetAddress());
 
-                try {
-                    SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager, lobbyController);
-                    new Thread(clientHandler).start();
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "[SOCKET] Error during client initialization", e);
-                    closeClientSocket(clientSocket);
-                }
+                SocketClientHandler clientHandler = new SocketClientHandler(clientSocket, gameManager, lobbyController);
+                new Thread(clientHandler).start();
             }
 
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "[SOCKET] Fatal server error", e);
-        }
-    }
-
-    private void closeClientSocket(Socket clientSocket) {
-        try {
-            clientSocket.close();
-        } catch (IOException e) {
-            LOGGER.log(Level.FINE, "[SOCKET] Error while closing client socket after initialization failure", e);
         }
     }
 

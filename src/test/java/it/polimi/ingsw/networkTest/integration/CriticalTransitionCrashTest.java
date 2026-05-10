@@ -18,6 +18,7 @@ public class CriticalTransitionCrashTest extends NetworkTestBase {
         DummyClient c2 = new DummyClient("Bob");
 
         c1.proxy.createGame("Alice", 2);
+        c1.waitFor(MatchmakingSuccessMessage.class, 2);
         String gid = gameManager.getAvailableGames().get(0).getGameId();
         c2.proxy.joinGame("Bob", gid);
 
