@@ -39,26 +39,26 @@ public class PlacementState extends GameState {
 
 
         board.consumeCurrentPlayer();
+        game.pushEvent(new TotemPlacedEvent(player.getNickname(), tileIndex));
 
         if (board.allTotemsPlaced()) {
             this.transition(new ActionState(this.game));
         }
 
-        game.pushEvent(new TotemPlacedEvent(player.getNickname(), tileIndex));
     }
 
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
-        // 1. Controllo turno
+        //  Controllo turno
         if (!playerNickname.equals(getActivePlayerNickname())) {
             return List.of();
         }
 
-        // 2. Recupero il tracciato
+        //  Recupero il tracciato
         Board board = game.getBoard();
         List<OfferTile> track = board.getOfferTrack();
 
-        // 3. Filtro gli indici delle tessere libere
+        //  Filtro gli indici delle tessere libere
         List<Integer> freeTiles = new ArrayList<>();
         for (int i = 0; i < track.size(); i++) {
             if (track.get(i).isFree()) {

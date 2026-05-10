@@ -8,7 +8,9 @@ import it.polimi.ingsw.server.model.update.GameEvent;
 import it.polimi.ingsw.server.model.update.GameEvent.*;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Game state handling end-of-round logic, including round progression, cleanup, and game termination check. */
 public class RoundEndState extends GameState {
@@ -20,11 +22,10 @@ public class RoundEndState extends GameState {
 
     @Override
     public void start() {
-        game.incrementRound();
-        game.pushEvent(new RoundAdvancedEvent(game.getCurrentRound()));
+
 
         // Snapshot risorse pre-risoluzione
-        java.util.Map<String, int[]> before = new java.util.HashMap<>();
+        Map<String, int[]> before = new HashMap<>();
         for (Player p : game.getPlayers()) {
             before.put(p.getNickname(), new int[]{p.getFood(), p.getPrestigePoints()});
         }
@@ -52,6 +53,8 @@ public class RoundEndState extends GameState {
             }
 
             notifyChanges(before, "Resources obtained at the end of the round (Bonus Totem Order Tile)");
+            game.incrementRound();
+            game.pushEvent(new RoundAdvancedEvent(game.getCurrentRound()));
             this.transition(new PlacementState(this.game));
         }
     }

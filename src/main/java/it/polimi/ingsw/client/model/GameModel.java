@@ -25,6 +25,8 @@ public class GameModel extends ObservableModel {
     private LeaderboardSnapshotDto globalLeaderboard = null;
     private final Map<String, PlayerResources> turnDeltas = new HashMap<>();
 
+    private boolean pendingDeltaReset = false;
+
     public void setFullState(BoardDto boardDTO, List<PlayerDto> playersList, String activePlayer) {
         board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
         board.setEra(boardDTO.currentEra());
@@ -48,15 +50,32 @@ public class GameModel extends ObservableModel {
     public void setActivePlayer(String activePlayer) {
         lock.writeLock().lock();
         try {
-            if (activePlayer != null && !activePlayer.equals(turn.getActivePlayer())) {
-                turnDeltas.remove(activePlayer);
-            }
             turn.setActivePlayer(activePlayer);
-        }finally {
+        } finally {
             lock.writeLock().unlock();
         }
         notifyUI();
+    }
 
+    public void scheduleDeltaReset() {
+        lock.writeLock().lock();
+        try {
+            this.pendingDeltaReset = true;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public void executePendingDeltaReset() {
+        lock.writeLock().lock();
+        try {
+            if (pendingDeltaReset) {
+                turnDeltas.clear();
+                pendingDeltaReset = false;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void removeCard(int row, int col) {

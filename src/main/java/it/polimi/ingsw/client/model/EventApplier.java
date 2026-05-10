@@ -25,6 +25,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(TotemPlacedDto event) {
+        gameModel.executePendingDeltaReset();
         gameModel.updateTotemPosition(event.nickname(), event.positionIndex());
     }
 
@@ -52,6 +53,7 @@ public class EventApplier implements EventVisitor {
         //gameModel.clearTurnDeltas();
         gameModel.addGameLog(ColorAnsi.YELLOW_BOLD + "=== END OF ROUND " + (event.newRound() - 1) + " ===" + ColorAnsi.RESET);
         gameModel.updateRound(event.newRound());
+        gameModel.scheduleDeltaReset();
     }
 
     @Override
