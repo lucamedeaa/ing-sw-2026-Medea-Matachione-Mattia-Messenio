@@ -178,10 +178,6 @@ public class Board {
     /** Moves non-persistent cards from the upper row to the lower row and keeps persistent cards in place according to board rules. */
     private void moveTopToLow() {
         // flatMap distrugge gli spazi bianchi vuoti, estraendo solo le carte vere
-        List<Card> remainingLower = lowerRow.stream()
-                .flatMap(Optional::stream)
-                .filter(Card::isPersistent)
-                .toList();
         List<Card> cardsSlidingDown = upperRow.stream()
                 .flatMap(Optional::stream)
                 .filter(card -> !card.isPersistent())
@@ -190,13 +186,11 @@ public class Board {
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
                 .toList();
-
         lowerRow.clear();
         upperRow.clear();
 
         // Ricostruzione compatta senza spazi vuoti
         cardsSlidingDown.forEach(this::addBottomRow);
-        remainingLower.forEach(this::addBottomRow);
         remainingUpper.forEach(this::addTopRow);
     }
 

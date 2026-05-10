@@ -214,6 +214,16 @@ public class ActionState extends GameState {
         if (picksExhausted || (!canDoMandatory && !canDoOptional)) {
             endPlayerTurn();
         }
+        if (!picksExhausted) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    currentPlayer.getNickname(),
+                    currentPlayer.getFood(),
+                    currentPlayer.getPrestigePoints(),
+                    currentPlayer.getFoodDiscount(),
+                    currentPlayer.getSustenanceDiscount(),
+                    "Automatic Skip: no affordable or valid actions left"
+            ));
+        }
     }
 
 
@@ -251,6 +261,15 @@ public class ActionState extends GameState {
         // Azzera i pick rimanenti per forzare la fine del turno
         this.remainingUpperPicks = 0;
         this.remainingLowerPicks = 0;
+
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                player.getFoodDiscount(),
+                player.getSustenanceDiscount(),
+                "Voluntary Skip: remaining picks skipped"
+        ));
 
         endPlayerTurn();
 

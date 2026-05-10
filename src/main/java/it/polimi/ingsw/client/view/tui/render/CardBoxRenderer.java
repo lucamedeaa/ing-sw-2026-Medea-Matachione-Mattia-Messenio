@@ -15,10 +15,10 @@ public class CardBoxRenderer {
         if (info.type().equals("Building")) return ColorAnsi.CYAN;
 
         return switch (info.type()) {
-            case "Builder"   -> ColorAnsi.YELLOW;
+            case "Builder"   -> ColorAnsi.GREEN_BOLD;
             case "Hunter"    -> ColorAnsi.RED;
             case "Artist"    -> ColorAnsi.MAGENTA;
-            case "Shaman"    -> ColorAnsi.CYAN;
+            case "Shaman"    -> ColorAnsi.WHITE_BOLD;
             case "Inventor"  -> ColorAnsi.BLUE;
             case "Collector" -> ColorAnsi.GREEN;
             default          -> ColorAnsi.RESET;
@@ -61,7 +61,7 @@ public class CardBoxRenderer {
             return;
         }
 
-        int chunkSize = 10; // Numero massimo di carte per riga
+        int chunkSize = 8; // Numero massimo di carte per riga
         for (int start = 0; start < cards.size(); start += chunkSize) {
             int end = Math.min(start + chunkSize, cards.size());
             List<Integer> chunk = cards.subList(start, end);
