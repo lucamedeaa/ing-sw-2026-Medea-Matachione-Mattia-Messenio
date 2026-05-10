@@ -11,7 +11,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Base class for client models that notify UI observers after state changes.
  */
 public abstract class ObservableModel {
-    private final List<UIObserver> observers = new CopyOnWriteArrayList<>();    protected boolean batchMode = false;
+    private final List<UIObserver> observers = new CopyOnWriteArrayList<>();
+    protected volatile boolean batchMode = false;
     private String globalError = "";
 
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -31,14 +32,19 @@ public abstract class ObservableModel {
      * @param updates updates to run under the model write lock
      */
     public void executeBatch(Runnable updates) {
-        lock.writeLock().lock();
         batchMode = true;
         try {
             updates.run();
         } finally {
             batchMode = false;
-            lock.writeLock().unlock();
-            notifyUI();
+
+            forceNotifyUI();
+        }
+    }
+
+    protected void forceNotifyUI() {
+        for (UIObserver obs : observers) {
+            obs.onStateChanged();
         }
     }
 
@@ -59,11 +65,14 @@ public abstract class ObservableModel {
     public void setGlobalError(String error) {
         lock.writeLock().lock();
         try {
-            this.globalError = error;
+            if (!this.globalError.isEmpty()) {
+                this.globalError += "\n";
+            }
+            this.globalError += error;
         } finally {
             lock.writeLock().unlock();
         }
-        notifyUI();
+        forceNotifyUI();
     }
 
     /**
@@ -98,7 +107,10 @@ public abstract class ObservableModel {
     public void setGlobalErrorSilent(String error) {
         lock.writeLock().lock();
         try {
-            this.globalError = error;
+            if (!this.globalError.isEmpty()) {
+                this.globalError += "\n";
+            }
+            this.globalError += error;
         } finally {
             lock.writeLock().unlock();
         }

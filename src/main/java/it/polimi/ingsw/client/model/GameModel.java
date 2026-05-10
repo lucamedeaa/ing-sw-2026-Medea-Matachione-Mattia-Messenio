@@ -172,17 +172,31 @@ public class GameModel extends ObservableModel {
      * @return copy of deltas by nickname
      */
     public Map<String, PlayerResources> getTurnDeltas() {
-        return new HashMap<>(turnDeltas);
+        lock.readLock().lock();
+        try {
+            return new HashMap<>(turnDeltas);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void addGameLog(String log) {
-        turn.addGameLog(log);
+        lock.writeLock().lock();
+        try {
+            turn.addGameLog(log);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public List<String> consumeGameLogs() {
-
-        return turn.consumeGameLogs();
+        lock.readLock().lock();
+        try {
+            return turn.consumeGameLogs();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
 

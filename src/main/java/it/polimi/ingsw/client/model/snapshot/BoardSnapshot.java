@@ -21,8 +21,11 @@ public class BoardSnapshot {
     }
 
     public void removeCard(int row, int col) {
-        if (row == 0) upperRowCards.set(col, null);
-        else lowerRowCards.set(col, null);
+        if (row == 0 && col >= 0 && col < upperRowCards.size()) {
+            upperRowCards.set(col, null);
+        } else if (row == 1 && col >= 0 && col < lowerRowCards.size()) {
+            lowerRowCards.set(col, null);
+        }
     }
 
     public void refillRow(int row, List<Integer> newCardIds) {

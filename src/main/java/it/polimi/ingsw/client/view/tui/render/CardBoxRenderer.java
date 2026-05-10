@@ -12,7 +12,7 @@ public class CardBoxRenderer {
         CardInfo info = CardNameMapper.getCard(id);
 
         if (info.type().equals("Event")) {
-            if ((info.name().contains("Sustenance") && info.era() == 3) || info.name().contains("ShamanicRitual") && info.era() == 3) {
+            if (info.era() == 3 && (info.name().contains("Sustenance") || info.name().contains("ShamanicRitual"))) {
                 return ColorAnsi.BLUE_BOLD;
             }
             return ColorAnsi.YELLOW;
@@ -43,7 +43,6 @@ public class CardBoxRenderer {
             };
         }
 
-        // Usa un'unica estrazione dal DB Data-Driven
         CardInfo info = CardNameMapper.getCard(id);
         String costPp = buildingCostPp(info.cost(), info.extraPP());
         String eraStr = "Era " + info.era();

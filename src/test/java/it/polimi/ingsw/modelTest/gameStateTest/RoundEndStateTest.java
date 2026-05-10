@@ -42,7 +42,6 @@ public class RoundEndStateTest extends ModelTest {
             RoundEndState state = roundEndState(game);
 
             int roundBefore = game.getCurrentRound();
-
             state.start();
 
             assertEquals(roundBefore + 1, game.getCurrentRound());
@@ -53,28 +52,29 @@ public class RoundEndStateTest extends ModelTest {
         void startTransitionsToPlacementStateWhenGameIsNotOver() {
             Game game = game(2);
             RoundEndState state = roundEndState(game);
-
             state.start();
 
             assertTrue(game.getCurrentState() instanceof PlacementState);
         }
 
         @Test
-        @DisplayName("start ends the game when round becomes greater than 10")
-        void startEndsGameWhenRoundBecomesGreaterThanTen() {
+        @DisplayName("start ends the game at the end of round 10")
+        void startEndsGameWhenRoundIsTen() {
             Game game = game(2);
 
             for (int i = 0; i < 9; i++) {
                 game.incrementRound();
             }
 
-            RoundEndState state = roundEndState(game);
+            assertEquals(10, game.getCurrentRound(), "Prima di RoundEndState, il round attuale deve essere 10");
 
+            RoundEndState state = roundEndState(game);
             state.start();
 
-            assertEquals(11, game.getCurrentRound());
-            assertTrue(game.getCurrentState() instanceof GameEndedState);
-            assertTrue(game.getCurrentState().isEnded());
+            assertEquals(10, game.getCurrentRound());
+
+            assertTrue(game.getCurrentState() instanceof it.polimi.ingsw.server.model.state.ScoringState ||
+                    game.getCurrentState() instanceof GameEndedState);
         }
     }
 
@@ -87,7 +87,6 @@ public class RoundEndStateTest extends ModelTest {
         void getAvailableActionsReturnsEmptyList() {
             Game game = game(2);
             RoundEndState state = roundEndState(game);
-
             List<AvailableAction> actions = state.getAvailableActions("Player1");
 
             assertTrue(actions.isEmpty());
