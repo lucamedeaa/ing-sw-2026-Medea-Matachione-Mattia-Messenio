@@ -296,15 +296,30 @@ public class Board {
         return this.offerTrack;
     }
 
-    //potenzialmente cambiarlo a direttamente getRowID, invece di dorlero risolvere ogni volta nei gameState (es: RoundEndState)
+    /**
+     * Returns the requested board row.
+     *
+     * @param idx 0 for upper row, any other value for lower row
+     * @return requested row
+     */
     public List<Optional<Card>> getRow(int idx){
         return idx == 0 ? this.upperRow : this.lowerRow;
     }
 
+    /**
+     * Returns the current era number.
+     *
+     * @return current era number
+     */
     public int getCurrentEraNumber() {
         return this.currentEraState.getEraNumber();
     }
 
+    /**
+     * Returns how many players have already returned their totem for the next round.
+     *
+     * @return next-round totem order size
+     */
     public int getNextTotemOrderSize() {
         return this.nextTotemOrder.size();
     }

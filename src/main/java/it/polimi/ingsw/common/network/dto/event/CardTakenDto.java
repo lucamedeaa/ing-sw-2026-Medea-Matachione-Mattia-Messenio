@@ -9,7 +9,7 @@ public record CardTakenDto(String nickname, int row, int col) implements GameEve
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Accepts a visitor. @param visitor */
+    /** Accepts a visitor. @param visitor visitor handling this event */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

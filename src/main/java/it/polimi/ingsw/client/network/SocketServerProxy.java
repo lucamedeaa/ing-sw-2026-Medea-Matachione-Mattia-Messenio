@@ -9,10 +9,18 @@ import it.polimi.ingsw.common.message.client.PlaceTotemMessage;
 import it.polimi.ingsw.common.message.client.SkipActionMessage;
 import it.polimi.ingsw.common.message.client.TakeCardMessage;
 
+/**
+ * Socket implementation of the server proxy used by the client.
+ */
 public class SocketServerProxy implements ServerProxy {
 
     private final SocketServerConnection connection;
 
+    /**
+     * Creates a proxy that writes command messages to an open socket connection.
+     *
+     * @param connection active socket connection
+     */
     public SocketServerProxy(SocketServerConnection connection) {
         this.connection = connection;
     }

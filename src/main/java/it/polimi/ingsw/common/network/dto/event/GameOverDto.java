@@ -6,6 +6,11 @@ import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
 import it.polimi.ingsw.common.visitor.EventVisitor;
 import java.util.List;
 
+/**
+ * Event DTO emitted when the game reaches the final ranking.
+ *
+ * @param leaderboard final leaderboard ordered by score
+ */
 public record GameOverDto(List<PlayerScoreDto> leaderboard) implements GameEventDto {
     @Serial
     private static final long serialVersionUID = 1L;

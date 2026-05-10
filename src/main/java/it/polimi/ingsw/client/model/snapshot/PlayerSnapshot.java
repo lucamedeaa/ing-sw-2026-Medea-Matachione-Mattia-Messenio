@@ -4,6 +4,9 @@ import it.polimi.ingsw.server.model.enums.TotemColor;
 import it.polimi.ingsw.common.network.dto.PlayerDto;
 
 //invece di usare PlayerDTO che è immutabile, diventa una rottura aggiornare il food e prestige ogni volta
+/**
+ * Mutable client-side copy of a player's public state.
+ */
 public class PlayerSnapshot {
     private final String nickname;
     private int food;
@@ -13,6 +16,11 @@ public class PlayerSnapshot {
     private int sustenanceDiscount;
 
 
+    /**
+     * Creates a snapshot from an immutable player DTO.
+     *
+     * @param dto source player data
+     */
     public PlayerSnapshot(PlayerDto dto) {
         this.nickname = dto.nickname();
         this.food = dto.food();

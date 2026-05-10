@@ -38,6 +38,11 @@ public class Player {
         this.totemColor = totemColor;
     }
 
+    /**
+     * Computes the discount applied during Sustenance.
+     *
+     * @return Sustenance discount from collectors and card effects
+     */
     public int getSustenanceDiscount() {
         int discount = countCharactersOfType(CharacterType.COLLECTOR) * 3;
         for (Card card : tribe) {
@@ -171,10 +176,20 @@ public class Player {
         return sumFromTribe(card -> card.getTopRowBonus());
     }
 
+    /**
+     * Returns the player's nickname.
+     *
+     * @return player nickname
+     */
     public String getNickname() {
         return name;
     }
 
+    /**
+     * Returns the player's totem color.
+     *
+     * @return assigned totem color
+     */
     public TotemColor getTotemColor() {
         return totemColor;
     }

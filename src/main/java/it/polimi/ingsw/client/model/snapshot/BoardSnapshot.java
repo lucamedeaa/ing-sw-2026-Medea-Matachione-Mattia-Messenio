@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Mutable client-side snapshot of visible board cards and round metadata.
+ */
 public class BoardSnapshot {
     private final List<Integer> upperRowCards = new CopyOnWriteArrayList<>();
     private final List<Integer> lowerRowCards = new CopyOnWriteArrayList<>();

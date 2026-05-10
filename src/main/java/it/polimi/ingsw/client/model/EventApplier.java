@@ -5,10 +5,18 @@ import it.polimi.ingsw.common.network.dto.TribeDto;
 import it.polimi.ingsw.common.network.dto.event.*;
 import it.polimi.ingsw.common.visitor.EventVisitor;
 
+/**
+ * Applies server delta events to the client-side game model.
+ */
 public class EventApplier implements EventVisitor {
 
     private final GameModel gameModel;
 
+    /**
+     * Creates an applier bound to the target game model.
+     *
+     * @param gameModel model updated by received events
+     */
     public EventApplier(GameModel gameModel) {
         this.gameModel = gameModel;
     }

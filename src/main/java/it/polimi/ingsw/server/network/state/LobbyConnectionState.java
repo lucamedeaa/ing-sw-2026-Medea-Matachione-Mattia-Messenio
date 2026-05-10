@@ -6,11 +6,20 @@ import it.polimi.ingsw.server.lobby.RoomConnectionHandler;
 import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import it.polimi.ingsw.server.network.ConnectionContext;
 
+/**
+ * Connection state that accepts matchmaking and lobby commands.
+ */
 public class LobbyConnectionState extends UnsupportedConnectionCommands {
 
     private final ConnectionContext connection;
     private final LobbyController lobbyController;
 
+    /**
+     * Creates the lobby state.
+     *
+     * @param connection connection context
+     * @param lobbyController lobby controller handling matchmaking
+     */
     public LobbyConnectionState(ConnectionContext connection, LobbyController lobbyController) {
         super(connection);
         this.connection = connection;

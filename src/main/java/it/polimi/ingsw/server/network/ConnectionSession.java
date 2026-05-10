@@ -44,6 +44,16 @@ public class ConnectionSession implements ConnectionContext {
     private ConnectionState connectionState;
     private String nickname;
 
+    /**
+     * Creates the shared session object for a transport handler.
+     *
+     * @param client transport-specific client proxy
+     * @param gameManager game manager used for nickname cleanup
+     * @param lobbyController lobby controller used by the lobby state
+     * @param closeConnection transport cleanup callback
+     * @param logger logger used for connection failures
+     * @param logPrefix prefix used in log messages and worker thread names
+     */
     public ConnectionSession(
             ClientProxy client,
             GameManagerInterface gameManager,
@@ -66,6 +76,11 @@ public class ConnectionSession implements ConnectionContext {
         this.connectionState = lobbyState;
     }
 
+    /**
+     * Returns the current command state.
+     *
+     * @return current connection state
+     */
     public ConnectionState currentState() {
         synchronized (lifecycleLock) {
             return connectionState;
@@ -143,6 +158,9 @@ public class ConnectionSession implements ConnectionContext {
         }
     }
 
+    /**
+     * Marks the session inactive, closes transport resources, and lets the current state clean up.
+     */
     public void handleClientDisconnection() {
         ConnectionState stateToNotify;
         String disconnectedNickname;

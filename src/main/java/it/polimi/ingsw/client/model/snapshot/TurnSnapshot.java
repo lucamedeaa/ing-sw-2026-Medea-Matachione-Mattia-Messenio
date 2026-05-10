@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Client-side snapshot of the active turn, available actions, and pending log lines.
+ */
 public class TurnSnapshot {
     private String activePlayer = "";
     private List<ActionDto> actions = new ArrayList<>();

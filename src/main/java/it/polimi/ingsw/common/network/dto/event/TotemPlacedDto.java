@@ -9,7 +9,7 @@ public record TotemPlacedDto(String nickname, int positionIndex) implements Game
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Accepts a visitor. @param visitor */
+    /** Accepts a visitor. @param visitor handling this event */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

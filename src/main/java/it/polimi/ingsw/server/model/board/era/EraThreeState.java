@@ -2,6 +2,9 @@ package it.polimi.ingsw.server.model.board.era;
 
 import it.polimi.ingsw.server.model.board.Board;
 
+/**
+ * Board era state for era three.
+ */
 public class EraThreeState implements EraState {
     @Override
     public int getEraNumber() { return 3; }

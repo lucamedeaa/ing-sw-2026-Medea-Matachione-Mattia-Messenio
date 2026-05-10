@@ -9,6 +9,9 @@ import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import java.util.*;
 
+/**
+ * Client-side projection of the game state received from the server.
+ */
 public class GameModel extends ObservableModel {
 
     // Composizione dei sotto-stati
@@ -27,6 +30,13 @@ public class GameModel extends ObservableModel {
 
     private boolean pendingDeltaReset = false;
 
+    /**
+     * Replaces the local state with a full server snapshot.
+     *
+     * @param boardDTO board snapshot
+     * @param playersList player snapshots
+     * @param activePlayer nickname of the active player
+     */
     public void setFullState(BoardDto boardDTO, List<PlayerDto> playersList, String activePlayer) {
         board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
         board.setEra(boardDTO.currentEra());
@@ -57,6 +67,9 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Marks accumulated turn deltas to be cleared before the next totem placement is applied.
+     */
     public void scheduleDeltaReset() {
         lock.writeLock().lock();
         try {
@@ -66,6 +79,9 @@ public class GameModel extends ObservableModel {
         }
     }
 
+    /**
+     * Clears accumulated turn deltas if a reset was previously scheduled.
+     */
     public void executePendingDeltaReset() {
         lock.writeLock().lock();
         try {
@@ -119,6 +135,15 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates a player's resources and accumulates the change for turn-delta rendering.
+     *
+     * @param nickname player to update
+     * @param newFood updated food amount
+     * @param newPrestige updated prestige amount
+     * @param newFoodDiscount updated permanent food discount
+     * @param newSustDiscount updated Sustenance discount
+     */
     public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount, int newSustDiscount) {
         lock.writeLock().lock();
         try {
@@ -141,18 +166,14 @@ public class GameModel extends ObservableModel {
         }
         notifyUI();
     }
+    /**
+     * Returns resource deltas accumulated during the visible turn.
+     *
+     * @return copy of deltas by nickname
+     */
     public Map<String, PlayerResources> getTurnDeltas() {
         return new HashMap<>(turnDeltas);
     }
-    public void clearTurnDeltas() {
-        lock.writeLock().lock();
-        try {
-            turnDeltas.clear();
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
 
     public void addGameLog(String log) {
         turn.addGameLog(log);
@@ -165,6 +186,9 @@ public class GameModel extends ObservableModel {
     }
 
 
+    /**
+     * Clears all cached game, turn, and end-game state.
+     */
     public void reset() {
         lock.writeLock().lock();
         try {
@@ -262,8 +286,6 @@ public class GameModel extends ObservableModel {
 
     public PlayerGameCompletedDto getLocalResult() { return localResult; }
     public LeaderboardSnapshotDto getGlobalLeaderboard() { return globalLeaderboard; }
-    public String getAbortReason() { return abortReason; }
     public boolean isGameOver() { return isGameOver; }
     public List<PlayerScoreDto> getLeaderboard() { return new ArrayList<>(leaderboard); }
-    public List<String> getWinners() { return new ArrayList<>(winners); }
 }
