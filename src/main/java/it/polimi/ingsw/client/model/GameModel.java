@@ -9,6 +9,9 @@ import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import java.util.*;
 
+/**
+ * Client-side projection of the game state received from the server.
+ */
 public class GameModel extends ObservableModel {
 
     // Composizione dei sotto-stati
@@ -25,6 +28,15 @@ public class GameModel extends ObservableModel {
     private LeaderboardSnapshotDto globalLeaderboard = null;
     private final Map<String, PlayerResources> turnDeltas = new HashMap<>();
 
+    private boolean pendingDeltaReset = false;
+
+    /**
+     * Replaces the local state with a full server snapshot.
+     *
+     * @param boardDTO board snapshot
+     * @param playersList player snapshots
+     * @param activePlayer nickname of the active player
+     */
     public void setFullState(BoardDto boardDTO, List<PlayerDto> playersList, String activePlayer) {
         board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
         board.setEra(boardDTO.currentEra());
@@ -48,15 +60,38 @@ public class GameModel extends ObservableModel {
     public void setActivePlayer(String activePlayer) {
         lock.writeLock().lock();
         try {
-            if (activePlayer != null && !activePlayer.equals(turn.getActivePlayer())) {
-                turnDeltas.remove(activePlayer);
-            }
             turn.setActivePlayer(activePlayer);
-        }finally {
+        } finally {
             lock.writeLock().unlock();
         }
         notifyUI();
+    }
 
+    /**
+     * Marks accumulated turn deltas to be cleared before the next totem placement is applied.
+     */
+    public void scheduleDeltaReset() {
+        lock.writeLock().lock();
+        try {
+            this.pendingDeltaReset = true;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    /**
+     * Clears accumulated turn deltas if a reset was previously scheduled.
+     */
+    public void executePendingDeltaReset() {
+        lock.writeLock().lock();
+        try {
+            if (pendingDeltaReset) {
+                turnDeltas.clear();
+                pendingDeltaReset = false;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     public void removeCard(int row, int col) {
@@ -100,6 +135,15 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates a player's resources and accumulates the change for turn-delta rendering.
+     *
+     * @param nickname player to update
+     * @param newFood updated food amount
+     * @param newPrestige updated prestige amount
+     * @param newFoodDiscount updated permanent food discount
+     * @param newSustDiscount updated Sustenance discount
+     */
     public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount, int newSustDiscount) {
         lock.writeLock().lock();
         try {
@@ -122,30 +166,43 @@ public class GameModel extends ObservableModel {
         }
         notifyUI();
     }
+    /**
+     * Returns resource deltas accumulated during the visible turn.
+     *
+     * @return copy of deltas by nickname
+     */
     public Map<String, PlayerResources> getTurnDeltas() {
-        return new HashMap<>(turnDeltas);
-    }
-    public void clearTurnDeltas() {
-        lock.writeLock().lock();
+        lock.readLock().lock();
         try {
-            turnDeltas.clear();
+            return new HashMap<>(turnDeltas);
         } finally {
-            lock.writeLock().unlock();
+            lock.readLock().unlock();
         }
     }
 
-
     public void addGameLog(String log) {
-        turn.addGameLog(log);
+        lock.writeLock().lock();
+        try {
+            turn.addGameLog(log);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public List<String> consumeGameLogs() {
-
-        return turn.consumeGameLogs();
+        lock.readLock().lock();
+        try {
+            return turn.consumeGameLogs();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
 
+    /**
+     * Clears all cached game, turn, and end-game state.
+     */
     public void reset() {
         lock.writeLock().lock();
         try {
@@ -243,8 +300,6 @@ public class GameModel extends ObservableModel {
 
     public PlayerGameCompletedDto getLocalResult() { return localResult; }
     public LeaderboardSnapshotDto getGlobalLeaderboard() { return globalLeaderboard; }
-    public String getAbortReason() { return abortReason; }
     public boolean isGameOver() { return isGameOver; }
     public List<PlayerScoreDto> getLeaderboard() { return new ArrayList<>(leaderboard); }
-    public List<String> getWinners() { return new ArrayList<>(winners); }
 }

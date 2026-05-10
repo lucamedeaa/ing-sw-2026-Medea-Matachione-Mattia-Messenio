@@ -1,10 +1,12 @@
 package it.polimi.ingsw.networkTest.protocol;
 
+import it.polimi.ingsw.common.message.server.ErrorMessage;
 import it.polimi.ingsw.networkTest.NetworkTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
@@ -24,22 +26,17 @@ public class MalformedPacketTest extends NetworkTestBase {
 
     @Test
     @DisplayName("Server drops client sending unknown serialized objects without crashing")
-    void dropsClientSendingUnknownObject() throws IOException, InterruptedException {
+    void dropsClientSendingUnknownObject() throws IOException, InterruptedException, ClassNotFoundException {
         Socket badClient = new Socket("localhost", serverPort);
         clientSockets.add(badClient);
-
         ObjectOutputStream out = new ObjectOutputStream(badClient.getOutputStream());
+        ObjectInputStream in = new ObjectInputStream(badClient.getInputStream());
         out.writeObject(new MaliciousPayload());
         out.flush();
+        Object response = in.readObject();
 
-        Thread.sleep(500);
-
-        Socket goodClient = new Socket("localhost", serverPort);
-        clientSockets.add(goodClient);
-
-        assertTrue(goodClient.isConnected(), "Server must still accept new connections.");
-
-        int readByte = badClient.getInputStream().read();
-        assertEquals(-1, readByte, "Server should have closed the connection with the bad client.");
+        assertTrue(response instanceof ErrorMessage, "Il server non ha disconnesso il client, ma doveva rispondere con un ErrorMessage.");
+        ErrorMessage errorMsg = (ErrorMessage) response;
+        assertEquals("Unknown message type.", errorMsg.error(), "Il testo dell'errore non corrisponde.");
     }
 }

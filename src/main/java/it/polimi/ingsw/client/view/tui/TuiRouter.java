@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.view.tui;
 
-import it.polimi.ingsw.client.controller.ServerController;
 import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.LobbyModel;
@@ -60,7 +59,7 @@ public class TuiRouter implements TuiNavigator {
 
     @Override
     public void toGameEnded() {
-        container.updateState(new GameEndedUiState(this, gameModel, controller, out, notificationController));
+        container.updateState(new GameEndedUiState(this, gameModel, controller,session, out, notificationController));
     }
 
     @Override

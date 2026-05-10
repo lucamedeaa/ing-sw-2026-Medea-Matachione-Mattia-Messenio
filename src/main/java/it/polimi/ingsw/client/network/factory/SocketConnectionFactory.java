@@ -9,6 +9,9 @@ import it.polimi.ingsw.client.network.SocketServerProxy;
 
 import java.io.IOException;
 
+/**
+ * Client connection factory for the socket transport.
+ */
 public class SocketConnectionFactory implements NetworkConnectionFactory {
 
     @Override

@@ -43,7 +43,16 @@ import java.util.Map;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+/**
+ * Factory for the tribe deck and era-specific building decks.
+ */
 public class DeckFactory {
+    /**
+     * Builds and shuffles the tribe deck for the given player count.
+     *
+     * @param playerCount number of players in the game
+     * @return configured tribe deck
+     */
     public static Deck buildTribeDeck(int playerCount) {
         List<Card> cards = new ArrayList<>();
 
@@ -216,6 +225,12 @@ public class DeckFactory {
         return new Deck(stackedDeck);
     }
 
+    /**
+     * Builds the building decks for all eras.
+     *
+     * @param playerCount number of players in the game
+     * @return three decks, ordered by era
+     */
     public static Deck[] buildBuildingDecks(int playerCount) {
         return new Deck[]{
                 buildBuildingDeckForEra(1, playerCount),

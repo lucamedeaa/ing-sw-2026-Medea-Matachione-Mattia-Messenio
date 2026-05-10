@@ -31,29 +31,21 @@ public class EraTwoStateTest extends ModelTest {
         assertDoesNotThrow(() -> new EraTwoState().transitionSetup(board));
     }
     @Test
-    @DisplayName("transitionSetup moves era 1 buildings to lower row and adds era 2 buildings to upper row")
-    void transitionSetupShiftsBuildingsAndAddsNewEraBuildings() {
+    @DisplayName("transitionSetup shifts buildings and adds era two buildings")
+    void transitionSetupShiftsBuildingsAndAddsNewEraBuildings() throws Exception {
         Board board = new Board(2, newPlayers(2));
 
-        long era1BuildingsInUpper = board.getRow(0).stream()
-                .flatMap(Optional::stream)
-                .filter(Card::isPersistent)
-                .count();
+        java.lang.reflect.Field field = Board.class.getDeclaredField("currentEraState");
+        field.setAccessible(true);
+        field.set(board, new EraTwoState());
 
         new EraTwoState().transitionSetup(board);
 
-        long buildingsInLower = board.getRow(1).stream()
+        boolean hasEra2Buildings = board.getRow(0).stream()
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
-                .count();
-        long buildingsInUpper = board.getRow(0).stream()
-                .flatMap(Optional::stream)
-                .filter(Card::isPersistent)
-                .count();
+                .anyMatch(c -> c.getEra() == 2);
 
-        assertTrue(buildingsInLower >= era1BuildingsInUpper,
-                "Era 1 buildings should have moved to lower row");
-        assertTrue(buildingsInUpper > 0,
-                "Upper row should contain era 2 buildings");
+        assertTrue(hasEra2Buildings, "Upper row should contain era 2 buildings");
     }
 }

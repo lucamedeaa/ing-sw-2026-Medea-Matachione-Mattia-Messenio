@@ -21,7 +21,9 @@ public class ActionCommand implements GameCommand {
         var availableActions = gameModel.getMyActions();
 
         if (availableActions.isEmpty()) {
-            gameModel.setGlobalError("It's not your turn! Wait until " + gameModel.getActivePlayer() + " has finished his move.");
+            String active = gameModel.getActivePlayer();
+            String target = (active == null) ? "the current phase" : active;
+            gameModel.setGlobalError("It's not your turn! Wait until " + target + " has finished.");
             return;
         }
 
@@ -35,9 +37,10 @@ public class ActionCommand implements GameCommand {
 
             var selectedAction = availableActions.get(actionIndex);
 
-
             ActionExecutor executor = new ActionExecutor(controller, gameModel, out, args);
             selectedAction.accept(executor);
+
+            gameModel.setAvailableActions(java.util.List.of());
 
         } catch (NumberFormatException e) {
             gameModel.setGlobalError("'" + args[0] + "' this is not a valid number.");

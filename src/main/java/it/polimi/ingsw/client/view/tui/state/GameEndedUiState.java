@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.view.tui.state;
 
+import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
@@ -22,12 +23,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private final GameEndedRenderer renderer;
     private boolean hasRendered = false;
+    private final ClientSession session;
 
 
-    public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, OutputPort out, ClientNotificationController notificationController) {
+    public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
         this.navigator = navigator;
         this.gameModel = gameModel;
         this.controller = controller;
+        this.session = session;
         this.out = out;
         this.notificationController = notificationController;
         this.renderer = new GameEndedRenderer(out);
@@ -57,7 +60,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
             if (hasRendered) return;
             hasRendered = true;
 
-            renderer.render(local, global);
+            renderer.render(local, global, session.getNickname());
         } finally {
             gameModel.getReadLock().unlock();
         }

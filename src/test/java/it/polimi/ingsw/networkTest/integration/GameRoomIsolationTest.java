@@ -27,8 +27,12 @@ public class GameRoomIsolationTest extends NetworkTestBase {
         alphaGuest.proxy.joinGame("AlphaGuest", gameIdAlpha);
 
         // Wait for Game Alpha to start
-        alphaHost.waitFor(FullSyncMessage.class, 3);
+        FullSyncMessage syncAlpha = alphaHost.waitFor(FullSyncMessage.class, 3);
         alphaGuest.waitFor(FullSyncMessage.class, 3);
+
+        String activeAlpha = syncAlpha.activePlayer();
+        DummyClient firstAlpha = activeAlpha.equals("AlphaHost") ? alphaHost : alphaGuest;
+        DummyClient secondAlpha = activeAlpha.equals("AlphaHost") ? alphaGuest : alphaHost;
 
         // Setup Game Beta
         DummyClient betaHost = new DummyClient("BetaHost");
@@ -37,25 +41,18 @@ public class GameRoomIsolationTest extends NetworkTestBase {
         betaHost.waitFor(MatchmakingSuccessMessage.class, 2);
 
         betaHost.proxy.getAvailableGames();
-        // Since Alpha is full, the only available game should be Beta
         String gameIdBeta = betaHost.waitFor(AvailableGamesResponseMessage.class, 2).games().get(0).getGameId();
         betaGuest.proxy.joinGame("BetaGuest", gameIdBeta);
 
-        // Wait for Game Beta to start
         betaHost.waitFor(FullSyncMessage.class, 3);
         betaGuest.waitFor(FullSyncMessage.class, 3);
 
-        // Action: AlphaHost places a totem in Game Alpha
-        alphaHost.proxy.placeTotem(0);
+        // Action: firstAlpha places a totem in Game Alpha
+        firstAlpha.proxy.placeTotem(0);
 
         // Verification 1: Game Alpha receives DeltaEvent
-        assertNotNull(alphaHost.waitFor(DeltaEventMessage.class, 2));
-        assertNotNull(alphaGuest.waitFor(DeltaEventMessage.class, 2));
-
-        // Verification 2: Game Beta must NOT receive this DeltaEvent. 
-        // We use a short timeout. If it returns null, isolation holds.
-        // Note: To write a true negative test, you'd check the internal history of BetaHost
-        // but for simplicity, we assume they didn't crash and are waiting for their own moves.
+        assertNotNull(firstAlpha.waitFor(DeltaEventMessage.class, 2));
+        assertNotNull(secondAlpha.waitFor(DeltaEventMessage.class, 2));
 
         // Action 2: BetaGuest abruptly disconnects
         betaGuest.disconnect();
@@ -65,9 +62,8 @@ public class GameRoomIsolationTest extends NetworkTestBase {
         assertNotNull(betaAbort, "BetaHost should receive an abort message due to BetaGuest's disconnection.");
 
         // Verification 4: Game Alpha is entirely unaffected by Game Beta's crash.
-        // AlphaGuest should still be able to play their turn.
-        alphaGuest.proxy.placeTotem(1);
-        DeltaEventMessage alphaDelta = alphaGuest.waitFor(DeltaEventMessage.class, 2);
+        secondAlpha.proxy.placeTotem(1);
+        DeltaEventMessage alphaDelta = secondAlpha.waitFor(DeltaEventMessage.class, 2);
         assertNotNull(alphaDelta, "Game Alpha should continue flawlessly despite Game Beta crashing.");
     }
 }

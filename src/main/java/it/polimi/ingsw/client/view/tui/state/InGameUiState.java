@@ -88,9 +88,6 @@ public class InGameUiState implements UIState, InGameView {
     }
 
     @Override
-    public void onDeltaEvent() {
-    }
-    @Override
     public void onError(String error) {
     }
 

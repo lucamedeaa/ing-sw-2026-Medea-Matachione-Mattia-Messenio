@@ -40,7 +40,7 @@ public class DiverseSet extends Building {
     /** Counts how many complete sets of all character types the player has. @param owner the owning player @return number of complete sets */
     private int countFullSets(Player owner) {
         return (int) targetSet.stream()
-                .mapToInt(type -> owner.countCharactersOfType(type))
+                .mapToInt(owner::countCharactersOfType)
                 .min()
                 .orElse(0);
     }

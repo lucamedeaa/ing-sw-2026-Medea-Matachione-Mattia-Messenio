@@ -45,17 +45,14 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     private static final Logger LOGGER = Logger.getLogger(SocketClientHandler.class.getName());
 
     private final Socket socket;
-    private final ObjectInputStream in;
-    private final ObjectOutputStream out;
+    private volatile ObjectInputStream in;
+    private volatile ObjectOutputStream out;
     private final ConnectionSession session;
     private final Object streamLock = new Object();
 
-    /** Constructs the handler and initializes I/O streams. @param socket client socket @param gameManager game manager instance */
-    public SocketClientHandler(Socket socket, GameManagerInterface gameManager, LobbyController lobbyController) throws IOException {
+    /** Constructs the handler. Blocking socket I/O setup is performed in the handler thread. */
+    public SocketClientHandler(Socket socket, GameManagerInterface gameManager, LobbyController lobbyController) {
         this.socket = socket;
-        this.socket.setSoTimeout(10000);
-        this.out = new ObjectOutputStream(socket.getOutputStream());
-        this.in = new ObjectInputStream(socket.getInputStream());
         this.session = new ConnectionSession(
                 this,
                 gameManager,
@@ -72,9 +69,13 @@ public class SocketClientHandler implements ClientProxy, Runnable {
         }
         try {
             synchronized (streamLock) {
-                out.writeObject(message);
-                out.reset();
-                out.flush();
+                ObjectOutputStream currentOut = out;
+                if (currentOut == null) {
+                    throw new IOException("Socket output stream is not initialized.");
+                }
+                currentOut.writeObject(message);
+                currentOut.reset();
+                currentOut.flush();
             }
         } catch (IOException e) {
             LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
@@ -141,6 +142,7 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     @Override
     public void run() {
         try {
+            initializeStreams();
             while (session.isActive()) {
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
@@ -178,6 +180,13 @@ public class SocketClientHandler implements ClientProxy, Runnable {
         }
     }
 
+    private void initializeStreams() throws IOException {
+        socket.setSoTimeout(10000);
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        in = new ObjectInputStream(socket.getInputStream());
+    }
+
     /** Closes socket and associated streams. */
     private void closeConnection() {
         closeResource(in, "input stream");
@@ -186,6 +195,9 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     }
 
     private void closeResource(Closeable resource, String description) {
+        if (resource == null) {
+            return;
+        }
         try {
             resource.close();
         } catch (IOException e) {

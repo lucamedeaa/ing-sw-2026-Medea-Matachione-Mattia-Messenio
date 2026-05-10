@@ -13,7 +13,7 @@ import it.polimi.ingsw.client.view.tui.render.ConsoleOutput;
 import java.util.Scanner;
 
 public class TextUserInterface implements ClientUi, UIObserver, StateContainer {
-    private UIState currentState;
+    private volatile UIState currentState;
     private final Scanner scanner;
     private final TuiRouter router;
 
@@ -46,16 +46,16 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer {
         while (true) {
             if (scanner.hasNextLine()) {
                 String input = scanner.nextLine();
-                synchronized (this) {
+                //synchronized (this) {
                     if (currentState != null) currentState.handleInput(input);
-                }
+                //}
             }
         }
     }
 
 
     @Override
-    public synchronized void onStateChanged() {
+    public /*synchronized */void onStateChanged() {
         if (currentState != null) {
             currentState.render();
         }

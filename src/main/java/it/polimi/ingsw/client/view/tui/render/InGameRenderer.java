@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.tui.render;
 import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.client.view.tui.state.InGameUiState;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 

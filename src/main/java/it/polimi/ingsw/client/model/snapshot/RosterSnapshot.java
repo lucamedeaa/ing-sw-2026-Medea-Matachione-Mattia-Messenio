@@ -8,12 +8,20 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Client-side snapshot of players, totem positions, return order, and tribes.
+ */
 public class RosterSnapshot {
     private final Map<String, PlayerSnapshot> players = new ConcurrentHashMap<>();
     private final Map<String, Integer> playerTotemPositions = new ConcurrentHashMap<>();
     private final Map<String, Integer> playerReturnPositions = new ConcurrentHashMap<>();
     private final Map<String, List<Integer>> playerTribes = new ConcurrentHashMap<>();
 
+    /**
+     * Rebuilds the roster from the latest full-sync player list.
+     *
+     * @param playersList players received from the server
+     */
     public void initPlayers(List<PlayerDto> playersList) {
         players.clear();
         playerReturnPositions.clear();
@@ -42,14 +50,6 @@ public class RosterSnapshot {
         playerTribes.put(nickname, new ArrayList<>(newTribeCards));
     }
 
-    public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
-        PlayerSnapshot player = players.get(nickname);
-        if (player != null) {
-            player.setFood(newFood);
-            player.setPrestige(newPrestige);
-            player.setFoodDiscount(newFoodDiscount);
-        }
-    }
 
     public void clearReturnPositions() {
         playerReturnPositions.clear();

@@ -10,6 +10,7 @@ import it.polimi.ingsw.server.model.update.AvailableAction.*;
 import it.polimi.ingsw.server.model.update.GameEvent.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /** Game state handling additional picks from the upper row granted by bonuses after the main action phase. */
 public class AdditionalPickState extends GameState {
@@ -97,9 +98,31 @@ public class AdditionalPickState extends GameState {
 
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
-        if (remainingUpperPicks <= 0) {
+        if (remainingUpperPicks <= 0 || !canAffordAnyPickableCardInUpperRow()) {
+            if (remainingUpperPicks > 0) {
+                // Aveva pick restanti ma non abbastanza cibo
+                game.pushEvent(new PlayerResourcesChangedEvent(
+                        player.getNickname(),
+                        player.getFood(),
+                        player.getPrestigePoints(),
+                        player.getFoodDiscount(),
+                        player.getSustenanceDiscount(),
+                        "Automatic Skip: no affordable cards left for bonus picks"
+                ));
+            }
             goToNextPlayer();
         }
+    }
+
+    private boolean canAffordAnyPickableCardInUpperRow() {
+        if (remainingUpperPicks <= 0) return false;
+        return game.getBoard().getRow(0).stream()
+                .flatMap(Optional::stream)
+                .filter(Card::isPickable)
+                .anyMatch(card -> {
+                    int cost = Math.max(card.getFoodCost() - currentPlayer.getFoodDiscount(), 0);
+                    return currentPlayer.getFood() >= cost;
+                });
     }
 
     /** Allows the current player to skip their remaining bonus picks. @param player acting player */
@@ -108,6 +131,16 @@ public class AdditionalPickState extends GameState {
         if (!player.equals(this.currentPlayer)) {
             throw new InvalidGameActionException("Not your turn");
         }
+
+        this.remainingUpperPicks = 0;
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                player.getFoodDiscount(),
+                player.getSustenanceDiscount(),
+                "Voluntary Skip: bonus picks skipped"
+        ));
         goToNextPlayer();
     }
 

@@ -119,8 +119,8 @@ public class PlayerTest extends ModelTest {
     @DisplayName("getFoodDiscount returns sum of discounts from tribe")
     void getFoodDiscount() {
         Player p = newPlayer("Alice");
-        give(p, new Collector(1, 1, 2));
-        give(p, new Collector(2, 1, 3));
+        give(p, new Builder(1, 1, 2, 0));
+        give(p, new Builder(2, 1, 3, 0));
         assertEquals(5, p.getFoodDiscount());
     }
 

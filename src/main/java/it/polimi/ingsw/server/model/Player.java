@@ -19,11 +19,11 @@ import java.util.ArrayList;
  * Provides methods to manage resources, cards, and compute scores.
  */
 public class Player {
-    private String name;
+    private final String name;
     private int food;
-    private List<Card> tribe;
+    private final List<Card> tribe;
     private int prestigePoints;
-    private TotemColor totemColor;
+    private final TotemColor totemColor;
 
     /**
      * Constructs a player.
@@ -38,6 +38,11 @@ public class Player {
         this.totemColor = totemColor;
     }
 
+    /**
+     * Computes the discount applied during Sustenance.
+     *
+     * @return Sustenance discount from collectors and card effects
+     */
     public int getSustenanceDiscount() {
         int discount = countCharactersOfType(CharacterType.COLLECTOR) * 3;
         for (Card card : tribe) {
@@ -61,7 +66,7 @@ public class Player {
      */
     private int sumFromTribe(ToIntFunction<Card> extract){
         return tribe.stream()
-                .mapToInt(card -> extract.applyAsInt(card))
+                .mapToInt(extract::applyAsInt)
                 .sum();
     }
 
@@ -83,7 +88,7 @@ public class Player {
      * @return food bonus
      */
     public int getFoodBonus(){
-        return sumFromTribe(card -> card.getFoodBonus());
+        return sumFromTribe(Card::getFoodBonus);
     }
 
     /**
@@ -160,7 +165,7 @@ public class Player {
      * @return stars count
      */
     public int getStarsNumber() {
-        return sumFromTribe(card -> card.getStarsNumber());
+        return sumFromTribe(Card::getStarsNumber);
     }
 
     /**
@@ -168,13 +173,23 @@ public class Player {
      * @return bonus value
      */
     public int getTopRowBonus() {
-        return sumFromTribe(card -> card.getTopRowBonus());
+        return sumFromTribe(Card::getTopRowBonus);
     }
 
+    /**
+     * Returns the player's nickname.
+     *
+     * @return player nickname
+     */
     public String getNickname() {
         return name;
     }
 
+    /**
+     * Returns the player's totem color.
+     *
+     * @return assigned totem color
+     */
     public TotemColor getTotemColor() {
         return totemColor;
     }

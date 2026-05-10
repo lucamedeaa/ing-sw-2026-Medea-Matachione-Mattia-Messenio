@@ -10,6 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * RMI implementation of the server proxy used by the client.
+ */
 public class RmiServerProxy implements ServerProxy {
 
     private static final Logger LOGGER = Logger.getLogger(RmiServerProxy.class.getName());
@@ -20,6 +23,12 @@ public class RmiServerProxy implements ServerProxy {
     private final ScheduledExecutorService pinger;
     private final RmiClientCallbackImpl callback;
 
+    /**
+     * Creates a proxy backed by an RMI server session and starts the heartbeat task.
+     *
+     * @param serverSession remote server session
+     * @param callback callback object exported by the client
+     */
     public RmiServerProxy(RMIServerSession serverSession, RmiClientCallbackImpl callback) {
         this.serverSession = serverSession;
         this.callback = callback;

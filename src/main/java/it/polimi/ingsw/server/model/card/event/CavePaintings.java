@@ -24,6 +24,7 @@ public class CavePaintings extends Event {
     private final int decrPrestigePoints;
     private final int incrPrestigePoints;
 
+
     /**
      * Constructs the Cave Paintings event.
      *

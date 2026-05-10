@@ -17,6 +17,9 @@ import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.util.List;
 
+/**
+ * Coordinates server notifications, client models, and the currently active UI views.
+ */
 public class ClientNotificationController implements ServerNotificationReceiver {
     private final LobbyModel lobbyModel;
     private final GameModel gameModel;
@@ -27,6 +30,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     private InGameView inGameView;
     private GameEndedView gameEndedView;
 
+    /**
+     * Creates the notification controller.
+     *
+     * @param lobbyModel lobby model to update before game start
+     * @param gameModel game model to update during and after a game
+     * @param applier event applier used for delta updates
+     */
     public ClientNotificationController(LobbyModel lobbyModel, GameModel gameModel, EventApplier applier) {
         this.lobbyModel = lobbyModel;
         this.gameModel = gameModel;
@@ -49,9 +59,9 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     public void matchmakingSuccess(String text) {
         if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
 
-        lobbyModel.executeBatch(() -> {
-            lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text);
-        });
+        lobbyModel.executeBatch(() ->
+            lobbyModel.setLobbyData(lobbyModel.getLobbyPlayers(), text)
+        );
 
     }
 
@@ -79,14 +89,10 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
-        for (GameEventDto event : events) {
-            gameModel.executeBatch(() -> {
-                event.accept(applier);
-            });
-
-        }
-
         gameModel.executeBatch(() -> {
+            for (GameEventDto event : events) {
+                event.accept(applier);
+            }
             gameModel.setAvailableActions(nextActions);
             gameModel.setActivePlayer(activePlayer);
         });

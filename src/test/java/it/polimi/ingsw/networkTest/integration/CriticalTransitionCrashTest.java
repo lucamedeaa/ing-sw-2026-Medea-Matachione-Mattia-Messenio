@@ -18,25 +18,32 @@ public class CriticalTransitionCrashTest extends NetworkTestBase {
         DummyClient c2 = new DummyClient("Bob");
 
         c1.proxy.createGame("Alice", 2);
+        c1.waitFor(MatchmakingSuccessMessage.class, 2);
         String gid = gameManager.getAvailableGames().get(0).getGameId();
         c2.proxy.joinGame("Bob", gid);
 
-        c1.waitFor(FullSyncMessage.class, 2);
+        FullSyncMessage sync = c1.waitFor(FullSyncMessage.class, 2);
         c2.waitFor(FullSyncMessage.class, 2);
 
-        // Simulating rapid fire: Take last card and DISCONNECT instantly
-        // This hits the SocketClientHandler thread while the GameExecutor is processing the turn.
-        c1.proxy.placeTotem(0);
-        c1.waitFor(DeltaEventMessage.class, 2);
+        String active = sync.activePlayer();
+        DummyClient first = active.equals("Alice") ? c1 : c2;
+        DummyClient second = active.equals("Alice") ? c2 : c1;
 
-        c2.proxy.placeTotem(1);
-        c2.waitFor(DeltaEventMessage.class, 2);
+        // Tile 0 (Template B per 2 player) e Tile 1 (Template C)
+        first.proxy.placeTotem(0);
+        first.waitFor(DeltaEventMessage.class, 2);
+        second.waitFor(DeltaEventMessage.class, 2);
 
-        // Now in ActionState. C1 takes a card and dies.
-        c1.proxy.takeCard(0, 0);
-        c1.disconnect();
+        second.proxy.placeTotem(1);
+        first.waitFor(DeltaEventMessage.class, 2);
+        second.waitFor(DeltaEventMessage.class, 2);
 
-        // Bob (C2) must receive a GameAbortedMessage, not a crash/timeout
-        c2.waitFor(GameAbortedMessage.class, 5);
+        // Now in ActionState. first takes a card and dies.
+        // Ha posizionato su 0 (Template B: 1 presa in basso), quindi deve prendere da row 1
+        first.proxy.takeCard(1, 0);
+        first.disconnect();
+
+        // second must receive GameAbortedMessage
+        second.waitFor(GameAbortedMessage.class, 5);
     }
 }

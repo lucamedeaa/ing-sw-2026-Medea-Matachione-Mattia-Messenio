@@ -21,14 +21,14 @@ import java.util.stream.Stream;
 public class Board {
 
     private List<Optional<Card>> upperRow;
-    private List<Optional<Card>> lowerRow;
-    private List<OfferTile> offerTrack;
+    private final List<Optional<Card>> lowerRow;
+    private final List<OfferTile> offerTrack;
     private List<Player> currentTotemOrder;
     private List<Integer> foodTurnOrderBonus;
     private List<Player> nextTotemOrder;
-    private int playerCount;
-    private Deck tribeDeck;
-    private Deck[] buildingDecks;
+    private final int playerCount;
+    private final Deck tribeDeck;
+    private final Deck[] buildingDecks;
     private EraState currentEraState;
 
     /** Constructs the board and initializes rows, decks, offer track, turn order, food bonuses, and starting cards. @param playerCount number of players @param players list of players @throws IllegalStateException if the number of players is not supported */
@@ -178,10 +178,6 @@ public class Board {
     /** Moves non-persistent cards from the upper row to the lower row and keeps persistent cards in place according to board rules. */
     private void moveTopToLow() {
         // flatMap distrugge gli spazi bianchi vuoti, estraendo solo le carte vere
-        List<Card> remainingLower = lowerRow.stream()
-                .flatMap(Optional::stream)
-                .filter(Card::isPersistent)
-                .toList();
         List<Card> cardsSlidingDown = upperRow.stream()
                 .flatMap(Optional::stream)
                 .filter(card -> !card.isPersistent())
@@ -190,13 +186,11 @@ public class Board {
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)
                 .toList();
-
         lowerRow.clear();
         upperRow.clear();
 
         // Ricostruzione compatta senza spazi vuoti
         cardsSlidingDown.forEach(this::addBottomRow);
-        remainingLower.forEach(this::addBottomRow);
         remainingUpper.forEach(this::addTopRow);
     }
 
@@ -234,13 +228,13 @@ public class Board {
         if (currentTotemOrder.isEmpty()) {
             throw new IllegalStateException("No players available!");
         }
-        return currentTotemOrder.get(0);
+        return currentTotemOrder.getFirst();
     }
 
     /** Removes the current player from the active turn order after their action has been completed. */
     public void consumeCurrentPlayer() {
         if (!currentTotemOrder.isEmpty()) {
-            currentTotemOrder.remove(0);
+            currentTotemOrder.removeFirst();
         }
     }
 
@@ -302,15 +296,30 @@ public class Board {
         return this.offerTrack;
     }
 
-    //potenzialmente cambiarlo a direttamente getRowID, invece di dorlero risolvere ogni volta nei gameState (es: RoundEndState)
+    /**
+     * Returns the requested board row.
+     *
+     * @param idx 0 for upper row, any other value for lower row
+     * @return requested row
+     */
     public List<Optional<Card>> getRow(int idx){
         return idx == 0 ? this.upperRow : this.lowerRow;
     }
 
+    /**
+     * Returns the current era number.
+     *
+     * @return current era number
+     */
     public int getCurrentEraNumber() {
         return this.currentEraState.getEraNumber();
     }
 
+    /**
+     * Returns how many players have already returned their totem for the next round.
+     *
+     * @return next-round totem order size
+     */
     public int getNextTotemOrderSize() {
         return this.nextTotemOrder.size();
     }

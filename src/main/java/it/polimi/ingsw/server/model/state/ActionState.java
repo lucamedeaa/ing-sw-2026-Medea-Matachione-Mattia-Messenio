@@ -214,6 +214,16 @@ public class ActionState extends GameState {
         if (picksExhausted || (!canDoMandatory && !canDoOptional)) {
             endPlayerTurn();
         }
+        if (!picksExhausted) {
+            game.pushEvent(new PlayerResourcesChangedEvent(
+                    currentPlayer.getNickname(),
+                    currentPlayer.getFood(),
+                    currentPlayer.getPrestigePoints(),
+                    currentPlayer.getFoodDiscount(),
+                    currentPlayer.getSustenanceDiscount(),
+                    "Automatic Skip: no affordable or valid actions left"
+            ));
+        }
     }
 
 
@@ -252,18 +262,18 @@ public class ActionState extends GameState {
         this.remainingUpperPicks = 0;
         this.remainingLowerPicks = 0;
 
-        endPlayerTurn();
-
-        // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
-       /* game.pushEvent(new PlayerResourcesChangedEvent(
+        game.pushEvent(new PlayerResourcesChangedEvent(
                 player.getNickname(),
                 player.getFood(),
                 player.getPrestigePoints(),
                 player.getFoodDiscount(),
-                "Ritorno Totem (Skip)"
+                player.getSustenanceDiscount(),
+                "Voluntary Skip: remaining picks skipped"
         ));
 
-        */
+        endPlayerTurn();
+
+
     }
 
 }

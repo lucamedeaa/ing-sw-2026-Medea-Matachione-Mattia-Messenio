@@ -9,7 +9,7 @@ public record SkipActionDto() implements ActionDto {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Accepts a visitor. @param visitor */
+    /** Accepts a visitor. @param visitor visitor handling this action */
     public void accept(ActionVisitor visitor) {
         visitor.visit(this);
     }

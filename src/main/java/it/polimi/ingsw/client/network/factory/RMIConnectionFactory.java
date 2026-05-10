@@ -13,6 +13,9 @@ import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/**
+ * Client connection factory for the RMI transport.
+ */
 public class RMIConnectionFactory implements NetworkConnectionFactory {
 
     @Override

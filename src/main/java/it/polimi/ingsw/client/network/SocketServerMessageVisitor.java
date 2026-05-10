@@ -14,9 +14,17 @@ import it.polimi.ingsw.common.message.server.RoomUpdateMessage;
 import it.polimi.ingsw.common.message.server.ServerDisconnectedMessage;
 import it.polimi.ingsw.common.visitor.ClientMessageVisitor;
 
+/**
+ * Converts decoded socket server messages into client notification callbacks.
+ */
 public class SocketServerMessageVisitor implements ClientMessageVisitor {
     private final ServerNotificationReceiver receiver;
 
+    /**
+     * Creates a visitor that forwards messages to the given receiver.
+     *
+     * @param receiver receiver notified after message dispatch
+     */
     public SocketServerMessageVisitor(ServerNotificationReceiver receiver) {
         this.receiver = receiver;
     }

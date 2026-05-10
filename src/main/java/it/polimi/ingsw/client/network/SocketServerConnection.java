@@ -37,7 +37,12 @@ public class SocketServerConnection implements Runnable {
     private final Object streamLock = new Object();
 
     /**
-     * Initializes the socket and streams.
+     * Initializes the socket, object streams, and heartbeat task.
+     *
+     * @param ip server host
+     * @param port server port
+     * @param view visitor that receives decoded server messages
+     * @throws IOException if the socket or streams cannot be opened
      */
     public SocketServerConnection(String ip, int port, ClientMessageVisitor view) throws IOException {
         this.socket = new Socket(ip, port);
@@ -47,13 +52,15 @@ public class SocketServerConnection implements Runnable {
         this.view = view;
 
         this.pinger = Executors.newSingleThreadScheduledExecutor();
-        this.pinger.scheduleAtFixedRate(() -> {
-            sendMessage(new PingMessage());
-        }, 5, 5, TimeUnit.SECONDS);
+        this.pinger.scheduleAtFixedRate(() ->
+            sendMessage(new PingMessage())
+        , 5, 5, TimeUnit.SECONDS);
     }
 
     /**
      * Sends a serializable socket message to the server.
+     *
+     * @param message message to write to the socket
      */
     public void sendMessage(Serializable message) {
         if (active.get()) {
@@ -99,6 +106,9 @@ public class SocketServerConnection implements Runnable {
         }
     }
 
+    /**
+     * Sends a disconnection message and closes local resources.
+     */
     public void disconnect() {
         if (active.compareAndSet(true, false)) {
             try {

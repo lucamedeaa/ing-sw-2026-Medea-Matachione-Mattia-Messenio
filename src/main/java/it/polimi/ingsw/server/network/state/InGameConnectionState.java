@@ -3,12 +3,22 @@ package it.polimi.ingsw.server.network.state;
 import it.polimi.ingsw.server.controller.GameController;
 import it.polimi.ingsw.server.network.ConnectionContext;
 
+/**
+ * Connection state that accepts in-game commands for one player.
+ */
 public class InGameConnectionState extends UnsupportedConnectionCommands {
 
     private final String nickname;
     private final ConnectionContext connection;
     private final GameController gameController;
 
+    /**
+     * Creates the in-game state.
+     *
+     * @param nickname player nickname bound to this connection
+     * @param connection connection context
+     * @param gameController controller for the current game
+     */
     public InGameConnectionState(String nickname, ConnectionContext connection, GameController gameController) {
         super(connection);
         this.nickname = nickname;
