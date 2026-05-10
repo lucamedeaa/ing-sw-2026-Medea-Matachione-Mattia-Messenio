@@ -21,14 +21,14 @@ import java.util.stream.Stream;
 public class Board {
 
     private List<Optional<Card>> upperRow;
-    private List<Optional<Card>> lowerRow;
-    private List<OfferTile> offerTrack;
+    private final List<Optional<Card>> lowerRow;
+    private final List<OfferTile> offerTrack;
     private List<Player> currentTotemOrder;
     private List<Integer> foodTurnOrderBonus;
     private List<Player> nextTotemOrder;
-    private int playerCount;
-    private Deck tribeDeck;
-    private Deck[] buildingDecks;
+    private final int playerCount;
+    private final Deck tribeDeck;
+    private final Deck[] buildingDecks;
     private EraState currentEraState;
 
     /** Constructs the board and initializes rows, decks, offer track, turn order, food bonuses, and starting cards. @param playerCount number of players @param players list of players @throws IllegalStateException if the number of players is not supported */
@@ -228,13 +228,13 @@ public class Board {
         if (currentTotemOrder.isEmpty()) {
             throw new IllegalStateException("No players available!");
         }
-        return currentTotemOrder.get(0);
+        return currentTotemOrder.getFirst();
     }
 
     /** Removes the current player from the active turn order after their action has been completed. */
     public void consumeCurrentPlayer() {
         if (!currentTotemOrder.isEmpty()) {
-            currentTotemOrder.remove(0);
+            currentTotemOrder.removeFirst();
         }
     }
 

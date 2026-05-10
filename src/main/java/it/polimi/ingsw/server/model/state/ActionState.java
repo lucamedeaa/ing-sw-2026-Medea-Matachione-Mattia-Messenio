@@ -273,16 +273,7 @@ public class ActionState extends GameState {
 
         endPlayerTurn();
 
-        // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
-       /* game.pushEvent(new PlayerResourcesChangedEvent(
-                player.getNickname(),
-                player.getFood(),
-                player.getPrestigePoints(),
-                player.getFoodDiscount(),
-                "Ritorno Totem (Skip)"
-        ));
 
-        */
     }
 
 }

@@ -11,7 +11,7 @@ public class GameEndedRenderer {
         this.out = out;
     }
 
-    public void render(PlayerGameCompletedDto local, LeaderboardSnapshotDto global) {
+    public void render(PlayerGameCompletedDto local, LeaderboardSnapshotDto global, String myNickname) {
         out.clearScreen();
         out.print(ColorAnsi.YELLOW_BOLD + "█".repeat(60) + ColorAnsi.RESET);
         out.print(ColorAnsi.WHITE_BOLD + "                 THE CHRONICLES OF MESOS ARE WRITTEN               " + ColorAnsi.RESET);
@@ -31,7 +31,7 @@ public class GameEndedRenderer {
         if (global != null) {
             out.print("  " + ColorAnsi.WHITE_BOLD + "🏆 OVERALL VALLEY RANKINGS (" + global.playerCount() + " players) 🏆" + ColorAnsi.RESET + "\n");
             for (var entry : global.entries()) {
-                String highlight = entry.nickname().equals(navNicknamePlaceholder(entry.nickname())) ? ColorAnsi.GREEN_BOLD : ColorAnsi.WHITE_BOLD;
+                String highlight = entry.nickname().equals(myNickname) ? ColorAnsi.GREEN_BOLD : ColorAnsi.WHITE_BOLD;
                 out.print(String.format("   %s%2d." + ColorAnsi.RESET + " %-18s " + ColorAnsi.GRAY + "|" + ColorAnsi.RESET + " " + ColorAnsi.YELLOW_BOLD + "%3d PP" + ColorAnsi.RESET + " " + ColorAnsi.GRAY + "|" + ColorAnsi.RESET + " Food: %-2d " + ColorAnsi.GRAY + "|" + ColorAnsi.RESET + " Date: %s",
                         highlight, entry.position(), entry.nickname(), entry.finalScore(), entry.remainingFood(), entry.playedAt().toString().substring(0, 10)));
             }
@@ -44,7 +44,5 @@ public class GameEndedRenderer {
         out.prompt("\n" + ColorAnsi.GREEN_BOLD + "> " + ColorAnsi.RESET);
     }
 
-    private String navNicknamePlaceholder(String entryNickname) {
-        return "";
-    }
+
 }

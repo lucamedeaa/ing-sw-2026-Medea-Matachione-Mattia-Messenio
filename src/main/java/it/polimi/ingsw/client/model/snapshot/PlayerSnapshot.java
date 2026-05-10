@@ -11,7 +11,7 @@ public class PlayerSnapshot {
     private final String nickname;
     private int food;
     private int prestige;
-    private TotemColor totemColor;
+    private final TotemColor totemColor;
     private int foodDiscount;
     private int sustenanceDiscount;
 

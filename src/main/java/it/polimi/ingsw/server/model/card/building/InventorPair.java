@@ -12,7 +12,7 @@ import java.util.EnumMap;
 public class InventorPair extends Building {
 
     private boolean init;
-    private EnumMap<InventorIcon, Integer> iconCount;
+    private final EnumMap<InventorIcon, Integer> iconCount;
 
     /** Constructs the InventorPair building and initializes icon tracking. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public InventorPair(int idcard, int foodCost, int prestigePoints, int era) {

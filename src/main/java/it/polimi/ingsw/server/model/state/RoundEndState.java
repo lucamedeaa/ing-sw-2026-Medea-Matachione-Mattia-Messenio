@@ -82,13 +82,7 @@ public class RoundEndState extends GameState {
     public String getActivePlayerNickname() {
         return null; // Nessun giocatore attivo
     }
-/*
-    private void notifyObserversPlayersResources() {
-        for (it.polimi.ingsw.model.Player p : game.getPlayers()) {
-            game.pushEvent(new PlayerResourcesChangedEvent(p.getNickname(), p.getFood(), p.getPrestigePoints(), "Risoluzione Eventi di Fine Round"));
-        }
-    }
-*/
+
     private void notifyBoardState() {
         // Estraiamo gli ID usando il tuo nuovo metodo getIDcard()
         List<Integer> upperIds = game.getBoard().getRow(0).stream()

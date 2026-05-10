@@ -192,4 +192,6 @@ public abstract class Card {
     public Integer getIDcard() {
         return IDcard;
     }
+
+
 }

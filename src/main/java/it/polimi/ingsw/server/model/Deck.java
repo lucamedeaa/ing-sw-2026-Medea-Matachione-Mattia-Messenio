@@ -12,7 +12,7 @@ import java.util.List;
  * and checking deck size or emptiness.
  */
 public class Deck {
-    private List<Card> cards;
+    private final List<Card> cards;
 
     /**
      * Constructs a deck from a list of cards and shuffles it.
@@ -47,6 +47,6 @@ public class Deck {
         if(isEmpty()){
             return null;
         }
-        return cards.remove(0);
+        return cards.removeFirst();
     }
 }

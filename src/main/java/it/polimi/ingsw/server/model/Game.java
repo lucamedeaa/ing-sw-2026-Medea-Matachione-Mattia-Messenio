@@ -19,12 +19,11 @@ import java.util.List;
  */
 public class Game implements ModelControllerInterface {
 
-    private Board board;
-    private List<Player> players;
-    private int playersSize;
+    private final Board board;
+    private final List<Player> players;
     private int currentRound;
     private GameState currentState;
-    private List<ModelObserver> observers = new ArrayList<>();
+    private final List<ModelObserver> observers = new ArrayList<>();
     private GameCompletionHandler completionHandler = result -> {};
 
     private final List<GameEvent> pendingEvents = new ArrayList<>();
@@ -45,9 +44,9 @@ public class Game implements ModelControllerInterface {
         for (int i = 0; i < players.size(); i++) {
             this.players.add(new Player(players.get(i), availableColors[i % availableColors.length]));
         }
-        this.playersSize = players.size();
+        int playersSize = players.size();
 
-        this.board = new Board(this.playersSize,  this.players);
+        this.board = new Board(playersSize,  this.players);
         this.currentRound = 1;
     }
 

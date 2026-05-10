@@ -11,7 +11,12 @@ public class CardBoxRenderer {
         if (id == null) return ColorAnsi.GRAY;
         CardInfo info = CardNameMapper.getCard(id);
 
-        if (info.type().equals("Event"))    return ColorAnsi.YELLOW;
+        if (info.type().equals("Event")) {
+            if ((info.name().contains("Sustenance") && info.era() == 3) || info.name().contains("ShamanicRitual") && info.era() == 3) {
+                return ColorAnsi.BLUE_BOLD;
+            }
+            return ColorAnsi.YELLOW;
+        }
         if (info.type().equals("Building")) return ColorAnsi.CYAN;
 
         return switch (info.type()) {

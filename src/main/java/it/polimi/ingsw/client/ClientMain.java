@@ -15,10 +15,13 @@ import it.polimi.ingsw.client.network.ServerProxy;
 
 import java.util.Scanner;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientMain {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        final Logger LOGGER = Logger.getLogger(ClientMain.class.getName());
 
         System.out.print(ColorAnsi.CLEAR);
         System.out.flush();
@@ -144,8 +147,7 @@ public class ClientMain {
             System.out.println(" " + ColorAnsi.GREEN_BOLD + "✔ Successfully connected!" + ColorAnsi.RESET + "\n");
             ui.start();
         } catch (Exception e) {
-            System.err.println("Critical error during UI startup: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Critical error during UI startup", e);
         }
     }
 
