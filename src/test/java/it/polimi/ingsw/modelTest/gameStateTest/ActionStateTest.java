@@ -130,7 +130,7 @@ public class ActionStateTest extends ModelTest {
             ActionState state = actionState(game);
             state.start();
 
-            assertEquals(foodBefore + 3, player.getFood());
+            assertEquals(foodBefore + 6, player.getFood());
         }
     }
 
@@ -180,6 +180,7 @@ public class ActionStateTest extends ModelTest {
             Player player = game.getPlayers().get(0);
 
             removeAllPickableCharacters(board);
+            giveFood(player, 20);
             board.placeTotem(1, player);
 
             ActionState state = actionState(game);
@@ -469,6 +470,7 @@ public class ActionStateTest extends ModelTest {
             Player second = game.getPlayers().get(1);
 
             removeAllPickableCharacters(board);
+            giveFood(first, 20);
 
             board.placeTotem(1, first);
             board.placeTotem(2, second);
