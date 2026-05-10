@@ -6,8 +6,7 @@ import it.polimi.ingsw.client.model.snapshot.RosterSnapshot;
 import it.polimi.ingsw.client.model.snapshot.TurnSnapshot;
 import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.client.view.tui.state.InGameUiState.PlayerResources;
-
+import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import java.util.*;
 
 public class GameModel extends ObservableModel {
@@ -49,6 +48,9 @@ public class GameModel extends ObservableModel {
     public void setActivePlayer(String activePlayer) {
         lock.writeLock().lock();
         try {
+            if (activePlayer != null && !activePlayer.equals(turn.getActivePlayer())) {
+                turnDeltas.remove(activePlayer);
+            }
             turn.setActivePlayer(activePlayer);
         }finally {
             lock.writeLock().unlock();
@@ -98,19 +100,23 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
-    public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount) {
+    public void updatePlayerResources(String nickname, int newFood, int newPrestige, int newFoodDiscount, int newSustDiscount) {
         lock.writeLock().lock();
         try {
             PlayerSnapshot old = roster.getPlayers().get(nickname);
             if (old != null) {
-                PlayerResources currentDelta = turnDeltas.getOrDefault(nickname, new PlayerResources(0, 0, 0));
+                PlayerResources currentDelta = turnDeltas.getOrDefault(nickname, new PlayerResources(0, 0, 0, 0));
                 turnDeltas.put(nickname, new PlayerResources(
                         currentDelta.food() + (newFood - old.getFood()),
                         currentDelta.prestige() + (newPrestige - old.getPrestige()),
-                        currentDelta.discount() + (newFoodDiscount - old.getFoodDiscount())
+                        currentDelta.discount() + (newFoodDiscount - old.getFoodDiscount()),
+                        currentDelta.sustenanceDiscount() + (newSustDiscount - old.getSustenanceDiscount())
                 ));
+                old.setFood(newFood);
+                old.setPrestige(newPrestige);
+                old.setFoodDiscount(newFoodDiscount);
+                old.setSustenanceDiscount(newSustDiscount);
             }
-            roster.updatePlayerResources(nickname, newFood, newPrestige, newFoodDiscount);
         } finally {
             lock.writeLock().unlock();
         }

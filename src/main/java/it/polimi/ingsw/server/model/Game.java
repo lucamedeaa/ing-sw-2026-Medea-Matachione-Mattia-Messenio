@@ -88,7 +88,7 @@ public class Game implements ModelControllerInterface {
         );
 
         List<PlayerUpdate> playersUpdates = players.stream()
-                .map(p -> new PlayerUpdate(p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getTotemColor(), p.getFoodDiscount()))
+                .map(p -> new PlayerUpdate(p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getTotemColor(), p.getFoodDiscount(),  p.getSustenanceDiscount()))
                 .toList();
 
         String activePlayer = (currentState != null) ? currentState.getActivePlayerNickname() : null;

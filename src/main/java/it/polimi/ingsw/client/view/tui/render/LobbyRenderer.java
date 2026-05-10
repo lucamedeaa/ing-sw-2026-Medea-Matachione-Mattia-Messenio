@@ -13,12 +13,12 @@ public class LobbyRenderer {
     public void render(List<String> currentPlayers, String notification, String myNickname) {
         out.clearScreen();
         out.print(ColorAnsi.YELLOW_BOLD + "█".repeat(52) + ColorAnsi.RESET);
-        out.print(ColorAnsi.WHITE_BOLD + "   MESOS   " + ColorAnsi.RESET + "| " + ColorAnsi.GREEN_BOLD + "LOBBY DELL'INSEDIAMENTO" + ColorAnsi.RESET);
+        out.print(ColorAnsi.WHITE_BOLD + "   MESOS   " + ColorAnsi.RESET + "| " + ColorAnsi.GREEN_BOLD + "SETTLEMENT LOBBY" + ColorAnsi.RESET);
         out.print(ColorAnsi.BLACK_BOLD + "━".repeat(52) + ColorAnsi.RESET + "\n");
 
-        out.print(ColorAnsi.WHITE_BOLD + "Esploratori pronti al viaggio:" + ColorAnsi.RESET);
+        out.print(ColorAnsi.WHITE_BOLD + "Explorers ready for the journey:" + ColorAnsi.RESET);
         if (currentPlayers.isEmpty()) {
-            out.print(" " + ColorAnsi.GRAY + "  Nessun membro trovato nell'accampamento..." + ColorAnsi.RESET);
+            out.print(" " + ColorAnsi.GRAY + "  No members found in the camp..." + ColorAnsi.RESET);
         } else {
             for (String p : currentPlayers) {
                 boolean isMe = p.equals(myNickname);
@@ -29,14 +29,14 @@ public class LobbyRenderer {
         }
 
         if (notification != null && !notification.isEmpty()) {
-            out.print("\n" + ColorAnsi.BLUE_BOLD + "ℹ ECO DALLA VALLE:" + ColorAnsi.RESET + " " + ColorAnsi.ITALIC + notification + ColorAnsi.RESET);
+            out.print("\n" + ColorAnsi.BLUE_BOLD + "ℹ ECHOES FROM THE VALLEY:" + ColorAnsi.RESET + " " + ColorAnsi.ITALIC + notification + ColorAnsi.RESET);
         }
 
         out.print("\n" + ColorAnsi.BLACK_BOLD + "━".repeat(52) + ColorAnsi.RESET);
-        out.print(" " + ColorAnsi.YELLOW_BOLD + "[ 0 ]" + ColorAnsi.RESET + " " + ColorAnsi.WHITE_BOLD + "Abbandona" + ColorAnsi.RESET + " " + ColorAnsi.GRAY + "| Torna alla ricerca di altre storie" + ColorAnsi.RESET);
-        out.print(" " + ColorAnsi.RED_BOLD + "[ d ]" + ColorAnsi.RESET + " " + ColorAnsi.WHITE_BOLD + "Svanisci" + ColorAnsi.RESET + "  " + ColorAnsi.GRAY + "| Disconnettiti dal mondo di Mesos" + ColorAnsi.RESET);
+        out.print(" " + ColorAnsi.YELLOW_BOLD + "[ 0 ]" + ColorAnsi.RESET + " " + ColorAnsi.WHITE_BOLD + "Give up" + ColorAnsi.RESET + " " + ColorAnsi.GRAY + "| Back to the search for more stories" + ColorAnsi.RESET);
+        out.print(" " + ColorAnsi.RED_BOLD + "[ d ]" + ColorAnsi.RESET + " " + ColorAnsi.WHITE_BOLD + "Fade away" + ColorAnsi.RESET + "  " + ColorAnsi.GRAY + "| Disconnect from the world of Mesos" + ColorAnsi.RESET);
         out.print(ColorAnsi.BLACK_BOLD + "━".repeat(52) + ColorAnsi.RESET);
 
-        out.prompt("\n" + ColorAnsi.YELLOW_BOLD + "In attesa che la tribù sia al completo > " + ColorAnsi.RESET);
+        out.prompt("\n" + ColorAnsi.YELLOW_BOLD + "Until the whole tribe is here > " + ColorAnsi.RESET);
     }
 }

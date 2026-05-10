@@ -45,7 +45,7 @@ public class GameController implements GameCompletionHandler {
                 return;
             }
             LOGGER.info("[CONTROLLER] Disconnection of " + nickname + ". Game terminated.");
-            lifecycleCallback.closeAbortedRoom("Il giocatore " + nickname + " ha abbandonato la partita.", nickname);
+            lifecycleCallback.closeAbortedRoom("The player " + nickname + " left the room.", nickname);
         });
     }
 

@@ -70,14 +70,14 @@ public class ShamanicRitual extends Event {
         // Applicazione effetti
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
-            String reason = "Rituale Sciamanico: " + stars[i] + " stelle. Nessun bonus/malus.";
+            String reason = "Shamanic ritual: " + stars[i] + " stars. No bonuses or penalties.";
 
             if (stars[i] == max) {
                 player.addPrestige(incrPrestigePoints);
                 for (Card card : player.getTribe()) {
                     card.onShamanicRitualEvent(player, incrPrestigePoints, 0);
                 }
-                reason = "Rituale Sciamanico: " + stars[i] + " stelle (MAX). +" + incrPrestigePoints + " PP";
+                reason = "Shamanic ritual: " + stars[i] + " stars (MAX). +" + incrPrestigePoints + " PP";
             }
             if (stars[i] == min) {
                 player.addPrestige(decrPrestigePoints);
@@ -87,7 +87,7 @@ public class ShamanicRitual extends Event {
                 if (max == min) {
                     reason += " e (MIN) " + decrPrestigePoints + " PP"; // Caso estremo di pareggio totale
                 } else {
-                    reason = "Rituale Sciamanico: " + stars[i] + " stelle (MIN). " + decrPrestigePoints + " PP";
+                    reason = "Shamanic ritual: " + stars[i] + " stars (MIN). " + decrPrestigePoints + " PP";
                 }
             }
 
@@ -96,6 +96,7 @@ public class ShamanicRitual extends Event {
                     player.getFood(),
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
+                    player.getSustenanceDiscount(),
                     reason
             ));
         }

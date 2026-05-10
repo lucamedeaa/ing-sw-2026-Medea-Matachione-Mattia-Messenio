@@ -30,7 +30,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerResourcesChangedDto event) {
-        gameModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount());
+        gameModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount(), event.sustenanceDiscount());
         if (event.reason() != null && !event.reason().isEmpty()) {
             gameModel.addGameLog(ColorAnsi.YELLOW + "[" + event.nickname() + "] " + event.reason() + ColorAnsi.RESET);
         }
@@ -44,12 +44,13 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(EraTransitionDto event) {
         gameModel.updateEra(event.newEraNumber());
-        gameModel.addGameLog(ColorAnsi.CYAN_BOLD + "[!] INIZIA L'ERA " + event.newEraNumber() + "!" + ColorAnsi.RESET);
+        gameModel.addGameLog(ColorAnsi.CYAN_BOLD + "[!] THE ERA BEGINS " + event.newEraNumber() + "!" + ColorAnsi.RESET);
     }
 
     @Override
     public void visit(RoundAdvancedDto event) {
-        gameModel.clearTurnDeltas();
+        //gameModel.clearTurnDeltas();
+        gameModel.addGameLog(ColorAnsi.YELLOW_BOLD + "=== END OF ROUND " + (event.newRound() - 1) + " ===" + ColorAnsi.RESET);
         gameModel.updateRound(event.newRound());
     }
 
@@ -65,7 +66,7 @@ public class EventApplier implements EventVisitor {
 
     @Override
     public void visit(PlayerLeftGameDto event) {
-        gameModel.setGameAborted("Il giocatore " + event.nickname() + " si è disconnesso. La partita è annullata.");
+        gameModel.setGameAborted("The player " + event.nickname() + " disconnected. The match has been cancelled");
     }
 
     @Override
@@ -76,4 +77,6 @@ public class EventApplier implements EventVisitor {
     public void visit(TotemReturnedDto event) {
         gameModel.returnTotemToTrack(event.nickname(), event.returnIndex());
     }
+
+
 }

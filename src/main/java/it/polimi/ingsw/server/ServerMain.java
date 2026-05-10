@@ -4,7 +4,7 @@ import it.polimi.ingsw.server.controller.LobbyController;
 import it.polimi.ingsw.server.lobby.GameManager;
 import it.polimi.ingsw.server.network.handler.SocketClientHandler;
 import it.polimi.ingsw.server.network.handler.RmiConnectionServerImpl;
-import it.polimi.ingsw.server.leaderboard.InMemoryLeaderboardService;
+import it.polimi.ingsw.server.leaderboard.JdbcLeaderboardService;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 public class ServerMain {
 
     private static final Logger LOGGER = Logger.getLogger(ServerMain.class.getName());
+    private static final String LEADERBOARD_DB_URL = "jdbc:postgresql://localhost:5432/mesos";
+    private static final String LEADERBOARD_DB_USER = "mesos";
+    private static final String LEADERBOARD_DB_PASSWORD = "mesos";
 
     private final int socketPort;
     private final int rmiPort;
@@ -30,7 +33,11 @@ public class ServerMain {
     public ServerMain(int socketPort, int rmiPort) {
         this.socketPort = socketPort;
         this.rmiPort = rmiPort;
-        this.gameManager = new GameManager(new InMemoryLeaderboardService());
+        this.gameManager = new GameManager(new JdbcLeaderboardService(
+                LEADERBOARD_DB_URL,
+                LEADERBOARD_DB_USER,
+                LEADERBOARD_DB_PASSWORD
+        ));
         this.lobbyController = new LobbyController(gameManager);
     }
 

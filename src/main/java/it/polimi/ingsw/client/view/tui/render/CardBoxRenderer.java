@@ -61,24 +61,32 @@ public class CardBoxRenderer {
             return;
         }
 
-        if (showIndices) {
-            StringBuilder idxBuilder = new StringBuilder("  ");
-            for (int i = 0; i < cards.size(); i++) {
-                idxBuilder.append(ColorAnsi.BLACK_BOLD).append(center("[" + i + "]", 15)).append(ColorAnsi.RESET);
-                if (i < cards.size() - 1) idxBuilder.append(" ");
-            }
-            out.print(idxBuilder.toString());
-        }
+        int chunkSize = 10; // Numero massimo di carte per riga
+        for (int start = 0; start < cards.size(); start += chunkSize) {
+            int end = Math.min(start + chunkSize, cards.size());
+            List<Integer> chunk = cards.subList(start, end);
 
-        List<String[]> boxes = cards.stream().map(CardBoxRenderer::cardBox).toList();
-        for (int line = 0; line < 7; line++) {
-            StringBuilder sb = new StringBuilder("  ");
-            for (int i = 0; i < boxes.size(); i++) {
-                String color = ansiColor(cards.get(i));
-                sb.append(color).append(boxes.get(i)[line]).append(ColorAnsi.RESET);
-                if (i < boxes.size() - 1) sb.append(" ");
+            if (showIndices) {
+                StringBuilder idxBuilder = new StringBuilder("  ");
+                for (int i = 0; i < chunk.size(); i++) {
+                    int actualIndex = start + i;
+                    idxBuilder.append(ColorAnsi.BLACK_BOLD).append(center("[" + actualIndex + "]", 15)).append(ColorAnsi.RESET);
+                    if (i < chunk.size() - 1) idxBuilder.append(" ");
+                }
+                out.print(idxBuilder.toString());
             }
-            out.print(sb.toString());
+
+            List<String[]> boxes = chunk.stream().map(CardBoxRenderer::cardBox).toList();
+            for (int line = 0; line < 7; line++) {
+                StringBuilder sb = new StringBuilder("  ");
+                for (int i = 0; i < boxes.size(); i++) {
+                    String color = ansiColor(chunk.get(i));
+                    sb.append(color).append(boxes.get(i)[line]).append(ColorAnsi.RESET);
+                    if (i < boxes.size() - 1) sb.append(" ");
+                }
+                out.print(sb.toString());
+            }
+            if (end < cards.size()) out.print("");
         }
     }
 

@@ -37,7 +37,15 @@ public class InGameUiState implements UIState, InGameView {
     }
 
     private void registerCommands() {
-        commandRegistry.put("v", args -> new ViewTribeCommand(navigator, out, args[1]));
+        commandRegistry.put("v", args -> {
+            if (args.length < 2) {
+                throw new IllegalArgumentException("Specify a player. Usage: v <nickname>");
+            }
+            if (!gameModel.getPlayers().containsKey(args[1])) {
+                throw new IllegalArgumentException("Player not found: " + args[1]);
+            }
+            return new ViewTribeCommand(navigator, out, args[1]);
+        });
         commandRegistry.put("i", args -> new InfoCommand(navigator, out));
         commandRegistry.put("quit", args -> new DisconnectCommand(controller));
         commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
@@ -45,6 +53,9 @@ public class InGameUiState implements UIState, InGameView {
 
     @Override
     public void render() {
+        if (gameModel.getPlayers().isEmpty()) {
+            return;
+        }
         String error = gameModel.consumeGlobalError();
         renderer.render(gameModel, session.getNickname(), gameModel.getTurnDeltas(), error);
     }
@@ -68,7 +79,7 @@ public class InGameUiState implements UIState, InGameView {
                 if (factory != null) {
                     factory.create(parts).execute();
                 } else {
-                    gameModel.setGlobalError("Comando sconosciuto.");
+                    gameModel.setGlobalError("Unknown command.");
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -96,5 +107,4 @@ public class InGameUiState implements UIState, InGameView {
     }
 
 
-    public record PlayerResources(int food, int prestige, int discount) {}
 }

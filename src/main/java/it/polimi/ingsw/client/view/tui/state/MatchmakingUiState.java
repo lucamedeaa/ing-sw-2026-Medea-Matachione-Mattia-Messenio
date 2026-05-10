@@ -45,18 +45,18 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
     private void registerCommands() {
         commandRegistry.put("create", args -> {
-            if (args.length < 3) throw new IllegalArgumentException("Uso: create <nickname> <max_players>");
+            if (args.length < 3) throw new IllegalArgumentException("Correct use: create <nickname> <max_players>");
             int maxPlayers;
             try { maxPlayers = Integer.parseInt(args[args.length - 1]); }
-            catch (NumberFormatException e) { throw new IllegalArgumentException("Errore: max_players deve essere un numero."); }
-            if (maxPlayers < 2 || maxPlayers > 5) throw new IllegalArgumentException("Errore: max_players deve essere tra 2 e 5.");
+            catch (NumberFormatException e) { throw new IllegalArgumentException("Error: max_players must be a number."); }
+            if (maxPlayers < 2 || maxPlayers > 5) throw new IllegalArgumentException("Error: max_players must be between 2 and 5.");
             String nickname = String.join(" ", copyOfRange(args, 1, args.length - 1));
             this.pendingNickname = nickname;
             return new CreateGameCommand(controller, out, nickname, maxPlayers);
         });
 
         commandRegistry.put("join", args -> {
-            if (args.length < 3) throw new IllegalArgumentException("Uso: join <nickname> <game_id>");
+            if (args.length < 3) throw new IllegalArgumentException("Correct use: join <nickname> <game_id>");
             String gameId = args[args.length - 1];
             String nickname = String.join(" ", copyOfRange(args, 1, args.length - 1));
             this.pendingNickname = nickname;
@@ -94,7 +94,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
-            lobbyModel.setGlobalError("Comando sconosciuto. Usa: create, join, list, 0.");
+            lobbyModel.setGlobalError("Unknown command. Use: create, join, list, 0.");
             render();
             return;
         }

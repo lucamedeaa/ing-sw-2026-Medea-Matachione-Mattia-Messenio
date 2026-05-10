@@ -45,6 +45,6 @@ public class InGameConnectionState extends UnsupportedConnectionCommands {
     }
 
     private void sendMoveError(String errorMessage) {
-        connection.error("Errore mossa: " + errorMessage);
+        connection.error("Move error: " + errorMessage);
     }
 }

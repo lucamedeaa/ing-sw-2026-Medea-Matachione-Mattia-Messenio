@@ -5,7 +5,7 @@ import java.io.Serial;
 import it.polimi.ingsw.common.visitor.EventVisitor;
 
 /** Event DTO representing a change in a player's resources. */
-public record PlayerResourcesChangedDto(String nickname, int newFood, int newPrestige, int foodDiscount, String reason) implements GameEventDto {
+public record PlayerResourcesChangedDto(String nickname, int newFood, int newPrestige, int foodDiscount, int sustenanceDiscount, String reason) implements GameEventDto {
     @Serial
     private static final long serialVersionUID = 1L;
 

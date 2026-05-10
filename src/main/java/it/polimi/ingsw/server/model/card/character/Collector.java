@@ -14,8 +14,8 @@ public class Collector extends Character {
     }
 
     /** Returns the food discount provided by this card. @return discount value */
-    @Override
-    public int getFoodDiscount(){return discount;}
+    //@Override
+    //public int getFoodDiscount(){return discount;}
 
     /** Returns the character type. @return CharacterType.COLLECTOR */
     @Override

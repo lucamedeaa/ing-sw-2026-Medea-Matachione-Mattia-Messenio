@@ -38,6 +38,14 @@ public class Player {
         this.totemColor = totemColor;
     }
 
+    public int getSustenanceDiscount() {
+        int discount = countCharactersOfType(CharacterType.COLLECTOR) * 3;
+        for (Card card : tribe) {
+            discount += card.onSustenanceEvent(this);
+        }
+        return discount;
+    }
+
     /**
      * Returns the total food discount from all cards in the tribe.
      * @return total food discount

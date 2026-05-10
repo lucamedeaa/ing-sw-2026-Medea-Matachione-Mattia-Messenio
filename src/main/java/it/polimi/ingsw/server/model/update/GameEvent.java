@@ -37,8 +37,8 @@ public interface GameEvent {
         @Override public GameEventDto toDTO() { return new PlayerLeftGameDto(nickname); }
     }
 
-    record PlayerResourcesChangedEvent(String nickname, int newFood, int newPrestige, int foodDiscount, String reason) implements GameEvent {
-        @Override public GameEventDto toDTO() { return new PlayerResourcesChangedDto(nickname, newFood, newPrestige, foodDiscount, reason); }
+    record PlayerResourcesChangedEvent(String nickname, int newFood, int newPrestige, int foodDiscount, int sustenanceDiscount, String reason) implements GameEvent {
+        @Override public GameEventDto toDTO() { return new PlayerResourcesChangedDto(nickname, newFood, newPrestige, foodDiscount, sustenanceDiscount, reason); }
     }
 
     record RoundAdvancedEvent(int newRound) implements GameEvent {

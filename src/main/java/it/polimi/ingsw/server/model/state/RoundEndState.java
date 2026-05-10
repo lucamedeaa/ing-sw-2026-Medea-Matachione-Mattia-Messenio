@@ -34,7 +34,7 @@ public class RoundEndState extends GameState {
             for (GameEvent e : finalEvents) {
                 game.pushEvent(e);
             }
-            notifyChanges(before, "Eventi di Fine Partita");
+            notifyChanges(before, "Endgame Events");
             this.transition(new ScoringState(this.game));
         } else {
             int eraBefore = game.getBoard().getCurrentEraNumber();
@@ -51,7 +51,7 @@ public class RoundEndState extends GameState {
                 game.pushEvent(new EraTransitionEvent(eraAfter));
             }
 
-            notifyChanges(before, "Risorse ottenute a fine round (Bonus Totem Order Tile)");
+            notifyChanges(before, "Resources obtained at the end of the round (Bonus Totem Order Tile)");
             this.transition(new PlacementState(this.game));
         }
     }
@@ -60,7 +60,7 @@ public class RoundEndState extends GameState {
         for (Player p : game.getPlayers()) {
             // Invia l'evento per TUTTI, indipendentemente dai guadagni
             game.pushEvent(new PlayerResourcesChangedEvent(
-                    p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), reason
+                    p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), p.getSustenanceDiscount(),reason
             ));
         }
     }

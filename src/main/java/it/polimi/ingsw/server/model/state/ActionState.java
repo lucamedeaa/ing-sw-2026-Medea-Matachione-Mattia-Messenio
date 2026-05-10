@@ -45,11 +45,10 @@ public class ActionState extends GameState {
             OfferTile tile = track.get(currentColumnIndex);
             if (!tile.isFree()) {
                 this.currentPlayer = tile.getOccupyingPlayer()
-                        .orElseThrow(() -> new IllegalStateException("Tile markata come non libera, ma occupante assente."));
+                        .orElseThrow(() -> new IllegalStateException("The tile is marked as occupied, but the occupant is absent."));
                 this.currentTile = tile;
                 this.remainingUpperPicks = tile.getUpperRowPicks();
                 this.remainingLowerPicks = tile.getLowerRowPicks();
-                this.currentPlayer.addFood(tile.getFoodBonus());
 
                 int bonus = tile.getFoodBonus();
                 if (bonus != 0) {
@@ -59,9 +58,11 @@ public class ActionState extends GameState {
                             this.currentPlayer.getFood(),
                             this.currentPlayer.getPrestigePoints(),
                             this.currentPlayer.getFoodDiscount(),
-                            "Bonus tessera offerta: +" + bonus + " cibo"
+                            this.currentPlayer.getSustenanceDiscount(),
+                            "Card bonus offer: +" + bonus + " food"
                     ));
                 }
+                checkTurnConditions();
                 return;
             }
             currentColumnIndex++;
@@ -109,9 +110,9 @@ public class ActionState extends GameState {
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
         String reason = "";
         if (purchasedCard.isPersistent()) {
-            reason = "Acquisto Edificio (-" + finalCost + " cibo)";
+            reason = "Buildings Purchase (-" + finalCost + " food)";
         } else if (finalCost > 0) {
-            reason = "Reclutamento Personaggio (-" + finalCost + " cibo)";
+            reason = "Character Recruitment (-" + finalCost + " food)";
         }
 
         game.pushEvent(new PlayerResourcesChangedEvent(
@@ -119,6 +120,7 @@ public class ActionState extends GameState {
                 player.getFood(),
                 player.getPrestigePoints(),
                 player.getFoodDiscount(),
+                player.getSustenanceDiscount(),
                 reason
         ));
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
@@ -147,12 +149,13 @@ public class ActionState extends GameState {
         int prestigeDiff = this.currentPlayer.getPrestigePoints() - ppBefore;
 
         if (foodDiff != 0 || prestigeDiff != 0) {
-            String msg = foodDiff < 0 ? "Penalità ordine turno" : "Bonus ordine turno";
+            String msg = (foodDiff < 0 || prestigeDiff < 0) ? "Order Tile Penalty" : "Order Tile Bonus";
             game.pushEvent(new PlayerResourcesChangedEvent(
                     this.currentPlayer.getNickname(),
                     this.currentPlayer.getFood(),
                     this.currentPlayer.getPrestigePoints(),
                     this.currentPlayer.getFoodDiscount(),
+                    this.currentPlayer.getSustenanceDiscount(),
                     msg
             ));
         }
@@ -252,13 +255,15 @@ public class ActionState extends GameState {
         endPlayerTurn();
 
         // Notifica l'accredito/addebito del cibo per aver riposizionato il totem
-        game.pushEvent(new PlayerResourcesChangedEvent(
+       /* game.pushEvent(new PlayerResourcesChangedEvent(
                 player.getNickname(),
                 player.getFood(),
                 player.getPrestigePoints(),
                 player.getFoodDiscount(),
                 "Ritorno Totem (Skip)"
         ));
+
+        */
     }
 
 }

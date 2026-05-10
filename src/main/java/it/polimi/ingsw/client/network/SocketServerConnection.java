@@ -65,7 +65,7 @@ public class SocketServerConnection implements Runnable {
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.INFO, "I/O error while sending a message to the server.", e);
-                handleServerDisconnection("Errore durante l'invio di un messaggio al server.");
+                handleServerDisconnection("An error occurred whilst sending a message to the server.");
             }
         }
     }
@@ -75,7 +75,7 @@ public class SocketServerConnection implements Runnable {
      */
     @Override
     public void run() {
-        String disconnectReason = "Disconnessione dal server inaspettata.";
+        String disconnectReason = "Unexpected disconnection from the server.";
         try {
             while (active.get()) {
                 Object input = in.readObject();
@@ -84,16 +84,16 @@ public class SocketServerConnection implements Runnable {
                 }
             }
         } catch (SocketTimeoutException e) {
-            disconnectReason = "Timeout: Il server non risponde.";
+            disconnectReason = "Timeout: The server is not responding.";
         } catch (EOFException e) {
-            disconnectReason = "Il server ha chiuso la connessione in modo imprevisto.";
+            disconnectReason = "The server unexpectedly closed the connection.";
         } catch (SocketException e) {
-            disconnectReason = "Connessione al server interrotta.";
+            disconnectReason = "Connection to the server has been lost.";
         } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Errore di deserializzazione. Versione client incompatibile?", e);
-            disconnectReason = "Protocollo di rete incompatibile.";
+            LOGGER.log(Level.SEVERE, "Deserialisation error. Incompatible client version?", e);
+            disconnectReason = "Incompatible network protocol.";
         } catch (IOException e) {
-            disconnectReason = "Errore di I/O durante la lettura: " + e.getMessage();
+            disconnectReason = "I/O error during reading: " + e.getMessage();
         } finally {
             handleServerDisconnection(disconnectReason);
         }

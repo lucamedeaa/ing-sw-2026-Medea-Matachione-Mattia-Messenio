@@ -70,7 +70,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
         // Run network-visible effects only after matchmaking success.
         RoomAdmissionResult broadcastJoin = new RoomAdmissionResult(
-                () -> broadcast("Il giocatore " + nickname + " è entrato.")
+                () -> broadcast("The player " + nickname + " has joined.")
         );
         if (startNow) {
             return new RoomAdmissionResult(() -> {
@@ -141,16 +141,34 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         if (roomIsEmpty) {
             gameManager.removeGame(gameId);
         } else if (successfullyRemoved) {
-            broadcast("Il giocatore " + nickname + " ha abbandonato la stanza.");
+            broadcast("The player " + nickname + " left the room.");
         }
     }
 
     @Override
-    public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {
-        Map<String, RoomClientProxy> connections;
+    public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {Map<String, RoomClientProxy> connections = snapshotConnections();
+        notifyCompletedPlayers(connections, completedGame, personalBestEntries);
+        closeRoomResources();
+    }
+
+    @Override
+    public void closeAbortedRoom(String reason, String excludedNickname) {
+        Map<String, RoomClientProxy> connections = snapshotConnections();
+        notifyAbortedPlayers(connections, reason, excludedNickname);
+        closeRoomResources();
+    }
+
+    private Map<String, RoomClientProxy> snapshotConnections() {
         synchronized (roomLock) {
-            connections = new HashMap<>(players);
+            return new HashMap<>(players);
         }
+    }
+
+    private void notifyCompletedPlayers(
+            Map<String, RoomClientProxy> connections,
+            CompletedGameResult completedGame,
+            List<LeaderboardEntryDto> personalBestEntries
+    ) {
         int playerCount = completedGame.playerResults().size();
         Map<String, PlayerGameResult> localResults = completedGame.playerResults().stream()
                 .collect(Collectors.toMap(PlayerGameResult::nickname, Function.identity()));
@@ -168,30 +186,15 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
             }
 
             conn.transitionToAfterGameState(playerCount, leaderboardService);
-            conn.gameCompleted(new PlayerGameCompletedDto(
-                    playerCount,
-                    localResult.position(),
-                    localResult.finalScore(),
-                    localResult.remainingFood(),
-                    personalBestEntry.position(),
-                    personalBestEntry.finalScore(),
-                    personalBestEntry.remainingFood()
-            ));
-        }
-
-        gameManager.removeGame(this.gameId);
-        if (gameExecutor != null) {
-            gameExecutor.shutdown();
+            conn.gameCompleted(buildCompletedDto(playerCount, localResult, personalBestEntry));
         }
     }
 
-    @Override
-    public void closeAbortedRoom(String reason, String excludedNickname) {
-        Map<String, RoomClientProxy> connections;
-        synchronized (roomLock) {
-            connections = new HashMap<>(players);
-        }
-
+    private void notifyAbortedPlayers(
+            Map<String, RoomClientProxy> connections,
+            String reason,
+            String excludedNickname
+    ) {
         for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
             if (entry.getKey().equals(excludedNickname)) {
                 continue;
@@ -200,6 +203,25 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
             conn.gameAborted(reason);
             conn.transitionToLobby();
         }
+    }
+
+    private PlayerGameCompletedDto buildCompletedDto(
+            int playerCount,
+            PlayerGameResult localResult,
+            LeaderboardEntryDto personalBestEntry
+    ) {
+        return new PlayerGameCompletedDto(
+                playerCount,
+                localResult.position(),
+                localResult.finalScore(),
+                localResult.remainingFood(),
+                personalBestEntry.position(),
+                personalBestEntry.finalScore(),
+                personalBestEntry.remainingFood()
+        );
+    }
+
+    private void closeRoomResources() {
         gameManager.removeGame(this.gameId);
         if (gameExecutor != null) {
             gameExecutor.shutdown();

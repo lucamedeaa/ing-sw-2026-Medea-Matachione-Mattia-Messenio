@@ -18,6 +18,6 @@ public class ViewTribeRenderer {
         CardBoxRenderer.printCardRow(out, tribeCards, false);
 
         out.print("\n");
-        out.prompt("  Premi Q per tornare alla partita > ");
+        out.prompt("  Press Q to return to the game > ");
     }
 }

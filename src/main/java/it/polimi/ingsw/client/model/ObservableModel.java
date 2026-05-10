@@ -2,14 +2,14 @@ package it.polimi.ingsw.client.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 //PER EVITARE CODICE DUPLICATEO NELLA GESTIONE DELLE NOTIFICHE UI
 
 public abstract class ObservableModel {
-    private final List<UIObserver> observers = new ArrayList<>();
-    protected boolean batchMode = false;
+    private final List<UIObserver> observers = new CopyOnWriteArrayList<>();    protected boolean batchMode = false;
     private String globalError = "";
 
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();

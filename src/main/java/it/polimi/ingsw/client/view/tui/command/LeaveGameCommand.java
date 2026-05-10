@@ -14,6 +14,6 @@ public class LeaveGameCommand implements GameCommand {
     @Override
     public void execute() {
         controller.leaveGame(); // o leaveMatch() se hai implementato la separazione
-        out.print("Richiesta di uscita inviata...");
+        out.print("Withdrawal request sent...");
     }
 }

@@ -16,9 +16,9 @@ public class DisconnectedUiState implements UIState {
     public void render() {
         out.clearScreen();
         out.print(ColorAnsi.BG_RED_WHITE_TEXT + " FATAL ERROR " + ColorAnsi.RESET);
-        out.print(ColorAnsi.RED_BOLD + "Connessione col server interrotta." + ColorAnsi.RESET);
-        out.print("Motivo: " + reason);
-        out.print("\nPremi INVIO per chiudere l'applicazione.");
+        out.print(ColorAnsi.RED_BOLD + "Connection to the server has been lost." + ColorAnsi.RESET);
+        out.print("Reason: " + reason);
+        out.print("\nPress ENTER to close the application.");
         out.prompt("> ");
     }
 

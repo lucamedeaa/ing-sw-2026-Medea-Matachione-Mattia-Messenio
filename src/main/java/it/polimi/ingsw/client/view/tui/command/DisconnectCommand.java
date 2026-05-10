@@ -10,7 +10,7 @@ public class DisconnectCommand implements GameCommand {
     @Override
     public void execute() {
         controller.disconnect(() -> {
-            System.out.println("Disconnessione completata.");
+            System.out.println("Logout complete.");
             System.exit(0);
         });
     }
