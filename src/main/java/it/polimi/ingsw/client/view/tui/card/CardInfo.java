@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.view.tui.render;
+package it.polimi.ingsw.client.view.tui.card;
 
 public record CardInfo(
         String name,
