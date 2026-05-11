@@ -13,7 +13,7 @@
     <Label text="Sala d'attesa" styleClass="title"/>
     <Label fx:id="statusLabel" wrapText="true"/>
 
-    <VBox fx:id="playersContainer" spacing="6" alignment="CENTER_LEFT"
+    <VBox fx:id="playersContainer" spacing="6" alignment="TOP_LEFT"
           style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;"
           VBox.vgrow="ALWAYS"/>
 

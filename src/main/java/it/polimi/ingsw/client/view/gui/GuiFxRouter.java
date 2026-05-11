@@ -26,6 +26,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         ctx.lobbyModel().addObserver(this);
         ctx.gameModel().addObserver(this);
         registerControllers();
+        setupCloseHandler();
     }
 
     private void navigateTo(SceneId sceneId) {
@@ -91,7 +92,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
             throw new RuntimeException("Unable to load scene: " + sceneId.path(), e);
         }
     }
-//Le tre linee commentate sono per non introdurre errori, togliere il commento una volta fatta la classe corrispondente
+
     private void registerControllers() {
         factories.put(MatchmakingScreen.class, () -> new MatchmakingScreen(ctx, this));
         factories.put(LobbyScreen.class,       () -> new LobbyScreen(ctx, this));
@@ -110,7 +111,18 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         if (factory != null) return factory.get();
         throw new RuntimeException("No factory registered for: " + controllerClass.getName());
     }
+
+
+    private void setupCloseHandler() {
+    stage.setOnCloseRequest(event -> {
+        if (currentScreen != null) {
+            currentScreen.handleWindowClose(event, ctx, this);
+        }
+    });
 }
+}
+
+
 
 
 //Implementa GuiNavigator e UIObserver. Unica classe che conosce lo Stage, cambia scena e osserva gameModel.

@@ -9,6 +9,10 @@ import it.polimi.ingsw.client.view.gui.interaction.InteractionState;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.stage.WindowEvent;
 
 import java.util.List;
 
@@ -183,5 +187,30 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     public void setViewedPlayer(String nickname) {
         this.viewedPlayerNickname = nickname;
         this.refresh(); // Aggiorna tutto per mostrare i dati del nuovo giocatore
+    }
+
+    @Override
+    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+        event.consume(); // Blocca la chiusura automatica per mostrare il dialogo
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Uscita");
+        alert.setHeaderText("Uscita dalla partita");
+        alert.setContentText("Vuoi tornare in lobby o chiudere il gioco?");
+
+        ButtonType btnLobby = new ButtonType("Torna alla Lobby");
+        ButtonType btnExit = new ButtonType("Esci", ButtonBar.ButtonData.YES);
+        ButtonType btnCancel = new ButtonType("Annulla", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(btnLobby, btnExit, btnCancel);
+
+        alert.showAndWait().ifPresent(type -> {
+            if (type == btnLobby) {
+                ctx.controller().leaveGame();
+            } else if (type == btnExit) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
     }
 }

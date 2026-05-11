@@ -7,9 +7,8 @@ import it.polimi.ingsw.client.view.listeners.MatchmakingView;
 import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     private String pendingNickname = "";
 
     @FXML private TextField nicknameField;
-    @FXML private TextField maxPlayersField;
+    @FXML private ComboBox<Integer> maxPlayersComboBox;
     @FXML private ListView<String> gamesListView;
     @FXML private Label errorLabel;
 
@@ -35,9 +34,26 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         this.navigator = navigator;
     }
 
+    @FXML private Button createGameButton;
+    @FXML private Button joinGameButton;
+
     @FXML
     public void initialize() {
         ctx.notificationController().setMatchmakingView(this);
+
+        maxPlayersComboBox.getItems().addAll(2, 3, 4, 5);
+
+        // 2. Blocco sottomissione: il bottone è disabilitato se il nickname è vuoto o non è selezionato un numero della tendina
+        createGameButton.disableProperty().bind(
+            nicknameField.textProperty().isEmpty()
+            .or(maxPlayersComboBox.valueProperty().isNull())
+        );
+
+        // 3. Regola per "Unisciti": disabilitato se Nickname è vuoto O nessuna partita è selezionata
+        joinGameButton.disableProperty().bind(
+        nicknameField.textProperty().isEmpty()
+        .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
+    );
     }
 
     @Override
@@ -51,7 +67,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
                 List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
                 gamesListView.getItems().setAll(
                         games.stream()
-                                .map(g -> g.getGameId() + " — " + g.getCurrentPlayers() + "/" + g.getMaxPlayers())
+                                .map(g -> g.getGameId() + " — Creator: " + g.getCreatorNickname() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")")
                                 .toList()
                 );
             } finally {
@@ -94,26 +110,20 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @FXML
     private void onCreateGame() {
         pendingNickname = nicknameField.getText().trim();
-        String maxStr = maxPlayersField.getText().trim();
-        try {
-            int maxPlayers = Integer.parseInt(maxStr);
-            ctx.controller().createGame(pendingNickname, maxPlayers);
-        } catch (NumberFormatException e) {
-            ctx.lobbyModel().setGlobalError("Errore: max_players deve essere un numero.");
-            refresh();
-        }
+        // Non serve più il try-catch, il TextFormatter garantisce che ci sia un numero valido
+        int maxPlayers = maxPlayersComboBox.getValue();
+        ctx.controller().createGame(pendingNickname, maxPlayers);
     }
 
     @FXML
     private void onJoinGame() {
+        // Il binding garantisce che nicknameField non sia vuoto e che ci sia una selezione
         pendingNickname = nicknameField.getText().trim();
         String selected = gamesListView.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            ctx.lobbyModel().setGlobalError("Seleziona una partita dalla lista.");
-            refresh();
-            return;
-        }
+
+        // Estrai l'ID (il formato "ID — Giocatori" è gestito a monte nel refresh)
         String gameId = selected.split(" — ")[0];
+
         ctx.controller().joinGame(pendingNickname, gameId);
     }
 

@@ -10,8 +10,8 @@
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
     <Label text="Tabellone" style="-fx-font-weight: bold;"/>
-    <GridPane fx:id="boardGrid" hgap="6" vgap="6"/>
-
+    <GridPane fx:id="boardGrid" hgap="0" vgap="6" alignment="CENTER"/>
+    
     <Separator/>
 
     <Label text="Tribù visualizzata" style="-fx-font-weight: bold;"/>

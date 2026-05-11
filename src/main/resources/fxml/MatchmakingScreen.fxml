@@ -18,18 +18,22 @@
 
     <!-- Crea partita -->
     <HBox spacing="8" alignment="CENTER">
-        <TextField fx:id="maxPlayersField" promptText="Giocatori (2-5)"
+
+        <HBox spacing="8" alignment="CENTER">
+        <ComboBox fx:id="maxPlayersComboBox" promptText="Giocatori (2-5)"
                    HBox.hgrow="NEVER" prefWidth="160"/>
-        <Button text="Crea partita" onAction="#onCreateGame" HBox.hgrow="ALWAYS"
+        <Button fx:id="createGameButton" text="Create Game" onAction="#onCreateGame" HBox.hgrow="ALWAYS"
                 maxWidth="Infinity"/>
+        </HBox>
+
     </HBox>
 
     <Separator/>
 
     <!-- Lista partite -->
-    <Button text="Aggiorna lista" onAction="#onRefreshList" maxWidth="Infinity"/>
+    <Button text="Update List" onAction="#onRefreshList" maxWidth="Infinity"/>
     <ListView fx:id="gamesListView" prefHeight="180"/>
-    <Button text="Unisciti" onAction="#onJoinGame" maxWidth="Infinity"/>
+    <Button fx:id="joinGameButton" text="Join" onAction="#onJoinGame" maxWidth="Infinity"/>
 
     <!-- Errore -->
     <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>

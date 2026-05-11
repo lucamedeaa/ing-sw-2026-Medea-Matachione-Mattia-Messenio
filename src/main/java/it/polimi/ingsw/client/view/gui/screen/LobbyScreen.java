@@ -17,7 +17,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
-    private boolean initialized = false;
+
 
     @FXML private VBox playersContainer;
     @FXML private Label statusLabel;
@@ -28,19 +28,15 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
         this.navigator = navigator;
     }
 
-    @FXML
+@FXML
     public void initialize() {
-        // Registrazione al caricamento
         ctx.notificationController().setLobbyView(this);
     }
+
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
-        // Ignoriamo i parametri per evitare doppia fonte di verità.
-        // Accendiamo solo il flag per autorizzare il refresh().
-        Platform.runLater(() -> {
-            this.initialized = true;
-            refresh();
-        });
+        // Ignoriamo i parametri, ma dobbiamo forzare la UI a rileggere il LobbyModel
+        Platform.runLater(this::refresh);
     }
 
     @Override
@@ -70,7 +66,6 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @Override
     public void refresh() {
-        if (!initialized) return;
         ctx.lobbyModel().getReadLock().lock();
         try {
             playersContainer.getChildren().clear();

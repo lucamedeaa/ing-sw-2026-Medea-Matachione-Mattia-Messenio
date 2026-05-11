@@ -2,6 +2,10 @@ package it.polimi.ingsw.client.view.gui;
 
 public interface RefreshableScreen {
     void refresh();
+    default void handleWindowClose(javafx.stage.WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+        javafx.application.Platform.exit();
+        System.exit(0);
+    }
 }
 // Contratto di refresh interno usato esclusivamente da GuiFxRouter.
 // Le screen che implementano questa interfaccia (MatchmakingScreen, LobbyScreen,
