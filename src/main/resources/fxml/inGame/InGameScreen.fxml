@@ -17,6 +17,9 @@
         </VBox>
     </right>
     <bottom>
-        <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
+        <VBox>
+            <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
+            <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
+        </VBox>
     </bottom>
 </BorderPane>

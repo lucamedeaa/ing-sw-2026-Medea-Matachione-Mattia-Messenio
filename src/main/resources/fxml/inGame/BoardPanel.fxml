@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.client.view.gui.controllers.BoardPanelController"
+      spacing="12" VBox.vgrow="ALWAYS">
 
-</AnchorPane>
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+    <Label text="Tabellone" style="-fx-font-weight: bold;"/>
+    <GridPane fx:id="boardGrid" hgap="6" vgap="6"/>
+
+    <Separator/>
+
+    <Label text="Tribù visualizzata" style="-fx-font-weight: bold;"/>
+    <HBox fx:id="tribeContainer" spacing="6"/>
+
+</VBox>

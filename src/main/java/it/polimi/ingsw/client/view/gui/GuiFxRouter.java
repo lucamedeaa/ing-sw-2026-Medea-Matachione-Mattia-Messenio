@@ -1,11 +1,7 @@
 package it.polimi.ingsw.client.view.gui;
 
-
 import it.polimi.ingsw.client.model.UIObserver;
-import it.polimi.ingsw.client.view.gui.controllers.ActionsPanelController;
-import it.polimi.ingsw.client.view.gui.controllers.BoardPanelController;
-import it.polimi.ingsw.client.view.gui.controllers.LogPanelController;
-import it.polimi.ingsw.client.view.gui.controllers.PlayersPanelController;
+import it.polimi.ingsw.client.view.gui.controllers.*;
 import it.polimi.ingsw.client.view.gui.screen.*;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +18,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
     private final GuiContext ctx;
     private RefreshableScreen currentScreen;
     private final Map<Class<?>, Supplier<Object>> factories = new HashMap<>();
+    private String disconnectReason = "";
 
     public GuiFxRouter(Stage stage,GuiContext ctx) {
         this.stage = stage;
@@ -70,6 +67,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
 
     @Override
     public void toDisconnected(String reason) {
+        this.disconnectReason = reason != null ? reason : "";
         navigateTo(SceneId.DISCONNECTED);
     }
 
@@ -99,7 +97,8 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         factories.put(LobbyScreen.class,       () -> new LobbyScreen(ctx, this));
         factories.put(InGameScreen.class,      () -> new InGameScreen(ctx, this));
         factories.put(GameEndedScreen.class,   () -> new GameEndedScreen(ctx, this));
-        factories.put(DisconnectedScreen.class, DisconnectedScreen::new);
+        factories.put(TribePanelController.class, TribePanelController::new);
+        factories.put(DisconnectedScreen.class, () -> new DisconnectedScreen(disconnectReason));
         factories.put(BoardPanelController.class, BoardPanelController::new);
         factories.put(PlayersPanelController.class, PlayersPanelController::new);
         factories.put(ActionsPanelController.class, ActionsPanelController::new);

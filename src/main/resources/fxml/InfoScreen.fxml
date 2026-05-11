@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.client.view.gui.screen.InfoScreen"
+      spacing="12" prefWidth="500" prefHeight="400">
 
-</AnchorPane>
+    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+
+    <Label text="MESOS — Card Reference" styleClass="title"/>
+    <TextArea fx:id="contentArea" VBox.vgrow="ALWAYS"
+              wrapText="true" editable="false" styleClass="info-area"/>
+    <Button text="Chiudi" onAction="#onClose" maxWidth="Infinity"/>
+
+</VBox>

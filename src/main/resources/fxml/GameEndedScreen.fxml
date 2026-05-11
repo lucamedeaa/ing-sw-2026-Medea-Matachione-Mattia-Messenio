@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="it.polimi.ingsw.client.view.gui.screen.GameEndedScreen"
+            prefWidth="900" prefHeight="600">
 
-</AnchorPane>
+    <top>
+        <Label text="Partita Terminata"
+               style="-fx-font-size: 26; -fx-font-weight: bold; -fx-padding: 20 0 10 20;"/>
+    </top>
+
+    <center>
+        <HBox spacing="20" style="-fx-padding: 10;">
+
+            <VBox spacing="12" HBox.hgrow="ALWAYS"
+                  style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;">
+                <Label text="Il tuo risultato" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                <Label fx:id="positionLabel" text="Posizione: —"/>
+                <Label fx:id="scoreLabel"    text="Punteggio: —"/>
+                <Label fx:id="foodLabel"     text="Cibo rimanente: —"/>
+                <Label fx:id="personalBestLabel" text="Miglior punteggio globale: —" wrapText="true"/>
+                <Separator/>
+                <Label text="Classifica partita" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
+                <ListView fx:id="sessionLeaderboardView" VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <VBox spacing="12" HBox.hgrow="ALWAYS"
+                  style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;">
+                <Label text="Classifica Globale" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+                <ProgressIndicator fx:id="globalSpinner"/>
+                <ListView fx:id="globalLeaderboardView" VBox.vgrow="ALWAYS" visible="false"/>
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" style="-fx-padding: 15;">
+            <Button text="Torna al menu" onAction="#handleLeave" style="-fx-font-size: 14;"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

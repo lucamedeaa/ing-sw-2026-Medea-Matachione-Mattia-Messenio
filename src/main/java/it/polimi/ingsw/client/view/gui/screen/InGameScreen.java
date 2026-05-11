@@ -25,6 +25,7 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     @FXML private PlayersPanelController playersPanelController;
     @FXML private ActionsPanelController actionsPanelController;
     @FXML private LogPanelController logPanelController;
+    @FXML private TribePanelController tribePanelController;
 
     public InGameScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
@@ -47,15 +48,18 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         if (playersPanelController != null) {
             playersPanelController.setParentScreen(this);
         }
+        if (tribePanelController != null) {
+            tribePanelController.init(ctx.gameModel(), ctx.session());
+        }
 
         this.viewedPlayerNickname = ctx.session().getNickname();
     }
 
-    @Override
-    public void onDeltaEvent() {
-        // No-op intenzionale: gli eventi vengono applicati al model da EventApplier,
-        // e la vista si aggiorna tramite il refresh() invocato dal router
-    }
+//    @Override
+//    public void onDeltaEvent() {
+//        // No-op intenzionale: gli eventi vengono applicati al model da EventApplier,
+//        // e la vista si aggiorna tramite il refresh() invocato dal router
+//    }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
@@ -111,6 +115,9 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         }
         if (actionsPanelController != null) actionsPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
         if (logPanelController != null) logPanelController.refresh(ctx.gameModel());
+        if (tribePanelController != null) {
+            tribePanelController.update();
+        }
     }
 
     private InteractionState currentState = InteractionState.IDLE;

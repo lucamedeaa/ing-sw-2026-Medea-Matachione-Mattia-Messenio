@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.client.view.gui.screen.LobbyScreen"
+      spacing="16" alignment="CENTER"
+      prefWidth="480" prefHeight="360">
 
-</AnchorPane>
+    <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
+
+    <Label text="Sala d'attesa" styleClass="title"/>
+    <Label fx:id="statusLabel" wrapText="true"/>
+
+    <VBox fx:id="playersContainer" spacing="6" alignment="CENTER_LEFT"
+          style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;"
+          VBox.vgrow="ALWAYS"/>
+
+    <Button text="Abbandona partita" onAction="#handleLeave" maxWidth="Infinity"
+            styleClass="danger-button"/>
+
+</VBox>

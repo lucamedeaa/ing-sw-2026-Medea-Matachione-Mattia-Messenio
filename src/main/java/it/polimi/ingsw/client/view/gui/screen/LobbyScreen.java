@@ -1,9 +1,5 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
-import it.polimi.ingsw.client.controller.ServerController;
-import it.polimi.ingsw.client.model.ClientSession;
-import it.polimi.ingsw.client.model.LobbyModel;
-import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
@@ -41,7 +37,10 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
         // Ignoriamo i parametri per evitare doppia fonte di verità.
         // Accendiamo solo il flag per autorizzare il refresh().
-        this.initialized = true;
+        Platform.runLater(() -> {
+            this.initialized = true;
+            refresh();
+        });
     }
 
     @Override
@@ -72,29 +71,25 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     @Override
     public void refresh() {
         if (!initialized) return;
-
-        // Il rendering legge esclusivamente dal model
-        playersContainer.getChildren().clear();
-        List<String> players = ctx.lobbyModel().getLobbyPlayers();
-
-        for (String player : players) {
-            Label playerLabel = new Label(player);
-            if (player.equals(ctx.session().getNickname())) {
-                playerLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+        ctx.lobbyModel().getReadLock().lock();
+        try {
+            playersContainer.getChildren().clear();
+            List<String> players = ctx.lobbyModel().getLobbyPlayers();
+            for (String player : players) {
+                Label playerLabel = new Label(player);
+                if (player.equals(ctx.session().getNickname()))
+                    playerLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+                playersContainer.getChildren().add(playerLabel);
             }
-            playersContainer.getChildren().add(playerLabel);
-        }
-
-        String notification = ctx.lobbyModel().getLobbyNotification();
-        if (notification != null) {
-            statusLabel.setText(notification);
+            String notification = ctx.lobbyModel().getLobbyNotification();
+            if (notification != null) statusLabel.setText(notification);
+        } finally {
+            ctx.lobbyModel().getReadLock().unlock();
         }
     }
 
     @FXML
     private void handleLeave() {
         ctx.controller().leaveGame();
-        ctx.notificationController().setLobbyView(null);
-        navigator.toMatchmaking();
     }
 }
