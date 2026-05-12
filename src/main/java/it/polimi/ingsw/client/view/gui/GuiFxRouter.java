@@ -19,6 +19,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
     private RefreshableScreen currentScreen;
     private final Map<Class<?>, Supplier<Object>> factories = new HashMap<>();
     private String disconnectReason = "";
+    private final SceneLoader sceneLoader;
 
     public GuiFxRouter(Stage stage,GuiContext ctx) {
         this.stage = stage;
@@ -27,14 +28,20 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         ctx.gameModel().addObserver(this);
         registerControllers();
         setupCloseHandler();
+        this.sceneLoader = new SceneLoader(stage, this::createController);
     }
 
     private void navigateTo(SceneId sceneId) {
         if (Platform.isFxApplicationThread()) {
-            loadScene(sceneId);
+            applyNavigation(sceneId);
         } else {
-            Platform.runLater(() -> loadScene(sceneId));
+            Platform.runLater(() -> applyNavigation(sceneId));
         }
+    }
+
+    private void applyNavigation(SceneId sceneId) {
+        Object controller = sceneLoader.load(sceneId);
+        currentScreen = (controller instanceof RefreshableScreen r) ? r : null;
     }
 
     @Override
