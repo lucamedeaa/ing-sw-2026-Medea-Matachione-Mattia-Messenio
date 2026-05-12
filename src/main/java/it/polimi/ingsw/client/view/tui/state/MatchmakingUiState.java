@@ -132,7 +132,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
     @Override
     public void onServerDisconnected(String reason) {
         notificationController.setMatchmakingView(null);
-        navigator.toLobby();
+        navigator.toDisconnected(reason);
     }
 
 }

@@ -99,6 +99,6 @@ public class LobbyUiState implements UIState, LobbyView {
     @Override
     public void onServerDisconnected(String reason) {
         notificationController.setLobbyView(null);
-        navigator.toLobby();
+        navigator.toDisconnected(reason);
     }
 }

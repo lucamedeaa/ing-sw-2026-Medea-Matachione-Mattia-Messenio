@@ -32,12 +32,18 @@ public abstract class ObservableModel {
      * @param updates updates to run under the model write lock
      */
     public void executeBatch(Runnable updates) {
+        lock.writeLock().lock();
+        boolean wasBatching = batchMode;
         batchMode = true;
+
         try {
             updates.run();
         } finally {
-            batchMode = false;
+            batchMode = wasBatching;
+            lock.writeLock().unlock();
+        }
 
+        if (!wasBatching) {
             forceNotifyUI();
         }
     }

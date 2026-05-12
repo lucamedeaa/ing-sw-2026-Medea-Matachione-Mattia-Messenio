@@ -1,6 +1,9 @@
 package it.polimi.ingsw.client.view.tui.render;
 
 import it.polimi.ingsw.client.view.tui.OutputPort;
+import it.polimi.ingsw.client.view.tui.card.CardInfo;
+import it.polimi.ingsw.client.view.tui.card.CardNameMapper;
+
 import java.util.List;
 
 public class CardBoxRenderer {

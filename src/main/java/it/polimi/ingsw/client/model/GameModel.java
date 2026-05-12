@@ -38,11 +38,16 @@ public class GameModel extends ObservableModel {
      * @param activePlayer nickname of the active player
      */
     public void setFullState(BoardDto boardDTO, List<PlayerDto> playersList, String activePlayer) {
-        board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
-        board.setEra(boardDTO.currentEra());
-        board.setRound(boardDTO.currentRound());
-        roster.initPlayers(playersList);
-        turn.setActivePlayer(activePlayer);
+        lock.writeLock().lock();
+        try {
+            board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
+            board.setEra(boardDTO.currentEra());
+            board.setRound(boardDTO.currentRound());
+            roster.initPlayers(playersList);
+            turn.setActivePlayer(activePlayer);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
@@ -95,43 +100,83 @@ public class GameModel extends ObservableModel {
     }
 
     public void removeCard(int row, int col) {
-        board.removeCard(row, col);
+        lock.writeLock().lock();
+        try {
+            board.removeCard(row, col);
+        } finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void refillBoardRow(int row, List<Integer> newCardIds) {
-        board.refillRow(row, newCardIds);
+        lock.writeLock().lock();
+        try {
+            board.refillRow(row, newCardIds);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void updateTotemPosition(String nickname, int positionIndex) {
-        roster.updateTotemPosition(nickname, positionIndex);
+        lock.writeLock().lock();
+        try{
+            roster.updateTotemPosition(nickname, positionIndex);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void returnTotemToTrack(String nickname, int returnIndex) {
-        roster.returnTotemToTrack(nickname, returnIndex);
+        lock.writeLock().lock();
+        try {
+            roster.returnTotemToTrack(nickname, returnIndex);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void addCardToPlayerTribe(String nickname, Integer cardId) {
-        roster.addCardToTribe(nickname, cardId);
+        lock.writeLock().lock();
+        try{
+            roster.addCardToTribe(nickname, cardId);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void updatePlayerTribe(String nickname, List<Integer> newTribeCards) {
-        roster.updateTribe(nickname, newTribeCards);
+        lock.writeLock().lock();
+        try {
+            roster.updateTribe(nickname, newTribeCards);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void updateEra(int newEra) {
-        board.setEra(newEra);
+        lock.writeLock().lock();
+        try{
+            board.setEra(newEra);
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
     public void updateRound(int newRound) {
-        board.setRound(newRound);
-        roster.clearReturnPositions();
+        lock.writeLock().lock();
+        try{
+            board.setRound(newRound);
+            roster.clearReturnPositions();
+        }finally {
+            lock.writeLock().unlock();
+        }
         notifyUI();
     }
 
@@ -191,11 +236,11 @@ public class GameModel extends ObservableModel {
     }
 
     public List<String> consumeGameLogs() {
-        lock.readLock().lock();
+        lock.writeLock().lock();
         try {
             return turn.consumeGameLogs();
         } finally {
-            lock.readLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
@@ -285,21 +330,129 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
-    public List<Integer> getUpperRowCards() { return board.getUpperRowCards(); }
-    public List<Integer> getLowerRowCards() { return board.getLowerRowCards(); }
-    public int getCurrentEra() { return board.getCurrentEra(); }
-    public int getCurrentRound() { return board.getCurrentRound(); }
+    public List<Integer> getUpperRowCards() {
+        lock.readLock().lock();
+        try {
+            return board.getUpperRowCards();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 
-    public Map<String, PlayerSnapshot> getPlayers() { return roster.getPlayers(); }
-    public Map<String, Integer> getTotemPositions() { return roster.getTotemPositions(); }
-    public Map<String, Integer> getReturnPositions() { return roster.getReturnPositions(); }
-    public Map<String, List<Integer>> getTribes() { return roster.getTribes(); }
+    public List<Integer> getLowerRowCards() {
+        lock.readLock().lock();
+        try {
+            return board.getLowerRowCards();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 
-    public String getActivePlayer() { return turn.getActivePlayer(); }
-    public List<ActionDto> getMyActions() { return turn.getActions(); }
+    public int getCurrentEra() {
+        lock.readLock().lock();
+        try {
+            return board.getCurrentEra();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 
-    public PlayerGameCompletedDto getLocalResult() { return localResult; }
-    public LeaderboardSnapshotDto getGlobalLeaderboard() { return globalLeaderboard; }
-    public boolean isGameOver() { return isGameOver; }
-    public List<PlayerScoreDto> getLeaderboard() { return new ArrayList<>(leaderboard); }
+    public int getCurrentRound() {
+        lock.readLock().lock();
+        try {
+            return board.getCurrentRound();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public Map<String, PlayerSnapshot> getPlayers() {
+        lock.readLock().lock();
+        try {
+            return roster.getPlayers();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public Map<String, Integer> getTotemPositions() {
+        lock.readLock().lock();
+        try {
+            return roster.getTotemPositions();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public Map<String, Integer> getReturnPositions() {
+        lock.readLock().lock();
+        try {
+            return roster.getReturnPositions();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public Map<String, List<Integer>> getTribes() {
+        lock.readLock().lock();
+        try {
+            return roster.getTribes();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public String getActivePlayer() {
+        lock.readLock().lock();
+        try {
+            return turn.getActivePlayer();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public List<ActionDto> getMyActions() {
+        lock.readLock().lock();
+        try {
+            return turn.getActions();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public PlayerGameCompletedDto getLocalResult() {
+        lock.readLock().lock();
+        try {
+            return localResult;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public LeaderboardSnapshotDto getGlobalLeaderboard() {
+        lock.readLock().lock();
+        try {
+            return globalLeaderboard;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public boolean isGameOver() {
+        lock.readLock().lock();
+        try {
+            return isGameOver;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public List<PlayerScoreDto> getLeaderboard() {
+        lock.readLock().lock();
+        try {
+            return new ArrayList<>(leaderboard);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 }
