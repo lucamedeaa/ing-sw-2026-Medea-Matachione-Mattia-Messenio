@@ -17,7 +17,7 @@ public class GuiAssetManager {
         }
 
         // Il path parte dalla radice di 'resources'
-        String path = "/images/cards/" + cardId + ".png";
+        String path = "/images/cards/pre_" + cardId + ".png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
