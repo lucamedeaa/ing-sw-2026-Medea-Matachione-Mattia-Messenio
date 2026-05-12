@@ -7,12 +7,21 @@ import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 /**
  * Mutable connection context shared by server connection states.
  */
-public interface ConnectionContext extends RoomClientProxy {
+public interface ConnectionContext extends ClientProxy {
 
-    @Override
+    /**
+     * Moves this connection to the in-game command state.
+     *
+     * @param gameController controller for the started game
+     */
     void transitionToGameState(GameController gameController);
 
-    @Override
+    /**
+     * Moves this connection to the post-game command state.
+     *
+     * @param playerCount player count of the completed game
+     * @param leaderboardService leaderboard service used for post-game requests
+     */
     void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService);
 
     /**
@@ -36,7 +45,9 @@ public interface ConnectionContext extends RoomClientProxy {
      */
     boolean isActive();
 
-    @Override
+    /**
+     * Moves this connection back to matchmaking/lobby state.
+     */
     void transitionToLobby();
 
     /**
