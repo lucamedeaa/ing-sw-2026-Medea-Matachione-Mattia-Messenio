@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-import static it.polimi.ingsw.client.view.gui.GuiFxApp.*;
 
 public class LobbyScreen implements LobbyView, RefreshableScreen {
 

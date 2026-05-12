@@ -16,7 +16,6 @@ import javafx.stage.WindowEvent;
 
 import java.util.List;
 
-import static it.polimi.ingsw.client.view.gui.GuiFxApp.*;
 
 public class InGameScreen implements InGameView, RefreshableScreen {
 
@@ -43,7 +42,7 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
 
         // Configura i sotto-pannelli usando i dati del contesto
         if (actionsPanelController != null) {
-            actionsPanelController.setServerController(ctx.controller());
+            actionsPanelController.setContext(ctx);
             actionsPanelController.setParentScreen(this);
         }
         if (boardPanelController != null) {

@@ -10,10 +10,6 @@ import javafx.scene.layout.FlowPane;
 
 import java.util.List;
 
-// Pannello integrato in InGameScreen. Mostra la tribù di ogni giocatore
-// in tab separati — un tab per giocatore. Il tab del proprio giocatore
-// è evidenziato. Aggiornato da InGameScreen.refresh() via update().
-// Nessun listener, nessuna comunicazione server.
 public class TribePanelController {
 
     @FXML private TabPane tribeTabPane;
