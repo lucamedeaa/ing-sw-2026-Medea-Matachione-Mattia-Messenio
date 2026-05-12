@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.PlayerGameResult;
 import it.polimi.ingsw.server.controller.GameLifecycleCallback;
 import it.polimi.ingsw.common.network.dto.LeaderboardEntryDto;
 import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.server.network.RoomClientProxy;
+import it.polimi.ingsw.server.network.ConnectionContext;
 import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 import it.polimi.ingsw.server.view.VirtualView;
@@ -34,7 +34,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     private final int maxPlayers;
     private final GameManagerInterface gameManager;
     private final LeaderboardService leaderboardService;
-    private final Map<String, RoomClientProxy> players;
+    private final Map<String, ConnectionContext> players;
     // Room state lock. External callbacks must run after releasing this lock.
     // If both locks are needed, acquire the connection lifecycle lock before this one. (used to create game and add player)
     private final Object roomLock = new Object();
@@ -51,7 +51,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     }
 
     /** Adds a player to the room and starts the game if full. */
-    public RoomAdmissionResult addPlayer(String nickname, RoomClientProxy connection) throws LobbyActionException {
+    public RoomAdmissionResult addPlayer(String nickname, ConnectionContext connection) throws LobbyActionException {
         boolean startNow = false;
         // Only room state is mutated under this lock.
         synchronized (roomLock) {
@@ -84,7 +84,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
         List<String> playerNames;
-        Map<String, RoomClientProxy> connections;
+        Map<String, ConnectionContext> connections;
         synchronized (roomLock) {
             playerNames = new ArrayList<>(players.keySet());
             connections = new HashMap<>(players);
@@ -96,11 +96,11 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         game.setCompletionHandler(controller);
         gameExecutor.submit(() -> {
             try {
-                for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+                for (Map.Entry<String, ConnectionContext> entry : connections.entrySet()) {
                     String name = entry.getKey();
-                    RoomClientProxy conn = entry.getValue();
-                    VirtualView vv = new VirtualView(name, conn);
-                    conn.transitionToGameState(controller);
+                    ConnectionContext session = entry.getValue();
+                    VirtualView vv = new VirtualView(name, session);
+                    session.transitionToGameState(controller);
                     game.addObserver(vv);
                 }
                 game.start();
@@ -128,7 +128,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
                 throw new LobbyActionException("Game already started. Cannot leave now.");
             }
 
-            RoomClientProxy removed = players.remove(nickname);
+            ConnectionContext removed = players.remove(nickname);
             if (players.isEmpty()) {
                 roomIsEmpty = true;
             } else if (removed != null) {
@@ -146,26 +146,27 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     }
 
     @Override
-    public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {Map<String, RoomClientProxy> connections = snapshotConnections();
+    public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {
+        Map<String, ConnectionContext> connections = snapshotConnections();
         notifyCompletedPlayers(connections, completedGame, personalBestEntries);
         closeRoomResources();
     }
 
     @Override
     public void closeAbortedRoom(String reason, String excludedNickname) {
-        Map<String, RoomClientProxy> connections = snapshotConnections();
+        Map<String, ConnectionContext> connections = snapshotConnections();
         notifyAbortedPlayers(connections, reason, excludedNickname);
         closeRoomResources();
     }
 
-    private Map<String, RoomClientProxy> snapshotConnections() {
+    private Map<String, ConnectionContext> snapshotConnections() {
         synchronized (roomLock) {
             return new HashMap<>(players);
         }
     }
 
     private void notifyCompletedPlayers(
-            Map<String, RoomClientProxy> connections,
+            Map<String, ConnectionContext> connections,
             CompletedGameResult completedGame,
             List<LeaderboardEntryDto> personalBestEntries
     ) {
@@ -175,33 +176,33 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         Map<String, LeaderboardEntryDto> personalBestByNickname = personalBestEntries.stream()
                 .collect(Collectors.toMap(LeaderboardEntryDto::nickname, Function.identity()));
 
-        for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+        for (Map.Entry<String, ConnectionContext> entry : connections.entrySet()) {
             String nickname = entry.getKey();
-            RoomClientProxy conn = entry.getValue();
+            ConnectionContext session = entry.getValue();
             PlayerGameResult localResult = localResults.get(nickname);
             LeaderboardEntryDto personalBestEntry = personalBestByNickname.get(nickname);
             if (localResult == null || personalBestEntry == null) {
-                conn.error("Unable to build final leaderboard result.");
+                session.error("Unable to build final leaderboard result.");
                 continue;
             }
 
-            conn.transitionToAfterGameState(playerCount, leaderboardService);
-            conn.gameCompleted(buildCompletedDto(playerCount, localResult, personalBestEntry));
+            session.transitionToAfterGameState(playerCount, leaderboardService);
+            session.gameCompleted(buildCompletedDto(playerCount, localResult, personalBestEntry));
         }
     }
 
     private void notifyAbortedPlayers(
-            Map<String, RoomClientProxy> connections,
+            Map<String, ConnectionContext> connections,
             String reason,
             String excludedNickname
     ) {
-        for (Map.Entry<String, RoomClientProxy> entry : connections.entrySet()) {
+        for (Map.Entry<String, ConnectionContext> entry : connections.entrySet()) {
             if (entry.getKey().equals(excludedNickname)) {
                 continue;
             }
-            RoomClientProxy conn = entry.getValue();
-            conn.gameAborted(reason);
-            conn.transitionToLobby();
+            ConnectionContext session = entry.getValue();
+            session.gameAborted(reason);
+            session.transitionToLobby();
         }
     }
 
@@ -261,15 +262,15 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     }
 
     public void broadcast(String messageText) {
-        List<RoomClientProxy> currentConnections;
+        List<ConnectionContext> currentConnections;
         List<String> currentPlayers;
         synchronized (roomLock) {
             currentConnections = new ArrayList<>(players.values());
             currentPlayers = new ArrayList<>(players.keySet());
         }
 
-        for (RoomClientProxy conn : currentConnections) {
-            conn.roomUpdate(messageText, currentPlayers);
+        for (ConnectionContext session : currentConnections) {
+            session.roomUpdate(messageText, currentPlayers);
         }
     }
 }
