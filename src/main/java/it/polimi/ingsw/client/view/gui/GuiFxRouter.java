@@ -78,5 +78,5 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
             currentScreen.handleWindowClose(event, ctx, this);
         }
     });
-}
+    }
 }

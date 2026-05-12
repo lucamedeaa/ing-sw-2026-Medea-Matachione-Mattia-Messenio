@@ -10,6 +10,7 @@ public class GuiAssetManager {
     // Cache per evitare di allocare nuova memoria per immagini già caricate
     private static final Map<Integer, Image> cardCache = new HashMap<>();
     private static final Map<String, Image> tileCache = new HashMap<>();
+    private static final Map<String, Image> totemCache = new HashMap<>();
 
     public static Image getCardImage(int cardId) {
         if (cardCache.containsKey(cardId)) {
@@ -46,6 +47,32 @@ public class GuiAssetManager {
 
         Image image = new Image(is);
         tileCache.put(tileName, image);
+        return image;
+    }
+
+    public static Image getTotemImage(String colorName) {
+        if (colorName == null || colorName.isBlank()) {
+            return null;
+        }
+
+        // Normalizziamo il nome per sicurezza (es. da "Red" a "RED")
+        String formattedColor = colorName.toUpperCase();
+
+        if (totemCache.containsKey(formattedColor)) {
+            return totemCache.get(formattedColor);
+        }
+
+        // Assicurati che il path corrisponda alla cartella reale nei tuoi resources
+        String path = "/images/totems/" + formattedColor + "_COLOR.png";
+        InputStream is = GuiAssetManager.class.getResourceAsStream(path);
+
+        if (is == null) {
+            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + formattedColor + " al percorso " + path);
+            return null;
+        }
+
+        Image image = new Image(is);
+        totemCache.put(formattedColor, image);
         return image;
     }
 }

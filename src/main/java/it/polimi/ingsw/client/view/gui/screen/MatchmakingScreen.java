@@ -52,8 +52,20 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         // 3. Regola per "Unisciti": disabilitato se Nickname è vuoto O nessuna partita è selezionata
         joinGameButton.disableProperty().bind(
         nicknameField.textProperty().isEmpty()
-        .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
-    );
+        .or(gamesListView.getSelectionModel().selectedItemProperty().isNull()));
+
+        Platform.runLater(() -> {
+            if (nicknameField != null && nicknameField.getScene() != null) {
+                javafx.stage.Stage stage = (javafx.stage.Stage) nicknameField.getScene().getWindow();
+                if (stage != null) {
+                    stage.setMinWidth(350);
+                    stage.setMinHeight(450);
+
+                    stage.setWidth(350);
+                    stage.setHeight(450);
+                }
+            }
+        });
     }
 
     @Override
