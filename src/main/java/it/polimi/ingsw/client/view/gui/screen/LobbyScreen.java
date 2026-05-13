@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
 
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     @FXML private VBox playersContainer;
     @FXML private Label statusLabel;
 
+
+
     // Nuovo costruttore per la Factory
     public LobbyScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
@@ -29,22 +32,19 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @FXML
     public void initialize() {
-        // Registrazione al caricamento
         ctx.notificationController().setLobbyView(this);
 
         Platform.runLater(this::refresh);
 
-        // Ripristina le dimensioni della finestra per la Lobby
         Platform.runLater(() -> {
+            // Dimensioni finestra
             if (playersContainer != null && playersContainer.getScene() != null) {
                 javafx.stage.Stage stage = (javafx.stage.Stage) playersContainer.getScene().getWindow();
                 if (stage != null) {
-
-                    stage.setMinWidth(400);
-                    stage.setMinHeight(500);
-
-                    stage.setWidth(400);
-                    stage.setHeight(500);
+                    stage.setMinWidth(900);
+                    stage.setMinHeight(600);
+                    stage.setWidth(900);
+                    stage.setHeight(600);
                 }
             }
         });

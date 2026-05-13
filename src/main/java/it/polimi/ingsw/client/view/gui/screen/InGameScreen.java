@@ -10,11 +10,7 @@ import it.polimi.ingsw.client.view.gui.interaction.InteractionState;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.WindowEvent;
 
 import java.util.List;
 

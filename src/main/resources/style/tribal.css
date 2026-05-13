@@ -93,3 +93,9 @@
     -fx-border-color: rgba(212, 163, 115, 0.4);
     -fx-border-width: 2 0 0 0;
 }
+.lobby-bg {
+    -fx-background-image: url('../images/tiles/mesos_cover.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+}

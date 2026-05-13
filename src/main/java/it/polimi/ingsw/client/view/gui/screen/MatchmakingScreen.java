@@ -18,11 +18,7 @@ import java.net.URL;
 
 import java.util.List;
 
-// Controller FXML della schermata iniziale. Implementa MatchmakingView e RefreshableScreen.
-// Si auto-registra in initialize() su ClientNotificationController e si de-registra prima di navigare.
-// I callback arrivano dal thread di rete — Platform.runLater obbligatorio.
-// refresh() è il punto unico di rendering: legge da LobbyModel sotto read lock.
-// I callback non aggiornano la UI direttamente: impostano flag/stato, poi refresh() li legge.
+
 public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
     private final GuiContext ctx;

@@ -4,10 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
-// Dialog modale con guida statica alle carte del gioco.
-// Nessuna dipendenza da model o server — contenuto fisso.
-// Aperto da InGameScreen come Stage con Modality.APPLICATION_MODAL.
-// Si chiude con il bottone "Chiudi" o con la X della finestra.
 public class InfoScreen {
 
     @FXML private TextArea contentArea;

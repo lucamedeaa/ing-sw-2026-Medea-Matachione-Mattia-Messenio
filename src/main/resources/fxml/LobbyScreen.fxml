@@ -3,21 +3,40 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.client.view.gui.screen.LobbyScreen"
-      spacing="16" alignment="CENTER"
-      prefWidth="480" prefHeight="360">
+<StackPane stylesheets="@../style/tribal.css"
+           styleClass="lobby-bg"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="it.polimi.ingsw.client.view.gui.screen.LobbyScreen">
 
-    <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
+    <BorderPane>
+        <center>
+            <VBox alignment="CENTER" BorderPane.alignment="CENTER"
+                  style="-fx-padding: 160 0 0 0;">
 
-    <Label text="Sala d'attesa" styleClass="title"/>
-    <Label fx:id="statusLabel" wrapText="true"/>
+                <HBox styleClass="tribal-card" maxWidth="650" minHeight="180"
+                      spacing="30" alignment="CENTER_LEFT">
+                    <padding><Insets top="24" right="36" bottom="24" left="36"/></padding>
 
-    <VBox fx:id="playersContainer" spacing="6" alignment="TOP_LEFT"
-          style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;"
-          VBox.vgrow="ALWAYS"/>
+                    <Label text="Giocatori in lobby"
+                           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e9c46a; -fx-min-width: 160;"/>
 
-    <Button text="Abbandona partita" onAction="#handleLeave" maxWidth="Infinity"
-            styleClass="danger-button"/>
+                    <Separator orientation="VERTICAL"/>
 
-</VBox>
+                    <VBox fx:id="playersContainer" spacing="8" HBox.hgrow="ALWAYS"/>
+
+                </HBox>
+
+                <Label fx:id="statusLabel" wrapText="true"
+                       style="-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-padding: 10 0 0 0;"/>
+            </VBox>
+        </center>
+
+        <bottom>
+            <HBox alignment="CENTER" style="-fx-padding: 0 0 40 0;">
+                <Button text="Abbandona partita" onAction="#handleLeave"
+                        prefWidth="280" styleClass="tribal-btn-secondary"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+
+</StackPane>
