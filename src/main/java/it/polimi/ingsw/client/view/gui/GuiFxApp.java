@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.ClientUi;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.scene.text.Font;
 
 public class GuiFxApp extends Application implements ClientUi{
     private static ServerController staticController;
@@ -28,9 +29,14 @@ public class GuiFxApp extends Application implements ClientUi{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        Font.loadFont(getClass().getResourceAsStream("/fonts/MedievalSharp-Regular.ttf"), 14);
         GuiContext ctx = new GuiContext(staticController, lobbyModel, gameModel, session, notificationController);
         GuiFxRouter router = new GuiFxRouter(primaryStage, ctx);
         primaryStage.setTitle("Mesos");
+
+        primaryStage.setWidth(1920);
+        primaryStage.setHeight(1080);
+
         router.toMatchmaking();
         primaryStage.show();
     }

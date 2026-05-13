@@ -1,0 +1,95 @@
+
+.root {
+    -fx-font-family: 'MedievalSharp', serif;
+}
+/* La Card: sfondo leggermente più opaco per far risaltare meglio il testo chiaro */
+.tribal-card {
+    -fx-background-color: rgba(15, 10, 5, 0.85); /* Aumentata l'opacità */
+    -fx-border-color: rgba(212, 163, 115, 0.5);
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 30; /* Respiro interno aumentato */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.9), 25, 0, 0, 8);
+}
+
+/* Input Testo: font più grande e testo bianco puro */
+.tribal-input {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: #ffffff; /* Bianco per massima visibilità */
+    -fx-prompt-text-fill: rgba(254, 250, 224, 0.7);
+    -fx-border-color: rgba(212, 163, 115, 0.6);
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 12; /* Più alto */
+    -fx-font-size: 18px; /* Font molto più grande */
+}
+.tribal-input:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: #d4a373;
+}
+
+/* ComboBox: allineato col nuovo text field */
+.tribal-combo {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(212, 163, 115, 0.6);
+    -fx-border-width: 0 0 2 0;
+    -fx-font-size: 16px;
+    -fx-base: rgba(15, 10, 5, 0.95);
+}
+
+/* Bottoni Principali: ingranditi e più evidenti */
+.tribal-btn-primary {
+    -fx-background-color: rgba(96, 108, 56, 0.9);
+    -fx-text-fill: #ffffff;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 15; /* Più alti */
+    -fx-font-size: 16px; /* Testo più grande */
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.tribal-btn-primary:hover {
+    -fx-background-color: rgba(120, 135, 70, 1.0);
+}
+
+/* Bottone Secondario: reso più visibile */
+.tribal-btn-secondary {
+    -fx-background-color: rgba(212, 163, 115, 0.15);
+    -fx-text-fill: #e9c46a; /* Giallo dorato chiaro */
+    -fx-border-color: rgba(212, 163, 115, 0.5);
+    -fx-border-radius: 8;
+    -fx-padding: 12;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+}
+.tribal-btn-secondary:hover {
+    -fx-background-color: rgba(212, 163, 115, 0.3);
+    -fx-text-fill: #ffffff;
+}
+
+/* ListView: Font più grande e celle con più padding */
+.tribal-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-control-inner-background-alt: transparent;
+    -fx-border-color: rgba(212, 163, 115, 0.4);
+    -fx-border-radius: 8;
+    -fx-font-size: 16px;
+}
+.tribal-list .list-cell {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-text-fill: #ffffff;
+    -fx-padding: 12; /* Più altezza per le scritte nella lista */
+}
+.tribal-list .list-cell:empty {
+    -fx-background-color: transparent;
+}
+.tribal-list .list-cell:selected {
+    -fx-background-color: rgba(212, 163, 115, 0.7);
+    -fx-text-fill: white;
+}
+
+.tribal-separator *.line {
+    -fx-border-color: rgba(212, 163, 115, 0.4);
+    -fx-border-width: 2 0 0 0;
+}

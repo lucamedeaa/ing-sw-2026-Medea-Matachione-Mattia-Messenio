@@ -10,6 +10,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.ComboBox;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+import java.net.URL;
+
 import java.util.List;
 
 // Controller FXML della schermata iniziale. Implementa MatchmakingView e RefreshableScreen.
@@ -37,6 +42,9 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @FXML private Button createGameButton;
     @FXML private Button joinGameButton;
 
+    @FXML private MediaView bgMediaView;
+    private MediaPlayer mediaPlayer;
+
     @FXML
     public void initialize() {
         ctx.notificationController().setMatchmakingView(this);
@@ -54,6 +62,37 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         nicknameField.textProperty().isEmpty()
         .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
     );
+        startVideoBackground();
+    }
+
+    private void startVideoBackground() {
+        URL videoUrl = getClass().getResource("/video/MesosMuroFinalRend.mp4");
+        if (videoUrl != null) {
+            Media media = new Media(videoUrl.toExternalForm());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop continuo
+
+            bgMediaView.setMediaPlayer(mediaPlayer);
+
+            // Per far sì che il video si adatti ridimensionando la finestra
+            Platform.runLater(() -> {
+                if (bgMediaView.getScene() != null) {
+                    bgMediaView.fitWidthProperty().bind(bgMediaView.getScene().widthProperty());
+                    bgMediaView.fitHeightProperty().bind(bgMediaView.getScene().heightProperty());
+                }
+            });
+
+            mediaPlayer.play();
+        } else {
+            System.err.println("Impossibile trovare il file video!");
+        }
+    }
+
+    private void stopVideo() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose(); // Libera definitivamente le risorse
+        }
     }
 
     @Override
@@ -87,6 +126,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @Override
     public void onMatchmakingSuccess(String text) {
         Platform.runLater(() -> {
+            stopVideo();
             ctx.notificationController().setMatchmakingView(null);
             ctx.session().setNickname(pendingNickname);
             navigator.toLobby();
@@ -102,6 +142,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     public void onServerDisconnected(String reason) {
         // Replica comportamento TUI: torna a toLobby() anche da Matchmaking.
         Platform.runLater(() -> {
+            stopVideo();
             ctx.notificationController().setMatchmakingView(null);
             navigator.toLobby();
         });

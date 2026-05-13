@@ -1,41 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.media.MediaView?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.client.view.gui.screen.MatchmakingScreen"
-      spacing="12" alignment="CENTER"
-      styleClass="root-container">
 
-    <padding><Insets top="40" right="60" bottom="40" left="60"/></padding>
+<StackPane stylesheets="@../style/tribal.css" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="it.polimi.ingsw.client.view.gui.screen.MatchmakingScreen">
 
-    <Label text="MESOS" styleClass="title"/>
+    <MediaView fx:id="bgMediaView" preserveRatio="false"/>
 
-    <!-- Nickname -->
-    <TextField fx:id="nicknameField" promptText="Nickname"/>
+    <VBox spacing="20" alignment="CENTER" maxWidth="550" maxHeight="580"
+          styleClass="tribal-card" StackPane.alignment="BOTTOM_CENTER">
 
-    <!-- Crea partita -->
-    <HBox spacing="8" alignment="CENTER">
+        <StackPane.margin>
+            <Insets bottom="40"/>
+        </StackPane.margin>
 
-        <HBox spacing="8" alignment="CENTER">
-        <ComboBox fx:id="maxPlayersComboBox" promptText="Giocatori (2-5)"
-                   HBox.hgrow="NEVER" prefWidth="160"/>
-        <Button fx:id="createGameButton" text="Create Game" onAction="#onCreateGame" HBox.hgrow="ALWAYS"
-                maxWidth="Infinity"/>
+        <TextField fx:id="nicknameField" promptText="Nome del Capotribù..." styleClass="tribal-input"/>
+
+        <HBox spacing="15" alignment="CENTER">
+            <ComboBox fx:id="maxPlayersComboBox" promptText="Membri" prefWidth="130" styleClass="tribal-combo"/>
+            <Button fx:id="createGameButton" text="FONDA VILLAGGIO" onAction="#onCreateGame" HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="tribal-btn-primary"/>
         </HBox>
 
-    </HBox>
+        <Separator styleClass="tribal-separator"/>
 
-    <Separator/>
+        <Button text="ASCOLTA GLI ECO (Aggiorna)" onAction="#onRefreshList" maxWidth="Infinity" styleClass="tribal-btn-secondary"/>
 
-    <!-- Lista partite -->
-    <Button text="Update List" onAction="#onRefreshList" maxWidth="Infinity"/>
-    <ListView fx:id="gamesListView" prefHeight="180"/>
-    <Button fx:id="joinGameButton" text="Join" onAction="#onJoinGame" maxWidth="Infinity"/>
+        <ListView fx:id="gamesListView" VBox.vgrow="ALWAYS" styleClass="tribal-list"/>
 
-    <!-- Errore -->
-    <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
+        <Button fx:id="joinGameButton" text="UNISCITI ALLA CACCIA" onAction="#onJoinGame" maxWidth="Infinity" styleClass="tribal-btn-primary"/>
 
-</VBox>
+        <Label fx:id="errorLabel" textFill="#ff5252" wrapText="true" style="-fx-font-weight: bold; -fx-font-size: 15px;"/>
+    </VBox>
+</StackPane>
