@@ -3,12 +3,15 @@ package it.polimi.ingsw.client.view.gui.screen;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
+import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import java.util.List;
 
@@ -23,6 +26,13 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     @FXML private Label statusLabel;
 
 
+    @FXML private StackPane videoContainer;
+    @FXML private Slider volumeSlider;
+
+
+    private final VideoBackground videoBackground = new VideoBackground();
+
+
 
     // Nuovo costruttore per la Factory
     public LobbyScreen(GuiContext ctx, GuiNavigator navigator) {
@@ -34,20 +44,46 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     public void initialize() {
         ctx.notificationController().setLobbyView(this);
 
+        if (ctx.gameModel() != null && !ctx.gameModel().getPlayers().isEmpty()) {
+            Platform.runLater(this::onGameStarted);
+            return;
+        }
+
         Platform.runLater(this::refresh);
 
         Platform.runLater(() -> {
-            // Dimensioni finestra
             if (playersContainer != null && playersContainer.getScene() != null) {
                 javafx.stage.Stage stage = (javafx.stage.Stage) playersContainer.getScene().getWindow();
-                if (stage != null) {
-                    stage.setMinWidth(900);
-                    stage.setMinHeight(600);
-                    stage.setWidth(900);
-                    stage.setHeight(600);
-                }
+                stage.setMinWidth(1280);
+                stage.setMinHeight(720);
             }
         });
+
+        volumeSlider.setMin(0);
+        volumeSlider.setMax(1);
+        volumeSlider.setValue(0.5);
+
+        // Spaziatura e allineamento centrale per i nomi dei giocatori
+        playersContainer.setAlignment(Pos.CENTER);
+        playersContainer.setSpacing(20);
+
+
+        statusLabel.setStyle("-fx-font-family: 'MedievalSharp'; -fx-font-size: 22px; " +
+                "-fx-text-fill: #ffd700; -fx-background-color: rgba(0,0,0,0.5); " +
+                "-fx-padding: 15px 30px; -fx-background-radius: 20px; " +
+                "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);");
+
+
+
+        startVideoBackground();
+    }
+
+    private void startVideoBackground() {
+        videoBackground.start(videoContainer, "/video/VideoMesosBG.mp4", volumeSlider.valueProperty());
+    }
+
+    private void stopVideo() {
+        videoBackground.stop();
     }
 
     @Override
@@ -59,6 +95,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     @Override
     public void onGameStarted() {
         Platform.runLater(() -> {
+            stopVideo();
             ctx.notificationController().setLobbyView(null);
             Platform.runLater(navigator::toInGame);
         });
@@ -66,9 +103,9 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @Override
     public void onReturnToMatchmaking(String reason) {
+        stopVideo();
         ctx.notificationController().setLobbyView(null);
         Platform.runLater(navigator::toMatchmaking);
-        // Nota: il motivo del ritorno andrebbe idealmente mostrato in MatchmakingScreen
     }
 
     @Override
@@ -80,6 +117,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     @Override
     public void onServerDisconnected(String reason) {
         ctx.notificationController().setLobbyView(null);
+        stopVideo();
         Platform.runLater(() -> navigator.toDisconnected(reason));
     }
 
@@ -89,14 +127,30 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
         try {
             playersContainer.getChildren().clear();
             List<String> players = ctx.lobbyModel().getLobbyPlayers();
+
+            String baseNameStyle = "-fx-font-family: 'MedievalSharp'; -fx-font-size: 54px; -fx-font-weight: bold; " +
+                    "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 20, 0.4, 0, 8);";
+
             for (String player : players) {
-                Label playerLabel = new Label(player);
-                if (player.equals(ctx.session().getNickname()))
-                    playerLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #2e7d32;");
+                Label playerLabel = new Label(player.toUpperCase());
+
+                if (player.equals(ctx.session().getNickname())) {
+                    // TU (Oro acceso)
+                    playerLabel.setStyle(baseNameStyle + "-fx-text-fill: #e67e22;");
+                } else {
+                    // ALTRI (Bianco Avorio)
+                    playerLabel.setStyle(baseNameStyle + "-fx-text-fill: #fdf5e6;");
+                }
                 playersContainer.getChildren().add(playerLabel);
             }
+
             String notification = ctx.lobbyModel().getLobbyNotification();
-            if (notification != null) statusLabel.setText(notification);
+            if (notification != null && !notification.isEmpty()) {
+                statusLabel.setText(notification.toUpperCase());
+                statusLabel.setVisible(true);
+            } else {
+                statusLabel.setVisible(false);
+            }
         } finally {
             ctx.lobbyModel().getReadLock().unlock();
         }
@@ -104,6 +158,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @FXML
     private void handleLeave() {
+        stopVideo();
         ctx.controller().leaveGame();
     }
 }

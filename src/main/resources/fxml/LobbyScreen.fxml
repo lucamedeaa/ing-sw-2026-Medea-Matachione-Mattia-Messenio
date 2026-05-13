@@ -1,42 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<StackPane stylesheets="@../style/tribal.css"
-           styleClass="lobby-bg"
+<StackPane stylesheets="@../style/style.css"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="it.polimi.ingsw.client.view.gui.screen.LobbyScreen">
 
+    <!-- Layer 1: video -->
+    <StackPane fx:id="videoContainer" mouseTransparent="true"/>
+
+    <!-- Layer 2: dark overlay for text contrast -->
+    <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.30);"/>
+
+    <!-- Layer 3: content -->
     <BorderPane>
         <center>
-            <VBox alignment="CENTER" BorderPane.alignment="CENTER"
-                  style="-fx-padding: 160 0 0 0;">
+            <VBox alignment="CENTER" spacing="14" BorderPane.alignment="CENTER" style="-fx-padding: 140 20 0 20;">
+                <HBox maxWidth="760" minHeight="240" spacing="28" alignment="CENTER_LEFT"
+                      style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 12;
+                             -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 15, 0, 0, 5);">
+                    <padding>
+                        <Insets top="24" right="30" bottom="24" left="30"/>
+                    </padding>
 
-                <HBox styleClass="tribal-card" maxWidth="650" minHeight="180"
-                      spacing="30" alignment="CENTER_LEFT">
-                    <padding><Insets top="24" right="36" bottom="24" left="36"/></padding>
-
-                    <Label text="Giocatori in lobby"
-                           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #e9c46a; -fx-min-width: 160;"/>
+                    <Label text="Giocatori in lobby" minWidth="240"
+                           style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 34px; -fx-text-fill: #e67e22; -fx-effect: dropshadow(three-pass-box, black, 8, 0, 0, 3);"/>
 
                     <Separator orientation="VERTICAL"/>
-
                     <VBox fx:id="playersContainer" spacing="8" HBox.hgrow="ALWAYS"/>
-
                 </HBox>
 
                 <Label fx:id="statusLabel" wrapText="true"
-                       style="-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-padding: 10 0 0 0;"/>
+                       style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-text-fill: #e67e22; -fx-effect: dropshadow(three-pass-box, black, 8, 0, 0, 3);"/>
             </VBox>
         </center>
 
         <bottom>
-            <HBox alignment="CENTER" style="-fx-padding: 0 0 40 0;">
-                <Button text="Abbandona partita" onAction="#handleLeave"
-                        prefWidth="280" styleClass="tribal-btn-secondary"/>
-            </HBox>
+            <VBox alignment="CENTER" spacing="15" style="-fx-padding: 0 0 40 0;">
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="Audio" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 26px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, black, 6, 0, 0, 2);"/>
+                    <Slider fx:id="volumeSlider" min="0" max="1" value="0.5" prefWidth="230"/>
+                </HBox>
+
+                <Button text="ABBANDONA PARTITA"
+                        onAction="#handleLeave"
+                        prefWidth="320"
+                        style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9);
+                               -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8;
+                               -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
+            </VBox>
         </bottom>
     </BorderPane>
-
 </StackPane>

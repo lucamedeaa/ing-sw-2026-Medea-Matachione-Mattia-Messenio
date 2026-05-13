@@ -3,21 +3,15 @@ package it.polimi.ingsw.client.view.gui.screen;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
+import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.listeners.MatchmakingView;
 import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.ComboBox;
-
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
-import java.net.URL;
 
 import java.util.List;
-
 
 public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
@@ -31,17 +25,18 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @FXML private ListView<String> gamesListView;
     @FXML private Label errorLabel;
 
+    @FXML private Button createGameButton;
+    @FXML private Button joinGameButton;
+
+    @FXML private StackPane videoContainer;
+    @FXML private Slider volumeSlider;
+
+    private final VideoBackground videoBackground = new VideoBackground();
+
     public MatchmakingScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
         this.navigator = navigator;
     }
-
-    @FXML private Button createGameButton;
-    @FXML private Button joinGameButton;
-
-    //@FXML private MediaView bgMediaView;
-    @FXML private StackPane videoContainer; // Non più MediaView
-    private MediaPlayer mediaPlayer;
 
     @FXML
     public void initialize() {
@@ -49,75 +44,80 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
         maxPlayersComboBox.getItems().addAll(2, 3, 4, 5);
 
-        // 2. Blocco sottomissione: il bottone è disabilitato se il nickname è vuoto o non è selezionato un numero della tendina
+        // Gestione dimensione minima per non far collassare la UI
+        Platform.runLater(() -> {
+            if (videoContainer != null && videoContainer.getScene() != null) {
+                javafx.stage.Stage stage = (javafx.stage.Stage) videoContainer.getScene().getWindow();
+                if (stage != null) {
+                    stage.setMinWidth(1280);
+                    stage.setMinHeight(720);
+                }
+            }
+        });
+
+        // Stili UI
+        String buttonStyle = "-fx-font-family: 'MedievalSharp', serif; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-font-size: 22px; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);";
+        String fieldStyle = "-fx-font-family: 'MedievalSharp', serif; -fx-background-color: rgba(0, 0, 0, 0.7); -fx-text-fill: white; -fx-font-size: 18px; -fx-border-color: #777; -fx-border-radius: 4; -fx-background-radius: 4; -fx-prompt-text-fill: #aaaaaa;";
+
+        createGameButton.setStyle(buttonStyle);
+        joinGameButton.setStyle(buttonStyle);
+        nicknameField.setStyle(fieldStyle);
+        maxPlayersComboBox.setStyle(fieldStyle);
+        maxPlayersComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                    // Forza il testo bianco e lo sfondo trasparente per allinearsi al TextField
+                    setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px;");
+                }
+            }
+        });
+
+        errorLabel.setStyle("-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-text-fill: #ff5252; -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);");
+
+        gamesListView.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
+
+        gamesListView.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    setText(item);
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-effect: dropshadow(three-pass-box, black, 8, 0.0, 0, 2);");
+                }
+            }
+        });
+
         createGameButton.disableProperty().bind(
-            nicknameField.textProperty().isEmpty()
-            .or(maxPlayersComboBox.valueProperty().isNull())
+                nicknameField.textProperty().isEmpty()
+                        .or(maxPlayersComboBox.valueProperty().isNull())
         );
 
-        // 3. Regola per "Unisciti": disabilitato se Nickname è vuoto O nessuna partita è selezionata
         joinGameButton.disableProperty().bind(
-        nicknameField.textProperty().isEmpty()
-        .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
-    );
+                nicknameField.textProperty().isEmpty()
+                        .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
+        );
+
+        volumeSlider.setMin(0);
+        volumeSlider.setMax(1);
+        volumeSlider.setValue(0.5);
 
         startVideoBackground();
     }
 
-/*    private void startVideoBackground() {
-        URL videoUrl = getClass().getResource("/video/MesosMuroFinalRend.mp4");
-        if (videoUrl != null) {
-            Media media = new Media(videoUrl.toExternalForm());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop continuo
-
-            bgMediaView.setMediaPlayer(mediaPlayer);
-
-            // Per far sì che il video si adatti ridimensionando la finestra
-            Platform.runLater(() -> {
-                if (bgMediaView.getScene() != null) {
-                    bgMediaView.fitWidthProperty().bind(bgMediaView.getScene().widthProperty());
-                    bgMediaView.fitHeightProperty().bind(bgMediaView.getScene().heightProperty());
-                }
-            });
-
-            mediaPlayer.play();
-        } else {
-            System.err.println("Impossibile trovare il file video!");
-        }
-    }*/
-
     private void startVideoBackground() {
-        new Thread(() -> {
-            try {
-                URL resource = getClass().getResource("/video/MesosMuroFinalRend.mp4");
-                if (resource == null) return;
-
-                Media media = new Media(resource.toExternalForm());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                mediaPlayer.setMute(true); // Evita conflitti audio tra client
-
-                Platform.runLater(() -> {
-                    MediaView mediaView = new MediaView(mediaPlayer);
-                    mediaView.setPreserveRatio(false);
-                    mediaView.fitWidthProperty().bind(videoContainer.widthProperty());
-                    mediaView.fitHeightProperty().bind(videoContainer.heightProperty());
-
-                    videoContainer.getChildren().add(mediaView);
-                    mediaPlayer.play();
-                });
-            } catch (Exception e) {
-                System.err.println("Impossibile caricare il video: " + e.getMessage());
-            }
-        }).start();
+        videoBackground.start(videoContainer, "/video/VideoMesosBG.mp4", volumeSlider.valueProperty());
     }
 
     private void stopVideo() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose(); // Libera definitivamente le risorse
-        }
+        videoBackground.stop();
     }
 
     @Override
@@ -165,7 +165,6 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
     @Override
     public void onServerDisconnected(String reason) {
-        // Replica comportamento TUI: torna a toLobby() anche da Matchmaking.
         Platform.runLater(() -> {
             stopVideo();
             ctx.notificationController().setMatchmakingView(null);
@@ -176,20 +175,15 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @FXML
     private void onCreateGame() {
         pendingNickname = nicknameField.getText().trim();
-        // Non serve più il try-catch, il TextFormatter garantisce che ci sia un numero valido
         int maxPlayers = maxPlayersComboBox.getValue();
         ctx.controller().createGame(pendingNickname, maxPlayers);
     }
 
     @FXML
     private void onJoinGame() {
-        // Il binding garantisce che nicknameField non sia vuoto e che ci sia una selezione
         pendingNickname = nicknameField.getText().trim();
         String selected = gamesListView.getSelectionModel().getSelectedItem();
-
-        // Estrai l'ID (il formato "ID — Giocatori" è gestito a monte nel refresh)
         String gameId = selected.split(" — ")[0];
-
         ctx.controller().joinGame(pendingNickname, gameId);
     }
 

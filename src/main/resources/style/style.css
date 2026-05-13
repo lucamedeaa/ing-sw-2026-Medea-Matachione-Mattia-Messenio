@@ -1,0 +1,67 @@
+.root {
+    -fx-font-family: 'MedievalSharp', serif;
+}
+
+.parchment-panel {
+      -fx-background-image: url('../images/ui/pergamena.png');
+      -fx-background-size: 100% 100%;
+      -fx-background-repeat: no-repeat;
+      -fx-background-position: center;
+      -fx-padding: 30 34 30 34;
+      -fx-background-color: transparent;
+      -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 18, 0.2, 0, 4);
+  }
+
+  .parchment-title {
+      -fx-text-fill: #2b1a10;
+      -fx-font-family: 'MedievalSharp';
+      -fx-font-size: 24px;
+      -fx-font-weight: 700;
+  }
+
+  .parchment-text {
+      -fx-text-fill: #3a2416;
+      -fx-font-family: 'MedievalSharp';
+      -fx-font-size: 16px;
+      -fx-font-weight: 600;
+  }
+
+  .parchment-status {
+      -fx-text-fill: #2f1c12;
+      -fx-font-size: 15px;
+      -fx-font-weight: 700;
+  }
+
+  /* controlli leggibili su pergamena */
+  .parchment-input {
+      -fx-background-color: rgba(255,255,255,0.60);
+      -fx-text-fill: #2b1a10;
+      -fx-prompt-text-fill: #6f5747;
+      -fx-border-color: #6a4a34;
+      -fx-border-width: 1.5;
+      -fx-background-radius: 6;
+      -fx-border-radius: 6;
+      -fx-font-size: 16px;
+  }
+
+  .parchment-button-primary {
+      -fx-background-color: #5a3a27;
+      -fx-text-fill: #f7e8c8;
+      -fx-font-size: 15px;
+      -fx-font-weight: 700;
+      -fx-background-radius: 7;
+      -fx-border-radius: 7;
+      -fx-border-color: #2a170f;
+      -fx-border-width: 1.5;
+  }
+  .parchment-button-primary:hover { -fx-background-color: #6d4832; }
+
+  .parchment-button-secondary {
+      -fx-background-color: rgba(90,58,39,0.85);
+      -fx-text-fill: #f7e8c8;
+      -fx-font-size: 14px;
+      -fx-font-weight: 700;
+      -fx-background-radius: 7;
+      -fx-border-radius: 7;
+      -fx-border-color: #2a170f;
+  }
