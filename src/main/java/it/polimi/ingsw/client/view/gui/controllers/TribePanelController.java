@@ -2,18 +2,20 @@ package it.polimi.ingsw.client.view.gui.controllers;
 
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.ClientSession;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 
 import java.util.List;
 
-// Pannello integrato in InGameScreen. Mostra la tribù di ogni giocatore
-// in tab separati — un tab per giocatore. Il tab del proprio giocatore
-// è evidenziato. Aggiornato da InGameScreen.refresh() via update().
-// Nessun listener, nessuna comunicazione server.
 public class TribePanelController {
 
     @FXML private TabPane tribeTabPane;
@@ -59,4 +61,48 @@ public class TribePanelController {
             gameModel.getReadLock().unlock();
         }
     }
+
+    public void refresh(GameModel model) {
+        Platform.runLater(() -> {
+            tribeTabPane.getTabs().clear();
+
+            // Itera sui giocatori per creare un Tab per ognuno
+            for (String playerName : model.getPlayers().keySet()) {
+                Tab playerTab = new Tab(playerName);
+                playerTab.setClosable(false);
+
+                // Contenitore a scorrimento orizzontale per le carte della tribù
+                ScrollPane scroll = new ScrollPane();
+                HBox cardsContainer = new HBox(10);
+                cardsContainer.setPadding(new Insets(10));
+
+                // Recupera le carte del giocatore e le renderizza
+                List<Integer> tribeCardIds = model.getTribes().get(playerName);
+                if (tribeCardIds != null) {
+                    renderTribeInContainer(tribeCardIds, cardsContainer);
+                }
+
+                scroll.setContent(cardsContainer);
+                playerTab.setContent(scroll);
+                tribeTabPane.getTabs().add(playerTab);
+            }
+        });
+    }
+
+    private void renderTribeInContainer(List<Integer> cardIds, HBox container) {
+        for (Integer id : cardIds) {
+            // Recupera l'asset usando l'ID della carta
+            Image img = it.polimi.ingsw.client.view.gui.GuiAssetManager.getCardImage(id);
+
+            if (img != null) {
+                ImageView iv = new ImageView(img);
+                iv.setPreserveRatio(true);
+
+                // Altezza fissa per le carte nella tab, altrimenti occupano troppo spazio
+                iv.setFitHeight(140);
+
+                container.getChildren().add(iv);
+            }
+        }
+}
 }

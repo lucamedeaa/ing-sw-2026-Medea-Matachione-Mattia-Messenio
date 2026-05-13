@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.view.tui.state;
 
 import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.GameModel;
+import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.client.view.tui.render.InGameRenderer;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InGameUiState implements UIState, InGameView {
@@ -57,7 +59,9 @@ public class InGameUiState implements UIState, InGameView {
             return;
         }
         String error = gameModel.consumeGlobalError();
-        renderer.render(gameModel, session.getNickname(), gameModel.getTurnDeltas(), error);
+        Map<String, PlayerResources> deltas = gameModel.getTurnDeltas();
+        List<String> logs = gameModel.consumeGameLogs();
+        renderer.render(gameModel, session.getNickname(), deltas,logs, error);
     }
 
     @Override

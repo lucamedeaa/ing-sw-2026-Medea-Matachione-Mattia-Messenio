@@ -16,7 +16,13 @@ public class InGameRenderer {
         this.out = out;
     }
 
-    public void render(GameModel gameModel, String myNickname, Map<String, PlayerResources> deltas, String lastError) {
+    public void render(
+            GameModel gameModel,
+            String myNickname,
+            Map<String, PlayerResources> deltas,
+            List<String> logs,
+            String lastError
+    ) {
         out.clearScreen();
         out.print("════ MESOS — Era " + gameModel.getCurrentEra() + " / Round " + gameModel.getCurrentRound() + " ════\n");
 
@@ -34,7 +40,6 @@ public class InGameRenderer {
         renderTurnRecap(deltas, gameModel);
         out.print("");
 
-        List<String> logs = gameModel.consumeGameLogs();
         if (!logs.isEmpty()) {
             out.print("── RECENT NOTIFICATIONS ──");
             for (String log : logs) {

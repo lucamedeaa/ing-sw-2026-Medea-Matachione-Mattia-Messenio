@@ -1,9 +1,9 @@
 package it.polimi.ingsw.client.view.gui.controllers;
 
-import it.polimi.ingsw.client.controller.ServerController;
 import it.polimi.ingsw.client.model.GameModel;
-import it.polimi.ingsw.client.view.gui.screen.InGameScreen; // <-- Importa la screen padre
-import it.polimi.ingsw.client.view.gui.visitor.FxActionVisitor;
+import it.polimi.ingsw.client.view.gui.GuiContext;
+import it.polimi.ingsw.client.view.gui.FxActionRender;
+import it.polimi.ingsw.client.view.gui.screen.InGameScreen;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ActionsPanelController {
 
-    private ServerController serverController;
+    private GuiContext ctx;
     private InGameScreen parentScreen; // <-- Riferimento al mediatore
 
     @FXML private Button placeTotemButton;
@@ -24,8 +24,8 @@ public class ActionsPanelController {
     private int upperPicksAllowed;
     private int lowerPicksAllowed;
 
-    public void setServerController(ServerController serverController) {
-        this.serverController = serverController;
+    public void setContext(GuiContext ctx) {
+        this.ctx = ctx;
     }
 
     // <-- Nuovo setter per collegare il figlio al padre
@@ -46,24 +46,23 @@ public class ActionsPanelController {
             return;
         }
 
-        // 2. Il Visitor "accende" i bottoni
-        FxActionVisitor visitor = new FxActionVisitor(this);
+        FxActionRender render = new FxActionRender(this);
         for (ActionDto action : model.getMyActions()) {
-            action.accept(visitor);
+            action.accept(render);
         }
     }
 
-    // --- Metodi chiamati dal FxActionVisitor ---
-
-    public void enablePlaceTotem(List<Integer> availableTiles) {
-        this.validTotemTiles = availableTiles;
-        placeTotemButton.setDisable(false);
-    }
+// --- Metodi chiamati da FxActionRender ---
 
     public void enableTakeCard(int upperPicks, int lowerPicks) {
         this.upperPicksAllowed = upperPicks;
         this.lowerPicksAllowed = lowerPicks;
         takeCardButton.setDisable(false);
+    }
+
+    public void enablePlaceTotem(List<Integer> availableTiles) {
+        this.validTotemTiles = availableTiles;
+        placeTotemButton.setDisable(false);
     }
 
     public void enableSkip() {
@@ -74,10 +73,7 @@ public class ActionsPanelController {
 
     @FXML
     private void handleSkip() {
-        // Skip non richiede click sul tabellone, si può inviare subito
-        if (serverController != null) {
-            serverController.skipAction();
-        }
+        ctx.controller().skipAction();
     }
 
     @FXML

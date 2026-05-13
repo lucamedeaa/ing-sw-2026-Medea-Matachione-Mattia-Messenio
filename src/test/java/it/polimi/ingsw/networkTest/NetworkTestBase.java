@@ -58,6 +58,14 @@ public abstract class NetworkTestBase {
             }
         }
         clientSockets.clear();
+
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            serverSocket.close();
+        }
+
+        if (serverExecutor != null) {
+            serverExecutor.shutdownNow();
+        }
     }
 
     public class DummyClient implements ClientMessageVisitor {

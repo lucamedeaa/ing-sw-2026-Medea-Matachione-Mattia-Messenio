@@ -1,9 +1,13 @@
 package it.polimi.ingsw.client.view.gui.controllers;
 
 import it.polimi.ingsw.client.model.GameModel;
+import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiAssetManager;
 import it.polimi.ingsw.client.view.gui.screen.InGameScreen;
+import it.polimi.ingsw.server.model.enums.TotemColor;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
@@ -14,6 +18,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoardPanelController {
@@ -21,7 +26,6 @@ public class BoardPanelController {
     private InGameScreen parentScreen;
 
     @FXML private GridPane boardGrid;      // Griglia per il tabellone comune
-    @FXML private HBox tribeContainer;    // Contenitore per le carte della tribù
 
     private int currentBoardPlayerCount = 0;
 
@@ -29,9 +33,44 @@ public class BoardPanelController {
     private boolean canPickUpper = false;
     private boolean canPickLower = false;
     private List<Integer> validTotemTiles = null;
+    private final DoubleProperty cardWidthProp = new SimpleDoubleProperty(60.0);
+    private Pane turnOrderTotemOverlay;
+
 
     public void setParentScreen(InGameScreen parentScreen) {
         this.parentScreen = parentScreen;
+    }
+
+    @FXML
+    public void initialize() {
+
+        Platform.runLater(() -> {
+            if (boardGrid.getParent() instanceof Region parent) {
+                parent.widthProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight()));
+                parent.heightProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight()));
+                // Prima chiamata per l'assetto iniziale
+                updateOptimalSize(parent.getWidth(), parent.getHeight());
+            }
+        });
+    }
+
+    private void updateOptimalSize(double availableWidth, double availableHeight) {
+        int cols = currentBoardPlayerCount > 0 ? getTileLayout(currentBoardPlayerCount).size() : 7;
+        if (cols == 0) return;
+
+        // availableHeight qui è l'altezza di tutto il pannello laterale (VBox).
+        // Dobbiamo sottrarre lo spazio occupato dalla tribù, dai margini e dalle label (circa 250px)
+        double effectiveHeightForBoard = availableHeight - 250;
+
+        double maxWidthFromWidth = (availableWidth - 35) / cols;
+        double maxCardHeight = (effectiveHeightForBoard - 12) / 3.0; // 3 righe, 12px totali di vgap
+        double maxWidthFromHeight = maxCardHeight * 0.75;
+
+        // Il blocco non supera mai l'altezza massima disponibile, ma si stringe se la larghezza non basta
+        double optimal = Math.min(maxWidthFromWidth, maxWidthFromHeight);
+
+        // Imposta un minimo vitale (es. 20px) per evitare errori di rendering a finestre compresse
+        cardWidthProp.set(Math.max(20.0, optimal));
     }
 
     public void refresh(GameModel model, String targetNickname) {
@@ -45,7 +84,7 @@ public class BoardPanelController {
             }
 
             renderCards(model.getUpperRowCards(), model.getLowerRowCards());
-            renderTribe(model.getTribes().get(targetNickname));
+            renderTurnOrderTotems(model);
         });
     }
 
@@ -53,26 +92,54 @@ public class BoardPanelController {
      * Costruisce la riga centrale delle tessere in base al numero di giocatori.
      */
     private void buildBoardTrack(int playerCount) {
-        // Ricava la sequenza di tessere esatta.
-        // L'elemento "TO" rappresenta la Turn Order Tile.
         List<String> layout = getTileLayout(playerCount);
+        int cols = layout.size();
 
-        for (int col = 0; col < layout.size(); col++) {
+        // Rimuovi esplicitamente eventuali vincoli preesistenti per permettere
+        // al GridPane di "avvolgere" strettamente i contenuti
+        boardGrid.getColumnConstraints().clear();
+        boardGrid.getRowConstraints().clear();
+
+        for (int col = 0; col < cols; col++) {
+
             String tileCode = layout.get(col);
-
             Image img = GuiAssetManager.getTileImage(tileCode);
-            if (img == null) continue; // Evita NullPointerException se manca il file
+            if (img == null) continue;
 
             ImageView tileView = new ImageView(img);
-            tileView.setFitWidth(120); // Regola in base alle tue immagini
-            tileView.setPreserveRatio(true);
+            tileView.setPreserveRatio(false);
+            tileView.setSmooth(true);
 
+            // Binding dell'immagine alla proprietà globale
+            tileView.fitWidthProperty().bind(cardWidthProp);
+            tileView.fitHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+
+            StackPane container = new StackPane(tileView);
+
+            // Blocca le dimensioni del contenitore per impedire sbavature della griglia
+            container.minWidthProperty().bind(cardWidthProp);
+            container.maxWidthProperty().bind(cardWidthProp);
+            container.prefWidthProperty().bind(cardWidthProp);
+
+            container.minHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+            container.maxHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+            container.prefHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+
+            // Mantiene lo spazio per la turn order tile (colonna 0)
             if (col == 0) {
-            // Insets(top, right, bottom, left) -> 15 pixel di spazio a destra
-            GridPane.setMargin(tileView, new Insets(0, 15, 0, 0));
+                GridPane.setMargin(container, new Insets(0, 15, 0, 0));
+
+                turnOrderTotemOverlay = new Pane();
+                //turnOrderTotemOverlay.setMouseTransparent(true);
+                // Il Pane deve copiare esattamente le dimensioni del contenitore
+                turnOrderTotemOverlay.prefWidthProperty().bind(container.widthProperty());
+                turnOrderTotemOverlay.prefHeightProperty().bind(container.heightProperty());
+
+                // Aggiungi l'overlay SOPRA la tileView
+                container.getChildren().add(turnOrderTotemOverlay);
             }
-            // Inserisce l'immagine nella colonna corrente, alla riga 1 (quella centrale)
-            boardGrid.add(tileView, col, 1);
+
+            boardGrid.add(container, col, 1);
         }
     }
 
@@ -130,50 +197,26 @@ public class BoardPanelController {
         if (img == null) return;
 
         ImageView cardView = new ImageView(img);
-        cardView.setFitWidth(90);
-        cardView.setFitHeight(120);
         cardView.setPreserveRatio(false);
         cardView.setSmooth(true);
 
-        // Crea una gabbia rigida che la griglia non può alterare
-        javafx.scene.layout.StackPane rigidBox = new javafx.scene.layout.StackPane(cardView);
-        rigidBox.setMinSize(90, 120);
-        rigidBox.setMaxSize(90, 120);
-        rigidBox.setPrefSize(90, 120);
+        // Identico binding per le carte normali
+        cardView.fitWidthProperty().bind(cardWidthProp);
+        cardView.fitHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
 
-        // Sposta il listener del click sulla gabbia
-        rigidBox.setOnMouseClicked(e -> handleCardClick(logicalRow, logicalCol));
+        StackPane container = new StackPane(cardView);
 
-        // Aggiungi la gabbia alla griglia, non la singola immagine
-        boardGrid.add(rigidBox, visualCol, visualRow);
-    }
+        // Stessi vincoli di blocco del contenitore
+        container.minWidthProperty().bind(cardWidthProp);
+        container.maxWidthProperty().bind(cardWidthProp);
+        container.prefWidthProperty().bind(cardWidthProp);
 
-    private void renderTribe(List<Integer> tribeCards) {
-        tribeContainer.getChildren().clear();
+        container.minHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+        container.maxHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+        container.prefHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
 
-        for (Integer cardId : tribeCards) {
-            Image img = GuiAssetManager.getCardImage(cardId);
-            if (img == null) continue;
-
-            ImageView cardView = new ImageView(img);
-
-            // Imposta le dimensioni base desiderate per le carte della tribù
-            cardView.setFitWidth(75);
-            cardView.setFitHeight(100);
-            cardView.setPreserveRatio(false);
-            cardView.setSmooth(true);
-
-            // Crea la gabbia rigida per l'HBox
-            javafx.scene.layout.StackPane rigidBox = new javafx.scene.layout.StackPane(cardView);
-            rigidBox.setMinSize(75, 100);
-            rigidBox.setMaxSize(75, 100);
-            rigidBox.setPrefSize(75, 100);
-
-            // Aggiungi un margine opzionale direttamente alla gabbia se vuoi distanziare le carte
-            // javafx.scene.layout.HBox.setMargin(rigidBox, new javafx.geometry.Insets(0, 5, 0, 0));
-
-            tribeContainer.getChildren().add(rigidBox);
-        }
+        container.setOnMouseClicked(e -> handleCardClick(logicalRow, logicalCol));
+        boardGrid.add(container, visualCol, visualRow);
     }
 
     // --- Metodi per la Macchina a Stati (chiamati da InGameScreen) ---
@@ -219,10 +262,6 @@ public class BoardPanelController {
         // Feedback visivo sugli slot del tracciato totem
     }
 
-
-
-    // --- Handler dei click ---
-
     private void handleCardClick(int row, int col) {
         if (parentScreen == null) return;
         if (row == 0 && !canPickUpper) return;
@@ -234,5 +273,37 @@ public class BoardPanelController {
         if (parentScreen == null) return;
         if (validTotemTiles == null || !validTotemTiles.contains(tileIndex)) return;
         parentScreen.onTotemPositionSelected(tileIndex);
+    }
+    
+    private void renderTurnOrderTotems(GameModel model) {
+        if (turnOrderTotemOverlay == null) return;
+        turnOrderTotemOverlay.getChildren().clear();
+
+        // Iteriamo sui player come da tua indicazione
+        List<PlayerSnapshot> players = new ArrayList<>(model.getPlayers().values());
+
+        // Coordinate percentuali (0.0 - 1.0) dei quadratini bianchi sulla tessera
+        // Nota: questi valori vanno calibrati millimetricamente sul tuo asset specifico
+        double[] ySteps = {0.16, 0.33, 0.50, 0.67, 0.84};
+        double xPercent = 0.15; // Posizione orizzontale della colonna di bianchi
+
+        for (int i = 0; i < players.size() && i < ySteps.length; i++) {
+            TotemColor color = players.get(i).getTotemColor();
+            Image img = GuiAssetManager.getTotemImage(color.name());
+
+            if (img != null) {
+                ImageView totemView = new ImageView(img);
+                totemView.setPreserveRatio(true);
+
+                // Dimensione del totem: circa il 20% della larghezza della tessera
+                totemView.fitWidthProperty().bind(cardWidthProp.multiply(0.20));
+
+                // Ancoraggio dinamico: se la finestra si allarga, il totem si sposta col quadratino
+                totemView.layoutXProperty().bind(turnOrderTotemOverlay.widthProperty().multiply(xPercent));
+                totemView.layoutYProperty().bind(turnOrderTotemOverlay.heightProperty().multiply(ySteps[i]));
+
+                turnOrderTotemOverlay.getChildren().add(totemView);
+            }
+        }
     }
 }

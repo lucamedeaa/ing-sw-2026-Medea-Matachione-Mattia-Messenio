@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.view.tui.render;
+package it.polimi.ingsw.client.view.tui.card;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -12,11 +12,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 
 import java.util.List;
 
-import static it.polimi.ingsw.client.view.gui.GuiFxApp.*;
 
 public class InGameScreen implements InGameView, RefreshableScreen {
 
@@ -25,11 +25,13 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     private String viewedPlayerNickname;
     private boolean isNavigatingAway = false;
 
+    @FXML private BorderPane rootPane;
     @FXML private BoardPanelController boardPanelController;
     @FXML private PlayersPanelController playersPanelController;
     @FXML private ActionsPanelController actionsPanelController;
     @FXML private LogPanelController logPanelController;
     @FXML private TribePanelController tribePanelController;
+
 
     public InGameScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
@@ -43,7 +45,7 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
 
         // Configura i sotto-pannelli usando i dati del contesto
         if (actionsPanelController != null) {
-            actionsPanelController.setServerController(ctx.controller());
+            actionsPanelController.setContext(ctx);
             actionsPanelController.setParentScreen(this);
         }
         if (boardPanelController != null) {
@@ -57,13 +59,21 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         }
 
         this.viewedPlayerNickname = ctx.session().getNickname();
+
+        Platform.runLater(() -> {
+            // Controlla che la scena sia effettivamente montata per evitare crash
+            if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null) {
+                javafx.stage.Stage stage = (javafx.stage.Stage) rootPane.getScene().getWindow();
+                setupWindowConstraints(stage);
+            }
+        });
     }
 
-//    @Override
-//    public void onDeltaEvent() {
-//        // No-op intenzionale: gli eventi vengono applicati al model da EventApplier,
-//        // e la vista si aggiorna tramite il refresh() invocato dal router
-//    }
+    private void setupWindowConstraints(javafx.stage.Stage stage) {
+        // Imposta il limite minimo della finestra di gioco
+        stage.setMinWidth(1000);
+        stage.setMinHeight(800);
+    }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
@@ -95,33 +105,34 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     @Override
     public void refresh() {
         if (isNavigatingAway) return;
+        Platform.runLater(() -> {
 
-        // Guardia contro il rendering prima del fullSync
-        if (ctx.gameModel() == null || ctx.gameModel().getPlayers().isEmpty()) {
-            return;
-        }
+            // Guardia contro il rendering prima del fullSync
+            if (ctx.gameModel() == null || ctx.gameModel().getPlayers().isEmpty()) {
+                return;
+            }
 
-        // Gestione fine partita con blocco anti-doppia-navigazione
-        if (ctx.gameModel().isGameOver()) {
-            isNavigatingAway = true;
-            ctx.notificationController().setInGameView(null);
-            navigator.toGameEnded();
-            return;
-        }
+            // Gestione fine partita con blocco anti-doppia-navigazione
+            if (ctx.gameModel().isGameOver()) {
+                isNavigatingAway = true;
+                ctx.notificationController().setInGameView(null);
+                navigator.toGameEnded();
+                return;
+            }
 
-        // Delega il rendering ai sotto-pannelli per evitare una God Class
-        if (boardPanelController != null) {
-            boardPanelController.refresh(ctx.gameModel(), viewedPlayerNickname);
-        }
+            // Delega il rendering ai sotto-pannelli per evitare una God Class
+            if (boardPanelController != null) {
+                boardPanelController.refresh(ctx.gameModel(), viewedPlayerNickname);
+            }
 
-        if (playersPanelController != null) {
-            playersPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
-        }
-        if (actionsPanelController != null) actionsPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
-        if (logPanelController != null) logPanelController.refresh(ctx.gameModel());
-        if (tribePanelController != null) {
-            tribePanelController.update();
-        }
+            if (playersPanelController != null) {
+                playersPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
+            }
+            if (actionsPanelController != null)
+                actionsPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
+            if (logPanelController != null) logPanelController.refresh(ctx.gameModel());
+            if (tribePanelController != null) tribePanelController.refresh(ctx.gameModel());
+        });
     }
 
     private InteractionState currentState = InteractionState.IDLE;
@@ -189,28 +200,4 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         this.refresh(); // Aggiorna tutto per mostrare i dati del nuovo giocatore
     }
 
-    @Override
-    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
-        event.consume(); // Blocca la chiusura automatica per mostrare il dialogo
-
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Uscita");
-        alert.setHeaderText("Uscita dalla partita");
-        alert.setContentText("Vuoi tornare in lobby o chiudere il gioco?");
-
-        ButtonType btnLobby = new ButtonType("Torna alla Lobby");
-        ButtonType btnExit = new ButtonType("Esci", ButtonBar.ButtonData.YES);
-        ButtonType btnCancel = new ButtonType("Annulla", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(btnLobby, btnExit, btnCancel);
-
-        alert.showAndWait().ifPresent(type -> {
-            if (type == btnLobby) {
-                ctx.controller().leaveGame();
-            } else if (type == btnExit) {
-                Platform.exit();
-                System.exit(0);
-            }
-        });
-    }
 }

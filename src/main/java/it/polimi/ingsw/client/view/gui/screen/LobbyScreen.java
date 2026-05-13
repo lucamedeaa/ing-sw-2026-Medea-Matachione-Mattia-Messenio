@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-import static it.polimi.ingsw.client.view.gui.GuiFxApp.*;
 
 public class LobbyScreen implements LobbyView, RefreshableScreen {
 
@@ -30,7 +29,23 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
 @FXML
     public void initialize() {
+        // Registrazione al caricamento
         ctx.notificationController().setLobbyView(this);
+
+        // Ripristina le dimensioni della finestra per la Lobby
+        Platform.runLater(() -> {
+            if (playersContainer != null && playersContainer.getScene() != null) {
+                javafx.stage.Stage stage = (javafx.stage.Stage) playersContainer.getScene().getWindow();
+                if (stage != null) {
+
+                    stage.setMinWidth(400);
+                    stage.setMinHeight(500);
+
+                    stage.setWidth(400);
+                    stage.setHeight(500);
+                }
+            }
+        });
     }
 
     @Override

@@ -3,6 +3,8 @@ package it.polimi.ingsw.client.view.tui.command;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 
+import java.util.List;
+
 public class ActionCommand implements GameCommand {
     private final GameModel gameModel;
     private final ServerCommandPort controller;
@@ -40,7 +42,9 @@ public class ActionCommand implements GameCommand {
             ActionExecutor executor = new ActionExecutor(controller, gameModel, out, args);
             selectedAction.accept(executor);
 
-            gameModel.setAvailableActions(java.util.List.of());
+            //if(executor.isCommandSent()){
+              //  gameModel.setAvailableActions(List.of());
+            //}
 
         } catch (NumberFormatException e) {
             gameModel.setGlobalError("'" + args[0] + "' this is not a valid number.");

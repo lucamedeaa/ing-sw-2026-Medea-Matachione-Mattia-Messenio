@@ -55,8 +55,4 @@ public class GuiFxApp extends Application implements ClientUi{
     public void setNotificationController(ClientNotificationController notificationController) {
         GuiFxApp.notificationController = notificationController;
     }
-    //Entry point della GUI. Estende Application, implementa ClientUi.
-    // Crea ClientSession internamente. Salva tutte le dipendenze in campi statici perché JavaFX instanzia una seconda copia via reflection;
-    // start(Stage) le legge e costruisce il router. Chiamare start() lancia la finestra e blocca il thread fino alla chiusura.
-
 }

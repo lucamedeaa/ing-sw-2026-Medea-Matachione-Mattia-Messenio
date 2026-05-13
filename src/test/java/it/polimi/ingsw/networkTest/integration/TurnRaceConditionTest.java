@@ -11,6 +11,7 @@ import it.polimi.ingsw.common.message.server.ErrorMessage;
 import it.polimi.ingsw.common.message.server.FullSyncMessage;
 import it.polimi.ingsw.common.message.server.MatchmakingSuccessMessage;
 import it.polimi.ingsw.networkTest.NetworkTestBase;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TurnRaceConditionTest extends NetworkTestBase {
 
     @Test
+    @DisplayName("Out-of-turn and repeated action commands are rejected sequentially")
     void testSimultaneousActionCommands() throws Exception {
         DummyClient p1 = new DummyClient("Player1");
         DummyClient p2 = new DummyClient("Player2");

@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
+<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
     <center>
         <fx:include source="BoardPanel.fxml" fx:id="boardPanel"/>
     </center>
@@ -17,9 +17,12 @@
         </VBox>
     </right>
     <bottom>
-        <VBox>
-            <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
-            <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
-        </VBox>
+        <SplitPane dividerPositions="0.7" prefHeight="250">
+            <items>
+                <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
+
+                <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
+            </items>
+        </SplitPane>
     </bottom>
 </BorderPane>
