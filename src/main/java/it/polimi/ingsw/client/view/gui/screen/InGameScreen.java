@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
 
+import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
@@ -66,6 +67,7 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
                 javafx.stage.Stage stage = (javafx.stage.Stage) rootPane.getScene().getWindow();
                 setupWindowConstraints(stage);
             }
+            this.refresh();
         });
     }
 
@@ -198,6 +200,17 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     public void setViewedPlayer(String nickname) {
         this.viewedPlayerNickname = nickname;
         this.refresh(); // Aggiorna tutto per mostrare i dati del nuovo giocatore
+    }
+
+    public void promptTotemPlacement(List<Integer> availableTiles) {
+        this.currentState = InteractionState.SELECTING_TOTEM_POSITION;
+        String self = ctx.session().getNickname();
+        GameModel model = ctx.gameModel();
+
+        if (boardPanelController != null && model != null) {
+            // Passiamo nickname e model per verificare se siamo già sulla Turn Order Tile
+            boardPanelController.highlightTotemPlacement(availableTiles, self, model);
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.ComboBox;
 
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -42,7 +43,8 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @FXML private Button createGameButton;
     @FXML private Button joinGameButton;
 
-    @FXML private MediaView bgMediaView;
+    //@FXML private MediaView bgMediaView;
+    @FXML private StackPane videoContainer; // Non più MediaView
     private MediaPlayer mediaPlayer;
 
     @FXML
@@ -62,10 +64,11 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         nicknameField.textProperty().isEmpty()
         .or(gamesListView.getSelectionModel().selectedItemProperty().isNull())
     );
+
         startVideoBackground();
     }
 
-    private void startVideoBackground() {
+/*    private void startVideoBackground() {
         URL videoUrl = getClass().getResource("/video/MesosMuroFinalRend.mp4");
         if (videoUrl != null) {
             Media media = new Media(videoUrl.toExternalForm());
@@ -86,6 +89,32 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         } else {
             System.err.println("Impossibile trovare il file video!");
         }
+    }*/
+
+    private void startVideoBackground() {
+        new Thread(() -> {
+            try {
+                URL resource = getClass().getResource("/video/MesosMuroFinalRend.mp4");
+                if (resource == null) return;
+
+                Media media = new Media(resource.toExternalForm());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                mediaPlayer.setMute(true); // Evita conflitti audio tra client
+
+                Platform.runLater(() -> {
+                    MediaView mediaView = new MediaView(mediaPlayer);
+                    mediaView.setPreserveRatio(false);
+                    mediaView.fitWidthProperty().bind(videoContainer.widthProperty());
+                    mediaView.fitHeightProperty().bind(videoContainer.heightProperty());
+
+                    videoContainer.getChildren().add(mediaView);
+                    mediaPlayer.play();
+                });
+            } catch (Exception e) {
+                System.err.println("Impossibile caricare il video: " + e.getMessage());
+            }
+        }).start();
     }
 
     private void stopVideo() {

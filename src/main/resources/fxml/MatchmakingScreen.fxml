@@ -8,7 +8,8 @@
 <StackPane stylesheets="@../style/tribal.css" xmlns:fx="http://javafx.com/fxml"
            fx:controller="it.polimi.ingsw.client.view.gui.screen.MatchmakingScreen">
 
-    <MediaView fx:id="bgMediaView" preserveRatio="false"/>
+    <!--<MediaView fx:id="bgMediaView" preserveRatio="false"/>-->
+    <StackPane fx:id="videoContainer" mouseTransparent="true" />
 
     <VBox spacing="20" alignment="CENTER" maxWidth="550" maxHeight="580"
           styleClass="tribal-card" StackPane.alignment="BOTTOM_CENTER">

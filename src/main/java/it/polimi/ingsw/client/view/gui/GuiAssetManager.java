@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.view.gui;
 
+import it.polimi.ingsw.server.model.enums.TotemColor;
 import javafx.scene.image.Image;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ public class GuiAssetManager {
     // Cache per evitare di allocare nuova memoria per immagini già caricate
     private static final Map<Integer, Image> cardCache = new HashMap<>();
     private static final Map<String, Image> tileCache = new HashMap<>();
-    private static final Map<String, Image> totemCache = new HashMap<>();
+    private static final Map<TotemColor, Image> totemCache = new HashMap<>();
 
     public static Image getCardImage(int cardId) {
         if (cardCache.containsKey(cardId)) {
@@ -50,29 +51,29 @@ public class GuiAssetManager {
         return image;
     }
 
-    public static Image getTotemImage(String colorName) {
-        if (colorName == null || colorName.isBlank()) {
+    public static Image getTotemImage(TotemColor color) {
+        if (color == null) {
             return null;
         }
 
         // Normalizziamo il nome per sicurezza (es. da "Red" a "RED")
-        String formattedColor = colorName.toUpperCase();
+        
 
-        if (totemCache.containsKey(formattedColor)) {
-            return totemCache.get(formattedColor);
+        if (totemCache.containsKey(color)) {
+            return totemCache.get(color);
         }
 
         // Assicurati che il path corrisponda alla cartella reale nei tuoi resources
-        String path = "/images/totems/" + formattedColor + "_COLOR.png";
+        String path = "/images/totem/" + color + "_COLOR.png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + formattedColor + " al percorso " + path);
+            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + color + " al percorso " + path);
             return null;
         }
 
         Image image = new Image(is);
-        totemCache.put(formattedColor, image);
+        totemCache.put(color, image);
         return image;
     }
 }

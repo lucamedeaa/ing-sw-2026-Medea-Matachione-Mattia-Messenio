@@ -89,6 +89,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
+
         gameModel.executeBatch(() -> {
             for (GameEventDto event : events) {
                 event.accept(applier);

@@ -15,7 +15,7 @@ public record PlaceTotemActionDto(List<Integer> availableTileIndices) implements
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Accepts a visitor. @param visitor visitor handling this action */
+    /** Accepts a visitor. @param visitor handling this action */
     @Override
     public void accept(ActionVisitor visitor) {
         visitor.visit(this);

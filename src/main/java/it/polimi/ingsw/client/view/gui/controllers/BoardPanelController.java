@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BoardPanelController {
 
@@ -34,7 +35,7 @@ public class BoardPanelController {
     private boolean canPickLower = false;
     private List<Integer> validTotemTiles = null;
     private final DoubleProperty cardWidthProp = new SimpleDoubleProperty(60.0);
-    private Pane turnOrderTotemOverlay;
+    private final List<Pane> trackOverlays = new ArrayList<>();
 
 
     public void setParentScreen(InGameScreen parentScreen) {
@@ -91,6 +92,7 @@ public class BoardPanelController {
     /**
      * Costruisce la riga centrale delle tessere in base al numero di giocatori.
      */
+
     private void buildBoardTrack(int playerCount) {
         List<String> layout = getTileLayout(playerCount);
         int cols = layout.size();
@@ -99,6 +101,64 @@ public class BoardPanelController {
         // al GridPane di "avvolgere" strettamente i contenuti
         boardGrid.getColumnConstraints().clear();
         boardGrid.getRowConstraints().clear();
+        trackOverlays.clear(); // Corretto: resetta la lista a ogni refresh
+
+        for (int col = 0; col < cols; col++) {
+
+            String tileCode = layout.get(col);
+            Image img = GuiAssetManager.getTileImage(tileCode);
+            if (img == null) continue;
+
+            ImageView tileView = new ImageView(img);
+            tileView.setPreserveRatio(false);
+            tileView.setSmooth(true);
+
+            // Binding dell'immagine alla proprietà globale (INTATTO)
+            tileView.fitWidthProperty().bind(cardWidthProp);
+            tileView.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
+
+            StackPane container = new StackPane(tileView);
+
+            // Blocca le dimensioni del contenitore per impedire sbavature della griglia (INTATTO)
+            container.minWidthProperty().bind(cardWidthProp);
+            container.maxWidthProperty().bind(cardWidthProp);
+            container.prefWidthProperty().bind(cardWidthProp);
+
+            container.minHeightProperty().bind(cardWidthProp.multiply(1.62));
+            container.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
+            container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
+
+            // --- CREAZIONE OVERLAY PER TUTTE LE TESSERE ---
+            Pane overlay = new Pane();
+            overlay.setMouseTransparent(true);
+
+            // Il Pane copia esattamente le dimensioni del contenitore, senza forzarne il resize
+            overlay.minWidthProperty().bind(container.widthProperty());
+            overlay.maxWidthProperty().bind(container.widthProperty());
+            overlay.minHeightProperty().bind(container.heightProperty());
+            overlay.maxHeightProperty().bind(container.heightProperty());
+
+            // Aggiunge l'overlay sopra la tileView e lo salva nella lista
+            container.getChildren().add(overlay);
+            trackOverlays.add(overlay);
+
+            // --- MARGINE SOLO PER LA TURN ORDER TILE ---
+            if (col == 0) {
+                GridPane.setMargin(container, new Insets(0, 15, 0, 0));
+            }
+
+            boardGrid.add(container, col, 1);
+        }
+    }
+    /*private void buildBoardTrack(int playerCount) {      funziona il ridimensionamento bene
+        List<String> layout = getTileLayout(playerCount);
+        int cols = layout.size();
+
+        // Rimuovi esplicitamente eventuali vincoli preesistenti per permettere
+        // al GridPane di "avvolgere" strettamente i contenuti
+        boardGrid.getColumnConstraints().clear();
+        boardGrid.getRowConstraints().clear();
+        trackOverlays.clear();
 
         for (int col = 0; col < cols; col++) {
 
@@ -112,7 +172,7 @@ public class BoardPanelController {
 
             // Binding dell'immagine alla proprietà globale
             tileView.fitWidthProperty().bind(cardWidthProp);
-            tileView.fitHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+            tileView.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
 
             StackPane container = new StackPane(tileView);
 
@@ -121,19 +181,21 @@ public class BoardPanelController {
             container.maxWidthProperty().bind(cardWidthProp);
             container.prefWidthProperty().bind(cardWidthProp);
 
-            container.minHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
-            container.maxHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
-            container.prefHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+            container.minHeightProperty().bind(cardWidthProp.multiply(1.62));
+            container.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
+            container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
 
             // Mantiene lo spazio per la turn order tile (colonna 0)
             if (col == 0) {
                 GridPane.setMargin(container, new Insets(0, 15, 0, 0));
 
                 turnOrderTotemOverlay = new Pane();
-                //turnOrderTotemOverlay.setMouseTransparent(true);
+                turnOrderTotemOverlay.setMouseTransparent(true);
                 // Il Pane deve copiare esattamente le dimensioni del contenitore
-                turnOrderTotemOverlay.prefWidthProperty().bind(container.widthProperty());
-                turnOrderTotemOverlay.prefHeightProperty().bind(container.heightProperty());
+                turnOrderTotemOverlay.minWidthProperty().bind(container.widthProperty());
+                turnOrderTotemOverlay.maxWidthProperty().bind(container.widthProperty());
+                turnOrderTotemOverlay.minHeightProperty().bind(container.heightProperty());
+                turnOrderTotemOverlay.maxHeightProperty().bind(container.heightProperty());
 
                 // Aggiungi l'overlay SOPRA la tileView
                 container.getChildren().add(turnOrderTotemOverlay);
@@ -141,7 +203,7 @@ public class BoardPanelController {
 
             boardGrid.add(container, col, 1);
         }
-    }
+    }*/
 
     /**
      * Hardcoding della struttura del tabellone.
@@ -202,7 +264,7 @@ public class BoardPanelController {
 
         // Identico binding per le carte normali
         cardView.fitWidthProperty().bind(cardWidthProp);
-        cardView.fitHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+        cardView.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
 
         StackPane container = new StackPane(cardView);
 
@@ -211,9 +273,9 @@ public class BoardPanelController {
         container.maxWidthProperty().bind(cardWidthProp);
         container.prefWidthProperty().bind(cardWidthProp);
 
-        container.minHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
-        container.maxHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
-        container.prefHeightProperty().bind(cardWidthProp.multiply(4.0/3.0));
+        container.minHeightProperty().bind(cardWidthProp.multiply(1.62));
+        container.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
+        container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
 
         container.setOnMouseClicked(e -> handleCardClick(logicalRow, logicalCol));
         boardGrid.add(container, visualCol, visualRow);
@@ -269,41 +331,110 @@ public class BoardPanelController {
 
         parentScreen.onCardSelected(row, col);
     }
-    private void handleTotemClick(int tileIndex) {
-        if (parentScreen == null) return;
-        if (validTotemTiles == null || !validTotemTiles.contains(tileIndex)) return;
-        parentScreen.onTotemPositionSelected(tileIndex);
-    }
     
     private void renderTurnOrderTotems(GameModel model) {
-        if (turnOrderTotemOverlay == null) return;
-        turnOrderTotemOverlay.getChildren().clear();
+        trackOverlays.forEach(p -> p.getChildren().clear());
 
-        // Iteriamo sui player come da tua indicazione
         List<PlayerSnapshot> players = new ArrayList<>(model.getPlayers().values());
+        double[] ySteps = getTurnOrderTotemYSteps(players.size());
 
-        // Coordinate percentuali (0.0 - 1.0) dei quadratini bianchi sulla tessera
-        // Nota: questi valori vanno calibrati millimetricamente sul tuo asset specifico
-        double[] ySteps = {0.16, 0.33, 0.50, 0.67, 0.84};
-        double xPercent = 0.15; // Posizione orizzontale della colonna di bianchi
+        // Recupera la mappa delle posizioni
+        Map<String, Integer> totemPositions = model.getTotemPositions();
 
-        for (int i = 0; i < players.size() && i < ySteps.length; i++) {
-            TotemColor color = players.get(i).getTotemColor();
-            Image img = GuiAssetManager.getTotemImage(color.name());
+        for (int i = 0; i < players.size(); i++) {
+            PlayerSnapshot p = players.get(i);
+            TotemColor color = p.getTotemColor();
+            Image img = GuiAssetManager.getTotemImage(color);
 
             if (img != null) {
                 ImageView totemView = new ImageView(img);
                 totemView.setPreserveRatio(true);
+                totemView.fitWidthProperty().bind(cardWidthProp.multiply(0.38));
 
-                // Dimensione del totem: circa il 20% della larghezza della tessera
-                totemView.fitWidthProperty().bind(cardWidthProp.multiply(0.20));
+                totemView.layoutXProperty().bind(cardWidthProp.subtract(totemView.fitWidthProperty()).divide(2));
+                totemView.layoutYProperty().bind(cardWidthProp.multiply(1.62).multiply(ySteps[i]));
 
-                // Ancoraggio dinamico: se la finestra si allarga, il totem si sposta col quadratino
-                totemView.layoutXProperty().bind(turnOrderTotemOverlay.widthProperty().multiply(xPercent));
-                totemView.layoutYProperty().bind(turnOrderTotemOverlay.heightProperty().multiply(ySteps[i]));
+                String nickname = p.getNickname();
+                Integer pos = totemPositions.get(nickname);
 
-                turnOrderTotemOverlay.getChildren().add(totemView);
+                // Se la posizione è null (non piazzato o tornato alla base) o -1, va sulla Turn Order Tile (col 0)
+                int visualCol = (pos == null || pos == 0) ? 0 : pos;
+
+                if (visualCol < trackOverlays.size()) {
+                    Pane overlay = trackOverlays.get(visualCol);
+
+                    if (visualCol == 0) {
+                        // Posizione nel tracciato verticale (colonna 0)
+                        totemView.layoutYProperty().bind(overlay.heightProperty().multiply(ySteps[i]));
+                    } else {
+                        // Posizione fissa in alto per le tessere offerta
+                        totemView.layoutYProperty().bind(overlay.heightProperty().multiply(0.18));
+                    }
+                    overlay.getChildren().add(totemView);
+                }
             }
+        }
+    }
+
+    private double[] getTurnOrderTotemYSteps(int playerCount) {
+        return switch (playerCount) {
+            case 2 -> new double[]{0.23, 0.40};
+            case 3 -> new double[]{0.16, 0.50, 0.84};
+            case 4 -> new double[]{0.12, 0.37, 0.62, 0.87};
+            default -> new double[]{0.10, 0.30, 0.50, 0.70, 0.90};
+        };
+    }
+
+    public void highlightTotemPlacement(List<Integer> validIndices, String myNickname, GameModel model) {
+
+        Platform.runLater(() -> {
+            if (trackOverlays.isEmpty()) return;
+
+            Pane turnOrder = trackOverlays.get(0);
+            turnOrder.setMouseTransparent(false);
+            turnOrder.setCursor(Cursor.HAND);
+
+            // Aumentata opacità per renderlo visibile (0.6)
+            turnOrder.setStyle("-fx-background-color: rgba(255, 255, 255, 0.6); -fx-border-color: white; -fx-border-width: 2;");
+
+            turnOrder.setOnMouseClicked(e -> {
+                turnOrder.setStyle("");
+                turnOrder.setMouseTransparent(true);
+                showOfferTileOptions(validIndices);
+            });
+        });
+    }
+
+    private void showOfferTileOptions(List<Integer> validIndices) {
+        for (Integer idx : validIndices) {
+
+            // Verifica come il server mappa le tessere offerta.
+            // Se 1 è la prima Offer Tile, usa 'idx'. Se 0 è la prima Offer Tile, usa 'idx + 1'.
+            int visualCol = idx; // o idx + 1
+
+            if (visualCol >= trackOverlays.size()) continue;
+
+            Pane p = trackOverlays.get(visualCol);
+            p.setMouseTransparent(false);
+            p.setCursor(Cursor.HAND);
+
+            // Sostituisce l'effetto ombra rotto con un bordo luminoso e uno sfondo leggero
+            p.setEffect(null);
+            p.setStyle("-fx-border-color: white; -fx-border-width: 3; -fx-background-color: rgba(255, 255, 255, 0.6);");
+
+            p.setOnMouseClicked(e -> {
+                clearTrackHighlights();
+                parentScreen.onTotemPositionSelected(idx); // Invia sempre l'indice originale al server
+            });
+        }
+    }
+
+    public void clearTrackHighlights() {
+        for (Pane p : trackOverlays) {
+            p.setStyle("");
+            p.setEffect(null);
+            p.setMouseTransparent(true);
+            p.setCursor(Cursor.DEFAULT);
         }
     }
 }

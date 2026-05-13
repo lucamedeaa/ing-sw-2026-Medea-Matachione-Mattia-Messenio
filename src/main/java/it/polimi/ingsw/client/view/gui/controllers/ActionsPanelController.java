@@ -62,7 +62,10 @@ public class ActionsPanelController {
 
     public void enablePlaceTotem(List<Integer> availableTiles) {
         this.validTotemTiles = availableTiles;
-        placeTotemButton.setDisable(false);
+        // Invece di abilitare il bottone, avvisiamo il mediatore
+        if (parentScreen != null) {
+            parentScreen.promptTotemPlacement(availableTiles);
+        }
     }
 
     public void enableSkip() {

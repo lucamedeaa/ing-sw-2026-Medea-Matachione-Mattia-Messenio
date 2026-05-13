@@ -27,10 +27,12 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
         this.navigator = navigator;
     }
 
-@FXML
+    @FXML
     public void initialize() {
         // Registrazione al caricamento
         ctx.notificationController().setLobbyView(this);
+
+        Platform.runLater(this::refresh);
 
         // Ripristina le dimensioni della finestra per la Lobby
         Platform.runLater(() -> {
@@ -56,14 +58,16 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @Override
     public void onGameStarted() {
-        ctx.notificationController().setLobbyView(null);
-        Platform.runLater(() -> navigator.toInGame());
+        Platform.runLater(() -> {
+            ctx.notificationController().setLobbyView(null);
+            Platform.runLater(navigator::toInGame);
+        });
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
         ctx.notificationController().setLobbyView(null);
-        Platform.runLater(() -> navigator.toMatchmaking());
+        Platform.runLater(navigator::toMatchmaking);
         // Nota: il motivo del ritorno andrebbe idealmente mostrato in MatchmakingScreen
     }
 
