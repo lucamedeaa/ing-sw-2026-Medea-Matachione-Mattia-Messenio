@@ -3,45 +3,54 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.polimi.ingsw.client.view.gui.screen.GameEndedScreen"
-            prefWidth="900" prefHeight="600">
+<StackPane stylesheets="@../style/style.css"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="it.polimi.ingsw.client.view.gui.screen.GameEndedScreen">
 
-    <top>
-        <Label text="Partita Terminata"
-               style="-fx-font-size: 26; -fx-font-weight: bold; -fx-padding: 20 0 10 20;"/>
-    </top>
+    <StackPane fx:id="videoContainer" mouseTransparent="true"/>
 
-    <center>
-        <HBox spacing="20" style="-fx-padding: 10;">
+    <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.60);"/>
 
-            <VBox spacing="12" HBox.hgrow="ALWAYS"
-                  style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;">
-                <Label text="Il tuo risultato" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
-                <Label fx:id="positionLabel" text="Posizione: —"/>
-                <Label fx:id="scoreLabel"    text="Punteggio: —"/>
-                <Label fx:id="foodLabel"     text="Cibo rimanente: —"/>
-                <Label fx:id="personalBestLabel" text="Miglior punteggio globale: —" wrapText="true"/>
-                <Separator/>
-                <Label text="Classifica partita" style="-fx-font-size: 14; -fx-font-weight: bold;"/>
-                <ListView fx:id="sessionLeaderboardView" VBox.vgrow="ALWAYS"/>
+    <VBox alignment="CENTER" spacing="20" maxWidth="1200" style="-fx-padding: 250 40 30 40;">
+        <!--<Label text="LE CRONACHE DI MESOS SONO SCRITTE"
+               style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 42px; -fx-text-fill: #ffd700; -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 4);"/> -->
+
+        <HBox spacing="30" alignment="CENTER" VBox.vgrow="ALWAYS">
+
+            <VBox spacing="15" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20; -fx-background-radius: 12; -fx-border-color: #e67e22; -fx-border-radius: 12; -fx-border-width: 2;">
+                <Label text="I TUOI RISULTATI NELLA TRIBÙ" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 24px; -fx-text-fill: #e67e22;"/>
+                <Label fx:id="positionLabel" text="Posizione: —" style="-fx-font-family: 'MedievalSharp', serif; -fx-text-fill: white; -fx-font-size: 18px;"/>
+                <Label fx:id="scoreLabel" text="Punteggio: —" style="-fx-font-family: 'MedievalSharp', serif; -fx-text-fill: white; -fx-font-size: 18px;"/>
+                <Label fx:id="foodLabel" text="Cibo rimanente: —" style="-fx-font-family: 'MedievalSharp', serif; -fx-text-fill: white; -fx-font-size: 18px;"/>
+
+                <Separator style="-fx-background-color: #e67e22; -fx-opacity: 0.5;"/>
+
+                <Label text="IL TUO RECORD PERSONALE" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-text-fill: #c0392b;"/>
+                <Label fx:id="personalBestLabel" text="Miglior punteggio globale: —" wrapText="true" style="-fx-font-family: 'MedievalSharp', serif; -fx-text-fill: white; -fx-font-size: 16px;"/>
+
+                <Separator style="-fx-background-color: #e67e22; -fx-opacity: 0.5;"/>
+
+                <Label text="CLASSIFICA PARTITA" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-text-fill: white;"/>
+                <ListView fx:id="sessionLeaderboardView" VBox.vgrow="ALWAYS" />
             </VBox>
 
-            <VBox spacing="12" HBox.hgrow="ALWAYS"
-                  style="-fx-padding: 10; -fx-border-color: #cccccc; -fx-border-radius: 6;">
-                <Label text="Classifica Globale" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+            <VBox spacing="15" HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: rgba(0,0,0,0.7); -fx-padding: 20; -fx-background-radius: 12; -fx-border-color: #e67e22; -fx-border-radius: 12; -fx-border-width: 2;">
+                <Label text="🏆 CLASSIFICA GLOBALE DELLA VALLE 🏆" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 24px; -fx-text-fill: #e67e22;"/>
                 <ProgressIndicator fx:id="globalSpinner"/>
-                <ListView fx:id="globalLeaderboardView" VBox.vgrow="ALWAYS" visible="false"/>
+                <ListView fx:id="globalLeaderboardView" VBox.vgrow="ALWAYS" visible="false" />
             </VBox>
 
         </HBox>
-    </center>
 
-    <bottom>
-        <HBox alignment="CENTER" style="-fx-padding: 15;">
-            <Button text="Torna al menu" onAction="#handleLeave" style="-fx-font-size: 14;"/>
+        <HBox alignment="CENTER" spacing="25">
+            <Label text="Audio" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, black, 6, 0, 0, 2);"/>
+            <Slider fx:id="volumeSlider" min="0" max="1" value="0.5" prefWidth="200"/>
         </HBox>
-    </bottom>
 
-</BorderPane>
+        <Button text="TORNA AL MENU" onAction="#handleLeave"
+                style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
+    </VBox>
+</StackPane>

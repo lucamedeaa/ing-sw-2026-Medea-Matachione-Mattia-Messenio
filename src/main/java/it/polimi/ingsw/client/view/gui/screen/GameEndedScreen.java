@@ -4,15 +4,15 @@ import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
+import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
 import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 
 import java.util.List;
 
@@ -30,6 +30,11 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
     @FXML private ProgressIndicator globalSpinner;
     @FXML private ListView<String> globalLeaderboardView;
 
+    @FXML private StackPane videoContainer;
+    @FXML private Slider volumeSlider;
+
+    private final VideoBackground videoBackground = new VideoBackground();
+
     public GameEndedScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
         this.navigator = navigator;
@@ -38,14 +43,37 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
     @FXML
     public void initialize() {
         ctx.notificationController().setGameEndedView(this);
-        // Richiede la leaderboard globale; quando arriva, il server aggiorna GameModel
-        // → notifyUI() → GuiFxRouter.onStateChanged() → refresh()
+
+        volumeSlider.setMin(0);
+        volumeSlider.setMax(1);
+        volumeSlider.setValue(0.5);
+        videoBackground.start(videoContainer, "/background/VideoMesosBG.mp4", volumeSlider.valueProperty());
+
+        setupListViewStyle(sessionLeaderboardView);
+        setupListViewStyle(globalLeaderboardView);
+
         ctx.controller().getLeaderboard();
+    }
+
+    private void setupListViewStyle(ListView<String> listView) {
+        listView.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
+        listView.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    setText(item);
+                    setStyle("-fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);");
+                }
+            }
+        });
     }
 
     @Override
     public void refresh() {
-        // Già sul thread JavaFX — chiamato da GuiFxRouter via Platform.runLater
         renderLocalResult();
         renderGlobalLeaderboard();
     }
@@ -105,6 +133,7 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
+        videoBackground.stop();
         ctx.notificationController().setGameEndedView(null);
         Platform.runLater(navigator::toMatchmaking);
     }
@@ -113,19 +142,14 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
     public void onServerDisconnected(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
+        videoBackground.stop();
         ctx.notificationController().setGameEndedView(null);
         Platform.runLater(() -> navigator.toDisconnected(reason));
     }
 
     @FXML
     private void handleLeave() {
+        videoBackground.stop();
         ctx.controller().leaveGame();
     }
 }
-
-    //Controller FXML della schermata fine partita. Implementa GameEndedView e UIObserver.
-    // Non chiama mai addObserver. In initialize() chiama controller.getLeaderboard();
-    // quando il server risponde, ClientNotificationController aggiorna GameModel → notifyUI() → router → onStateChanged()
-    // già sul thread JavaFX → legge il leaderboard e popola la tabella. Mostra spinner finché il dato non arriva.
-    //GameEndedScreen deve renderizzare subito il risultato locale anche se la leaderboard globale non è ancora arrivata.
-

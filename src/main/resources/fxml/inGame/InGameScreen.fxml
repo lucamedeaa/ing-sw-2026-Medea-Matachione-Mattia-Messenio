@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="rootPane" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
-    <center>
-        <fx:include source="BoardPanel.fxml" fx:id="boardPanel"/>
-    </center>
-    <right>
-        <VBox>
-            <fx:include source="PlayersPanel.fxml" fx:id="playersPanel"/>
-            <fx:include source="ActionsPanel.fxml" fx:id="actionsPanel"/>
-        </VBox>
-    </right>
-    <bottom>
-        <SplitPane dividerPositions="0.7" prefHeight="250">
-            <items>
-                <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
+<StackPane fx:id="rootPane" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
 
-                <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
-            </items>
-        </SplitPane>
-    </bottom>
-</BorderPane>
+    <Pane style="-fx-background-image: url('/background/BgPlancia.png'); -fx-background-size: cover; -fx-background-position: center;"/>
+
+    <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.65);"/>
+
+    <BorderPane>
+        <center>
+            <fx:include source="BoardPanel.fxml" fx:id="boardPanel"/>
+        </center>
+        <right>
+            <VBox>
+                <fx:include source="PlayersPanel.fxml" fx:id="playersPanel"/>
+                <fx:include source="ActionsPanel.fxml" fx:id="actionsPanel"/>
+            </VBox>
+        </right>
+        <bottom>
+            <SplitPane dividerPositions="0.7" prefHeight="250">
+                <items>
+                    <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
+                    <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
+                </items>
+            </SplitPane>
+        </bottom>
+    </BorderPane>
+
+</StackPane>
