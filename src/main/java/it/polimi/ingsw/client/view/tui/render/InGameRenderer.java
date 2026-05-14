@@ -43,7 +43,13 @@ public class InGameRenderer {
         if (!logs.isEmpty()) {
             out.print("── RECENT NOTIFICATIONS ──");
             for (String log : logs) {
-                out.print("  " + log);
+                if (log.startsWith("[!] THE ERA BEGINS")) {
+                    out.print("  " + ColorAnsi.CYAN_BOLD + log + ColorAnsi.RESET);
+                } else if (log.startsWith("=== END OF ROUND")) {
+                    out.print("  " + ColorAnsi.YELLOW_BOLD + log + ColorAnsi.RESET);
+                } else {
+                    out.print("  " + ColorAnsi.YELLOW + log + ColorAnsi.RESET);
+                }
             }
             out.print("");
         }

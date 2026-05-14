@@ -29,6 +29,14 @@ public class PlayerSnapshot {
         this.foodDiscount = dto.foodDiscount();
         this.sustenanceDiscount = dto.sustenanceDiscount();
     }
+    public PlayerSnapshot(PlayerSnapshot other) {
+        this.nickname = other.nickname;
+        this.food = other.food;
+        this.prestige = other.prestige;
+        this.totemColor = other.totemColor;
+        this.foodDiscount = other.foodDiscount;
+        this.sustenanceDiscount = other.sustenanceDiscount;
+    }
 
     public String getNickname() { return nickname; }
     public int getFood() { return food; }
@@ -43,3 +51,4 @@ public class PlayerSnapshot {
     public void setSustenanceDiscount(int sustenanceDiscount) { this.sustenanceDiscount = sustenanceDiscount; }
 
 }
+

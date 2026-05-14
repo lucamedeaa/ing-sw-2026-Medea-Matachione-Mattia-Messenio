@@ -212,18 +212,19 @@ public class ActionState extends GameState {
 
         // Se ha finito i pick O non può più fare nulla, il turno finisce
         if (picksExhausted || (!canDoMandatory && !canDoOptional)) {
+            if (!picksExhausted) {
+                game.pushEvent(new PlayerResourcesChangedEvent(
+                        currentPlayer.getNickname(),
+                        currentPlayer.getFood(),
+                        currentPlayer.getPrestigePoints(),
+                        currentPlayer.getFoodDiscount(),
+                        currentPlayer.getSustenanceDiscount(),
+                        "Automatic Skip: no affordable or valid actions left"
+                ));
+            }
             endPlayerTurn();
         }
-        if (!picksExhausted) {
-            game.pushEvent(new PlayerResourcesChangedEvent(
-                    currentPlayer.getNickname(),
-                    currentPlayer.getFood(),
-                    currentPlayer.getPrestigePoints(),
-                    currentPlayer.getFoodDiscount(),
-                    currentPlayer.getSustenanceDiscount(),
-                    "Automatic Skip: no affordable or valid actions left"
-            ));
-        }
+
     }
 
 

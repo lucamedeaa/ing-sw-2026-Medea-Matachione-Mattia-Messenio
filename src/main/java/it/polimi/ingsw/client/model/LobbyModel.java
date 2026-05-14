@@ -47,7 +47,30 @@ public class LobbyModel extends ObservableModel {
 
     }
 
-    public List<GameInfoDto> getAvailableGames() { return new ArrayList<>(availableGames); }
-    public List<String> getLobbyPlayers() { return new ArrayList<>(lobbyPlayers); }
-    public String getLobbyNotification() { return lobbyNotification; }
+    public List<GameInfoDto> getAvailableGames() {
+        lock.readLock().lock();
+        try {
+            return new ArrayList<>(availableGames);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public List<String> getLobbyPlayers() {
+        lock.readLock().lock();
+        try {
+            return new ArrayList<>(lobbyPlayers);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public String getLobbyNotification() {
+        lock.readLock().lock();
+        try {
+            return lobbyNotification;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 }

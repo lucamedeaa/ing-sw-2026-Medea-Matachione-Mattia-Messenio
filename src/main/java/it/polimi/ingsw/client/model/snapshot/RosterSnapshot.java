@@ -55,8 +55,24 @@ public class RosterSnapshot {
         playerReturnPositions.clear();
     }
 
-    public Map<String, PlayerSnapshot> getPlayers() { return new HashMap<>(players); }
+    //public Map<String, PlayerSnapshot> getPlayers() { return new HashMap<>(players); }
     public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
     public Map<String, Integer> getReturnPositions() { return new HashMap<>(playerReturnPositions); }
-    public Map<String, List<Integer>> getTribes() { return new HashMap<>(playerTribes); }
+    //public Map<String, List<Integer>> getTribes() { return new HashMap<>(playerTribes); }
+
+    public Map<String, PlayerSnapshot> getPlayers() {
+        Map<String, PlayerSnapshot> copy = new HashMap<>();
+        for (Map.Entry<String, PlayerSnapshot> entry : players.entrySet()) {
+            copy.put(entry.getKey(), new PlayerSnapshot(entry.getValue()));
+        }
+        return copy;
+    }
+
+    public Map<String, List<Integer>> getTribes() {
+        Map<String, List<Integer>> copy = new HashMap<>();
+        for (Map.Entry<String, List<Integer>> entry : playerTribes.entrySet()) {
+            copy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return copy;
+    }
 }
