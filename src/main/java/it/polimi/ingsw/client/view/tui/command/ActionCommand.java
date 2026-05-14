@@ -33,7 +33,7 @@ public class ActionCommand implements GameCommand {
             int actionIndex = Integer.parseInt(args[0]);
 
             if (actionIndex < 0 || actionIndex >= availableActions.size()) {
-                gameModel.setGlobalError("Invalid action index.");
+                gameModel.setGlobalError("Invalid action index. Choose between 0 and " + (availableActions.size() - 1) + ".");
                 return;
             }
 

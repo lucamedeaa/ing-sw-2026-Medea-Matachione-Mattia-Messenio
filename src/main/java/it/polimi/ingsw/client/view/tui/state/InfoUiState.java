@@ -26,4 +26,10 @@ public class InfoUiState implements UIState {
             out.print("Invalid input. Press Q to return to game.");
         }
     }
+
+    @Override
+    public void onEnter() {} // Non fa nulla, non ascolta la rete
+
+    @Override
+    public void onExit() {} // Non fa nulla
 }

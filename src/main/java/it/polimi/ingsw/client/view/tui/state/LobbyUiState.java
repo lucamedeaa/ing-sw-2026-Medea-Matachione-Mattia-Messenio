@@ -3,12 +3,14 @@ package it.polimi.ingsw.client.view.tui.state;
 import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.LobbyModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.CommandFactory;
 import it.polimi.ingsw.client.view.tui.command.DisconnectCommand;
 import it.polimi.ingsw.client.view.tui.command.LeaveGameCommand;
 import it.polimi.ingsw.client.view.tui.command.ServerCommandPort;
+import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.tui.render.LobbyRenderer;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 
@@ -28,7 +30,9 @@ public class LobbyUiState implements UIState, LobbyView {
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private boolean initialized = false;
 
-    public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+    private final ApplicationLifecyclePort lifecyclePort;
+
+    public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.lobbyModel = lobbyModel;
         this.controller = controller;
@@ -36,19 +40,32 @@ public class LobbyUiState implements UIState, LobbyView {
         this.out = out;
         this.notificationController = notificationController;
         this.renderer = new LobbyRenderer(out);
+        this.lifecyclePort = lifecyclePort;
 
         registerCommands();
+        //this.notificationController.setLobbyView(this);
+    }
+
+
+    @Override
+    public void onEnter() {
         this.notificationController.setLobbyView(this);
+    }
+
+    @Override
+    public void onExit() {
+        this.notificationController.setLobbyView(null);
     }
 
     private void registerCommands() {
         commandRegistry.put("0", args -> new LeaveGameCommand(controller, out));
-        commandRegistry.put("d", args -> new DisconnectCommand(controller));
+        commandRegistry.put("d", args -> new DisconnectCommand(controller, lifecyclePort, out));
     }
 
     @Override
     public void render() {
         if(!initialized) { return; }
+        String error = lobbyModel.consumeGlobalError();
 
         lobbyModel.getReadLock().lock();
         try {
@@ -59,6 +76,10 @@ public class LobbyUiState implements UIState, LobbyView {
             );
         } finally {
             lobbyModel.getReadLock().unlock();
+        }
+        if (error != null && !error.isEmpty()) {
+            out.print(ColorAnsi.RED_BOLD + "\n[ERRORE SERVER]: " + error + ColorAnsi.RESET);
+            out.prompt(ColorAnsi.YELLOW_BOLD + "\nUntil the whole tribe is here > " + ColorAnsi.RESET);
         }
     }
 
@@ -92,13 +113,13 @@ public class LobbyUiState implements UIState, LobbyView {
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        notificationController.setLobbyView(null);
+        //notificationController.setLobbyView(null);
         navigator.toMatchmaking();
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        notificationController.setLobbyView(null);
+        //notificationController.setLobbyView(null);
         navigator.toDisconnected(reason);
     }
 }

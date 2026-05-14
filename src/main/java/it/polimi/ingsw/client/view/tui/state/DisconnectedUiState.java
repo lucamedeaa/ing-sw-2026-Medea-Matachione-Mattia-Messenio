@@ -1,15 +1,18 @@
 package it.polimi.ingsw.client.view.tui.state;
 
+import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 
 public class DisconnectedUiState implements UIState {
     private final OutputPort out;
     private final String reason;
+    private final ApplicationLifecyclePort lifecyclePort;
 
-    public DisconnectedUiState(OutputPort out, String reason) {
+    public DisconnectedUiState(OutputPort out, String reason, ApplicationLifecyclePort lifecyclePort) {
         this.out = out;
         this.reason = reason;
+        this.lifecyclePort = lifecyclePort;
     }
 
     @Override
@@ -24,6 +27,12 @@ public class DisconnectedUiState implements UIState {
 
     @Override
     public void handleInput(String input) {
-        System.exit(0);
+        lifecyclePort.requestShutdown();
     }
+
+    @Override
+    public void onEnter() {} // Non fa nulla, non ascolta la rete
+
+    @Override
+    public void onExit() {} // Non fa nulla
 }

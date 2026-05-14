@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.view.tui.state;
 import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.LobbyModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
@@ -27,7 +28,9 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
     private String pendingNickname = "";
     private boolean showGamesList = false;
 
-    public MatchmakingUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out,ClientNotificationController notificationController) {
+    private final ApplicationLifecyclePort lifecyclePort;
+
+    public MatchmakingUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.lobbyModel = lobbyModel;
         this.controller = controller;
@@ -35,12 +38,22 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         this.out = out;
         this.notificationController = notificationController;
         this.renderer = new MatchmakingRenderer(out);
+        this.lifecyclePort = lifecyclePort;
 
         registerCommands();
 
-        this.notificationController.setMatchmakingView(this);
+        //this.notificationController.setMatchmakingView(this);
 
         //render();
+    }
+    @Override
+    public void onEnter() {
+        this.notificationController.setMatchmakingView(this);
+    }
+
+    @Override
+    public void onExit() {
+        this.notificationController.setMatchmakingView(null);
     }
 
     private void registerCommands() {
@@ -64,8 +77,8 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         });
 
         commandRegistry.put("list", args -> new AvailableGamesCommand(controller, out));
-        commandRegistry.put("disconnect", args -> new DisconnectCommand(controller));
-        commandRegistry.put("0", args -> new DisconnectCommand(controller));
+        commandRegistry.put("disconnect", args -> new DisconnectCommand(controller, lifecyclePort, out));
+        commandRegistry.put("0", args -> new DisconnectCommand(controller, lifecyclePort, out));
     }
 
     @Override
@@ -116,13 +129,13 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
     @Override
     public void onError(String error) {
-        render();
+
     }
 
     @Override
     public void onMatchmakingSuccess(String text) {
         //  MI DE-REGISTRO prima di morire
-        notificationController.setMatchmakingView(null);
+        //notificationController.setMatchmakingView(null);
 
         //  va in Lobby
         session.setNickname(this.pendingNickname);
@@ -131,7 +144,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
     @Override
     public void onServerDisconnected(String reason) {
-        notificationController.setMatchmakingView(null);
+        //notificationController.setMatchmakingView(null);
         navigator.toDisconnected(reason);
     }
 

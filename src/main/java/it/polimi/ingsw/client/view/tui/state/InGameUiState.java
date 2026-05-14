@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
@@ -24,8 +25,9 @@ public class InGameUiState implements UIState, InGameView {
 
     private final InGameRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
+    private final ApplicationLifecyclePort lifecyclePort;
 
-    public InGameUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+    public InGameUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.gameModel = gameModel;
         this.controller = controller;
@@ -33,9 +35,20 @@ public class InGameUiState implements UIState, InGameView {
         this.out = out;
         this.notificationController = notificationController;
         this.renderer = new InGameRenderer(out);
+        this.lifecyclePort = lifecyclePort;
 
         registerCommands();
+        //this.notificationController.setInGameView(this);
+    }
+
+    @Override
+    public void onEnter() {
         this.notificationController.setInGameView(this);
+    }
+
+    @Override
+    public void onExit() {
+        this.notificationController.setInGameView(null);
     }
 
     private void registerCommands() {
@@ -49,7 +62,7 @@ public class InGameUiState implements UIState, InGameView {
             return new ViewTribeCommand(navigator, out, args[1]);
         });
         commandRegistry.put("i", args -> new InfoCommand(navigator, out));
-        commandRegistry.put("quit", args -> new DisconnectCommand(controller));
+        commandRegistry.put("quit", args -> new DisconnectCommand(controller, lifecyclePort, out));
         commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
     }
 
@@ -67,7 +80,7 @@ public class InGameUiState implements UIState, InGameView {
     @Override
     public void handleInput(String input) {
         if (gameModel.isGameOver()) {
-            notificationController.setInGameView(null);
+            //notificationController.setInGameView(null);
             navigator.toGameEnded();
             return;
         }
@@ -97,13 +110,13 @@ public class InGameUiState implements UIState, InGameView {
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        notificationController.setInGameView(null);
+        //notificationController.setInGameView(null);
         navigator.toMatchmaking();
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        notificationController.setInGameView(null);
+        //notificationController.setInGameView(null);
         navigator.toDisconnected(reason);
     }
 

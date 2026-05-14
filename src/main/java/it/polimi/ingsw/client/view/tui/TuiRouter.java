@@ -15,14 +15,17 @@ public class TuiRouter implements TuiNavigator {
     private final OutputPort out;
     private ClientNotificationController notificationController;
     private ServerCommandPort controller;
+    private final ApplicationLifecyclePort lifecyclePort;
 
     public TuiRouter(StateContainer container, LobbyModel lobbyModel, GameModel gameModel,
-                     ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+                     ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.container = container;
         this.lobbyModel = lobbyModel;
         this.gameModel = gameModel;
         this.session = session;
         this.out = out;
+        this.notificationController = notificationController;
+        this.lifecyclePort = lifecyclePort;
     }
     public void setNotificationController(ClientNotificationController nc) {
         this.notificationController = nc;
@@ -34,17 +37,17 @@ public class TuiRouter implements TuiNavigator {
 
     @Override
     public void toMatchmaking() {
-        container.updateState(new MatchmakingUiState(this, lobbyModel, controller, session, out, notificationController));
+        container.updateState(new MatchmakingUiState(this, lobbyModel, controller, session, out, notificationController, lifecyclePort));
     }
 
     @Override
     public void toLobby() {
-        container.updateState(new LobbyUiState(this, lobbyModel, controller, session, out, notificationController));
+        container.updateState(new LobbyUiState(this, lobbyModel, controller, session, out, notificationController, lifecyclePort));
     }
 
     @Override
     public void toInGame() {
-        container.updateState(new InGameUiState(this, gameModel, controller, session, out, notificationController));
+        container.updateState(new InGameUiState(this, gameModel, controller, session, out, notificationController, lifecyclePort));
     }
 
     @Override
@@ -59,11 +62,11 @@ public class TuiRouter implements TuiNavigator {
 
     @Override
     public void toGameEnded() {
-        container.updateState(new GameEndedUiState(this, gameModel, controller,session, out, notificationController));
+        container.updateState(new GameEndedUiState(this, gameModel, controller,session, out, notificationController, lifecyclePort));
     }
 
     @Override
     public void toDisconnected(String reason) {
-        container.updateState(new DisconnectedUiState(out, reason));
+        container.updateState(new DisconnectedUiState(out, reason,lifecyclePort));
     }
 }

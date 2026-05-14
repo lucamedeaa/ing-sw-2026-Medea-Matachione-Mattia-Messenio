@@ -38,4 +38,10 @@ public class ViewTribeUiState implements UIState {
         }
     }
 
+    @Override
+    public void onEnter() {} // Non fa nulla, non ascolta la rete
+
+    @Override
+    public void onExit() {} // Non fa nulla
+
 }

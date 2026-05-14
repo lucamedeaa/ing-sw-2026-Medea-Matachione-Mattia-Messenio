@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.view.tui.state;
 import it.polimi.ingsw.client.model.ClientSession;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.command.*;
@@ -22,14 +23,13 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private final GameEndedRenderer renderer;
-    private boolean hasRendered = false;
     private final ClientSession session;
 
     private boolean showLeaderboard = false;
-    private boolean leaderboardRequested = false;
 
+    private final ApplicationLifecyclePort lifecyclePort;
 
-    public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
+    public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.gameModel = gameModel;
         this.controller = controller;
@@ -37,15 +37,25 @@ public class GameEndedUiState implements UIState, GameEndedView {
         this.out = out;
         this.notificationController = notificationController;
         this.renderer = new GameEndedRenderer(out);
+        this.lifecyclePort = lifecyclePort;
 
-        this.notificationController.setGameEndedView(this);
+       // this.notificationController.setGameEndedView(this);
         registerCommands();
         //new GetLeaderboardCommand(controller).execute();
+    }
+    @Override
+    public void onEnter() {
+        this.notificationController.setGameEndedView(this);
+    }
+
+    @Override
+    public void onExit() {
+        this.notificationController.setGameEndedView(null);
     }
 
     private void registerCommands() {
         commandRegistry.put("0", args -> new LeaveGameCommand(controller, out));
-        commandRegistry.put("d", args -> new DisconnectCommand(controller));
+        commandRegistry.put("d", args -> new DisconnectCommand(controller, lifecyclePort, out));
         commandRegistry.put("l", args -> new ShowLeaderboardCommand(this::showLeaderboard));
     }
 
@@ -71,18 +81,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
     private void showLeaderboard() {
         showLeaderboard = true;
-
-        //if (!leaderboardRequested) {
-            //leaderboardRequested = true;
-            new GetLeaderboardCommand(controller).execute();
-        //}
-
+        // Invia la richiesta, il server risponderà e il model farà scattare il render asincrono
+        new GetLeaderboardCommand(controller).execute();
         render();
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        notificationController.setGameEndedView(null);
+       //notificationController.setGameEndedView(null);
         navigator.toMatchmaking();
     }
 
@@ -106,7 +112,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
     }
     @Override
     public void onServerDisconnected(String reason) {
-        notificationController.setGameEndedView(null);
+        //notificationController.setGameEndedView(null);
         navigator.toDisconnected(reason);
     }
 }
