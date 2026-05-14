@@ -3,10 +3,7 @@ package it.polimi.ingsw.modelTest;
 import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.ModelObserver;
 import it.polimi.ingsw.server.model.exception.InvalidGameActionException;
-import it.polimi.ingsw.server.model.update.AvailableAction;
-import it.polimi.ingsw.server.model.update.BoardUpdate;
-import it.polimi.ingsw.server.model.update.ModelUpdate;
-import it.polimi.ingsw.server.model.update.PlayerUpdate;
+import it.polimi.ingsw.server.model.update.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -131,7 +128,7 @@ public class GameTest extends ModelTest {
             boolean[] called = {false};
             g.addObserver(new ModelObserver() {
                 @Override public void onModelUpdate(ModelUpdate update) {}
-                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions, InitTurnOrderTileUpdate turnOrderTile) {
                     called[0] = true;
                 }
             });
@@ -146,7 +143,7 @@ public class GameTest extends ModelTest {
             int[] count = {0};
             g.addObserver(new ModelObserver() {
                 @Override public void onModelUpdate(ModelUpdate update) {}
-                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions, InitTurnOrderTileUpdate turnOrderTile) {
                     count[0] = players.size();
                 }
             });
@@ -167,7 +164,7 @@ public class GameTest extends ModelTest {
             Game g = game(2);
             g.addObserver(new ModelObserver() {
                 @Override public void onModelUpdate(ModelUpdate update) {}
-                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions, InitTurnOrderTileUpdate turnOrderTile) {}
             });
             assertDoesNotThrow(g::start);
         }
@@ -178,7 +175,7 @@ public class GameTest extends ModelTest {
             Game g = game(2);
             g.addObserver(new ModelObserver() {
                 @Override public void onModelUpdate(ModelUpdate update) {}
-                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions) {}
+                @Override public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions,  InitTurnOrderTileUpdate turnOrderTile) {}
             });
             g.start();
             assertNotNull(g.getCurrentState());

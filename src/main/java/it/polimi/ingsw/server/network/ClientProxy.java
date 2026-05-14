@@ -1,12 +1,8 @@
 package it.polimi.ingsw.server.network;
 
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.util.List;
 
@@ -18,12 +14,13 @@ public interface ClientProxy {
     /**
      * Sends a complete game snapshot.
      *
-     * @param board board state
-     * @param players player states
-     * @param activePlayer active player nickname, or null if no action is pending
-     * @param actions actions available to the active player
+     * @param board         board state
+     * @param players       player states
+     * @param activePlayer  active player nickname, or null if no action is pending
+     * @param actions       actions available to the active player
+     * @param turnOrderTile
      */
-    void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions);
+    void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile);
 
     /**
      * Sends incremental game events and the next active-player state.

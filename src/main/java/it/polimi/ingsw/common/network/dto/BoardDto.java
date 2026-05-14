@@ -14,8 +14,4 @@ public record BoardDto(List<Integer> UpperRowCards,
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /** Accepts a visitor to process this DTO. @param visitor handling the board data */
-    public void accept(ActionVisitor visitor) {
-        visitor.visit(this);
-    }
 }

@@ -1,9 +1,7 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.server.model.update.AvailableAction;
-import it.polimi.ingsw.server.model.update.BoardUpdate;
-import it.polimi.ingsw.server.model.update.ModelUpdate;
-import it.polimi.ingsw.server.model.update.PlayerUpdate;
+import it.polimi.ingsw.common.network.dto.InitTurnOrderTileDto;
+import it.polimi.ingsw.server.model.update.*;
 
 import java.util.List;
 
@@ -26,5 +24,5 @@ public interface ModelObserver {
      * @param activePlayer active player nickname, or null if no action is pending
      * @param actions actions available to the active player
      */
-    void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions);
+    void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions, InitTurnOrderTileUpdate turnOrderTile);
 }

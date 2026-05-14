@@ -1,12 +1,8 @@
 package it.polimi.ingsw.client.network;
 
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import it.polimi.ingsw.common.rmi.RMIClientCallback;
 
 import java.rmi.NoSuchObjectException;
@@ -32,8 +28,8 @@ public class RmiClientCallbackImpl extends UnicastRemoteObject implements RMICli
     }
 
     @Override
-    public void onFullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) throws RemoteException {
-        receiver.fullSync(board, players, activePlayer, actions);
+    public void onFullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTileDto) throws RemoteException {
+        receiver.fullSync(board, players, activePlayer, actions, turnOrderTileDto);
     }
 
     @Override

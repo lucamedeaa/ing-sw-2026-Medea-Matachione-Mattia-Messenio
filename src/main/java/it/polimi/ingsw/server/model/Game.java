@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.network.dto.InitTurnOrderTileDto;
 import it.polimi.ingsw.server.controller.ModelControllerInterface;
 import it.polimi.ingsw.server.model.board.Board;
 import it.polimi.ingsw.server.model.card.Card;
@@ -132,9 +133,9 @@ public class Game implements ModelControllerInterface {
         if (activePlayer != null) {
             actions = currentState.getAvailableActions(activePlayer);
         }
-
+        InitTurnOrderTileUpdate turnOrderTile = new InitTurnOrderTileUpdate(board.getCurrentPlayers().stream().map(Player::getNickname).toList());
         for (ModelObserver obs : observers) {
-            obs.onFullSync(boardUpdate, playersUpdates, activePlayer, actions);
+            obs.onFullSync(boardUpdate, playersUpdates, activePlayer, actions, turnOrderTile);
         }
     }
 

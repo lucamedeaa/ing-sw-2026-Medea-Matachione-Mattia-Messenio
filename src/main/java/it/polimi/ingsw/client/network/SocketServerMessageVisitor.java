@@ -31,7 +31,7 @@ public class SocketServerMessageVisitor implements ClientMessageVisitor {
 
     @Override
     public void visit(FullSyncMessage message) {
-        receiver.fullSync(message.board(), message.players(), message.activePlayer(), message.actions());
+        receiver.fullSync(message.board(), message.players(), message.activePlayer(), message.actions(), message.turnOrderTileDto());
     }
 
     @Override

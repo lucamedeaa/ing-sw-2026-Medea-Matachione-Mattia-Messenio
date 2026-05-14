@@ -15,11 +15,7 @@ import it.polimi.ingsw.common.message.server.MatchmakingSuccessMessage;
 import it.polimi.ingsw.common.message.server.PongMessage;
 import it.polimi.ingsw.common.message.server.RoomUpdateMessage;
 import it.polimi.ingsw.common.message.server.ServerMessage;
-import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 import it.polimi.ingsw.server.controller.LobbyController;
@@ -89,8 +85,8 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     }
 
     @Override
-    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        sendMessage(new FullSyncMessage(board, players, activePlayer, actions));
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
+        sendMessage(new FullSyncMessage(board, players, activePlayer, actions, turnOrderTile));
     }
 
     @Override

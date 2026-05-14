@@ -1,10 +1,6 @@
 package it.polimi.ingsw.server.network.handler;
 
-import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 import it.polimi.ingsw.common.rmi.RMIClientCallback;
@@ -116,8 +112,8 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
     }
 
     @Override
-    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        deliver(() -> callback.onFullSync(board, players, activePlayer, actions));
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
+        deliver(() -> callback.onFullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
     @Override

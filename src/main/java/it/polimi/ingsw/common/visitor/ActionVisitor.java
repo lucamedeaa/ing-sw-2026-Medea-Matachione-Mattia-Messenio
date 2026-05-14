@@ -9,6 +9,4 @@ public interface ActionVisitor {
     void visit(PlaceTotemActionDto action);
     void visit(TakeCardActionDto action);
     void visit(SkipActionDto action);
-    void visit(BoardDto board);
-
 }

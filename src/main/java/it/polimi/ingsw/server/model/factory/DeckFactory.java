@@ -99,6 +99,7 @@ public class DeckFactory {
         cards.add(new CavePaintings(55));
         cards.add(new Hunt(56));
         cards.add(new Hunt(57));
+        cards.add(new Hunt(117));
         cards.add(new ShamanicRitual(58));
         cards.add(new ShamanicRitual(59));
         cards.add(new ShamanicRitual(60));

@@ -5,10 +5,7 @@ import it.polimi.ingsw.server.model.Game;
 import it.polimi.ingsw.server.model.ModelObserver;
 import it.polimi.ingsw.server.model.state.InitState;
 import it.polimi.ingsw.server.model.state.PlacementState;
-import it.polimi.ingsw.server.model.update.AvailableAction;
-import it.polimi.ingsw.server.model.update.BoardUpdate;
-import it.polimi.ingsw.server.model.update.ModelUpdate;
-import it.polimi.ingsw.server.model.update.PlayerUpdate;
+import it.polimi.ingsw.server.model.update.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -109,7 +106,8 @@ public class InitStateTest extends ModelTest {
         public void onFullSync(BoardUpdate board,
                                List<PlayerUpdate> players,
                                String activePlayer,
-                               List<AvailableAction> actions) {
+                               List<AvailableAction> actions,
+                               InitTurnOrderTileUpdate turnOrderTile) {
             this.fullSyncReceived = true;
             this.boardUpdate = board;
             this.playersUpdates = players;

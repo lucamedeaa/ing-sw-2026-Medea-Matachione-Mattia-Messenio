@@ -120,6 +120,5 @@ public class ActionExecutor implements ActionVisitor {
         commandSent = true;
     }
 
-    @Override
-    public void visit(BoardDto board) {}
+
 }

@@ -7,13 +7,10 @@ import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 import it.polimi.ingsw.client.view.listeners.MatchmakingView;
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
+import it.polimi.ingsw.server.model.update.InitTurnOrderTileUpdate;
 
 import java.util.List;
 
@@ -67,15 +64,17 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     }
 
     @Override
-    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
         if (lobbyView != null) {
             lobbyView.onGameStarted();
         }
+
 
         gameModel.executeBatch(() -> {
             gameModel.reset();
             gameModel.setFullState(board, players, activePlayer);
             gameModel.setAvailableActions(actions);
+            gameModel.setInitTotemPosition(turnOrderTile);
         });
     }
 

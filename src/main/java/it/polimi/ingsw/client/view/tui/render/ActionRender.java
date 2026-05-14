@@ -29,6 +29,4 @@ public class ActionRender implements ActionVisitor {
         out.print("Skip phase/bonus");
     }
 
-    @Override
-    public void visit(BoardDto board) { }
 }

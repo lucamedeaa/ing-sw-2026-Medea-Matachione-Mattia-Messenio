@@ -1,11 +1,7 @@
 package it.polimi.ingsw.client.network;
 
 import it.polimi.ingsw.client.view.ClientEventDispatcher;
-import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 
@@ -22,8 +18,8 @@ public class DispatchingNotificationReceiver implements ServerNotificationReceiv
     }
 
     @Override
-    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        dispatcher.dispatch(() -> delegate.fullSync(board, players, activePlayer, actions));
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions,  InitTurnOrderTileDto turnOrderTile) {
+        dispatcher.dispatch(() -> delegate.fullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
     @Override

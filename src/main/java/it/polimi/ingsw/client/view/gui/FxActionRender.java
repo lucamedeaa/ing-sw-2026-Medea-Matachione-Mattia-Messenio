@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.view.gui;
 
 import it.polimi.ingsw.client.view.gui.controllers.ActionsPanelController;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.action.PlaceTotemActionDto;
 import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
 import it.polimi.ingsw.common.network.dto.action.TakeCardActionDto;
@@ -33,6 +32,4 @@ public class FxActionRender implements ActionVisitor {
         controller.enableSkip();
     }
 
-    @Override
-    public void visit(BoardDto b) {} // no-op
 }

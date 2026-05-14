@@ -114,5 +114,6 @@
   "113": { "name": "ClassScorer(Sha)", "type": "Building", "era": 3, "foodCost": 7, "prestigePoints": 4 },
   "114": { "name": "ClassScorer(Hun)", "type": "Building", "era": 3, "foodCost": 8, "prestigePoints": 8 },
   "115": { "name": "ClassScorer(Col)", "type": "Building", "era": 3, "foodCost": 7, "prestigePoints": 6 },
-  "116": { "name": "ClassScorer(Bui)", "type": "Building", "era": 3, "foodCost": 6, "prestigePoints": 3 }
+  "116": { "name": "ClassScorer(Bui)", "type": "Building", "era": 3, "foodCost": 6, "prestigePoints": 3 },
+  "117": { "name": "Hunt III", "type": "Event", "era": 3, "foodCost": 0, "prestigePoints": 0, "val1": 1, "val2": 3 }
 }

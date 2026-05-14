@@ -1,10 +1,6 @@
 package it.polimi.ingsw.server.network;
 
-import it.polimi.ingsw.common.network.dto.BoardDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
 import it.polimi.ingsw.server.controller.GameController;
@@ -183,8 +179,8 @@ public class ConnectionSession implements ConnectionContext {
     }
 
     @Override
-    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        enqueueOutbound("full sync", () -> client.fullSync(board, players, activePlayer, actions));
+    public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
+        enqueueOutbound("full sync", () -> client.fullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
     @Override

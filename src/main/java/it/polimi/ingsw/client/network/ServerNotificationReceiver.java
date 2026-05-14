@@ -1,12 +1,8 @@
 package it.polimi.ingsw.client.network;
 
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.util.List;
 
@@ -23,7 +19,7 @@ public interface ServerNotificationReceiver {
      * @param activePlayer active player nickname, or null when no action is pending
      * @param actions actions available to the active player
      */
-    void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions);
+    void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions,  InitTurnOrderTileDto turnOrderTile);
 
     /**
      * Receives incremental game events and the next turn state.

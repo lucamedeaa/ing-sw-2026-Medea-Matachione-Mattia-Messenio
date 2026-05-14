@@ -1,13 +1,11 @@
 package it.polimi.ingsw.server.view;
 
 import it.polimi.ingsw.common.network.dto.BoardDto;
+import it.polimi.ingsw.common.network.dto.InitTurnOrderTileDto;
 import it.polimi.ingsw.common.network.dto.ModelUpdateDto;
 import it.polimi.ingsw.common.network.dto.PlayerDto;
 import it.polimi.ingsw.server.model.ModelObserver;
-import it.polimi.ingsw.server.model.update.AvailableAction;
-import it.polimi.ingsw.server.model.update.BoardUpdate;
-import it.polimi.ingsw.server.model.update.ModelUpdate;
-import it.polimi.ingsw.server.model.update.PlayerUpdate;
+import it.polimi.ingsw.server.model.update.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import it.polimi.ingsw.server.network.ConnectionContext;
 
@@ -47,14 +45,14 @@ public class VirtualView implements ModelObserver {
     }
 
     @Override
-    public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates) {
+    public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates, InitTurnOrderTileUpdate initTurnOrderTile) {
         BoardDto board = boardUpdate.toDTO();
         List<PlayerDto> players = playersUpdates.stream().map(PlayerUpdate::toDTO).toList();
         List<ActionDto> actions = actionsUpdates.stream().map(AvailableAction::toDTO).toList();
 
         List<ActionDto> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
-
-        session.fullSync(board, players, activePlayer, myActions);
+        InitTurnOrderTileDto turnOrderTile = initTurnOrderTile.toDto();
+        session.fullSync(board, players, activePlayer, myActions, turnOrderTile);
     }
 
 }

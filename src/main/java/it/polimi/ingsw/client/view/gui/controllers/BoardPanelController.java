@@ -321,7 +321,7 @@ public class BoardPanelController {
         double[] ySteps = getTurnOrderTotemYSteps(players.size());
 
         // DEDUZIONE ROUND: Stessa logica usata nell'interazione
-        boolean isRoundOne = model.getTribes().values().stream().allMatch(List::isEmpty);
+        //boolean isRoundOne = model.getTribes().values().stream().allMatch(List::isEmpty);
 
         int fallbackYIndex = 0;
 
@@ -331,9 +331,6 @@ public class BoardPanelController {
             Integer retPos = returnPositions.get(nickname);
 
             // ROUND 1: Il totem resta invisibile finché non viene piazzato sull'offerta
-            if (isRoundOne && offerPos == null) {
-                continue;
-            }
 
             ImageView totemView = createTotemImageView(p.getTotemColor());
             if (totemView == null) continue;
@@ -387,15 +384,6 @@ public class BoardPanelController {
 
         Platform.runLater(() -> {
             boolean iAmOnOffer = totemPositions.containsKey(myNickname);
-
-            // DEDUZIONE ROUND: Se nessuno ha ancora carte nella tribù, siamo al Round 1.
-            boolean isRoundOne = model.getTribes().values().stream().allMatch(List::isEmpty);
-
-            // Se siamo al Round 1 e non abbiamo ancora piazzato, saltiamo il click della base
-            if (isRoundOne && !iAmOnOffer) {
-                showOfferTileOptions(validIndices);
-                return;
-            }
 
             // Se non siamo sulle offerte (quindi dobbiamo prelevare il totem dalla base)
             if (!iAmOnOffer) {

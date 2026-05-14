@@ -1,12 +1,8 @@
 package it.polimi.ingsw.common.rmi;
 
+import it.polimi.ingsw.common.network.dto.*;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.event.GameEventDto;
-import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
-import it.polimi.ingsw.common.network.dto.PlayerDto;
-import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
-import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -15,7 +11,7 @@ import java.util.List;
 /** Remote RMI callback interface used by the server to send messages to the client. */
 public interface RMIClientCallback extends Remote {
 
-    void onFullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) throws RemoteException;
+    void onFullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTileDto) throws RemoteException;
 
     void onDeltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) throws RemoteException;
 

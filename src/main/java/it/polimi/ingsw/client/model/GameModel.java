@@ -105,6 +105,14 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    public void setInitTotemPosition(InitTurnOrderTileDto turnOrderTile) {
+        List<String> players = turnOrderTile.nickPlayers();
+        for(int i = 0; i < players.size(); i++) {
+            roster.returnTotemToTrack(players.get(i), i);
+        }
+        notifyUI();
+    }
+
     public void returnTotemToTrack(String nickname, int returnIndex) {
 
             roster.returnTotemToTrack(nickname, returnIndex);
