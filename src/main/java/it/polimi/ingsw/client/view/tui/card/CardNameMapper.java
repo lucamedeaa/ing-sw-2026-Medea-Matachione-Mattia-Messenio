@@ -36,7 +36,17 @@ public class CardNameMapper {
         return getCard(id).type().equals("Event");
     }
 
-    public static boolean isBuilding(int id) {
-        return getCard(id).type().equals("Building");
+    public static Integer getCost(int cardId) {
+        var card = getCard(cardId);
+
+        String costString = card.cost(); // "cost: 3f"
+        if ("Building".equals(card.type()) && costString != null && costString.contains("f")) {
+            String numberOnly = costString.replaceAll("[^0-9]", "");
+            if (!numberOnly.isEmpty()) {
+                return Integer.parseInt(numberOnly);
+            }
+        }
+
+        return 0;
     }
 }

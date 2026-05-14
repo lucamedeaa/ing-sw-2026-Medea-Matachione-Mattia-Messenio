@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.view.gui.screen;
 
 
 import it.polimi.ingsw.client.model.GameModel;
+import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
@@ -145,10 +146,11 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
         this.upperPicksAllowed = upperPicks;
         this.lowerPicksAllowed = lowerPicks;
+        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
 
         // Ordina al tabellone di rendere le carte cliccabili
         if (boardPanelController != null) {
-            boardPanelController.enableCardSelection(upperPicks > 0, lowerPicks > 0);
+            boardPanelController.enableCardSelection(upperPicks > 0, lowerPicks > 0, me);
         }
     }
 
@@ -215,12 +217,13 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
         this.upperPicksAllowed = upperPicksAllowed;
         this.lowerPicksAllowed = lowerPicksAllowed;
+        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
 
         if (boardPanelController != null) {
             // Chiama il metodo sul tabellone per accendere le luci verdi
             boardPanelController.enableCardSelection(
                 upperPicksAllowed > 0,
-                lowerPicksAllowed > 0
+                lowerPicksAllowed > 0, me
             );
         }
     }

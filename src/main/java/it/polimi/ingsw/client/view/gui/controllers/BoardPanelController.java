@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiAssetManager;
 import it.polimi.ingsw.client.view.gui.screen.InGameScreen;
+import it.polimi.ingsw.client.view.tui.card.CardNameMapper;
 import it.polimi.ingsw.server.model.enums.TotemColor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -22,11 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static it.polimi.ingsw.client.view.tui.card.CardNameMapper.isEvent;
+
 public class BoardPanelController {
 
     private InGameScreen parentScreen;
 
-    @FXML private GridPane boardGrid;      // Griglia per il tabellone comune
+    @FXML
+    private GridPane boardGrid;      // Griglia per il tabellone comune
 
     private int currentBoardPlayerCount = 0;
 
@@ -227,14 +231,14 @@ public class BoardPanelController {
         container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
 
         container.setOnMouseClicked(e -> {
-            if (!isEventCard(cardId)) {
-            handleCardClick(logicalRow, logicalCol);
+            if (!isEvent(cardId)) {
+                handleCardClick(logicalRow, logicalCol);
             }
         });
         boardGrid.add(container, visualCol, visualRow);
     }
 
-    public void enableCardSelection(boolean upperAllowed, boolean lowerAllowed) {
+    public void enableCardSelection(boolean upperAllowed, boolean lowerAllowed, PlayerSnapshot myPlayer) {
         this.canPickUpper = upperAllowed;
         this.canPickLower = lowerAllowed;
 
@@ -245,27 +249,34 @@ public class BoardPanelController {
 
                 // Legge l'ID della carta dal nodo (se presente) per capire se è un evento
                 boolean isEvent = false;
+                boolean canAfford = true;
+
                 if (node.getUserData() instanceof Integer cardId) {
-                    isEvent = isEventCard(cardId);
+                    isEvent = isEvent(cardId);
+                    canAfford = isAffordable(cardId, myPlayer);
                 }
 
                 // Illumina solo se la riga è permessa E la carta non è un evento
                 if (((row == 0 && upperAllowed) || (row == 2 && lowerAllowed)) && !isEvent) {
-                    if (!node.getStyleClass().contains("card-glow")) {
-                        node.getStyleClass().add("card-glow");
+                    if (canAfford) {
+                        node.getStyleClass().add("card-glow-green");
+                        node.setCursor(Cursor.HAND);
+                    } else {
+                    // Non hai abbastanza cibo -> ombra rossa
+                        node.getStyleClass().add("card-glow-red");
+                        node.setCursor(Cursor.DEFAULT); // Nessuna manina, fa capire che è bloccata
                     }
-                    node.setCursor(Cursor.HAND);
                 }
                 // Altrimenti spegne eventuali illuminazioni residue
                 else if (row == 0 || row == 2) {
-                    node.getStyleClass().remove("card-glow");
+                    node.getStyleClass().removeAll("card-glow-green", "card-glow-red");
                     node.setCursor(Cursor.DEFAULT);
                 }
             }
         });
     }
 
-     /**
+    /**
      * Disabilita ogni interazione visiva e rimuove gli effetti di illuminazione
      * sia dal tracciato dei totem che dalle carte.
      */
@@ -284,7 +295,7 @@ public class BoardPanelController {
             for (Node node : boardGrid.getChildren()) {
                 Integer row = GridPane.getRowIndex(node);
                 if (row != null && (row == 0 || row == 2)) {
-                    node.getStyleClass().remove("card-glow");
+                    node.getStyleClass().removeAll("card-glow-green", "card-glow-red");
                     node.setEffect(null);
                     node.setCursor(Cursor.DEFAULT);
                 }
@@ -303,7 +314,7 @@ public class BoardPanelController {
 
         parentScreen.onCardSelected(row, col);
     }
-    
+
     private void renderTurnOrderTotems(GameModel model) {
         trackOverlays.forEach(p -> p.getChildren().clear());
 
@@ -418,7 +429,7 @@ public class BoardPanelController {
 
             // Verifica come il server mappa le tessere offerta.
             // Se 1 è la prima Offer Tile, usa 'idx'. Se 0 è la prima Offer Tile, usa 'idx + 1'.
-            int visualCol = idx+1;
+            int visualCol = idx + 1;
 
             if (visualCol >= trackOverlays.size()) continue;
 
@@ -448,7 +459,14 @@ public class BoardPanelController {
         }
     }
 
-    private boolean isEventCard(int cardId) {
-        return cardId >= 53 && cardId <= 63;
+    private boolean isAffordable(int cardId, PlayerSnapshot player) {
+        Integer baseCost = CardNameMapper.getCost(cardId);
+
+        if (baseCost == 0) {
+            return true;
+        }
+
+        int finalCost = Math.max(baseCost - player.getFoodDiscount(), 0);
+        return player.getFood() >= finalCost;
     }
 }

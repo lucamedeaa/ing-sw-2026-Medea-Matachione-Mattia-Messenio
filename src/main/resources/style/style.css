@@ -85,6 +85,10 @@
     }
 
     /* Illuminazione per le carte selezionabili */
-    .card-glow {
-        -fx-effect: dropshadow(gaussian, #FFD700, 25, 0.6, 0, 0);
+    .card-glow-green {
+        -fx-effect: dropshadow(gaussian, #4CBB17, 25, 0.6, 0, 0);
+    }
+
+    .card-glow-red {
+        -fx-effect: dropshadow(gaussian, #FF2400, 25, 0.6, 0, 0);
     }
