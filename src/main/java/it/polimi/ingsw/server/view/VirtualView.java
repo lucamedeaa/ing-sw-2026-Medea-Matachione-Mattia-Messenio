@@ -9,51 +9,52 @@ import it.polimi.ingsw.server.model.update.BoardUpdate;
 import it.polimi.ingsw.server.model.update.ModelUpdate;
 import it.polimi.ingsw.server.model.update.PlayerUpdate;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
-import it.polimi.ingsw.server.network.ClientProxy;
+import it.polimi.ingsw.server.network.ConnectionContext;
 
 import java.util.List;
-//import java.util.concurrent.TimeUnit;
 
+/**
+ * Observer that adapts model updates to client-specific network updates.
+ */
 public class VirtualView implements ModelObserver {
 
     private final String nickname;
-    private final ClientProxy client;
+    private final ConnectionContext session;
 
-    public VirtualView(String nickname, ClientProxy client) {
+    /**
+     * Creates a virtual view for one player connection.
+     *
+     * @param nickname player nickname represented by this view
+     * @param session connection session used to enqueue outbound client messages
+     */
+    public VirtualView(String nickname, ConnectionContext session) {
         this.nickname = nickname;
-        this.client = client;
+        this.session = session;
     }
 
     @Override
     public void onModelUpdate(ModelUpdate modelUpdate) {
-        ModelUpdateDto update =  modelUpdate.toDTO();
+        ModelUpdateDto update = modelUpdate.toDTO();
         List<ActionDto> myActions;
 
-        // Il mio nickname è uguale a tizio a? Mando le azioni.
         if (this.nickname.equals(update.activePlayerNickname())) {
             myActions = update.activePlayerActions();
-            //startTurnTimer();
         } else {
-            // Altrimenti mando una lista vuota (nessuna azione permessa)
             myActions = List.of();
-            //cancelTurnTimer();
         }
 
-        // Mando SEMPRE l'evento, così la UI degli altri si aggiorna
-        client.deltaEvent(update.events(), myActions, update.activePlayerNickname());
+        session.deltaEvent(update.events(), myActions, update.activePlayerNickname());
     }
 
-    //Inviata solo all'inizio o riconness@Override
     @Override
     public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates) {
         BoardDto board = boardUpdate.toDTO();
         List<PlayerDto> players = playersUpdates.stream().map(PlayerUpdate::toDTO).toList();
         List<ActionDto> actions = actionsUpdates.stream().map(AvailableAction::toDTO).toList();
 
-        // Invia le azioni solo se il nickname della vista corrisponde al giocatore attivo
         List<ActionDto> myActions = this.nickname.equals(activePlayer) ? actions : List.of();
 
-        client.fullSync(board, players, activePlayer, myActions);
+        session.fullSync(board, players, activePlayer, myActions);
     }
 
 }

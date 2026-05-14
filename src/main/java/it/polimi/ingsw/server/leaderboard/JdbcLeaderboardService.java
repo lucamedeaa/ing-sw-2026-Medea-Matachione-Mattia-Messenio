@@ -41,32 +41,46 @@ public class JdbcLeaderboardService implements LeaderboardService {
             VALUES (?, ?, ?, ?, ?)
             """;
 
+    private static final String FULL_LEADERBOARD_SQL = """
+              SELECT
+                  DENSE_RANK() OVER (
+                      ORDER BY final_score DESC, remaining_food DESC
+                  ) AS position,
+                  nickname,
+                  final_score,
+                  remaining_food,
+                  played_at
+              FROM leaderboard_results
+              WHERE player_count = ?
+              ORDER BY position, played_at, nickname
+              """;
+
     private static final String PERSONAL_BEST_LEADERBOARD_SQL = """
-            WITH personal_best AS (
-                SELECT DISTINCT ON (nickname)
-                    nickname,
-                    final_score,
-                    remaining_food,
-                    played_at
-                FROM leaderboard_results
-                WHERE player_count = ?
-                ORDER BY nickname, final_score DESC, remaining_food DESC, played_at ASC
-            ),
-            ranked AS (
-                SELECT
-                    RANK() OVER (
-                        ORDER BY final_score DESC, remaining_food DESC
-                    ) AS position,
-                    nickname,
-                    final_score,
-                    remaining_food,
-                    played_at
-                FROM personal_best
-            )
-            SELECT position, nickname, final_score, remaining_food, played_at
-            FROM ranked
-            ORDER BY position, played_at, nickname
-            """;
+          WITH personal_best AS (
+              SELECT DISTINCT ON (nickname)
+                  nickname,
+                  final_score,
+                  remaining_food,
+                  played_at
+              FROM leaderboard_results
+              WHERE player_count = ?
+              ORDER BY nickname, final_score DESC, remaining_food DESC, played_at ASC
+          ),
+          ranked AS (
+              SELECT
+                  DENSE_RANK() OVER (
+                      ORDER BY final_score DESC, remaining_food DESC
+                  ) AS position,
+                  nickname,
+                  final_score,
+                  remaining_food,
+                  played_at
+              FROM personal_best
+          )
+          SELECT position, nickname, final_score, remaining_food, played_at
+          FROM ranked
+          ORDER BY position, played_at, nickname
+          """;
 
     private final String url;
     private final String user;
@@ -107,8 +121,12 @@ public class JdbcLeaderboardService implements LeaderboardService {
 
     @Override
     public LeaderboardSnapshotDto getLeaderboard(int playerCount) {
-        return new LeaderboardSnapshotDto(playerCount, personalBestLeaderboardEntries(playerCount));
+        return new LeaderboardSnapshotDto(playerCount, fullLeaderboardEntries(playerCount));
     }
+
+    //public LeaderboardSnapshotDto getPersonalBestLeaderboard(int playerCount) {
+        //return new LeaderboardSnapshotDto(playerCount, personalBestLeaderboardEntries(playerCount));
+    //}
 
     private void initializeSchema() {
         try (Connection connection = openConnection();
@@ -140,11 +158,21 @@ public class JdbcLeaderboardService implements LeaderboardService {
         }
     }
 
+    private List<LeaderboardEntryDto> fullLeaderboardEntries(int playerCount) {
+        return readLeaderboardEntries(FULL_LEADERBOARD_SQL, playerCount);
+    }
+
     private List<LeaderboardEntryDto> personalBestLeaderboardEntries(int playerCount) {
+        return readLeaderboardEntries(PERSONAL_BEST_LEADERBOARD_SQL, playerCount);
+    }
+
+    private List<LeaderboardEntryDto> readLeaderboardEntries(String sql, int playerCount) {
         List<LeaderboardEntryDto> entries = new ArrayList<>();
+
         try (Connection connection = openConnection();
-             PreparedStatement statement = connection.prepareStatement(PERSONAL_BEST_LEADERBOARD_SQL)) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, playerCount);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     entries.add(new LeaderboardEntryDto(
@@ -159,6 +187,7 @@ public class JdbcLeaderboardService implements LeaderboardService {
         } catch (SQLException e) {
             throw new LeaderboardStorageException("Unable to read leaderboard results.", e);
         }
+
         return entries;
     }
 

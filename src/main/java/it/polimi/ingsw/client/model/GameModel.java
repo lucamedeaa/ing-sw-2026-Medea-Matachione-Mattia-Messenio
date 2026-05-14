@@ -44,7 +44,7 @@ public class GameModel extends ObservableModel {
             board.setEra(boardDTO.currentEra());
             board.setRound(boardDTO.currentRound());
             roster.initPlayers(playersList);
-            turn.setActivePlayer(activePlayer);
+            turn.setActivePlayerSnap(activePlayer);
         } finally {
             lock.writeLock().unlock();
         }
@@ -65,7 +65,7 @@ public class GameModel extends ObservableModel {
     public void setActivePlayer(String activePlayer) {
         lock.writeLock().lock();
         try {
-            turn.setActivePlayer(activePlayer);
+            turn.setActivePlayerSnap(activePlayer);
         } finally {
             lock.writeLock().unlock();
         }

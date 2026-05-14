@@ -12,7 +12,7 @@ public class TurnSnapshot {
     private List<ActionDto> actions = new ArrayList<>();
     private final List<String> gameLogs = new ArrayList<>();
 
-    public void setActivePlayer(String activePlayer) { this.activePlayer = activePlayer; }
+    public void setActivePlayerSnap(String activePlayer) { this.activePlayer = activePlayer; }
     public void setActions(List<ActionDto> actions) { this.actions = actions != null ? actions : new ArrayList<>(); }
 
     public void addGameLog(String log) { this.gameLogs.add(log); }

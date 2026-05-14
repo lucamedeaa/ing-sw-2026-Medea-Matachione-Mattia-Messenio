@@ -25,6 +25,9 @@ public class GameEndedUiState implements UIState, GameEndedView {
     private boolean hasRendered = false;
     private final ClientSession session;
 
+    private boolean showLeaderboard = false;
+    private boolean leaderboardRequested = false;
+
 
     public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController) {
         this.navigator = navigator;
@@ -37,12 +40,13 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
         this.notificationController.setGameEndedView(this);
         registerCommands();
-        new GetLeaderboardCommand(controller).execute();
+        //new GetLeaderboardCommand(controller).execute();
     }
 
     private void registerCommands() {
         commandRegistry.put("0", args -> new LeaveGameCommand(controller, out));
         commandRegistry.put("d", args -> new DisconnectCommand(controller));
+        commandRegistry.put("l", args -> new ShowLeaderboardCommand(this::showLeaderboard));
     }
 
     @Override
@@ -52,18 +56,28 @@ public class GameEndedUiState implements UIState, GameEndedView {
             var local = gameModel.getLocalResult();
             var global = gameModel.getGlobalLeaderboard();
 
-            if (local == null || global == null) {
+            if (local == null) {
                 out.clearScreen();
                 out.print(ColorAnsi.CYAN_BOLD + "\n Looking through the archives of the Mesos Valley..." + ColorAnsi.RESET);
                 return;
             }
-            if (hasRendered) return;
-            hasRendered = true;
 
-            renderer.render(local, global, session.getNickname());
+
+            renderer.render(local, showLeaderboard ? global : null, session.getNickname(), showLeaderboard);
         } finally {
             gameModel.getReadLock().unlock();
         }
+    }
+
+    private void showLeaderboard() {
+        showLeaderboard = true;
+
+        //if (!leaderboardRequested) {
+            //leaderboardRequested = true;
+            new GetLeaderboardCommand(controller).execute();
+        //}
+
+        render();
     }
 
     @Override
@@ -80,7 +94,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
         CommandFactory factory = commandRegistry.get(parts[0].toLowerCase());
 
         if (factory == null) {
-            out.print("Invalid command. Use “0” (menu) or “d” (log out).");
+            out.print("Invalid command. Use “l” (leaderboard), “0” (menu) or “d” (log out).");
             return;
         }
 
