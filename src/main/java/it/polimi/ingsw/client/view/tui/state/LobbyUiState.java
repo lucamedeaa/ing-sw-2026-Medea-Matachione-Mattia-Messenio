@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.view.tui.state;
 
 import it.polimi.ingsw.client.model.ClientSession;
+import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.LobbyModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
 import it.polimi.ingsw.client.view.tui.ApplicationLifecyclePort;
@@ -13,6 +14,7 @@ import it.polimi.ingsw.client.view.tui.command.ServerCommandPort;
 import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.tui.render.LobbyRenderer;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
+import it.polimi.ingsw.server.model.Game;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class LobbyUiState implements UIState, LobbyView {
     private final TuiNavigator navigator;
     private final LobbyModel lobbyModel;
+    private final GameModel gameModel;
     private final ServerCommandPort controller;
     private final ClientSession session;
     private final OutputPort out;
@@ -28,11 +31,10 @@ public class LobbyUiState implements UIState, LobbyView {
 
     private final LobbyRenderer renderer;
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
-    private boolean initialized = false;
 
     private final ApplicationLifecyclePort lifecyclePort;
 
-    public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
+    public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.lobbyModel = lobbyModel;
         this.controller = controller;
@@ -41,6 +43,7 @@ public class LobbyUiState implements UIState, LobbyView {
         this.notificationController = notificationController;
         this.renderer = new LobbyRenderer(out);
         this.lifecyclePort = lifecyclePort;
+        this.gameModel = gameModel;
 
         registerCommands();
         //this.notificationController.setLobbyView(this);
@@ -50,6 +53,21 @@ public class LobbyUiState implements UIState, LobbyView {
     @Override
     public void onEnter() {
         this.notificationController.setLobbyView(this);
+        // serve per recuperare eventuali eventi persi durante la transizione.
+        // Se il modello ha già dei dati, la view deve considerarsi inizializzata.
+
+
+        // Se il FullSync è arrivato prima
+        // che questa view fosse registrata, il GameModel avrà già i giocatori.
+        gameModel.getReadLock().lock();
+        try {
+            // Se i player del gioco non sono vuoti, significa che il FullSync è arrivato prima
+            if (!gameModel.getPlayers().isEmpty()) {
+                onGameStarted();
+            }
+        } finally {
+            gameModel.getReadLock().unlock();
+        }
     }
 
     @Override
@@ -64,7 +82,6 @@ public class LobbyUiState implements UIState, LobbyView {
 
     @Override
     public void render() {
-        if(!initialized) { return; }
         String error = lobbyModel.consumeGlobalError();
 
         lobbyModel.getReadLock().lock();
@@ -93,7 +110,6 @@ public class LobbyUiState implements UIState, LobbyView {
 
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
-        this.initialized = true;
         //render(); //gia fatto in chiusura del batch
     }
 

@@ -61,7 +61,14 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
                         currentState.handleInput(input);
                     }
                 });
+            }else {
+                // Se hasNextLine() restituisce false, significa che
+                // l'input stream è stato chiuso (EOF, es. Ctrl+D o pipe terminata).
+                break;
             }
+        }
+        if (running.get()) {
+            requestShutdown();
         }
     }
 

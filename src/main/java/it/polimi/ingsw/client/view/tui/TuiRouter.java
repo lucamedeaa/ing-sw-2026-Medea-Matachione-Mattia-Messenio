@@ -42,7 +42,7 @@ public class TuiRouter implements TuiNavigator {
 
     @Override
     public void toLobby() {
-        container.updateState(new LobbyUiState(this, lobbyModel, controller, session, out, notificationController, lifecyclePort));
+        container.updateState(new LobbyUiState(this, lobbyModel,gameModel, controller, session, out, notificationController, lifecyclePort));
     }
 
     @Override
@@ -52,12 +52,12 @@ public class TuiRouter implements TuiNavigator {
 
     @Override
     public void toViewTribe(String targetPlayer) {
-        container.updateState(new ViewTribeUiState(this, gameModel, out, targetPlayer));
+        container.updateState(new ViewTribeUiState(this, gameModel, out, targetPlayer, notificationController));
     }
 
     @Override
     public void toInfo() {
-        container.updateState(new InfoUiState(this, out));
+        container.updateState(new InfoUiState(this, out, notificationController));
     }
 
     @Override

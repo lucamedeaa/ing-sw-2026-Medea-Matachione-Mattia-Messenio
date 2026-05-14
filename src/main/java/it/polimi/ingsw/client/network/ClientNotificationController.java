@@ -25,10 +25,10 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     private final GameModel gameModel;
     private final EventApplier applier;
 
-    private MatchmakingView matchmakingView;
-    private LobbyView lobbyView;
-    private InGameView inGameView;
-    private GameEndedView gameEndedView;
+    private volatile MatchmakingView matchmakingView;
+    private volatile LobbyView lobbyView;
+    private volatile InGameView inGameView;
+    private volatile GameEndedView gameEndedView;
 
     /**
      * Creates the notification controller.
@@ -52,7 +52,9 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     @Override
     public void availableGames(List<GameInfoDto> games) {
         lobbyModel.setAvailableGames(games); // Aggiorna sempre i dati
-        if (matchmakingView != null) matchmakingView.onAvailableGames(games); // Avvisa la UI (se esiste)
+
+        MatchmakingView view = matchmakingView;
+        if (view != null) view.onAvailableGames(games);
     }
 
     @Override
@@ -70,14 +72,16 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         lobbyModel.executeBatch(() -> {
             lobbyModel.setLobbyData(currentPlayers, notification);
 
-            if (lobbyView != null) lobbyView.onRoomUpdate(notification, currentPlayers);
+            LobbyView view = lobbyView;
+            if (view != null) view.onRoomUpdate(notification, currentPlayers);
         });
     }
 
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions) {
-        if (lobbyView != null) {
-            lobbyView.onGameStarted();
+        LobbyView view = lobbyView;
+        if (view != null) {
+            view.onGameStarted();
         }
 
         gameModel.executeBatch(() -> {
@@ -101,14 +105,16 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void error(String error) {
-        if (inGameView != null) {
+        InGameView igView = inGameView;
+        if (igView != null) {
             gameModel.setGlobalError(error);
-            inGameView.onError(error);
-        }
-        else {
+            igView.onError(error);
+        } else {
             lobbyModel.setGlobalError(error);
-            if (matchmakingView != null) matchmakingView.onError(error);
-            if (lobbyView != null) lobbyView.onError(error);
+            MatchmakingView mmView = matchmakingView;
+            if (mmView != null) mmView.onError(error);
+            LobbyView lView = lobbyView;
+            if (lView != null) lView.onError(error);
         }
     }
 
@@ -117,8 +123,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         gameModel.reset();
         lobbyModel.setGlobalErrorSilent(reason);
 
-        if (inGameView != null) inGameView.onReturnToMatchmaking(reason);
-        if (lobbyView != null) lobbyView.onReturnToMatchmaking(reason);
+        // uso riferimenti in variabili locali per evitare che
+        // diventino null tra il check (if != null) e l'esecuzione.
+        InGameView currentInGame = inGameView;
+        LobbyView currentLobby = lobbyView;
+
+        if (currentInGame != null) currentInGame.onReturnToMatchmaking(reason);
+        if (currentLobby != null) currentLobby.onReturnToMatchmaking(reason);
 
     }
 
@@ -127,9 +138,13 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         gameModel.reset();
         lobbyModel.setGlobalErrorSilent(text);
 
-        if (inGameView != null) inGameView.onReturnToMatchmaking(text);
-        if (gameEndedView != null) gameEndedView.onReturnToMatchmaking(text);
-        if (lobbyView != null) lobbyView.onReturnToMatchmaking(text);
+        InGameView igView = inGameView;
+        GameEndedView geView = gameEndedView;
+        LobbyView lView = lobbyView;
+
+        if (igView != null) igView.onReturnToMatchmaking(text);
+        if (geView != null) geView.onReturnToMatchmaking(text);
+        if (lView != null) lView.onReturnToMatchmaking(text);
 
     }
 
@@ -145,9 +160,21 @@ public class ClientNotificationController implements ServerNotificationReceiver 
 
     @Override
     public void serverDisconnected(String reason) {
-        if (matchmakingView != null) matchmakingView.onServerDisconnected(reason);
-        else if (lobbyView != null) lobbyView.onServerDisconnected(reason);
-        else if (inGameView != null) inGameView.onServerDisconnected(reason);
-        else if (gameEndedView != null) gameEndedView.onServerDisconnected(reason);
+        MatchmakingView currentMatchmaking = matchmakingView;
+        LobbyView currentLobby = lobbyView;
+        InGameView currentInGame = inGameView;
+        GameEndedView currentGameEnded = gameEndedView;
+
+        if (currentMatchmaking != null) currentMatchmaking.onServerDisconnected(reason);
+        else if (currentLobby != null) currentLobby.onServerDisconnected(reason);
+        else if (currentInGame != null) currentInGame.onServerDisconnected(reason);
+        else if (currentGameEnded != null) currentGameEnded.onServerDisconnected(reason);
+        else {
+            // Policy di fallback obbligatoria: se l'evento fatale arriva esattamente
+            // mentre la UI sta cambiando schermata (tutte le view sono null),
+            // bisogna comunque forzare la chiusura.
+            System.err.println("FATAL CONNECTION ERROR: " + reason);
+            System.exit(1);
+        }
     }
 }
