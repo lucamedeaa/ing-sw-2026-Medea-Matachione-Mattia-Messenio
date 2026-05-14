@@ -1,8 +1,8 @@
 package it.polimi.ingsw.client.view.tui.render;
 
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.client.view.tui.card.CardInfo;
-import it.polimi.ingsw.client.view.tui.card.CardNameMapper;
+import it.polimi.ingsw.common.config.CardInfo;
+import it.polimi.ingsw.common.config.CardRegistry;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class CardBoxRenderer {
 
     public static String ansiColor(Integer id) {
         if (id == null) return ColorAnsi.GRAY;
-        CardInfo info = CardNameMapper.getCard(id);
+        CardInfo info = CardRegistry.getCard(id);
 
         if (info.type().equals("Event")) {
             if (info.era() == 3 && (info.name().contains("Sustenance") || info.name().contains("ShamanicRitual"))) {
@@ -46,17 +46,46 @@ public class CardBoxRenderer {
             };
         }
 
-        CardInfo info = CardNameMapper.getCard(id);
-        String costPp = buildingCostPp(info.cost(), info.extraPP());
+        CardInfo info = CardRegistry.getCard(id);
+
+        // Formattazione UI applicata SOLO QUI, partendo dai numeri puri
+        String costString = info.foodCost() > 0 ? "cost: " + info.foodCost() + "f" : "";
+        String ppString = info.prestigePoints() > 0 ? "+" + info.prestigePoints() + " pp" : "";
+        String costPp = costString.isEmpty() && ppString.isEmpty() ? "" : costString + " " + ppString;
+
         String eraStr = "Era " + info.era();
         String[] nameParts = splitName(info.name(), 13);
+
+        String detailText = "";
+        if (info.type() != null) {
+            switch (info.type()) {
+                case "Builder" -> detailText = "-" + info.foodDiscount() + "f +" + info.bonusPrestige() + "pp";
+                case "Shaman" -> detailText = "★ x" + info.stars();
+                case "Hunter" -> detailText = "sym: " + (info.hasIcon() ? "✓" : "✗");
+                case "Inventor" -> detailText = info.inventorIcon() != null ? info.inventorIcon() : "";
+                case "Collector" -> detailText = "-" + info.sustenanceDiscount() + " food";
+                case "Event" -> {
+                    String name = info.name();
+                    if (name.contains("CavePaintings")) {
+                        detailText = "≥" + info.val1() + "a +" + info.val3() + "/a";
+                    } else if (name.contains("Hunt")) {
+                        detailText = "+" + info.val1() + "f +" + info.val2() + "/h";
+                    } else if (name.contains("ShamanicRitual")) {
+                        detailText = "+" + info.val1() + "/" + info.val2() + "pp";
+                    } else if (name.contains("Sustenance")) {
+                        detailText = "-" + info.val1() + "f/char";
+                    }
+                }
+                // Per Artist, Building standard, ecc., detailText rimane ""
+            }
+        }
 
         return new String[]{
                 "┌─────────────┐",
                 "│" + center(nameParts[0], 13) + "│",
                 "│" + center(nameParts[1], 13) + "│",
-                "│" + center(info.detail(),  13) + "│",
-                "│" + center(costPp,         13) + "│",
+                "│" + center(detailText,     13) + "│",
+                "│" + center(costPp.trim(),  13) + "│",
                 "│" + center(eraStr,         13) + "│",
                 "└─────────────┘"
         };
@@ -97,12 +126,6 @@ public class CardBoxRenderer {
         }
     }
 
-    private static String buildingCostPp(String extra, String extra2) {
-        if (extra.isEmpty()) return "";
-        String cost = extra.replace("cost: ", "");
-        String pp   = extra2.replace(" ", "");
-        return cost + " " + pp;
-    }
 
     private static String[] splitName(String name, int width) {
         int paren = name.indexOf('(');

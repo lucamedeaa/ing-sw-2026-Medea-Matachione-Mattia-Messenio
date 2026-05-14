@@ -1,930 +1,118 @@
 {
-  "1": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 1,
-    "detail": "-1f +2pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "2": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 1,
-    "detail": "-2f +0pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "3": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 1,
-    "detail": "-1f +3pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "4": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 2,
-    "detail": "-1f +4pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "5": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 2,
-    "detail": "-2f +1pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "6": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 2,
-    "detail": "-2f +3pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "7": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 3,
-    "detail": "-1f +5pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "8": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 3,
-    "detail": "-2f +3pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "9": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 3,
-    "detail": "-2f +2pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "10": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 1,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "11": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 1,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "12": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 1,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "13": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "14": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "15": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "16": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 3,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "17": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 3,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "18": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 3,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "19": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 1,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "20": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 1,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "21": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 1,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "22": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 2,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "23": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 2,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "24": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 2,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "25": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 3,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "26": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 3,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "27": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 3,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "28": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 1,
-    "detail": "\u2605 x1",
-    "cost": "",
-    "extraPP": ""
-  },
-  "29": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 1,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "30": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 2,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "31": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 2,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "32": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 3,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "33": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 3,
-    "detail": "\u2605 x3",
-    "cost": "",
-    "extraPP": ""
-  },
-  "34": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 3,
-    "detail": "\u2605 x3",
-    "cost": "",
-    "extraPP": ""
-  },
-  "35": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 1,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "36": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 1,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "37": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 2,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "38": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 3,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "39": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Spearhead",
-    "cost": "",
-    "extraPP": ""
-  },
-  "40": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Leather",
-    "cost": "",
-    "extraPP": ""
-  },
-  "41": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Bread",
-    "cost": "",
-    "extraPP": ""
-  },
-  "42": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Canoe",
-    "cost": "",
-    "extraPP": ""
-  },
-  "43": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Mortar",
-    "cost": "",
-    "extraPP": ""
-  },
-  "44": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Rope",
-    "cost": "",
-    "extraPP": ""
-  },
-  "45": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Leather",
-    "cost": "",
-    "extraPP": ""
-  },
-  "46": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Mortar",
-    "cost": "",
-    "extraPP": ""
-  },
-  "47": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Flute",
-    "cost": "",
-    "extraPP": ""
-  },
-  "48": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Statue",
-    "cost": "",
-    "extraPP": ""
-  },
-  "49": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Fishhook",
-    "cost": "",
-    "extraPP": ""
-  },
-  "50": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Statue",
-    "cost": "",
-    "extraPP": ""
-  },
-  "51": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Necklace",
-    "cost": "",
-    "extraPP": ""
-  },
-  "52": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Bread",
-    "cost": "",
-    "extraPP": ""
-  },
-  "53": {
-    "name": "CavePaintings I",
-    "type": "Event",
-    "era": 1,
-    "detail": "\u22651a +1/a",
-    "cost": "",
-    "extraPP": ""
-  },
-  "54": {
-    "name": "CavePaintings II",
-    "type": "Event",
-    "era": 2,
-    "detail": "\u22652a +2/a",
-    "cost": "",
-    "extraPP": ""
-  },
-  "55": {
-    "name": "CavePaintings III",
-    "type": "Event",
-    "era": 3,
-    "detail": "\u22653a +3/a",
-    "cost": "",
-    "extraPP": ""
-  },
-  "56": {
-    "name": "Hunt I",
-    "type": "Event",
-    "era": 1,
-    "detail": "+1f +1/hun",
-    "cost": "",
-    "extraPP": ""
-  },
-  "57": {
-    "name": "Hunt II",
-    "type": "Event",
-    "era": 2,
-    "detail": "+1f +2/hun",
-    "cost": "",
-    "extraPP": ""
-  },
-  "58": {
-    "name": "ShamanicRitual I",
-    "type": "Event",
-    "era": 1,
-    "detail": "+5/-3pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "59": {
-    "name": "ShamanicRitual II",
-    "type": "Event",
-    "era": 2,
-    "detail": "+10/-5pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "60": {
-    "name": "ShamanicRitual III",
-    "type": "Event",
-    "era": 3,
-    "detail": "+15/-7pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "61": {
-    "name": "Sustenance I",
-    "type": "Event",
-    "era": 1,
-    "detail": "-1f/char",
-    "cost": "",
-    "extraPP": ""
-  },
-  "62": {
-    "name": "Sustenance II",
-    "type": "Event",
-    "era": 2,
-    "detail": "-1f/char",
-    "cost": "",
-    "extraPP": ""
-  },
-  "63": {
-    "name": "Sustenance III",
-    "type": "Event",
-    "era": 3,
-    "detail": "-1f/char",
-    "cost": "",
-    "extraPP": ""
-  },
-  "64": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 1,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "65": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 2,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "66": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 1,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "67": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 1,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "68": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "69": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 1,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "70": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 2,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "71": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 2,
-    "detail": "-1f +2pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "72": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 3,
-    "detail": "Spearhead",
-    "cost": "",
-    "extraPP": ""
-  },
-  "73": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 3,
-    "detail": "Canoe",
-    "cost": "",
-    "extraPP": ""
-  },
-  "74": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 3,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "75": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 1,
-    "detail": "\u2605 x1",
-    "cost": "",
-    "extraPP": ""
-  },
-  "76": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 3,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "77": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 1,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "78": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Rope",
-    "cost": "",
-    "extraPP": ""
-  },
-  "79": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 1,
-    "detail": "Flute",
-    "cost": "",
-    "extraPP": ""
-  },
-  "80": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 2,
-    "detail": "Fishhook",
-    "cost": "",
-    "extraPP": ""
-  },
-  "81": {
-    "name": "Inventor",
-    "type": "Inventor",
-    "era": 3,
-    "detail": "Necklace",
-    "cost": "",
-    "extraPP": ""
-  },
-  "82": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 2,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "83": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 3,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "84": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "85": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 1,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "86": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 2,
-    "detail": "\u2605 x1",
-    "cost": "",
-    "extraPP": ""
-  },
-  "87": {
-    "name": "Shaman",
-    "type": "Shaman",
-    "era": 2,
-    "detail": "\u2605 x2",
-    "cost": "",
-    "extraPP": ""
-  },
-  "88": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 1,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "89": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 2,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "90": {
-    "name": "Collector",
-    "type": "Collector",
-    "era": 3,
-    "detail": "-3 food",
-    "cost": "",
-    "extraPP": ""
-  },
-  "91": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 1,
-    "detail": "-2f +1pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "92": {
-    "name": "Builder",
-    "type": "Builder",
-    "era": 3,
-    "detail": "-1f +4pp",
-    "cost": "",
-    "extraPP": ""
-  },
-  "93": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 2,
-    "detail": "sym: \u2717",
-    "cost": "",
-    "extraPP": ""
-  },
-  "94": {
-    "name": "Hunter",
-    "type": "Hunter",
-    "era": 3,
-    "detail": "sym: \u2713",
-    "cost": "",
-    "extraPP": ""
-  },
-  "95": {
-    "name": "Artist",
-    "type": "Artist",
-    "era": 3,
-    "detail": "",
-    "cost": "",
-    "extraPP": ""
-  },
-  "96": {
-    "name": "RitualShield",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 5f",
-    "extraPP": "+2 pp"
-  },
-  "97": {
-    "name": "DiverseSet",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 4f",
-    "extraPP": "+3 pp"
-  },
-  "98": {
-    "name": "InventorPair",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 3f",
-    "extraPP": "+4 pp"
-  },
-  "99": {
-    "name": "TurnBonus",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 3f",
-    "extraPP": "+3 pp"
-  },
-  "100": {
-    "name": "FoodDiscount(Art)",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 5f",
-    "extraPP": "+3 pp"
-  },
-  "101": {
-    "name": "FoodDiscount(Col)",
-    "type": "Building",
-    "era": 1,
-    "detail": "",
-    "cost": "cost: 4f",
-    "extraPP": "+4 pp"
-  },
-  "102": {
-    "name": "ArtistFood",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 5f",
-    "extraPP": "+6 pp"
-  },
-  "103": {
-    "name": "BuilderMastery",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 6f",
-    "extraPP": "+4 pp"
-  },
-  "104": {
-    "name": "RitualStars",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 6f",
-    "extraPP": "+4 pp"
-  },
-  "105": {
-    "name": "DoublePrestige",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+0 pp"
-  },
-  "106": {
-    "name": "FoodDiscount(Inv)",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+4 pp"
-  },
-  "107": {
-    "name": "SetScorer",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 5f",
-    "extraPP": "+6 pp"
-  },
-  "108": {
-    "name": "HunterBonus",
-    "type": "Building",
-    "era": 2,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+2 pp"
-  },
-  "109": {
-    "name": "VictoryPoints",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 10f",
-    "extraPP": "+25 pp"
-  },
-  "110": {
-    "name": "LatePurchase",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 9f",
-    "extraPP": "+3 pp"
-  },
-  "111": {
-    "name": "ClassScorer(Inv)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 6f",
-    "extraPP": "+6 pp"
-  },
-  "112": {
-    "name": "ClassScorer(Art)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+4 pp"
-  },
-  "113": {
-    "name": "ClassScorer(Sha)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+4 pp"
-  },
-  "114": {
-    "name": "ClassScorer(Hun)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 8f",
-    "extraPP": "+8 pp"
-  },
-  "115": {
-    "name": "ClassScorer(Col)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 7f",
-    "extraPP": "+6 pp"
-  },
-  "116": {
-    "name": "ClassScorer(Bui)",
-    "type": "Building",
-    "era": 3,
-    "detail": "",
-    "cost": "cost: 6f",
-    "extraPP": "+3 pp"
-  }
+  "1": { "name": "Builder", "type": "Builder", "era": 1, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 2 },
+  "2": { "name": "Builder", "type": "Builder", "era": 1, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 0 },
+  "3": { "name": "Builder", "type": "Builder", "era": 1, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 3 },
+  "4": { "name": "Builder", "type": "Builder", "era": 2, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 4 },
+  "5": { "name": "Builder", "type": "Builder", "era": 2, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 1 },
+  "6": { "name": "Builder", "type": "Builder", "era": 2, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 3 },
+  "7": { "name": "Builder", "type": "Builder", "era": 3, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 5 },
+  "8": { "name": "Builder", "type": "Builder", "era": 3, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 3 },
+  "9": { "name": "Builder", "type": "Builder", "era": 3, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 2 },
+  "10": { "name": "Hunter", "type": "Hunter", "era": 1, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "11": { "name": "Hunter", "type": "Hunter", "era": 1, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "12": { "name": "Hunter", "type": "Hunter", "era": 1, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "13": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "14": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "15": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "16": { "name": "Hunter", "type": "Hunter", "era": 3, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "17": { "name": "Hunter", "type": "Hunter", "era": 3, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "18": { "name": "Hunter", "type": "Hunter", "era": 3, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "19": { "name": "Artist", "type": "Artist", "era": 1, "foodCost": 0, "prestigePoints": 0 },
+  "20": { "name": "Artist", "type": "Artist", "era": 1, "foodCost": 0, "prestigePoints": 0 },
+  "21": { "name": "Artist", "type": "Artist", "era": 1, "foodCost": 0, "prestigePoints": 0 },
+  "22": { "name": "Artist", "type": "Artist", "era": 2, "foodCost": 0, "prestigePoints": 0 },
+  "23": { "name": "Artist", "type": "Artist", "era": 2, "foodCost": 0, "prestigePoints": 0 },
+  "24": { "name": "Artist", "type": "Artist", "era": 2, "foodCost": 0, "prestigePoints": 0 },
+  "25": { "name": "Artist", "type": "Artist", "era": 3, "foodCost": 0, "prestigePoints": 0 },
+  "26": { "name": "Artist", "type": "Artist", "era": 3, "foodCost": 0, "prestigePoints": 0 },
+  "27": { "name": "Artist", "type": "Artist", "era": 3, "foodCost": 0, "prestigePoints": 0 },
+  "28": { "name": "Shaman", "type": "Shaman", "era": 1, "foodCost": 0, "prestigePoints": 0, "stars": 1 },
+  "29": { "name": "Shaman", "type": "Shaman", "era": 1, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "30": { "name": "Shaman", "type": "Shaman", "era": 2, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "31": { "name": "Shaman", "type": "Shaman", "era": 2, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "32": { "name": "Shaman", "type": "Shaman", "era": 3, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "33": { "name": "Shaman", "type": "Shaman", "era": 3, "foodCost": 0, "prestigePoints": 0, "stars": 3 },
+  "34": { "name": "Shaman", "type": "Shaman", "era": 3, "foodCost": 0, "prestigePoints": 0, "stars": 3 },
+  "35": { "name": "Collector", "type": "Collector", "era": 1, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "36": { "name": "Collector", "type": "Collector", "era": 1, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "37": { "name": "Collector", "type": "Collector", "era": 2, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "38": { "name": "Collector", "type": "Collector", "era": 3, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "39": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "SPEARHEAD" },
+  "40": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "LEATHER" },
+  "41": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "BREAD" },
+  "42": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "CANOE" },
+  "43": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "MORTAR" },
+  "44": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "ROPE" },
+  "45": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "LEATHER" },
+  "46": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "MORTAR" },
+  "47": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "FLUTE" },
+  "48": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "STATUE" },
+  "49": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "FISHHOOK" },
+  "50": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "STATUE" },
+  "51": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "NECKLACE" },
+  "52": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "BREAD" },
+  "53": { "name": "CavePaintings I", "type": "Event", "era": 1, "foodCost": 0, "prestigePoints": 0, "val1": 1, "val2": -2, "val3": 1 },
+  "54": { "name": "CavePaintings II", "type": "Event", "era": 2, "foodCost": 0, "prestigePoints": 0, "val1": 2, "val2": -2, "val3": 2 },
+  "55": { "name": "CavePaintings III", "type": "Event", "era": 3, "foodCost": 0, "prestigePoints": 0, "val1": 3, "val2": -2, "val3": 3 },
+  "56": { "name": "Hunt I", "type": "Event", "era": 1, "foodCost": 0, "prestigePoints": 0, "val1": 1, "val2": 1 },
+  "57": { "name": "Hunt II", "type": "Event", "era": 2, "foodCost": 0, "prestigePoints": 0, "val1": 1, "val2": 2 },
+  "58": { "name": "ShamanicRitual I", "type": "Event", "era": 1, "foodCost": 0, "prestigePoints": 0, "val1": 5, "val2": -3 },
+  "59": { "name": "ShamanicRitual II", "type": "Event", "era": 2, "foodCost": 0, "prestigePoints": 0, "val1": 10, "val2": -5 },
+  "60": { "name": "ShamanicRitual III", "type": "Event", "era": 3, "foodCost": 0, "prestigePoints": 0, "val1": 15, "val2": -7 },
+  "61": { "name": "Sustenance I", "type": "Event", "era": 1, "foodCost": 0, "prestigePoints": 0, "val1": 1 },
+  "62": { "name": "Sustenance II", "type": "Event", "era": 2, "foodCost": 0, "prestigePoints": 0, "val1": 2 },
+  "63": { "name": "Sustenance III", "type": "Event", "era": 3, "foodCost": 0, "prestigePoints": 0, "val1": 3 },
+  "64": { "name": "Artist", "type": "Artist", "era": 1, "foodCost": 0, "prestigePoints": 0 },
+  "65": { "name": "Artist", "type": "Artist", "era": 2, "foodCost": 0, "prestigePoints": 0 },
+  "66": { "name": "Hunter", "type": "Hunter", "era": 1, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "67": { "name": "Hunter", "type": "Hunter", "era": 1, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "68": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "69": { "name": "Collector", "type": "Collector", "era": 1, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "70": { "name": "Collector", "type": "Collector", "era": 2, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "71": { "name": "Builder", "type": "Builder", "era": 2, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 2 },
+  "72": { "name": "Inventor", "type": "Inventor", "era": 3, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "SPEARHEAD" },
+  "73": { "name": "Inventor", "type": "Inventor", "era": 3, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "CANOE" },
+  "74": { "name": "Shaman", "type": "Shaman", "era": 3, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "75": { "name": "Shaman", "type": "Shaman", "era": 1, "foodCost": 0, "prestigePoints": 0, "stars": 1 },
+  "76": { "name": "Shaman", "type": "Shaman", "era": 3, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "77": { "name": "Artist", "type": "Artist", "era": 1, "foodCost": 0, "prestigePoints": 0 },
+  "78": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "ROPE" },
+  "79": { "name": "Inventor", "type": "Inventor", "era": 1, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "FLUTE" },
+  "80": { "name": "Inventor", "type": "Inventor", "era": 2, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "FISHHOOK" },
+  "81": { "name": "Inventor", "type": "Inventor", "era": 3, "foodCost": 0, "prestigePoints": 0, "inventorIcon": "NECKLACE" },
+  "82": { "name": "Collector", "type": "Collector", "era": 2, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "83": { "name": "Collector", "type": "Collector", "era": 3, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "84": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "85": { "name": "Shaman", "type": "Shaman", "era": 1, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "86": { "name": "Shaman", "type": "Shaman", "era": 2, "foodCost": 0, "prestigePoints": 0, "stars": 1 },
+  "87": { "name": "Shaman", "type": "Shaman", "era": 2, "foodCost": 0, "prestigePoints": 0, "stars": 2 },
+  "88": { "name": "Collector", "type": "Collector", "era": 1, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "89": { "name": "Collector", "type": "Collector", "era": 2, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "90": { "name": "Collector", "type": "Collector", "era": 3, "foodCost": 0, "prestigePoints": 0, "sustenanceDiscount": 3 },
+  "91": { "name": "Builder", "type": "Builder", "era": 1, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 2, "bonusPrestige": 1 },
+  "92": { "name": "Builder", "type": "Builder", "era": 3, "foodCost": 0, "prestigePoints": 0, "foodDiscount": 1, "bonusPrestige": 4 },
+  "93": { "name": "Hunter", "type": "Hunter", "era": 2, "foodCost": 0, "prestigePoints": 0, "hasIcon": false },
+  "94": { "name": "Hunter", "type": "Hunter", "era": 3, "foodCost": 0, "prestigePoints": 0, "hasIcon": true },
+  "95": { "name": "Artist", "type": "Artist", "era": 3, "foodCost": 0, "prestigePoints": 0 },
+  "96": { "name": "RitualShield", "type": "Building", "era": 1, "foodCost": 5, "prestigePoints": 2 },
+  "97": { "name": "DiverseSet", "type": "Building", "era": 1, "foodCost": 4, "prestigePoints": 3 },
+  "98": { "name": "InventorPair", "type": "Building", "era": 1, "foodCost": 3, "prestigePoints": 4 },
+  "99": { "name": "TurnBonus", "type": "Building", "era": 1, "foodCost": 3, "prestigePoints": 3 },
+  "100": { "name": "FoodDiscount(Art)", "type": "Building", "era": 1, "foodCost": 5, "prestigePoints": 3 },
+  "101": { "name": "FoodDiscount(Col)", "type": "Building", "era": 1, "foodCost": 4, "prestigePoints": 4 },
+  "102": { "name": "ArtistFood", "type": "Building", "era": 2, "foodCost": 5, "prestigePoints": 6 },
+  "103": { "name": "BuilderMastery", "type": "Building", "era": 2, "foodCost": 6, "prestigePoints": 4 },
+  "104": { "name": "RitualStars", "type": "Building", "era": 2, "foodCost": 6, "prestigePoints": 4 },
+  "105": { "name": "DoublePrestige", "type": "Building", "era": 2, "foodCost": 7, "prestigePoints": 0 },
+  "106": { "name": "FoodDiscount(Inv)", "type": "Building", "era": 2, "foodCost": 7, "prestigePoints": 4 },
+  "107": { "name": "SetScorer", "type": "Building", "era": 2, "foodCost": 5, "prestigePoints": 6 },
+  "108": { "name": "HunterBonus", "type": "Building", "era": 2, "foodCost": 7, "prestigePoints": 2 },
+  "109": { "name": "VictoryPoints", "type": "Building", "era": 3, "foodCost": 10, "prestigePoints": 25 },
+  "110": { "name": "LatePurchase", "type": "Building", "era": 3, "foodCost": 9, "prestigePoints": 3 },
+  "111": { "name": "ClassScorer(Inv)", "type": "Building", "era": 3, "foodCost": 6, "prestigePoints": 6 },
+  "112": { "name": "ClassScorer(Art)", "type": "Building", "era": 3, "foodCost": 7, "prestigePoints": 4 },
+  "113": { "name": "ClassScorer(Sha)", "type": "Building", "era": 3, "foodCost": 7, "prestigePoints": 4 },
+  "114": { "name": "ClassScorer(Hun)", "type": "Building", "era": 3, "foodCost": 8, "prestigePoints": 8 },
+  "115": { "name": "ClassScorer(Col)", "type": "Building", "era": 3, "foodCost": 7, "prestigePoints": 6 },
+  "116": { "name": "ClassScorer(Bui)", "type": "Building", "era": 3, "foodCost": 6, "prestigePoints": 3 }
 }

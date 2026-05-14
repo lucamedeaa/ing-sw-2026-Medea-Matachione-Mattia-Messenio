@@ -4,7 +4,7 @@ import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiAssetManager;
 import it.polimi.ingsw.client.view.gui.screen.InGameScreen;
-import it.polimi.ingsw.client.view.tui.card.CardNameMapper;
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.enums.TotemColor;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -15,15 +15,12 @@ import javafx.scene.layout.*;
 import javafx.scene.image.*;
 import javafx.scene.*;
 import javafx.scene.Cursor;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static it.polimi.ingsw.client.view.tui.card.CardNameMapper.isEvent;
 
 public class BoardPanelController {
 
@@ -460,7 +457,7 @@ public class BoardPanelController {
     }
 
     private boolean isAffordable(int cardId, PlayerSnapshot player) {
-        Integer baseCost = CardNameMapper.getCost(cardId);
+        Integer baseCost = CardRegistry.getCard(cardId).foodCost();
 
         if (baseCost == 0) {
             return true;
@@ -468,5 +465,9 @@ public class BoardPanelController {
 
         int finalCost = Math.max(baseCost - player.getFoodDiscount(), 0);
         return player.getFood() >= finalCost;
+    }
+
+    private boolean isEvent(int cardId) {
+        return "Event".equals(it.polimi.ingsw.common.config.CardRegistry.getCard(cardId).type());
     }
 }

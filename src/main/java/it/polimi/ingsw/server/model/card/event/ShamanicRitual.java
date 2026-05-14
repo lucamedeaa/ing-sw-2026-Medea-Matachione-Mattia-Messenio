@@ -2,6 +2,8 @@ package it.polimi.ingsw.server.model.card.event;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.card.Card;
 import it.polimi.ingsw.server.model.update.GameEvent;
@@ -23,20 +25,18 @@ import it.polimi.ingsw.server.model.update.GameEvent;
  */
 public class ShamanicRitual extends Event {
     private final int incrPrestigePoints;
-    private final int decrPrestigePoints; // negative number
+    private final int decrPrestigePoints;
 
     /**
      * Constructs the Shamanic Ritual event.
      *
      * @param idcard the card identifier
-     * @param era the card era
-     * @param incrPrestigePoints prestige points gained by highest score
-     * @param decrPrestigePoints prestige points lost by lowest score (negative)
      */
-    public ShamanicRitual(int idcard, int era, int incrPrestigePoints, int decrPrestigePoints) {
-        super(idcard, era);
-        this.incrPrestigePoints = incrPrestigePoints;
-        this.decrPrestigePoints = decrPrestigePoints;
+    public ShamanicRitual(int idcard) {
+        super(idcard);
+        var info = CardRegistry.getCard(idcard);
+        this.incrPrestigePoints = info.val1();
+        this.decrPrestigePoints = info.val2();
     }
 
     /**

@@ -20,10 +20,9 @@ public abstract class Event extends Card {
     /**
      * Constructs an Event card.
      * @param idcard the card identifier
-     * @param era the card era
      */
-    public Event(int idcard, int era){
-        super(idcard, era);
+    public Event(int idcard) {
+        super(idcard, it.polimi.ingsw.common.config.CardRegistry.getCard(idcard).era());
     }
 
     /**

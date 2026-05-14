@@ -6,8 +6,8 @@ import it.polimi.ingsw.server.model.Player;
 public class RitualStars extends Building {
 
     /** Constructs the RitualStars building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public RitualStars(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public RitualStars(int idcard) {
+        super(idcard);
     }
 
     /** Adds a fixed contribution to the ritual score. @param owner the owning player @param increment applied prestige increase @param decrement applied prestige decrease @return additional stars (3) */

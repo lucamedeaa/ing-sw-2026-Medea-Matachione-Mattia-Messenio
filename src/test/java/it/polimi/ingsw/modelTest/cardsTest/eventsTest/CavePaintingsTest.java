@@ -20,7 +20,7 @@ public class CavePaintingsTest extends ModelTest {
     void zeroArtistsBelowThreshold() {
         Player p = new Player("Henry", TotemColor.ORANGE);
         // CavePaintings Constructor: idcard, era, upperNumArtists, decrPrestigePoints, incrPrestigePoints
-        CavePaintings cp = new CavePaintings(53, 1, 1, -2, 1);
+        CavePaintings cp = new CavePaintings(53);
 
         cp.execute(List.of(p));
 
@@ -32,9 +32,9 @@ public class CavePaintingsTest extends ModelTest {
     void oneArtistAtThresholdGains() {
         Player p = new Player("Henry", TotemColor.ORANGE);
         // Artist Constructor: idcard, era
-        p.addCard(new Artist(19, 1));
+        p.addCard(new Artist(19));
 
-        CavePaintings cp = new CavePaintings(53, 1, 1, -2, 1);
+        CavePaintings cp = new CavePaintings(53);
         cp.execute(List.of(p));
 
         assertEquals(1, p.getPrestigePoints());
@@ -44,13 +44,13 @@ public class CavePaintingsTest extends ModelTest {
     @DisplayName("ArtistFood adds 1 food per artist during CavePaintings")
     void artistFoodBuildingAddsFoodOnEvent() {
         Player p = new Player("Henry", TotemColor.ORANGE);
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
 
         // ArtistFood Constructor: idcard, foodCost, prestigePoints, era
-        p.addCard(new ArtistFood(102, 5, 6, 2));
+        p.addCard(new ArtistFood(102));
 
-        CavePaintings cp = new CavePaintings(53, 1, 1, -2, 1);
+        CavePaintings cp = new CavePaintings(53);
         cp.execute(List.of(p));
 
         assertEquals(2, p.getFood());

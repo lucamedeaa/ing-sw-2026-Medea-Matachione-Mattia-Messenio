@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.card.character;
 
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.board.Board;
 import it.polimi.ingsw.server.model.card.Card;
 
@@ -8,8 +9,8 @@ public abstract class Character extends Card {
     protected int foodCost;
 
     /** Constructs a Character card. @param idcard the card identifier @param era the card era */
-    public Character(int idcard, int era) {
-        super(idcard, era);
+    public Character(int idcard) {
+        super(idcard, CardRegistry.getCard(idcard).era());
     }
 
     /** Characters are not persistent. @return always false */

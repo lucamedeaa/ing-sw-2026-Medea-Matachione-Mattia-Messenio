@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server.model.card.character;
 
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.enums.CharacterType;
+import it.polimi.ingsw.common.config.CardInfo;
 
 /** Represents a Builder character card that provides a food discount and end-game prestige points. */
 public class Builder extends Character {
@@ -9,10 +11,11 @@ public class Builder extends Character {
     private final int endGamePrestigePoints;
 
     /** Constructs a Builder card. @param idcard the card identifier @param era the card era @param foodDiscount food discount provided @param endGamePrestigePoints prestige points awarded at game end */
-    public Builder(int idcard, int era, int foodDiscount, int endGamePrestigePoints) {
-        super(idcard, era);
-        this.foodDiscount = foodDiscount;
-        this.endGamePrestigePoints = endGamePrestigePoints;
+    public Builder(int idcard) {
+        super(idcard);
+        CardInfo info = CardRegistry.getCard(idcard);
+        this.foodDiscount = info.foodDiscount(); // NON info.foodCost()
+        this.endGamePrestigePoints = info.bonusPrestige(); // NON info.prestigePoints()
     }
 
     /** Returns the food discount provided by this card. @return food discount value */

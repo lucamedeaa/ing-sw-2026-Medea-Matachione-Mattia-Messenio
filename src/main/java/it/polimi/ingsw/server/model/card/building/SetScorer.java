@@ -11,8 +11,8 @@ public class SetScorer extends Building {
     private final Set<CharacterType> targetSet;
 
     /** Constructs the SetScorer building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public SetScorer(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public SetScorer(int idcard) {
+        super(idcard);
         this.targetSet = EnumSet.allOf(CharacterType.class);
         this.targetSet.remove(CharacterType.NONCHARACTER);
     }

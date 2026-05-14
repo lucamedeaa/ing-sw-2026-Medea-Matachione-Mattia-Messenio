@@ -243,7 +243,7 @@ public class ActionStateTest extends ModelTest {
             Board board = game.getBoard();
             Player player = game.getPlayers().get(0);
 
-            board.addTopRow(new Hunt(9001, 1, 1, 1));
+            board.addTopRow(new Hunt(56));
             int eventIdx = board.getRow(0).size() - 1;
 
             board.placeTotem(1, player);

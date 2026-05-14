@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.card.character;
 
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.enums.CharacterType;
 import it.polimi.ingsw.server.model.enums.InventorIcon;
 
@@ -10,10 +11,10 @@ public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
     /** Constructs an Inventor card. @param idcard the card identifier @param era the card era @param inventorIcon the associated inventor icon */
-    public Inventor(int idcard, int era, InventorIcon inventorIcon){
-        super(idcard, era);
+    public Inventor(int idcard) {
+        super(idcard);
         this.foodCost = 0;
-        this.inventorIcon = inventorIcon;
+        this.inventorIcon = InventorIcon.valueOf(CardRegistry.getCard(idcard).inventorIcon()); // Enumerativo diretto
     }
 
     /** Returns the character type. @return CharacterType.INVENTOR */

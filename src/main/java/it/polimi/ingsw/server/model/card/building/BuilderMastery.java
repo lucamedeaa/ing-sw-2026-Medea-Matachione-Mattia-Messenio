@@ -8,8 +8,8 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class BuilderMastery extends Building {
 
     /** Constructs the BuilderMastery building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public BuilderMastery(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public BuilderMastery(int idcard) {
+        super(idcard);
     }
 
     /** Computes final points by summing BUILDER card points again plus base prestige. @param owner the owning player @return total points */

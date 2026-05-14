@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.card.event;
 
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.card.Card;
 import it.polimi.ingsw.server.model.enums.CharacterType;
@@ -20,19 +21,16 @@ import java.util.List;
  * </ul>
  */
 public class Sustenance extends Event {
-    private final int numPrestRem;
 
+    private final int numPrestRem;
     /**
      * Constructs the Sustenance event.
      *
      * @param idcard the card identifier
-     * @param era the card era
-     * @param numPrestRem prestige points lost per missing food unit
      */
-    public Sustenance(int idcard, int era, int numPrestRem) {
-        super(idcard, era);
-        this.numPrestRem = numPrestRem;
-    }
+    public Sustenance(int idcard) {
+        super(idcard);
+        this.numPrestRem = CardRegistry.getCard(idcard).val1();    }
 
     /**
      * Executes the event:

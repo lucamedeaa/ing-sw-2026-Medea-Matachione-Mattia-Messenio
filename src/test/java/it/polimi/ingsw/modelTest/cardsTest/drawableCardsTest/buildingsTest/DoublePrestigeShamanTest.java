@@ -16,7 +16,7 @@ public class DoublePrestigeShamanTest {
     @BeforeEach
     void setUp() {
         // Updated Constructor: idcard, foodCost, prestigePoints, era
-        doublePrestigeShaman = new DoublePrestigeShaman(105, 7, 0, 2);
+        doublePrestigeShaman = new DoublePrestigeShaman(105);
         player = newPlayer("Alice");
     }
 

@@ -15,9 +15,9 @@ public class ArtistTest extends ModelTest {
     void artistPairScoreIsIntegerDivision() {
         Player p = newPlayer("Carol");
         // Updated Constructor: idcard, era
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
-        p.addCard(new Artist(21, 1));
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
+        p.addCard(new Artist(21));
 
         assertEquals(10, p.calculateTotalScore());
     }
@@ -26,10 +26,10 @@ public class ArtistTest extends ModelTest {
     @DisplayName("4 artists give 20 final PP")
     void fourArtistsGiveTwentyPoints() {
         Player p = newPlayer("Carol");
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
-        p.addCard(new Artist(21, 1));
-        p.addCard(new Artist(22, 2));
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
+        p.addCard(new Artist(21));
+        p.addCard(new Artist(22));
 
         assertEquals(20, p.calculateTotalScore());
     }

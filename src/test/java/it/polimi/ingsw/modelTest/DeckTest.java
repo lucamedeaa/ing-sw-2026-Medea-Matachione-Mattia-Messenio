@@ -16,13 +16,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DeckTest extends ModelTest {
 
-    // ── Helper
 
     private Deck deckOf(Card... cards) {
         return new Deck(new ArrayList<>(List.of(cards)));
     }
 
-    // ── isEmpty
 
     @Nested
     @DisplayName("isEmpty")
@@ -37,19 +35,18 @@ public class DeckTest extends ModelTest {
         @Test
         @DisplayName("non-empty deck returns false")
         void nonEmptyDeckIsNotEmpty() {
-            assertFalse(deckOf(new Artist(1, 1)).isEmpty());
+            assertFalse(deckOf(new Artist(19)).isEmpty());
         }
 
         @Test
         @DisplayName("becomes empty after drawing all cards")
         void emptyAfterDrawingAll() {
-            Deck d = deckOf(new Artist(1, 1));
+            Deck d = deckOf(new Artist(19));
             d.draw();
             assertTrue(d.isEmpty());
         }
     }
 
-    // ── size
 
     @Nested
     @DisplayName("size")
@@ -64,20 +61,19 @@ public class DeckTest extends ModelTest {
         @Test
         @DisplayName("deck size matches number of cards given")
         void sizeMatchesCardCount() {
-            Deck d = deckOf(new Artist(1, 1), new Hunter(2, 1, false), new Shaman(3, 1, 2));
+            Deck d = deckOf(new Artist(19), new Hunter(10), new Shaman(28));
             assertEquals(3, d.size());
         }
 
         @Test
         @DisplayName("size decreases by 1 after each draw")
         void sizeDecreasesAfterDraw() {
-            Deck d = deckOf(new Artist(1, 1), new Artist(2, 1));
+            Deck d = deckOf(new Artist(19), new Artist(20));
             d.draw();
             assertEquals(1, d.size());
         }
     }
 
-    // ── draw
 
     @Nested
     @DisplayName("draw")
@@ -92,14 +88,14 @@ public class DeckTest extends ModelTest {
         @Test
         @DisplayName("draw returns a non-null card from non-empty deck")
         void drawReturnsCard() {
-            Deck d = deckOf(new Artist(1, 1));
+            Deck d = deckOf(new Artist(19));
             assertNotNull(d.draw());
         }
 
         @Test
         @DisplayName("drawing all cards empties the deck")
         void drawAllEmptiesDeck() {
-            Deck d = deckOf(new Artist(1, 1), new Artist(2, 1));
+            Deck d = deckOf(new Artist(19), new Artist(20));
             d.draw();
             d.draw();
             assertTrue(d.isEmpty());
@@ -108,7 +104,7 @@ public class DeckTest extends ModelTest {
         @Test
         @DisplayName("draw after emptying returns null")
         void drawAfterEmptyReturnsNull() {
-            Deck d = deckOf(new Artist(1, 1));
+            Deck d = deckOf(new Artist(19));
             d.draw();
             assertNull(d.draw());
         }

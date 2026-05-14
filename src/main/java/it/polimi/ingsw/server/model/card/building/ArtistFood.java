@@ -7,8 +7,8 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class ArtistFood extends Building {
 
     /** Constructs the ArtistFood building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public ArtistFood(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public ArtistFood(int idcard) {
+        super(idcard);
     }
 
     /** Grants food equal to the number of ARTIST characters during the Cave Paintings event. @param owner the owning player */

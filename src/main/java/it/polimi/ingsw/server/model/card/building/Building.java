@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.model.card.building;
 
+import it.polimi.ingsw.common.config.CardInfo;
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.board.Board;
 import it.polimi.ingsw.server.model.card.Card;
@@ -11,10 +13,11 @@ public abstract class Building extends Card {
     protected int prestigePoints;
 
     /** Constructs a Building card. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public Building(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, era);
-        this.foodCost = foodCost;
-        this.prestigePoints = prestigePoints;
+    public Building(int idcard) {
+        super(idcard, CardRegistry.getCard(idcard).era());
+        CardInfo info = CardRegistry.getCard(idcard);
+        this.foodCost = info.foodCost();
+        this.prestigePoints = info.prestigePoints();
     }
 
     @Override

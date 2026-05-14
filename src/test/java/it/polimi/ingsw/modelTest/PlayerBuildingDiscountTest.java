@@ -16,11 +16,10 @@ public class PlayerBuildingDiscountTest extends ModelTest {
         Player p = newPlayer("TestPlayer");
 
         // Aggiungiamo un Costruttore (Builder) che dà 2 di sconto per l'acquisto di Edifici
-        // Costruttore: Builder(id, era, discount, finalPoints)
-        give(p, new Builder(10, 1, 2, 0));
+        give(p, new Builder(2));
 
         // Aggiungiamo un Raccoglitore (Collector) che dà 3 di sconto SOLO per l'evento Sostentamento
-        give(p, new Collector(20, 1, 3));
+        give(p, new Collector(35));
 
         // Il metodo getFoodDiscount() (se usato dal controller per i costi degli edifici)
         // DEVE restituire solo 2. Se restituisce 5, il Collector sta "inquinando"

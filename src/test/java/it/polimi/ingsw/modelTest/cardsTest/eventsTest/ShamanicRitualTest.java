@@ -24,12 +24,10 @@ public class ShamanicRitualTest extends ModelTest {
         Player rich = new Player("Rich", TotemColor.ORANGE);
         Player poor = new Player("Poor", TotemColor.BLUE);
 
-        // Shaman Constructor: idcard, era, starsCount
-        rich.addCard(new Shaman(34, 3, 3));
-        poor.addCard(new Shaman(28, 1, 1));
+        rich.addCard(new Shaman(34));
+        poor.addCard(new Shaman(28));
 
-        // ShamanicRitual Constructor: idcard, era, incrPrestigePoints, decrPrestigePoints
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(rich, poor));
 
         assertEquals(10, rich.getPrestigePoints());
@@ -42,13 +40,13 @@ public class ShamanicRitualTest extends ModelTest {
         Player a = new Player("A", TotemColor.ORANGE);
         Player b = new Player("B", TotemColor.BLUE);
 
-        a.addCard(new Shaman(30, 2, 2));
-        b.addCard(new Shaman(31, 2, 2));
+        a.addCard(new Shaman(30));
+        b.addCard(new Shaman(31));
 
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(a, b));
 
-        assertEquals(5, a.getPrestigePoints(), "In absolute tie: +10-5=+5");
+        assertEquals(5, a.getPrestigePoints());
         assertEquals(5, b.getPrestigePoints());
     }
 
@@ -59,11 +57,11 @@ public class ShamanicRitualTest extends ModelTest {
         Player b = new Player("B", TotemColor.BLUE);
         Player c = new Player("C", TotemColor.WHITE);
 
-        a.addCard(new Shaman(33, 3, 3));
-        b.addCard(new Shaman(34, 3, 3));
-        c.addCard(new Shaman(28, 1, 1));
+        a.addCard(new Shaman(33));
+        b.addCard(new Shaman(34));
+        c.addCard(new Shaman(28));
 
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(a, b, c));
 
         assertEquals(10, a.getPrestigePoints());
@@ -77,30 +75,25 @@ public class ShamanicRitualTest extends ModelTest {
         Player rich = new Player("Rich", TotemColor.ORANGE);
         Player shielded = new Player("Shielded", TotemColor.BLUE);
 
-        rich.addCard(new Shaman(34, 3, 3));
-        shielded.addCard(new Shaman(28, 1, 1));
+        rich.addCard(new Shaman(34));
+        shielded.addCard(new Shaman(28));
+        shielded.addCard(new RitualShield(96));
 
-        // RitualShield Constructor: idcard, foodCost, prestigePoints, era
-        shielded.addCard(new RitualShield(96, 5, 2, 1));
-
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(rich, shielded));
 
-        assertTrue(shielded.getPrestigePoints() >= 0,
-                "With RitualShield no PP should be lost at the Shamanic Ritual");
+        assertTrue(shielded.getPrestigePoints() >= 0);
     }
 
     @Test
     @DisplayName("RitualShield: Selectively blocks decrements while preserving increments")
     void ritualShieldBothIncrementAndDecrement() {
         Player p = new Player("Alice", TotemColor.ORANGE);
-        RitualShield shield = new RitualShield(96, 5, 2, 1);
+        RitualShield shield = new RitualShield(96);
         p.addCard(shield);
 
         shield.onShamanicRitualEvent(p, 10, -5);
-
-        assertEquals(5, p.getPrestigePoints(),
-                "Must neutralize the decrement (-5 -> +5) without touching the logic of increments");
+        assertEquals(5, p.getPrestigePoints());
     }
 
     @Test
@@ -109,14 +102,12 @@ public class ShamanicRitualTest extends ModelTest {
         Player base = new Player("Base", TotemColor.ORANGE);
         Player starred = new Player("Starred", TotemColor.BLUE);
 
-        // RitualStars Constructor: idcard, foodCost, prestigePoints, era
-        starred.addCard(new RitualStars(104, 6, 4, 2));
+        starred.addCard(new RitualStars(104));
 
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(base, starred));
 
-        assertEquals(10, starred.getPrestigePoints(),
-                "RitualStars must earn PP as if it had 3 stars");
+        assertEquals(10, starred.getPrestigePoints());
         assertEquals(-5, base.getPrestigePoints());
     }
 
@@ -126,16 +117,13 @@ public class ShamanicRitualTest extends ModelTest {
         Player winner = new Player("Winner", TotemColor.ORANGE);
         Player loser  = new Player("Loser", TotemColor.BLUE);
 
-        winner.addCard(new Shaman(34, 3, 3));
-        // DoublePrestigeShaman Constructor: idcard, foodCost, prestigePoints, era
-        winner.addCard(new DoublePrestigeShaman(105, 7, 0, 2));
+        winner.addCard(new Shaman(34));
+        winner.addCard(new DoublePrestigeShaman(105));
+        loser.addCard(new Shaman(28));
 
-        loser.addCard(new Shaman(28, 1, 1));
-
-        ShamanicRitual r = new ShamanicRitual(58, 1, 10, -5);
+        ShamanicRitual r = new ShamanicRitual(59);
         r.execute(List.of(winner, loser));
 
-        assertEquals(20, winner.getPrestigePoints(),
-                "DoublePrestigeShaman must add another 10 PP (doubling)");
+        assertEquals(20, winner.getPrestigePoints());
     }
 }

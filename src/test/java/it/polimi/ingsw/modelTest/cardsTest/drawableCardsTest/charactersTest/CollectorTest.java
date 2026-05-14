@@ -19,7 +19,7 @@ public class CollectorTest extends ModelTest {
     void collectorGivesNoFoodWhenAdded() {
         Player p = newPlayer("Eve");
         // Updated Constructor: idcard, era, discount
-        p.addCard(new Collector(35, 1, 3));
+        p.addCard(new Collector(35));
 
         assertEquals(0, p.getFood());
     }
@@ -28,12 +28,12 @@ public class CollectorTest extends ModelTest {
     @DisplayName("1 Collector with discount 3 exactly covers 3 characters at Sustenance")
     void collectorDiscountCoversThreeCharacters() {
         Player p = newPlayer("Eve");
-        p.addCard(new Collector(35, 1, 3));
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
+        p.addCard(new Collector(35));
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
 
         // Sustenance Constructor: idcard, era, numPrestRem
-        Sustenance s = new Sustenance(61, 1, 2);
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
         assertEquals(0, p.getPrestigePoints(), "With discount equal to cost no PP should be lost");

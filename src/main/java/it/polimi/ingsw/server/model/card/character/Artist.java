@@ -6,8 +6,8 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class Artist extends Character {
 
     /** Constructs an Artist card. @param idcard the card identifier @param era the card era */
-    public Artist (int idcard, int era){
-        super(idcard, era);
+    public Artist(int idcard) {
+        super(idcard);
         this.foodCost = 0;
     }
 

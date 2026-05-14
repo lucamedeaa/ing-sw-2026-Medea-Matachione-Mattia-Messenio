@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.view.tui.command;
 
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.client.view.tui.card.CardNameMapper;
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.action.PlaceTotemActionDto;
 import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
@@ -107,7 +107,7 @@ public class ActionExecutor implements ActionVisitor {
             return false;
         }
 
-        if (CardNameMapper.isEvent(cardId)) {
+        if ("Event".equals(CardRegistry.getCard(cardId).type())) {
             gameModel.setGlobalError("Event cards cannot be taken directly.");
             return false;
         }

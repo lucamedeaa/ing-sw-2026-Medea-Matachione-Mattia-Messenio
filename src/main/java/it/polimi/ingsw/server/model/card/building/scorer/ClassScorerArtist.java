@@ -7,8 +7,8 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class ClassScorerArtist extends ClassScorer {
 
     /** Constructs the ClassScorerArtist building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to ARTIST logic) */
-    public ClassScorerArtist(int idcard, int foodCost, int prestigePoints, int era, CharacterType characters){
-        super(idcard, foodCost, prestigePoints, era, characters);
+    public ClassScorerArtist(int idcard){
+        super(idcard);
     }
 
     /** Computes final points based on ARTIST count. @param owner the owning player @return total points */

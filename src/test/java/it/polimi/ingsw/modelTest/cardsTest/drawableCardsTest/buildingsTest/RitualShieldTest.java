@@ -16,7 +16,7 @@ class RitualShieldTest {
     @BeforeEach
     void setUp() {
         // Updated Constructor: idcard, foodCost, prestigePoints, era
-        ritualShield = new RitualShield(96, 5, 2, 1);
+        ritualShield = new RitualShield(96);
         player = newPlayer("Alice");
     }
 

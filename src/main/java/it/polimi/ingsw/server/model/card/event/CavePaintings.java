@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.model.card.event;
 
+import it.polimi.ingsw.common.config.CardInfo;
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.card.Card;
 import it.polimi.ingsw.server.model.enums.CharacterType;
@@ -24,22 +26,17 @@ public class CavePaintings extends Event {
     private final int decrPrestigePoints;
     private final int incrPrestigePoints;
 
-
     /**
      * Constructs the Cave Paintings event.
      *
      * @param idcard the card identifier
-     * @param era the card era
-     * @param upperNumArtists threshold of ARTIST characters to gain the bonus
-     * @param decrPrestigePoints prestige points (negative) if below threshold
-     * @param incrPrestigePoints prestige points gained per ARTIST if above threshold
      */
-    public CavePaintings(int idcard, int era, int upperNumArtists,
-                         int decrPrestigePoints, int incrPrestigePoints) {
-        super(idcard, era);
-        this.upperNumArtists = upperNumArtists;
-        this.decrPrestigePoints = decrPrestigePoints;
-        this.incrPrestigePoints = incrPrestigePoints;
+    public CavePaintings(int idcard) {
+        super(idcard);
+        var info = CardRegistry.getCard(idcard);
+        this.upperNumArtists = info.val1();
+        this.decrPrestigePoints = info.val2();
+        this.incrPrestigePoints = info.val3();
     }
 
     /**

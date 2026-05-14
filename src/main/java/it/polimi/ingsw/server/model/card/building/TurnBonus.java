@@ -4,8 +4,8 @@ package it.polimi.ingsw.server.model.card.building;
 public class TurnBonus extends Building {
 
     /** Constructs the TurnBonus building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public TurnBonus(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public TurnBonus(int idcard) {
+        super(idcard);
     }
 
     /** Provides an additional food bonus when turn-order bonuses are applied. @return food bonus (1) */

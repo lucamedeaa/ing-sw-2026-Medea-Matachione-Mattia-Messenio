@@ -20,29 +20,27 @@ public class SustenanceTest extends ModelTest {
     @DisplayName("With insufficient food: food is reset and proportional PP are lost")
     void insufficientFoodAzzerasCiboAndLosesPrestige() {
         Player p = new Player("Frank", TotemColor.ORANGE);
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1)); // 2 characters, required food=2
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
 
-        p.addFood(1); // only 1 food
+        p.addFood(1);
 
-        // Sustenance Constructor: idcard, era, numPrestRem
-        Sustenance s = new Sustenance(61, 1, 2); // 2 PP per unfed character
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
         assertEquals(0, p.getFood(), "Food must be reset to zero");
-        assertEquals(-2, p.getPrestigePoints(), "Loses 2 PP for 1 unfed character");
+        assertEquals(-1, p.getPrestigePoints(), "Loses 1 PP for 1 unfed character");
     }
 
     @Test
     @DisplayName("With sufficient food no PP are lost")
     void sufficientFoodNoPPLoss() {
         Player p = new Player("Frank", TotemColor.ORANGE);
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
-
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
         p.addFood(2);
 
-        Sustenance s = new Sustenance(61, 1, 2);
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
         assertEquals(0, p.getPrestigePoints());
@@ -53,14 +51,11 @@ public class SustenanceTest extends ModelTest {
     @DisplayName("Buildings are not counted in the total to feed")
     void buildingsNotCountedInSustenance() {
         Player p = new Player("Frank", TotemColor.ORANGE);
-        p.addCard(new Artist(19, 1)); // 1 character
-
-        // VictoryPoints Constructor: idcard, foodCost, prestigePoints, era
-        p.addCard(new VictoryPoints(109, 10, 0, 3)); // building -> does not count
-
+        p.addCard(new Artist(19));
+        p.addCard(new VictoryPoints(109));
         p.addFood(1);
 
-        Sustenance s = new Sustenance(61, 1, 2);
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
         assertEquals(0, p.getPrestigePoints(), "The building must not be counted");
@@ -70,28 +65,27 @@ public class SustenanceTest extends ModelTest {
     @DisplayName("Zero food and 3 characters: loses 3 * numPP")
     void zeroFoodThreeCharactersMaxLoss() {
         Player p = new Player("Frank", TotemColor.ORANGE);
-        p.addCard(new Artist(19, 1));
-        p.addCard(new Artist(20, 1));
-        p.addCard(new Artist(21, 1));
+        p.addCard(new Artist(19));
+        p.addCard(new Artist(20));
+        p.addCard(new Artist(21));
 
-        Sustenance s = new Sustenance(61, 1, 3); // 3 PP per unfed
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
-        assertEquals(-9, p.getPrestigePoints());
+        assertEquals(-3, p.getPrestigePoints());
     }
 
     @Test
     @DisplayName("Discount greater than total: no food is subtracted")
     void discountExceedsTotalNoFoodTaken() {
         Player p = new Player("Frank", TotemColor.ORANGE);
-        // Collector Constructor: idcard, era, discount
-        p.addCard(new Collector(35, 1, 3)); // discount 3
-        p.addCard(new Collector(36, 1, 3)); // discount 3 -> total discount 6
-        p.addCard(new Artist(19, 1));       // 1 character to feed
+        p.addCard(new Collector(35));
+        p.addCard(new Collector(36));
+        p.addCard(new Artist(19));
 
         p.addFood(5);
 
-        Sustenance s = new Sustenance(61, 1, 2);
+        Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 
         assertEquals(5, p.getFood(), "With discount >= total no food must be paid");

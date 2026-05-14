@@ -15,8 +15,8 @@ public class ShamanTest extends ModelTest {
     void shamanAddsStars() {
         Player p = newPlayer("Bob");
         // Updated Constructor: idcard, era, starsCount
-        p.addCard(new Shaman(28, 1, 2));
-        p.addCard(new Shaman(29, 1, 1));
+        p.addCard(new Shaman(28));
+        p.addCard(new Shaman(29));
 
         assertEquals(3, p.getStarsNumber(), "Should sum the stars from all shamans");
     }

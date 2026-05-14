@@ -19,35 +19,29 @@ public class HuntTest extends ModelTest {
     @DisplayName("Hunt with 3 hunters: correct food and PP")
     void huntWithThreeHunters() {
         Player p = new Player("Gina", TotemColor.ORANGE);
-        // Hunter Constructor: idcard, era, hasIcon
-        p.addCard(new Hunter(10, 1, false));
-        p.addCard(new Hunter(11, 1, false));
-        p.addCard(new Hunter(12, 1, false));
+        p.addCard(new Hunter(12));
+        p.addCard(new Hunter(14));
+        p.addCard(new Hunter(15));
 
-        // Hunt Constructor: idcard, era, foodGiven, prestigeGiven
-        Hunt h = new Hunt(56, 1, 1, 2); // 1 food and 2 PP per hunter
+        Hunt h = new Hunt(56);
         h.execute(List.of(p));
 
         assertEquals(3, p.getFood());
-        assertEquals(6, p.getPrestigePoints());
+        assertEquals(3, p.getPrestigePoints()); // Era 1 -> 3
     }
 
     @Test
     @DisplayName("HunterBonus adds extra food and PP per hunter during Hunt")
     void hunterBonusBuildingAddsExtraFoodAndPrestige() {
         Player p = new Player("Gina", TotemColor.ORANGE);
-        p.addCard(new Hunter(10, 1, false));
-        p.addCard(new Hunter(11, 1, false));
+        p.addCard(new Hunter(12));
+        p.addCard(new Hunter(14));
 
-        // HunterBonus Constructor: idcard, foodCost, prestigePoints, era
-        p.addCard(new HunterBonus(108, 7, 2, 2));
+        p.addCard(new HunterBonus(108));
 
-        Hunt h = new Hunt(56, 1, 1, 1); // 1 food, 1 PP per hunter
+        Hunt h = new Hunt(56);
         h.execute(List.of(p));
 
-        // Base Hunt: 2 hunters * (1 food, 1 PP) = 2 food, 2 PP
-        // HunterBonus: 2 hunters * (1 food, 1 PP) = 2 food, 2 PP
-        // Total = 4 food, 4 PP (assuming HunterBonus gives 1 food, 1 PP per hunter natively)
         assertEquals(4, p.getFood());
         assertEquals(4, p.getPrestigePoints());
     }

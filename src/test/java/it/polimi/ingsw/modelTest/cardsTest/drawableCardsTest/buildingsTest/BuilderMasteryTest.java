@@ -17,7 +17,7 @@ public class BuilderMasteryTest {
     @BeforeEach
     void setUp() {
         // Updated Constructor: idcard, foodCost, prestigePoints, era
-        builderMastery = new BuilderMastery(103, 6, 4, 2);
+        builderMastery = new BuilderMastery(103);
         player = newPlayer("Alice");
     }
 
@@ -35,7 +35,7 @@ public class BuilderMasteryTest {
     @Test
     void testSingleBuilder() {
         // Builder Constructor: idcard, era, foodDiscount, endGamePrestigePoints
-        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(1));
         player.addCard(builderMastery);
 
         // Builder PP (2) + BuilderMastery PP (4) = 6
@@ -45,8 +45,8 @@ public class BuilderMasteryTest {
 
     @Test
     void testMultipleBuilders() {
-        player.addCard(new Builder(1, 1, 1, 2));
-        player.addCard(new Builder(2, 1, 2, 0));
+        player.addCard(new Builder(1));
+        player.addCard(new Builder(2));
         player.addCard(builderMastery);
 
         // (2 + 0) + 4 = 6
@@ -56,8 +56,8 @@ public class BuilderMasteryTest {
 
     @Test
     void testOnlyCountsBuilders() {
-        player.addCard(new Builder(1, 1, 1, 2));
-        player.addCard(new BuilderMastery(103, 6, 4, 2)); // Another building
+        player.addCard(new Builder(1));
+        player.addCard(new BuilderMastery(103)); // Another building
         player.addCard(builderMastery);
 
         // Builder PP (2) + BuilderMastery PP (4) = 6
@@ -67,7 +67,7 @@ public class BuilderMasteryTest {
 
     @Test
     void testMultipleCallsConsistency() {
-        player.addCard(new Builder(1, 1, 1, 2));
+        player.addCard(new Builder(1));
         player.addCard(builderMastery);
 
         int first = builderMastery.getFinalPoints(player);

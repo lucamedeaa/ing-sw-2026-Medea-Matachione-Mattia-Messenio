@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.card.event;
 
+import it.polimi.ingsw.common.config.CardRegistry;
 import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.card.Card;
 import it.polimi.ingsw.server.model.enums.CharacterType;
@@ -27,14 +28,12 @@ public class Hunt extends Event {
      * Constructs the Hunt event.
      *
      * @param idcard the card identifier
-     * @param era the card era
-     * @param foodGiven food gained per HUNTER
-     * @param prestigeGiven prestige gained per HUNTER
      */
-    public Hunt(int idcard, int era, int foodGiven, int prestigeGiven) {
-        super(idcard, era);
-        this.foodGiven = foodGiven;
-        this.prestigeGiven = prestigeGiven;
+    public Hunt(int idcard) {
+        super(idcard);
+        var info = CardRegistry.getCard(idcard);
+        this.foodGiven = info.val1();
+        this.prestigeGiven = info.val2();
     }
 
     /**
@@ -57,7 +56,7 @@ public class Hunt extends Event {
                     player.getFood(),
                     player.getPrestigePoints(),
                     player.getFoodDiscount(),
-                    player.getPrestigePoints(),
+                    player.getSustenanceDiscount(),
                     "Hunt event: +" + (num * foodGiven) + " food, +" + (num * prestigeGiven) + " PP"
             ));
 

@@ -67,7 +67,7 @@ public class AdditionalPickStateTest extends ModelTest {
     }
 
     private void giveBonusPick(Player player) {
-        player.addCard(new LatePurchase(9001, 0, 0, 3));
+        player.addCard(new LatePurchase(110));
     }
 
     private void giveFood(Player player, int amount) {
@@ -216,7 +216,7 @@ public class AdditionalPickStateTest extends ModelTest {
 
             giveBonusPick(player);
 
-            board.addTopRow(new Hunt(9002, 1, 1, 1));
+            board.addTopRow(new Hunt(56));
             int eventIdx = board.getRow(0).size() - 1;
 
             AdditionalPickState state = additionalPickState(game);

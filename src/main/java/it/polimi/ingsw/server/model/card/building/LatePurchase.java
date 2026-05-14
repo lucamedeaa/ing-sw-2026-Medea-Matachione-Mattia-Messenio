@@ -4,8 +4,8 @@ package it.polimi.ingsw.server.model.card.building;
 public class LatePurchase extends Building {
 
     /** Constructs the LatePurchase building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
-    public LatePurchase(int idcard, int foodCost, int prestigePoints, int era) {
-        super(idcard, foodCost, prestigePoints, era);
+    public LatePurchase(int idcard) {
+        super(idcard);
     }
 
     /** Provides one additional upper-row pick during the bonus phase. @return bonus picks (1) */
