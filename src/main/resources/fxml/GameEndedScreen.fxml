@@ -12,7 +12,7 @@
 
     <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.60);"/>
 
-    <VBox alignment="CENTER" spacing="20" maxWidth="1200" style="-fx-padding: 250 40 30 40;">
+    <VBox alignment="CENTER" spacing="20" maxWidth="1200" style="-fx-padding: 380 40 30 40;">
         <!--<Label text="LE CRONACHE DI MESOS SONO SCRITTE"
                style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 42px; -fx-text-fill: #ffd700; -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 4);"/> -->
 
@@ -49,6 +49,8 @@
             <Label text="Audio" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, black, 6, 0, 0, 2);"/>
             <Slider fx:id="volumeSlider" min="0" max="1" value="0.5" prefWidth="200"/>
         </HBox>
+        <Button text="AGGIORNA CLASSIFICA" onAction="#handleRefresh"
+                style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
 
         <Button text="TORNA AL MENU" onAction="#handleLeave"
                 style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>

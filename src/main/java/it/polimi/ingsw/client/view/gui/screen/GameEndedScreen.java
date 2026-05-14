@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import java.time.format.DateTimeFormatter;
 
 import java.util.List;
 
@@ -54,6 +55,8 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
 
         ctx.controller().getLeaderboard();
     }
+
+
 
     private void setupListViewStyle(ListView<String> listView) {
         listView.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
@@ -120,10 +123,18 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
         } else {
             globalSpinner.setVisible(false);
             globalLeaderboardView.setVisible(true);
+
+            // Creiamo un formatter per rendere la data leggibile
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
             globalLeaderboardView.getItems().setAll(
                     global.entries().stream()
-                            .map(e -> e.position() + ". " + e.nickname()
-                                    + "  —  " + e.finalScore() + " pt  (" + e.remainingFood() + " food)")
+                            .map(e -> String.format("%d. %-12s —  %d pt  (%d food)   |   %s",
+                                    e.position(),
+                                    e.nickname(),
+                                    e.finalScore(),
+                                    e.remainingFood(),
+                                    e.playedAt().format(formatter)))
                             .toList()
             );
         }
@@ -137,7 +148,13 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
         ctx.notificationController().setGameEndedView(null);
         Platform.runLater(navigator::toMatchmaking);
     }
-
+    @FXML
+    private void handleRefresh() {
+        globalSpinner.setVisible(true);
+        globalLeaderboardView.setVisible(false);
+        // Richiede nuovamente la classifica al server
+        ctx.controller().getLeaderboard();
+    }
     @Override
     public void onServerDisconnected(String reason) {
         if (isNavigatingAway) return;

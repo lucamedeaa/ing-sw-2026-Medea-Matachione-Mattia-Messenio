@@ -125,7 +125,7 @@ public class JdbcLeaderboardService implements LeaderboardService {
     }
 
     //public LeaderboardSnapshotDto getPersonalBestLeaderboard(int playerCount) {
-        //return new LeaderboardSnapshotDto(playerCount, personalBestLeaderboardEntries(playerCount));
+    //return new LeaderboardSnapshotDto(playerCount, personalBestLeaderboardEntries(playerCount));
     //}
 
     private void initializeSchema() {
