@@ -144,7 +144,6 @@ public class GameModel extends ObservableModel {
     public void updateRound(int newRound) {
 
             board.setRound(newRound);
-            roster.clearReturnPositions();
 
         notifyUI();
     }

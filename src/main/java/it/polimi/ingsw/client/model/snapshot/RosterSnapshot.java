@@ -34,6 +34,7 @@ public class RosterSnapshot {
 
     public void updateTotemPosition(String nickname, int positionIndex) {
         playerTotemPositions.put(nickname, positionIndex);
+        playerReturnPositions.remove(nickname);
     }
 
     public void returnTotemToTrack(String nickname, int returnIndex) {
