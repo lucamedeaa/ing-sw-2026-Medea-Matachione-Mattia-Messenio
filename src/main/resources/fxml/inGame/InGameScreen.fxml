@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="rootPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
+<BorderPane fx:id="rootPane" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
     <center>
         <fx:include source="BoardPanel.fxml" fx:id="boardPanel"/>
     </center>

@@ -57,7 +57,11 @@ public class ActionsPanelController {
     public void enableTakeCard(int upperPicks, int lowerPicks) {
         this.upperPicksAllowed = upperPicks;
         this.lowerPicksAllowed = lowerPicks;
-        takeCardButton.setDisable(false);
+
+        // Attivazione automatica del flusso di selezione sul tabellone
+        if (parentScreen != null) {
+            parentScreen.promptCardSelection(upperPicks, lowerPicks);
+        }
     }
 
     public void enablePlaceTotem(List<Integer> availableTiles) {

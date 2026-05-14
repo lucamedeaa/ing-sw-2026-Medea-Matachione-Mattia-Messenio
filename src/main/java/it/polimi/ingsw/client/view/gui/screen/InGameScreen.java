@@ -159,21 +159,6 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
         }
     }
 
-    // --- Metodi richiamati dal BoardPanelController a seguito del click visivo ---
-
-    public void onCardSelected(int row, int col) {
-        if (currentState != InteractionState.SELECTING_CARD_TO_TAKE) return;
-
-        // Validazione lato client per evitare di mandare pacchetti inutili
-        if (row == 0 && upperPicksAllowed <= 0) return;
-        if (row == 1 && lowerPicksAllowed <= 0) return;
-
-        // Invia il comando al server
-        ctx.controller().takeCard(row, col);
-
-        // Reset dello stato
-        resetInteraction();
-    }
 
     public void onTotemPositionSelected(int tileIndex) {
         if (currentState != InteractionState.SELECTING_TOTEM_POSITION) return;
@@ -185,9 +170,10 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
     private void resetInteraction() {
         this.currentState = InteractionState.IDLE;
         if (boardPanelController != null) {
-            boardPanelController.disableSelection(); // Blocca i click visivi
+            boardPanelController.disableAllInteractions(); // Blocca i click visivi
         }
     }
+
     public String getViewedPlayer() {
         return viewedPlayerNickname;
     }
@@ -208,5 +194,36 @@ private final GuiContext ctx;      // Sostituisce controller, ctx.gameModel(), c
             boardPanelController.highlightTotemPlacement(availableTiles, self, model);
         }
     }
+
+    public void onCardSelected(int row, int col) {
+        if (currentState != InteractionState.SELECTING_CARD_TO_TAKE) return;
+
+        if (row == 0 && upperPicksAllowed <= 0) return;
+        if (row == 1 && lowerPicksAllowed <= 0) return;
+
+        ctx.controller().takeCard(row, col);
+
+        // --- IMPORTANTE: Spegne le luci sul tabellone ---
+        if (boardPanelController != null) {
+            boardPanelController.disableAllInteractions();
+        }
+
+        resetInteraction();
+    }
+
+    public void promptCardSelection(int upperPicksAllowed, int lowerPicksAllowed) {
+        this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
+        this.upperPicksAllowed = upperPicksAllowed;
+        this.lowerPicksAllowed = lowerPicksAllowed;
+
+        if (boardPanelController != null) {
+            // Chiama il metodo sul tabellone per accendere le luci verdi
+            boardPanelController.enableCardSelection(
+                upperPicksAllowed > 0,
+                lowerPicksAllowed > 0
+            );
+        }
+    }
+
 
 }

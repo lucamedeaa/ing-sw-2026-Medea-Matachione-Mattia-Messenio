@@ -44,7 +44,6 @@ public class BoardPanelController {
 
     @FXML
     public void initialize() {
-
         Platform.runLater(() -> {
             if (boardGrid.getParent() instanceof Region parent) {
                 parent.widthProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight()));
@@ -142,6 +141,7 @@ public class BoardPanelController {
             container.getChildren().add(overlay);
             trackOverlays.add(overlay);
 
+
             // --- MARGINE SOLO PER LA TURN ORDER TILE ---
             if (col == 0) {
                 GridPane.setMargin(container, new Insets(0, 15, 0, 0));
@@ -150,60 +150,7 @@ public class BoardPanelController {
             boardGrid.add(container, col, 1);
         }
     }
-    /*private void buildBoardTrack(int playerCount) {      funziona il ridimensionamento bene
-        List<String> layout = getTileLayout(playerCount);
-        int cols = layout.size();
 
-        // Rimuovi esplicitamente eventuali vincoli preesistenti per permettere
-        // al GridPane di "avvolgere" strettamente i contenuti
-        boardGrid.getColumnConstraints().clear();
-        boardGrid.getRowConstraints().clear();
-        trackOverlays.clear();
-
-        for (int col = 0; col < cols; col++) {
-
-            String tileCode = layout.get(col);
-            Image img = GuiAssetManager.getTileImage(tileCode);
-            if (img == null) continue;
-
-            ImageView tileView = new ImageView(img);
-            tileView.setPreserveRatio(false);
-            tileView.setSmooth(true);
-
-            // Binding dell'immagine alla proprietà globale
-            tileView.fitWidthProperty().bind(cardWidthProp);
-            tileView.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
-
-            StackPane container = new StackPane(tileView);
-
-            // Blocca le dimensioni del contenitore per impedire sbavature della griglia
-            container.minWidthProperty().bind(cardWidthProp);
-            container.maxWidthProperty().bind(cardWidthProp);
-            container.prefWidthProperty().bind(cardWidthProp);
-
-            container.minHeightProperty().bind(cardWidthProp.multiply(1.62));
-            container.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
-            container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
-
-            // Mantiene lo spazio per la turn order tile (colonna 0)
-            if (col == 0) {
-                GridPane.setMargin(container, new Insets(0, 15, 0, 0));
-
-                turnOrderTotemOverlay = new Pane();
-                turnOrderTotemOverlay.setMouseTransparent(true);
-                // Il Pane deve copiare esattamente le dimensioni del contenitore
-                turnOrderTotemOverlay.minWidthProperty().bind(container.widthProperty());
-                turnOrderTotemOverlay.maxWidthProperty().bind(container.widthProperty());
-                turnOrderTotemOverlay.minHeightProperty().bind(container.heightProperty());
-                turnOrderTotemOverlay.maxHeightProperty().bind(container.heightProperty());
-
-                // Aggiungi l'overlay SOPRA la tileView
-                container.getChildren().add(turnOrderTotemOverlay);
-            }
-
-            boardGrid.add(container, col, 1);
-        }
-    }*/
 
     /**
      * Hardcoding della struttura del tabellone.
@@ -268,6 +215,8 @@ public class BoardPanelController {
 
         StackPane container = new StackPane(cardView);
 
+        container.setUserData(cardId);
+
         // Stessi vincoli di blocco del contenitore
         container.minWidthProperty().bind(cardWidthProp);
         container.maxWidthProperty().bind(cardWidthProp);
@@ -277,11 +226,13 @@ public class BoardPanelController {
         container.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
         container.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
 
-        container.setOnMouseClicked(e -> handleCardClick(logicalRow, logicalCol));
+        container.setOnMouseClicked(e -> {
+            if (!isEventCard(cardId)) {
+            handleCardClick(logicalRow, logicalCol);
+            }
+        });
         boardGrid.add(container, visualCol, visualRow);
     }
-
-    // --- Metodi per la Macchina a Stati (chiamati da InGameScreen) ---
 
     public void enableCardSelection(boolean upperAllowed, boolean lowerAllowed) {
         this.canPickUpper = upperAllowed;
@@ -292,36 +243,57 @@ public class BoardPanelController {
                 Integer row = GridPane.getRowIndex(node);
                 if (row == null) continue;
 
-                // Se è una carta della riga superiore e possiamo pescarla,
-                // OPPURE se è della riga inferiore e possiamo pescarla:
-                if ((row == 0 && upperAllowed) || (row == 2 && lowerAllowed)) {
-                    node.setEffect(new DropShadow(20, Color.YELLOW));
+                // Legge l'ID della carta dal nodo (se presente) per capire se è un evento
+                boolean isEvent = false;
+                if (node.getUserData() instanceof Integer cardId) {
+                    isEvent = isEventCard(cardId);
+                }
+
+                // Illumina solo se la riga è permessa E la carta non è un evento
+                if (((row == 0 && upperAllowed) || (row == 2 && lowerAllowed)) && !isEvent) {
+                    if (!node.getStyleClass().contains("card-glow")) {
+                        node.getStyleClass().add("card-glow");
+                    }
                     node.setCursor(Cursor.HAND);
-                } else if (row == 0 || row == 2) {
-                    node.setEffect(null); // Spegne le carte non valide
+                }
+                // Altrimenti spegne eventuali illuminazioni residue
+                else if (row == 0 || row == 2) {
+                    node.getStyleClass().remove("card-glow");
                     node.setCursor(Cursor.DEFAULT);
                 }
             }
         });
     }
 
-    public void disableSelection() {
+     /**
+     * Disabilita ogni interazione visiva e rimuove gli effetti di illuminazione
+     * sia dal tracciato dei totem che dalle carte.
+     */
+    public void disableAllInteractions() {
         this.canPickUpper = false;
         this.canPickLower = false;
         this.validTotemTiles = null;
 
-        // Spegne tutto
         Platform.runLater(() -> {
-             for (Node node : boardGrid.getChildren()) {
-                 node.setEffect(null);
-                 node.setCursor(Cursor.DEFAULT);
-             }
+            // Pulisce il tracciato e le relative ombre
+            if (trackOverlays != null) {
+                clearTrackHighlights(); // Usiamo il metodo appena sistemato per non duplicare codice
+            }
+
+            // Pulisce le carte
+            for (Node node : boardGrid.getChildren()) {
+                Integer row = GridPane.getRowIndex(node);
+                if (row != null && (row == 0 || row == 2)) {
+                    node.getStyleClass().remove("card-glow");
+                    node.setEffect(null);
+                    node.setCursor(Cursor.DEFAULT);
+                }
+            }
         });
     }
 
     public void enableTotemSelection(List<Integer> availableTiles) {
         this.validTotemTiles = availableTiles;
-        // Feedback visivo sugli slot del tracciato totem
     }
 
     private void handleCardClick(int row, int col) {
@@ -335,45 +307,62 @@ public class BoardPanelController {
     private void renderTurnOrderTotems(GameModel model) {
         trackOverlays.forEach(p -> p.getChildren().clear());
 
-        List<PlayerSnapshot> players = new ArrayList<>(model.getPlayers().values());
+        Map<String, PlayerSnapshot> players = model.getPlayers();
+        Map<String, Integer> totemPositions = model.getTotemPositions();
+        Map<String, Integer> returnPositions = model.getReturnPositions();
         double[] ySteps = getTurnOrderTotemYSteps(players.size());
 
-        // Recupera la mappa delle posizioni
-        Map<String, Integer> totemPositions = model.getTotemPositions();
+        // DEDUZIONE ROUND: Stessa logica usata nell'interazione
+        boolean isRoundOne = model.getTribes().values().stream().allMatch(List::isEmpty);
 
-        for (int i = 0; i < players.size(); i++) {
-            PlayerSnapshot p = players.get(i);
-            TotemColor color = p.getTotemColor();
-            Image img = GuiAssetManager.getTotemImage(color);
+        int fallbackYIndex = 0;
 
-            if (img != null) {
-                ImageView totemView = new ImageView(img);
-                totemView.setPreserveRatio(true);
-                totemView.fitWidthProperty().bind(cardWidthProp.multiply(0.38));
+        for (PlayerSnapshot p : players.values()) {
+            String nickname = p.getNickname();
+            Integer offerPos = totemPositions.get(nickname);
+            Integer retPos = returnPositions.get(nickname);
 
-                totemView.layoutXProperty().bind(cardWidthProp.subtract(totemView.fitWidthProperty()).divide(2));
-                totemView.layoutYProperty().bind(cardWidthProp.multiply(1.62).multiply(ySteps[i]));
+            // ROUND 1: Il totem resta invisibile finché non viene piazzato sull'offerta
+            if (isRoundOne && offerPos == null) {
+                continue;
+            }
 
-                String nickname = p.getNickname();
-                Integer pos = totemPositions.get(nickname);
+            ImageView totemView = createTotemImageView(p.getTotemColor());
+            if (totemView == null) continue;
 
-                // Se la posizione è null (non piazzato o tornato alla base) o -1, va sulla Turn Order Tile (col 0)
-                int visualCol = (pos == null || pos == 0) ? 0 : pos;
-
+            if (offerPos != null) {
+                // È posizionato sull'Offertrack
+                int visualCol = offerPos + 1;
                 if (visualCol < trackOverlays.size()) {
                     Pane overlay = trackOverlays.get(visualCol);
+                    totemView.layoutYProperty().bind(overlay.heightProperty().multiply(0.18));
+                    overlay.getChildren().add(totemView);
+                }
+            } else {
+                // È posizionato sulla Turn Order Tile (Base)
+                Pane overlay = trackOverlays.get(0);
 
-                    if (visualCol == 0) {
-                        // Posizione nel tracciato verticale (colonna 0)
-                        totemView.layoutYProperty().bind(overlay.heightProperty().multiply(ySteps[i]));
-                    } else {
-                        // Posizione fissa in alto per le tessere offerta
-                        totemView.layoutYProperty().bind(overlay.heightProperty().multiply(0.18));
-                    }
+                // Usa l'ordine di ritorno se disponibile, altrimenti li impila progressivamente
+                int yIndex = (retPos != null) ? retPos : fallbackYIndex++;
+
+                if (yIndex >= 0 && yIndex < ySteps.length) {
+                    totemView.layoutYProperty().bind(overlay.heightProperty().multiply(ySteps[yIndex]));
                     overlay.getChildren().add(totemView);
                 }
             }
         }
+    }
+
+    // Metodo di utility per mantenere i binding di ridimensionamento coerenti
+    private ImageView createTotemImageView(TotemColor color) {
+        Image img = GuiAssetManager.getTotemImage(color);
+        if (img == null) return null;
+
+        ImageView iv = new ImageView(img);
+        iv.setPreserveRatio(true);
+        iv.fitWidthProperty().bind(cardWidthProp.multiply(0.38));
+        iv.layoutXProperty().bind(cardWidthProp.subtract(iv.fitWidthProperty()).divide(2));
+        return iv;
     }
 
     private double[] getTurnOrderTotemYSteps(int playerCount) {
@@ -386,31 +375,50 @@ public class BoardPanelController {
     }
 
     public void highlightTotemPlacement(List<Integer> validIndices, String myNickname, GameModel model) {
+        Map<String, Integer> totemPositions = model.getTotemPositions();
 
         Platform.runLater(() -> {
-            if (trackOverlays.isEmpty()) return;
+            boolean iAmOnOffer = totemPositions.containsKey(myNickname);
 
-            Pane turnOrder = trackOverlays.get(0);
-            turnOrder.setMouseTransparent(false);
-            turnOrder.setCursor(Cursor.HAND);
+            // DEDUZIONE ROUND: Se nessuno ha ancora carte nella tribù, siamo al Round 1.
+            boolean isRoundOne = model.getTribes().values().stream().allMatch(List::isEmpty);
 
-            // Aumentata opacità per renderlo visibile (0.6)
-            turnOrder.setStyle("-fx-background-color: rgba(255, 255, 255, 0.6); -fx-border-color: white; -fx-border-width: 2;");
-
-            turnOrder.setOnMouseClicked(e -> {
-                turnOrder.setStyle("");
-                turnOrder.setMouseTransparent(true);
+            // Se siamo al Round 1 e non abbiamo ancora piazzato, saltiamo il click della base
+            if (isRoundOne && !iAmOnOffer) {
                 showOfferTileOptions(validIndices);
-            });
+                return;
+            }
+
+            // Se non siamo sulle offerte (quindi dobbiamo prelevare il totem dalla base)
+            if (!iAmOnOffer) {
+                if (trackOverlays.isEmpty()) return;
+
+                Pane turnOrder = trackOverlays.get(0);
+                turnOrder.setMouseTransparent(false);
+                turnOrder.setCursor(Cursor.HAND);
+
+                if (!turnOrder.getStyleClass().contains("tile-glow-white")) {
+                    turnOrder.getStyleClass().add("tile-glow-white");
+                }
+
+                turnOrder.setOnMouseClicked(e -> {
+                    turnOrder.getStyleClass().remove("tile-glow-white");
+                    turnOrder.setMouseTransparent(true);
+                    turnOrder.setOnMouseClicked(null);
+
+                    showOfferTileOptions(validIndices);
+                });
+            }
         });
     }
 
     private void showOfferTileOptions(List<Integer> validIndices) {
+
         for (Integer idx : validIndices) {
 
             // Verifica come il server mappa le tessere offerta.
             // Se 1 è la prima Offer Tile, usa 'idx'. Se 0 è la prima Offer Tile, usa 'idx + 1'.
-            int visualCol = idx; // o idx + 1
+            int visualCol = idx+1;
 
             if (visualCol >= trackOverlays.size()) continue;
 
@@ -418,23 +426,29 @@ public class BoardPanelController {
             p.setMouseTransparent(false);
             p.setCursor(Cursor.HAND);
 
-            // Sostituisce l'effetto ombra rotto con un bordo luminoso e uno sfondo leggero
-            p.setEffect(null);
-            p.setStyle("-fx-border-color: white; -fx-border-width: 3; -fx-background-color: rgba(255, 255, 255, 0.6);");
+            if (!p.getStyleClass().contains("tile-glow-yellow")) {
+                p.getStyleClass().add("tile-glow-yellow");
+            }
 
             p.setOnMouseClicked(e -> {
                 clearTrackHighlights();
-                parentScreen.onTotemPositionSelected(idx); // Invia sempre l'indice originale al server
+                parentScreen.onTotemPositionSelected(idx);
             });
         }
     }
 
     public void clearTrackHighlights() {
         for (Pane p : trackOverlays) {
-            p.setStyle("");
-            p.setEffect(null);
+            // Rimuove entrambe le possibili classi di illuminazione
+            p.getStyleClass().removeAll("tile-glow-white", "tile-glow-yellow");
+
             p.setMouseTransparent(true);
             p.setCursor(Cursor.DEFAULT);
+            p.setOnMouseClicked(null);
         }
+    }
+
+    private boolean isEventCard(int cardId) {
+        return cardId >= 53 && cardId <= 63;
     }
 }
