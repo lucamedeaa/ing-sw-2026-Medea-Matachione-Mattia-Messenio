@@ -79,7 +79,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     }
 
     private void startVideoBackground() {
-        videoBackground.start(videoContainer, "/video/VideoMesosBG.mp4", volumeSlider.valueProperty());
+        videoBackground.start(videoContainer, "/backGround/VideoMesosBG.mp4", volumeSlider.valueProperty());
     }
 
     private void stopVideo() {
@@ -96,8 +96,8 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     public void onGameStarted() {
         Platform.runLater(() -> {
             stopVideo();
-            ctx.notificationController().setLobbyView(null);
-            Platform.runLater(navigator::toInGame);
+            navigator.toInGame(); // <-- PRIMA navighiamo
+            ctx.notificationController().setLobbyView(null); // <-- POI ci deregistriamo
         });
     }
 

@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.client.view.gui.screen.InfoScreen"
-      spacing="12" prefWidth="500" prefHeight="400">
-
-    <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-
-    <Label text="MESOS — Card Reference" styleClass="title"/>
-    <TextArea fx:id="contentArea" VBox.vgrow="ALWAYS"
-              wrapText="true" editable="false" styleClass="info-area"/>
-    <Button text="Chiudi" onAction="#onClose" maxWidth="Infinity"/>
-
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InfoScreen" alignment="CENTER" spacing="10" style="-fx-background-color: #2b1a10; -fx-padding: 20;">
+    <Label text="Reference Guide" style="-fx-font-family: 'MedievalSharp'; -fx-font-size: 24px; -fx-text-fill: #ffd700;"/>
+    <TextArea fx:id="contentArea" wrapText="true" editable="false" VBox.vgrow="ALWAYS" style="-fx-font-family: 'Courier New'; -fx-font-size: 14px;"/>
+    <Button text="Chiudi" onAction="#onClose" style="-fx-font-family: 'MedievalSharp'; -fx-font-size: 18px;"/>
 </VBox>

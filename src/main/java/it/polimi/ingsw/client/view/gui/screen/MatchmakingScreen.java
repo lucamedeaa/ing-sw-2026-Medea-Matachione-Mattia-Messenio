@@ -113,7 +113,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     }
 
     private void startVideoBackground() {
-        videoBackground.start(videoContainer, "/video/VideoMesosBG.mp4", volumeSlider.valueProperty());
+        videoBackground.start(videoContainer, "/backGround/VideoMesosBG.mp4", volumeSlider.valueProperty());
     }
 
     private void stopVideo() {
