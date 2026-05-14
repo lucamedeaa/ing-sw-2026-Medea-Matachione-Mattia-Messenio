@@ -86,14 +86,10 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         String error = lobbyModel.consumeGlobalError();
 
         List<GameInfoDto> gamesToDisplay = null;
-        lobbyModel.getReadLock().lock();
-        try {
+
             if (showGamesList) {
                 gamesToDisplay = lobbyModel.getAvailableGames();
             }
-        } finally {
-            lobbyModel.getReadLock().unlock();
-        }
 
         renderer.render(gamesToDisplay, error);
     }
@@ -108,7 +104,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
             lobbyModel.setGlobalError("Unknown command. Use: create, join, list, 0.");
-            render();
+            //render();
             return;
         }
 
@@ -117,7 +113,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             command.execute();
         } catch (IllegalArgumentException e) {
             lobbyModel.setGlobalError(e.getMessage());
-            render();
+            //render();
         }
     }
 

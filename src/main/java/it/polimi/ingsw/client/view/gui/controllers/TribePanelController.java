@@ -29,8 +29,7 @@ public class TribePanelController {
     }
 
     public void update() {
-        gameModel.getReadLock().lock();
-        try {
+
             List<String> players = List.copyOf(gameModel.getPlayers().keySet());
             tribeTabPane.getTabs().clear();
 
@@ -57,9 +56,7 @@ public class TribePanelController {
 
                 tribeTabPane.getTabs().add(tab);
             }
-        } finally {
-            gameModel.getReadLock().unlock();
-        }
+
     }
 
     public void refresh(GameModel model) {

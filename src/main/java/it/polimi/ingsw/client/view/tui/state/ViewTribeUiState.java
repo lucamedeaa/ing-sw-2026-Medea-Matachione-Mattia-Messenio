@@ -27,11 +27,9 @@ public class ViewTribeUiState implements UIState, InGameView {
 
     @Override
     public void render() {
-        gameModel.getReadLock().lock();
-        try {
+
             var tribe = gameModel.getTribes().get(targetPlayer);
             renderer.render(targetPlayer, tribe);
-        } finally { gameModel.getReadLock().unlock(); }
     }
 
     @Override

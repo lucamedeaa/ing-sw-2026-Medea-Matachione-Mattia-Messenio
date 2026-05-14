@@ -126,17 +126,14 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         errorLabel.setText(error != null ? error : "");
 
         if (showGamesList) {
-            ctx.lobbyModel().getReadLock().lock();
-            try {
+
                 List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
                 gamesListView.getItems().setAll(
                         games.stream()
                                 .map(g -> g.getGameId() + " — Creator: " + g.getCreatorNickname() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")")
                                 .toList()
                 );
-            } finally {
-                ctx.lobbyModel().getReadLock().unlock();
-            }
+
         }
     }
 

@@ -5,9 +5,12 @@ import it.polimi.ingsw.client.model.EventApplier;
 import it.polimi.ingsw.client.model.LobbyModel;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.network.ClientNotificationController;
+import it.polimi.ingsw.client.network.DispatchingNotificationReceiver;
+import it.polimi.ingsw.client.network.ServerNotificationReceiver;
 import it.polimi.ingsw.client.network.factory.NetworkClientFactory;
 import it.polimi.ingsw.client.network.factory.RMIConnectionFactory;
 import it.polimi.ingsw.client.network.factory.SocketConnectionFactory;
+import it.polimi.ingsw.client.view.ClientEventDispatcher;
 import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.ClientUi;
 import it.polimi.ingsw.client.view.UiFactory;
@@ -106,8 +109,21 @@ public class ClientMain {
                         new RMIConnectionFactory()
                 ));
 
-                // UNICA CONNESSIONE: passiamo il receiver reale direttamente
-                server = networkFactory.createConnection(type, ip, port, receiver);
+                ClientEventDispatcher uiDispatcher;
+
+                if (uiChoice == 1) { // Caso TUI
+                    it.polimi.ingsw.client.view.tui.TextUserInterface tui = (it.polimi.ingsw.client.view.tui.TextUserInterface) ui;
+                    uiDispatcher = tui::dispatch;
+                } else { // Caso GUI
+                    uiDispatcher = javafx.application.Platform::runLater; // Dispatcher nativo JavaFX
+                }
+
+                // ricevitore sicuro che rimbalza i messaggi sul thread UI
+                ServerNotificationReceiver safeReceiver =
+                        new DispatchingNotificationReceiver(uiDispatcher, receiver);
+
+                // Passiamo safeReceiver (il decoratore) invece del receiver base
+                server = networkFactory.createConnection(type, ip, port, safeReceiver);
 
             } catch (java.rmi.NotBoundException e) {
                 // Errore previsto: Il server c'è ma il servizio "MesosServer" non è registrato

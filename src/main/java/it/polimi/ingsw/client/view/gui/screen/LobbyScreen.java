@@ -123,8 +123,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @Override
     public void refresh() {
-        ctx.lobbyModel().getReadLock().lock();
-        try {
+
             playersContainer.getChildren().clear();
             List<String> players = ctx.lobbyModel().getLobbyPlayers();
 
@@ -151,9 +150,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
             } else {
                 statusLabel.setVisible(false);
             }
-        } finally {
-            ctx.lobbyModel().getReadLock().unlock();
-        }
+
     }
 
     @FXML

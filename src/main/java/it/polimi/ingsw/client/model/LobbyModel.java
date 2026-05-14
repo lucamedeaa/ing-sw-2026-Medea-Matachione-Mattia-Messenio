@@ -20,12 +20,9 @@ public class LobbyModel extends ObservableModel {
      * @param games latest lobby game list received from the server
      */
     public void setAvailableGames(List<GameInfoDto> games) {
-        lock.writeLock().lock();
-        try {
+
             this.availableGames = games;
-        }finally {
-            lock.writeLock().unlock();
-        }
+
     }
 
     /**
@@ -35,42 +32,30 @@ public class LobbyModel extends ObservableModel {
      * @param notification message associated with the update
      */
     public void setLobbyData(List<String> players, String notification) {
-        lock.writeLock().lock();
-        try {
+
             this.lobbyPlayers = new ArrayList<>(players);
             this.lobbyNotification = notification;
 
-        }finally {
-            lock.writeLock().unlock();
-        }
+
         notifyUI();
 
     }
 
     public List<GameInfoDto> getAvailableGames() {
-        lock.readLock().lock();
-        try {
+
             return new ArrayList<>(availableGames);
-        } finally {
-            lock.readLock().unlock();
-        }
+
     }
 
     public List<String> getLobbyPlayers() {
-        lock.readLock().lock();
-        try {
+
             return new ArrayList<>(lobbyPlayers);
-        } finally {
-            lock.readLock().unlock();
-        }
+
     }
 
     public String getLobbyNotification() {
-        lock.readLock().lock();
-        try {
+
             return lobbyNotification;
-        } finally {
-            lock.readLock().unlock();
-        }
+
     }
 }

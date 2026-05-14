@@ -16,12 +16,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TextUserInterface implements ClientUi, UIObserver, StateContainer, ApplicationLifecyclePort {
-    private volatile UIState currentState;
+    private  UIState currentState;
     private final Scanner scanner;
     private final TuiRouter router;
 
     private final ExecutorService uiExecutor = Executors.newSingleThreadExecutor();
     private final AtomicBoolean running = new AtomicBoolean(true);
+    private final AtomicBoolean renderPending = new AtomicBoolean(false);
 
     public TextUserInterface(LobbyModel lobbyModel, GameModel gameModel, Scanner scanner) {
         this.scanner = scanner;
@@ -72,15 +73,13 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
         }
     }
 
+    public void dispatch(Runnable task) {
+        uiExecutor.submit(task);
+    }
 
     @Override
     public void onStateChanged() {
-        // Le notifiche di rete (che arrivano da thread diversi) vengono accodate
-        uiExecutor.submit(() -> {
-            if (currentState != null && running.get()) {
-                currentState.render();
-            }
-        });
+        requestRender();
     }
     @Override
     public void updateState(UIState newState) {
@@ -94,8 +93,18 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
             }
             this.currentState = newState;
             this.currentState.onEnter();
-            this.currentState.render();
+            requestRender();
         });
+    }
+    private void requestRender() {
+        if (renderPending.compareAndSet(false, true)) {
+            uiExecutor.submit(() -> {
+                renderPending.set(false);
+                if (currentState != null && running.get()) {
+                    currentState.render();
+                }
+            });
+        }
     }
     @Override
     public void requestShutdown() {

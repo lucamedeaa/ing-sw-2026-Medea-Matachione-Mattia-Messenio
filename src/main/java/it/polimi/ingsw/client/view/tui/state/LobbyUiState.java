@@ -59,15 +59,12 @@ public class LobbyUiState implements UIState, LobbyView {
 
         // Se il FullSync è arrivato prima
         // che questa view fosse registrata, il GameModel avrà già i giocatori.
-        gameModel.getReadLock().lock();
-        try {
+
             // Se i player del gioco non sono vuoti, significa che il FullSync è arrivato prima
             if (!gameModel.getPlayers().isEmpty()) {
                 onGameStarted();
             }
-        } finally {
-            gameModel.getReadLock().unlock();
-        }
+
     }
 
     @Override
@@ -84,16 +81,13 @@ public class LobbyUiState implements UIState, LobbyView {
     public void render() {
         String error = lobbyModel.consumeGlobalError();
 
-        lobbyModel.getReadLock().lock();
-        try {
+
             renderer.render(
                     lobbyModel.getLobbyPlayers(),
                     lobbyModel.getLobbyNotification(),
                     session.getNickname()
             );
-        } finally {
-            lobbyModel.getReadLock().unlock();
-        }
+
         if (error != null && !error.isEmpty()) {
             out.print(ColorAnsi.RED_BOLD + "\n[ERRORE SERVER]: " + error + ColorAnsi.RESET);
             out.prompt(ColorAnsi.YELLOW_BOLD + "\nUntil the whole tribe is here > " + ColorAnsi.RESET);

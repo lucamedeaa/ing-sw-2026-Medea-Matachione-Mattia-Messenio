@@ -83,8 +83,7 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
 
     private void renderLocalResult() {
         GameModel gm = ctx.gameModel();
-        gm.getReadLock().lock();
-        try {
+
             List<PlayerScoreDto> scores = gm.getLeaderboard();
             if (scores != null && !scores.isEmpty()) {
                 sessionLeaderboardView.getItems().setAll(
@@ -102,20 +101,15 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
                 personalBestLabel.setText("Miglior punteggio globale: "
                         + local.personalBestScore() + " pt  (pos. " + local.globalPersonalBestPosition() + ")");
             }
-        } finally {
-            gm.getReadLock().unlock();
-        }
+
     }
 
     private void renderGlobalLeaderboard() {
         GameModel gm = ctx.gameModel();
-        gm.getReadLock().lock();
+
         LeaderboardSnapshotDto global;
-        try {
-            global = gm.getGlobalLeaderboard();
-        } finally {
-            gm.getReadLock().unlock();
-        }
+
+        global = gm.getGlobalLeaderboard();
 
         if (global == null) {
             globalSpinner.setVisible(true);

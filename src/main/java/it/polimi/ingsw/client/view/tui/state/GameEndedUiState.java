@@ -61,8 +61,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
     @Override
     public void render() {
-        gameModel.getReadLock().lock();
-        try {
+
             var local = gameModel.getLocalResult();
             var global = gameModel.getGlobalLeaderboard();
 
@@ -74,9 +73,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
 
             renderer.render(local, showLeaderboard ? global : null, session.getNickname(), showLeaderboard);
-        } finally {
-            gameModel.getReadLock().unlock();
-        }
+
     }
 
     private void showLeaderboard() {
