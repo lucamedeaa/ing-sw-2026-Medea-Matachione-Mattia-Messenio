@@ -12,6 +12,10 @@ public class VideoBackground {
     private MediaPlayer mediaPlayer;
     private StackPane currentContainer;
 
+    private static double globalVolume = 0.15;
+
+    public static double getGlobalVolume() { return globalVolume; }
+
     public void start(StackPane container, String resourcePath, ObservableValue<? extends Number> volumeProperty) {
         stop();
         currentContainer = container;
@@ -26,9 +30,17 @@ public class VideoBackground {
         media.setOnError(() -> System.err.println("Errore Media: " + media.getError()));
 
         mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-        mediaPlayer.setMute(false);
-        if (volumeProperty != null) mediaPlayer.volumeProperty().bind(volumeProperty);
+        mediaPlayer.setVolume(globalVolume);
+
+        if (volumeProperty != null) {
+            // Se lo slider si muove, aggiorna sia il player che la memoria globale
+            volumeProperty.addListener((obs, old, newVal) -> {
+                globalVolume = newVal.doubleValue();
+                if (mediaPlayer != null) mediaPlayer.setVolume(globalVolume);
+            });
+        }
 
         mediaPlayer.setOnError(() -> System.err.println("Errore MediaPlayer: " + mediaPlayer.getError()));
         mediaPlayer.setOnReady(mediaPlayer::play);

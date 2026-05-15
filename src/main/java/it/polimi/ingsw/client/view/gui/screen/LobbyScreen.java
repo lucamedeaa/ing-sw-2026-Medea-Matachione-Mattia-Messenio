@@ -61,7 +61,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
-        volumeSlider.setValue(0.5);
+        volumeSlider.setValue(VideoBackground.getGlobalVolume());
 
         // Spaziatura e allineamento centrale per i nomi dei giocatori
         playersContainer.setAlignment(Pos.CENTER);
@@ -96,8 +96,8 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     public void onGameStarted() {
         Platform.runLater(() -> {
             stopVideo();
-            navigator.toInGame(); // <-- PRIMA navighiamo
-            ctx.notificationController().setLobbyView(null); // <-- POI ci deregistriamo
+            ctx.notificationController().setLobbyView(null);
+            navigator.toInGame();
         });
     }
 

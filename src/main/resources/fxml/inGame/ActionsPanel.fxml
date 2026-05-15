@@ -5,13 +5,16 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.view.gui.controllers.ActionsPanelController"
-      spacing="8" alignment="CENTER">
+      spacing="15" alignment="CENTER">
 
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <Label text="Azioni" style="-fx-font-weight: bold;"/>
-    <Button fx:id="takeCardButton"   text="Pesca carta"    onAction="#handleTakeCard"   maxWidth="Infinity" disable="true"/>
-    <Button fx:id="placeTotemButton" text="Piazza totem"   onAction="#handlePlaceTotem" maxWidth="Infinity" disable="true"/>
-    <Button fx:id="skipButton"       text="Salta azione"   onAction="#handleSkip"       maxWidth="Infinity" disable="true"/>
+    <Button fx:id="skipButton" text="Salta azione" onAction="#handleSkip"
+            style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;" disable="true"/>
+
+    <Separator style="-fx-background-color: #e67e22; -fx-opacity: 0.2;"/>
+
+    <Button text="Mostra / Nascondi Log" onAction="#handleToggleLog"
+            style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;"/>
 
 </VBox>

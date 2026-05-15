@@ -5,12 +5,13 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.view.gui.controllers.LogPanelController"
-      VBox.vgrow="ALWAYS">
+      style="-fx-background-color: rgba(0,0,0,0.85); -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, black, 15, 0, 0, 0);"
+      prefWidth="450" prefHeight="280" maxHeight="280">
 
-    <padding><Insets top="4" right="8" bottom="4" left="8"/></padding>
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <Label text="Log" style="-fx-font-weight: bold;"/>
+    <Label text="Cronache della Tribù" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-text-fill: #e67e22;"/>
     <TextArea fx:id="logArea" editable="false" wrapText="true"
-              prefHeight="120" VBox.vgrow="ALWAYS"/>
-
+              style="-fx-control-inner-background: transparent; -fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'Arial'; -fx-font-size: 14px;"
+              VBox.vgrow="ALWAYS"/>
 </VBox>

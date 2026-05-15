@@ -15,14 +15,9 @@ public class ActionsPanelController {
     private GuiContext ctx;
     private InGameScreen parentScreen; // <-- Riferimento al mediatore
 
-    @FXML private Button placeTotemButton;
-    @FXML private Button takeCardButton;
     @FXML private Button skipButton;
 
-    // Variabili per mantenere lo stato dei click validi
-    private List<Integer> validTotemTiles;
-    private int upperPicksAllowed;
-    private int lowerPicksAllowed;
+
 
     public void setContext(GuiContext ctx) {
         this.ctx = ctx;
@@ -34,13 +29,7 @@ public class ActionsPanelController {
     }
 
     public void refresh(GameModel model, String myNickname) {
-        // 1. Reset totale
-        placeTotemButton.setDisable(true);
-        takeCardButton.setDisable(true);
-        skipButton.setDisable(true);
-        this.validTotemTiles = null;
-        this.upperPicksAllowed = 0;
-        this.lowerPicksAllowed = 0;
+        // Reset totale
 
         if (!myNickname.equals(model.getActivePlayer())) {
             return;
@@ -55,21 +44,11 @@ public class ActionsPanelController {
 // --- Metodi chiamati da FxActionRender ---
 
     public void enableTakeCard(int upperPicks, int lowerPicks) {
-        this.upperPicksAllowed = upperPicks;
-        this.lowerPicksAllowed = lowerPicks;
-
-        // Attivazione automatica del flusso di selezione sul tabellone
-        if (parentScreen != null) {
-            parentScreen.promptCardSelection(upperPicks, lowerPicks);
-        }
+        if (parentScreen != null) parentScreen.promptCardSelection(upperPicks, lowerPicks);
     }
 
-    public void enablePlaceTotem(List<Integer> availableTiles) {
-        this.validTotemTiles = availableTiles;
-        // Invece di abilitare il bottone, avvisiamo il mediatore
-        if (parentScreen != null) {
-            parentScreen.promptTotemPlacement(availableTiles);
-        }
+    public void enablePlaceTotem(java.util.List<Integer> availableTiles) {
+        if (parentScreen != null) parentScreen.promptTotemPlacement(availableTiles);
     }
 
     public void enableSkip() {
@@ -83,19 +62,11 @@ public class ActionsPanelController {
         ctx.controller().skipAction();
     }
 
-    @FXML
-    private void handleTakeCard() {
-        // Delega la logica di transizione di stato al mediatore
-        if (parentScreen != null) {
-            parentScreen.startTakeCardFlow(upperPicksAllowed, lowerPicksAllowed);
-        }
-    }
 
     @FXML
-    private void handlePlaceTotem() {
-        // Delega la logica di transizione di stato al mediatore
+    private void handleToggleLog() {
         if (parentScreen != null) {
-            parentScreen.startPlaceTotemFlow(validTotemTiles);
+            parentScreen.toggleLog();
         }
     }
 }

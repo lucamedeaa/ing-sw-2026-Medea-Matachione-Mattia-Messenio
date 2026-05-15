@@ -81,7 +81,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
         gamesListView.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
 
-        gamesListView.setCellFactory(lv -> new ListCell<String>() {
+        gamesListView.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -90,7 +90,25 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
                     setStyle("-fx-background-color: transparent;");
                 } else {
                     setText(item);
-                    setStyle("-fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-effect: dropshadow(three-pass-box, black, 8, 0.0, 0, 2);");
+                    applyCustomStyle(isSelected());
+                }
+            }
+
+            @Override
+            public void updateSelected(boolean selected) {
+                super.updateSelected(selected);
+                if (!isEmpty() && getItem() != null) {
+                    applyCustomStyle(selected);
+                }
+            }
+
+            private void applyCustomStyle(boolean selected) {
+                if (selected) {
+                    // Partita selezionata (riquadro e sfondo dorato)
+                    setStyle("-fx-background-color: rgba(230, 126, 34, 0.4); -fx-border-color: #e67e22; -fx-border-radius: 4; -fx-text-fill: #ffd700; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px;");
+                } else {
+                    // Partita non selezionata
+                    setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-effect: dropshadow(three-pass-box, black, 8, 0.0, 0, 2);");
                 }
             }
         });
@@ -107,8 +125,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
-        volumeSlider.setValue(0.5);
-
+        volumeSlider.setValue(VideoBackground.getGlobalVolume());
         startVideoBackground();
     }
 
@@ -136,6 +153,8 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
         }
     }
+
+
 
     @Override
     public void onAvailableGames(List<GameInfoDto> games) {

@@ -47,7 +47,7 @@ public class GameEndedScreen implements GameEndedView, RefreshableScreen {
 
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
-        volumeSlider.setValue(0.5);
+        volumeSlider.setValue(VideoBackground.getGlobalVolume());
         videoBackground.start(videoContainer, "/background/VideoMesosBG.mp4", volumeSlider.valueProperty());
 
         setupListViewStyle(sessionLeaderboardView);

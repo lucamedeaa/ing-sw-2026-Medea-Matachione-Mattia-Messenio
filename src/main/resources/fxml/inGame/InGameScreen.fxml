@@ -5,27 +5,32 @@
 <StackPane fx:id="rootPane" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
 
     <Pane style="-fx-background-image: url('/background/BgPlancia.png'); -fx-background-size: cover; -fx-background-position: center;"/>
-
-    <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.65);"/>
+    <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.5);"/>
 
     <BorderPane>
         <center>
             <fx:include source="BoardPanel.fxml" fx:id="boardPanel"/>
         </center>
+
         <right>
-            <VBox>
+            <VBox spacing="20" style="-fx-background-color: rgba(0,0,0,0.50); -fx-border-color: #e67e22; -fx-border-width: 0 0 0 2; -fx-padding: 20;">
                 <fx:include source="PlayersPanel.fxml" fx:id="playersPanel"/>
+                <Separator style="-fx-background-color: #e67e22; -fx-opacity: 0.4;"/>
                 <fx:include source="ActionsPanel.fxml" fx:id="actionsPanel"/>
             </VBox>
         </right>
+
         <bottom>
-            <SplitPane dividerPositions="0.7" prefHeight="250">
-                <items>
-                    <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
-                    <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
-                </items>
-            </SplitPane>
+            <VBox prefHeight="250" style="-fx-background-color: rgba(0,0,0,0.50); -fx-border-color: #e67e22; -fx-border-width: 2 0 0 0;">
+                <fx:include source="TribePanel.fxml" fx:id="tribePanel"/>
+            </VBox>
         </bottom>
     </BorderPane>
+
+    <StackPane fx:id="logOverlay" visible="false" alignment="BOTTOM_RIGHT" pickOnBounds="false">
+        <VBox alignment="BOTTOM_RIGHT" pickOnBounds="false" style="-fx-padding: 0 280 220 0;">
+            <fx:include source="LogPanel.fxml" fx:id="logPanel"/>
+        </VBox>
+    </StackPane>
 
 </StackPane>

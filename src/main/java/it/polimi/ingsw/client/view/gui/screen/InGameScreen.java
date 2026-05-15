@@ -31,10 +31,17 @@ public class InGameScreen implements InGameView, RefreshableScreen {
     @FXML private ActionsPanelController actionsPanelController;
     @FXML private LogPanelController logPanelController;
     @FXML private TribePanelController tribePanelController;
+    @FXML private StackPane logOverlay;
 
     public InGameScreen(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
         this.navigator = navigator;
+    }
+
+    public void toggleLog() {
+        if (logOverlay != null) {
+            logOverlay.setVisible(!logOverlay.isVisible());
+        }
     }
 
     @FXML
@@ -51,9 +58,7 @@ public class InGameScreen implements InGameView, RefreshableScreen {
         if (playersPanelController != null) {
             playersPanelController.setParentScreen(this);
         }
-        if (tribePanelController != null) {
-            tribePanelController.init(ctx.gameModel(), ctx.session());
-        }
+
 
         this.viewedPlayerNickname = ctx.session().getNickname();
 
@@ -107,7 +112,7 @@ public class InGameScreen implements InGameView, RefreshableScreen {
             if (playersPanelController != null) playersPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
             if (actionsPanelController != null) actionsPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
             if (logPanelController != null) logPanelController.refresh(ctx.gameModel());
-            if (tribePanelController != null) tribePanelController.refresh(ctx.gameModel());
+            if (tribePanelController != null) tribePanelController.refresh(ctx.gameModel(), viewedPlayerNickname);
         });
     }
 
