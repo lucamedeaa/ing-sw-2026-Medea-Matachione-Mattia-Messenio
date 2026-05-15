@@ -36,6 +36,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +50,7 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     private volatile ObjectOutputStream out;
     private final ConnectionSession session;
     private final Object streamLock = new Object();
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     /** Constructs the handler. Blocking socket I/O setup is performed in the handler thread. */
     public SocketClientHandler(Socket socket, GameManagerInterface gameManager, LobbyController lobbyController) {
@@ -57,14 +59,13 @@ public class SocketClientHandler implements ClientProxy, Runnable {
                 this,
                 gameManager,
                 lobbyController,
-                this::closeConnection,
                 LOGGER,
                 "SOCKET"
         );
     }
 
     private void sendMessage(ServerMessage message) {
-        if (!session.isActive()) {
+        if (closed.get()) {
             return;
         }
         try {
@@ -80,11 +81,11 @@ public class SocketClientHandler implements ClientProxy, Runnable {
         } catch (IOException e) {
             LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
                     + session.getNickname() + ": " + e.getMessage());
-            session.handleClientDisconnection();
+            disconnectClient();
         } catch (RuntimeException e) {
             LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while sending message to "
                     + session.getNickname(), e);
-            session.handleClientDisconnection();
+            disconnectClient();
         }
     }
 
@@ -143,18 +144,18 @@ public class SocketClientHandler implements ClientProxy, Runnable {
     public void run() {
         try {
             initializeStreams();
-            while (session.isActive()) {
+            while (!closed.get()) {
                 Object input = in.readObject();
                 if (input instanceof PingMessage) {
                     sendMessage(new PongMessage());
                     continue;
                 }
                 if (input instanceof DisconnectionMessage) {
-                    session.handleClientDisconnection();
+                    disconnectClient();
                     continue;
                 }
                 if (input instanceof ClientMessage message) {
-                    message.dispatchTo(session.currentState());
+                    message.dispatchTo(session);
                 } else {
                     error("Unknown message type.");
                 }
@@ -176,7 +177,7 @@ public class SocketClientHandler implements ClientProxy, Runnable {
             LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while handling client "
                     + session.getNickname(), e);
         } finally {
-            session.handleClientDisconnection();
+            disconnectClient();
         }
     }
 
@@ -192,6 +193,14 @@ public class SocketClientHandler implements ClientProxy, Runnable {
         closeResource(in, "input stream");
         closeResource(out, "output stream");
         closeResource(socket, "socket");
+    }
+
+    private void disconnectClient() {
+        if (!closed.compareAndSet(false, true)) {
+            return;
+        }
+        closeConnection();
+        session.handleClientDisconnection();
     }
 
     private void closeResource(Closeable resource, String description) {

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.network;
 
 import it.polimi.ingsw.server.controller.GameController;
-import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 /**
@@ -39,13 +38,6 @@ public interface ConnectionContext extends ClientProxy {
     String getNickname();
 
     /**
-     * Indicates whether this connection is still active.
-     *
-     * @return true if the connection has not been closed
-     */
-    boolean isActive();
-
-    /**
      * Moves this connection back to matchmaking/lobby state.
      */
     void transitionToLobby();
@@ -54,31 +46,5 @@ public interface ConnectionContext extends ClientProxy {
      * Clears and unregisters the current nickname, if present.
      */
     void clearNickname();
-
-    /**
-     * Executes an operation while holding the connection lifecycle lock.
-     *
-     * @param operation operation to execute
-     * @param <T> result type
-     * @return operation result
-     * @throws LobbyActionException if the operation fails in lobby logic
-     */
-    <T> T withConnectionLock(LockedConnectionOperation<T> operation) throws LobbyActionException;
-
-    /**
-     * Operation that must run under the connection lifecycle lock.
-     *
-     * @param <T> operation result type
-     */
-    @FunctionalInterface
-    interface LockedConnectionOperation<T> {
-        /**
-         * Runs the locked operation.
-         *
-         * @return operation result
-         * @throws LobbyActionException if lobby logic rejects the operation
-         */
-        T run() throws LobbyActionException;
-    }
 
 }

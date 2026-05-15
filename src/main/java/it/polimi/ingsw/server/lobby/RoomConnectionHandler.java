@@ -19,10 +19,9 @@ public interface RoomConnectionHandler {
     RoomAdmissionResult addPlayer(String nickname, ConnectionContext connection) throws LobbyActionException;
 
     /**
-     * Removes a player from the room before the game starts.
+     * Removes a player from the room, or forwards the disconnection to the game controller after start.
      *
      * @param nickname nickname of the player to remove
-     * @throws LobbyActionException if the player cannot leave the room
      */
-    void removePlayer(String nickname) throws LobbyActionException;
+    void removePlayer(String nickname);
 }
