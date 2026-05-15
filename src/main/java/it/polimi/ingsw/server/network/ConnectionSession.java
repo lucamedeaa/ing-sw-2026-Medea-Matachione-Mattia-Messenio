@@ -210,7 +210,7 @@ public class ConnectionSession implements ConnectionContext, ConnectionState {
 
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
-        enqueueOutbound("full sync", () -> client.fullSync(board, players, activePlayer, actions, turnOrderTile));
+        enqueueOutbound(() -> client.fullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
     @Override
@@ -261,9 +261,6 @@ public class ConnectionSession implements ConnectionContext, ConnectionState {
     private void enqueueOutbound(Runnable delivery) {
         try {
             outboundExecutor.submit(() -> {
-                if (!active.get()) {
-                    return;
-                }
                 try {
                     delivery.run();
                 } catch (RuntimeException e) {
