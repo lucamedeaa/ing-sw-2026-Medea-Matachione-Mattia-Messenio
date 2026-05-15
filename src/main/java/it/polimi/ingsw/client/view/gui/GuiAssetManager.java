@@ -12,6 +12,7 @@ public class GuiAssetManager {
     private static final Map<Integer, Image> cardCache = new HashMap<>();
     private static final Map<String, Image> tileCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemCache = new HashMap<>();
+    private static final Map<TotemColor, Image> totemFullCache = new HashMap<>();
 
     public static Image getCardImage(int cardId) {
         if (cardCache.containsKey(cardId)) {
@@ -74,6 +75,29 @@ public class GuiAssetManager {
 
         Image image = new Image(is);
         totemCache.put(color, image);
+        return image;
+    }
+
+    public static Image getTotemImageFull(TotemColor color) {
+        if (color == null) {
+            return null;
+        }
+
+        if (totemFullCache.containsKey(color)) {
+            return totemFullCache.get(color);
+        }
+
+        // Costruisce il nuovo path con il prefisso TOTEM_ e il nome del colore
+        String path = "/images/totem/TOTEM_" + color.name() + ".png";
+        InputStream is = GuiAssetManager.class.getResourceAsStream(path);
+
+        if (is == null) {
+            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + color.name() + " al percorso " + path);
+            return null;
+        }
+
+        Image image = new Image(is);
+        totemFullCache.put(color, image);
         return image;
     }
 }

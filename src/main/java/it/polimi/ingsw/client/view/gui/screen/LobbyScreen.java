@@ -101,6 +101,14 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
         });
     }
 
+    @FXML
+    private void handleDisconnect() {
+        stopVideo();
+        ctx.controller().disconnect(() -> {
+            Platform.runLater(() -> navigator.toDisconnected("Disconnesso volontariamente."));
+        });
+    }
+
     @Override
     public void onReturnToMatchmaking(String reason) {
         stopVideo();

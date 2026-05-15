@@ -5,11 +5,10 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.view.gui.controllers.BoardPanelController"
-      spacing="12" VBox.vgrow="ALWAYS">
+      spacing="12" VBox.vgrow="ALWAYS" alignment="CENTER">
 
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <!--<Label text="Tabellone" style="-fx-font-weight: bold;"/> -->
-    <GridPane fx:id="boardGrid" hgap="0" vgap="6" alignment="CENTER"/>
+    <GridPane fx:id="boardGrid" hgap="10" vgap="6" alignment="CENTER"/>
 
 </VBox>

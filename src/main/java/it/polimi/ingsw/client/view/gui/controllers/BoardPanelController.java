@@ -178,31 +178,29 @@ public class BoardPanelController {
 
 
     private void renderCards(List<Integer> upper, List<Integer> lower) {
-        // Rimuove solo le carte (riga 0 e riga 2), lasciando intatte le tessere (riga 1)
         boardGrid.getChildren().removeIf(node -> {
             Integer row = GridPane.getRowIndex(node);
             return row != null && (row == 0 || row == 2);
         });
 
-        // Disegna la riga superiore (Server Row 0 -> GUI Row 0)
         for (int i = 0; i < upper.size(); i++) {
             Integer cardId = upper.get(i);
-            // Il server imposta 'null' se la carta è stata presa
             if (cardId != null) {
-                addCardToGrid(cardId, 0, i + 1, 0, i);
+                boolean isFirstBuilding = isFirstBuilding(upper, i);
+                addCardToGrid(cardId, 0, i + 1, 0, i, isFirstBuilding);
             }
         }
 
-        // Disegna la riga inferiore (Server Row 1 -> GUI Row 2)
         for (int i = 0; i < lower.size(); i++) {
             Integer cardId = lower.get(i);
             if (cardId != null) {
-                addCardToGrid(cardId, 2, i + 1, 1, i);
+                boolean isFirstBuilding = isFirstBuilding(lower, i);
+                addCardToGrid(cardId, 2, i + 1, 1, i, isFirstBuilding);
             }
         }
     }
 
-    private void addCardToGrid(int cardId, int visualRow, int visualCol, int logicalRow, int logicalCol) {
+    private void addCardToGrid(int cardId, int visualRow, int visualCol, int logicalRow, int logicalCol, boolean isFirstBuilding) {
         Image img = GuiAssetManager.getCardImage(cardId);
         if (img == null) return;
 
@@ -356,6 +354,21 @@ public class BoardPanelController {
                 }
             }
         }
+    }
+
+    private boolean isFirstBuilding(List<Integer> row, int index) {
+        Integer currentId = row.get(index);
+        if (currentId == null || !"Building".equals(it.polimi.ingsw.common.config.CardRegistry.getCard(currentId).type())) {
+            return false;
+        }
+        // Controlla a ritroso se la carta precedente non era un edificio
+        for (int i = index - 1; i >= 0; i--) {
+            Integer prevId = row.get(i);
+            if (prevId != null) {
+                return !"Building".equals(it.polimi.ingsw.common.config.CardRegistry.getCard(prevId).type());
+            }
+        }
+        return true;
     }
 
     // Metodo di utility per mantenere i binding di ridimensionamento coerenti

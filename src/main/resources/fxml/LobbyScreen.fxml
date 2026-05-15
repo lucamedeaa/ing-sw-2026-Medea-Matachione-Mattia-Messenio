@@ -47,9 +47,12 @@
                 <Button text="ABBANDONA PARTITA"
                         onAction="#handleLeave"
                         prefWidth="320"
-                        style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9);
-                               -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8;
-                               -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
+                        style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
+
+                <Button text="DISCONNETTITI"
+                        onAction="#handleDisconnect"
+                        prefWidth="320"
+                        style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ff5252; -fx-border-color: #ff5252; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
             </VBox>
         </bottom>
     </BorderPane>

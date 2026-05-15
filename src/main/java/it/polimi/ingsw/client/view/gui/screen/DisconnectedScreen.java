@@ -22,5 +22,6 @@ public class DisconnectedScreen {
     @FXML
     private void onExit() {
         Platform.exit();
+        System.exit(0);
     }
 }

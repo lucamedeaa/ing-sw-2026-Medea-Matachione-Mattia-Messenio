@@ -69,4 +69,28 @@ public class ActionsPanelController {
             parentScreen.toggleLog();
         }
     }
+    @FXML
+    private void handleShowInfo() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/InfoScreen.fxml"));
+            javafx.scene.Parent root = loader.load();
+            javafx.stage.Stage infoStage = new javafx.stage.Stage();
+            infoStage.setTitle("Reference Guide");
+            infoStage.setScene(new javafx.scene.Scene(root));
+            infoStage.show();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleDisconnect() {
+        ctx.controller().disconnect(() -> {
+            javafx.application.Platform.runLater(() -> {
+                if (parentScreen != null) {
+                    parentScreen.onServerDisconnected("Disconnesso volontariamente.");
+                }
+            });
+        });
+    }
 }

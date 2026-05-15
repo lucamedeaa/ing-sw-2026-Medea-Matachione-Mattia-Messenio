@@ -29,7 +29,7 @@ public class PlayersPanelController {
             row.setPadding(new Insets(8, 10, 8, 10));
 
             // Icona del Totem
-            ImageView totemImg = new ImageView(GuiAssetManager.getTotemImage(player.getTotemColor()));
+            ImageView totemImg = new ImageView(GuiAssetManager.getTotemImageFull(player.getTotemColor()));
             totemImg.setFitHeight(45);
             totemImg.setPreserveRatio(true);
 

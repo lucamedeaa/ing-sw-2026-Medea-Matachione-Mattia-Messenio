@@ -207,4 +207,12 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     private void onRefreshList() {
         ctx.controller().getAvailableGames();
     }
+
+    @FXML
+    private void handleDisconnect() {
+        stopVideo();
+        ctx.controller().disconnect(() -> {
+            Platform.runLater(() -> navigator.toDisconnected("Disconnesso volontariamente."));
+        });
+    }
 }
