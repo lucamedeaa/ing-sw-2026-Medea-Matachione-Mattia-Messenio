@@ -82,10 +82,6 @@ public class SocketClientHandler implements ClientProxy, Runnable {
             LOGGER.log(Level.INFO, () -> "[SOCKET] Disconnection detected on write for "
                     + session.getNickname() + ": " + e.getMessage());
             disconnectClient();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while sending message to "
-                    + session.getNickname(), e);
-            disconnectClient();
         }
     }
 
@@ -173,9 +169,6 @@ public class SocketClientHandler implements ClientProxy, Runnable {
             LOGGER.log(Level.WARNING, "[SOCKET] Received an unknown object from " + session.getNickname(), e);
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "[SOCKET] I/O error for " + session.getNickname(), e);
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[SOCKET] Unexpected failure while handling client "
-                    + session.getNickname(), e);
         } finally {
             disconnectClient();
         }

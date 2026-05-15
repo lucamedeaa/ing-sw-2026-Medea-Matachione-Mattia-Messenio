@@ -90,21 +90,13 @@ public class GameController implements GameCompletionHandler {
                     task.run();
                 } catch (RuntimeException e) {
                     LOGGER.log(Level.SEVERE, "[CONTROLLER] Unexpected failure during " + description, e);
-                    abortAfterUnexpectedFailure();
+                    if (game.abort()) {
+                        lifecycleCallback.closeAbortedRoom(INTERNAL_ABORT_REASON, null);
+                    }
                 }
             });
         } catch (RejectedExecutionException e) {
             LOGGER.log(Level.FINE, "[CONTROLLER] Dropped game task after game shutdown: " + description, e);
-        }
-    }
-
-    private void abortAfterUnexpectedFailure() {
-        try {
-            if (game.abort()) {
-                lifecycleCallback.closeAbortedRoom(INTERNAL_ABORT_REASON, null);
-            }
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[CONTROLLER] Failed to abort game after unexpected failure", e);
         }
     }
 }

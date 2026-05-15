@@ -112,7 +112,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
                     gameToStart.start();
                 } catch (RuntimeException e) {
                     LOGGER.log(Level.SEVERE, "[ROOM] Unexpected failure while starting game " + gameId, e);
-                    closeRoomAfterUnexpectedFailure();
+                    closeAbortedRoom(INTERNAL_ABORT_REASON, null);
                 }
             });
         } catch (RejectedExecutionException e) {
@@ -143,14 +143,6 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         this.gameController = new GameController(game, gameExecutor, this, leaderboardService);
         this.game.setCompletionHandler(gameController);
         this.gameStarted = true;
-    }
-
-    private void closeRoomAfterUnexpectedFailure() {
-        try {
-            closeAbortedRoom(INTERNAL_ABORT_REASON, null);
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[ROOM] Failed to close room " + gameId + " after unexpected failure", e);
-        }
     }
 
     /** Removes a player and handles cleanup or disconnection logic. */

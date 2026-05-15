@@ -174,23 +174,8 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
         if (closed.get()) {
             return;
         }
-        try {
-            touch();
-            action.run();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while handling client action for "
-                    + session.getNickname(), e);
-            disconnectAfterUnexpectedFailure();
-        }
-    }
-
-    private void disconnectAfterUnexpectedFailure() {
-        try {
-            disconnectClient();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Failed to disconnect " + session.getNickname()
-                    + " after unexpected failure", e);
-        }
+        touch();
+        action.run();
     }
 
     private void deliver(RemoteCall call) {
@@ -203,10 +188,6 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
             LOGGER.log(Level.INFO, () -> "[RMI] Disconnection detected on write for "
                     + session.getNickname() + ": " + e.getMessage());
             disconnectClient();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while delivering callback to "
-                    + session.getNickname(), e);
-            disconnectAfterUnexpectedFailure();
         }
     }
 
