@@ -29,18 +29,8 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
     @Override
     public void createGame(String nickname, int maxPlayers) {
         try {
-            RoomAdmissionResult admissionResult;
-            // Serialize reservation and room admission with disconnect cleanup.
-            admissionResult = connection.withConnectionLock(() -> {
-                if (!connection.isActive()) {
-                    return null;
-                }
-                RoomConnectionHandler room = lobbyController.createGame(nickname, maxPlayers);
-                return addPlayerToRoom(room, nickname);
-            });
-            if (admissionResult == null) {
-                return;
-            }
+            RoomConnectionHandler room = lobbyController.createGame(nickname, maxPlayers);
+            RoomAdmissionResult admissionResult = addPlayerToRoom(room, nickname);
             connection.matchmakingSuccess("Game created. Waiting for other players...");
             // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
@@ -52,18 +42,8 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
     @Override
     public void joinGame(String nickname, String gameId) {
         try {
-            RoomAdmissionResult admissionResult;
-            // Serialize reservation and room admission with disconnect cleanup.
-            admissionResult = connection.withConnectionLock(() -> {
-                if (!connection.isActive()) {
-                    return null;
-                }
-                RoomConnectionHandler room = lobbyController.joinGame(nickname, gameId);
-                return addPlayerToRoom(room, nickname);
-            });
-            if (admissionResult == null) {
-                return;
-            }
+            RoomConnectionHandler room = lobbyController.joinGame(nickname, gameId);
+            RoomAdmissionResult admissionResult = addPlayerToRoom(room, nickname);
             connection.matchmakingSuccess("Joined game successfully. Waiting to start...");
             // Broadcasts and game start after matchmakingSuccess message.
             admissionResult.afterMatchmakingSuccess();
@@ -95,7 +75,6 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
     private RoomAdmissionResult addPlayerToRoom(RoomConnectionHandler room, String nickname) throws LobbyActionException {
         boolean admitted = false;
         try {
-            // Connection identity must be visible before room membership is added.
             connection.setNickname(nickname);
             RoomAdmissionResult admissionResult = room.addPlayer(nickname, connection);
             admitted = true;

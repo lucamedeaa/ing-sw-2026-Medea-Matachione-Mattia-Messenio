@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
     private final RMIClientCallback callback;
     private final ConnectionSession session;
     private final ScheduledExecutorService timeoutChecker;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     private final AtomicLong lastPingTime = new AtomicLong();
 
     public RMmiClientHandler(
@@ -44,71 +46,70 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
                 this,
                 gameManager,
                 lobbyController,
-                this::closeConnection,
                 LOGGER,
                 "RMI"
         );
 
         this.timeoutChecker.scheduleAtFixedRate(() -> {
-            if (session.isActive() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
+            if (!closed.get() && (System.currentTimeMillis() - lastPingTime.get() > 10000)) {
                 LOGGER.warning("[RMI] Timeout: client " + session.getNickname()
                         + " did not send ping. Marked as disconnected.");
-                session.handleClientDisconnection();
+                disconnectClient();
             }
         }, 5, 5, TimeUnit.SECONDS);
     }
 
     @Override
     public void ping() {
-        handleClientAction("ping", this::touch);
+        handleClientAction(this::touch);
     }
 
     @Override
     public void disconnect() {
-        handleClientAction("disconnect", () -> {
+        handleClientAction(() -> {
             touch();
-            session.handleClientDisconnection();
+            disconnectClient();
         });
     }
 
     @Override
     public void createGame(String nickname, int maxPlayers) {
-        handleClientAction("create game", () -> session.currentState().createGame(nickname, maxPlayers));
+        handleClientAction(() -> session.createGame(nickname, maxPlayers));
     }
 
     @Override
     public void joinGame(String nickname, String gameId) {
-        handleClientAction("join game", () -> session.currentState().joinGame(nickname, gameId));
+        handleClientAction(() -> session.joinGame(nickname, gameId));
     }
 
     @Override
     public void getAvailableGames() {
-        handleClientAction("get available games", () -> session.currentState().getAvailableGames());
+        handleClientAction(session::getAvailableGames);
     }
 
     @Override
     public void leaveGame() {
-        handleClientAction("leave game", () -> session.currentState().leaveGame());
+        handleClientAction(session::leaveGame);
     }
 
     @Override
     public void placeTotem(int positionIndex) {
-        handleClientAction("place totem", () -> session.currentState().placeTotem(positionIndex));
+        handleClientAction(() -> session.placeTotem(positionIndex));
     }
 
     @Override
     public void takeCard(int row, int col) {
-        handleClientAction("take card", () -> session.currentState().takeCard(row, col));
+        handleClientAction(() -> session.takeCard(row, col));
     }
 
     @Override
     public void skipAction() {
-        handleClientAction("skip action", () -> session.currentState().skipAction());
+        handleClientAction(session::skipAction);
     }
 
     @Override
     public void getLeaderboard() {
-        handleClientAction("get leaderboard", () -> session.currentState().getLeaderboard());
+        handleClientAction(session::getLeaderboard);
     }
 
     @Override
@@ -165,28 +166,16 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
         this.lastPingTime.set(System.currentTimeMillis());
     }
 
-    private void handleClientAction(String actionName, Runnable action) {
-        try {
-            touch();
-            action.run();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while handling " + actionName
-                    + " for " + session.getNickname(), e);
-            disconnectAfterUnexpectedFailure();
+    private void handleClientAction(Runnable action) {
+        if (closed.get()) {
+            return;
         }
-    }
-
-    private void disconnectAfterUnexpectedFailure() {
-        try {
-            session.handleClientDisconnection();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Failed to disconnect " + session.getNickname()
-                    + " after unexpected failure", e);
-        }
+        touch();
+        action.run();
     }
 
     private void deliver(RemoteCall call) {
-        if (!session.isActive()) {
+        if (closed.get()) {
             return;
         }
         try {
@@ -194,12 +183,16 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
         } catch (RemoteException e) {
             LOGGER.log(Level.INFO, () -> "[RMI] Disconnection detected on write for "
                     + session.getNickname() + ": " + e.getMessage());
-            session.handleClientDisconnection();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[RMI] Unexpected failure while delivering callback to "
-                    + session.getNickname(), e);
-            disconnectAfterUnexpectedFailure();
+            disconnectClient();
         }
+    }
+
+    private void disconnectClient() {
+        if (!closed.compareAndSet(false, true)) {
+            return;
+        }
+        closeConnection();
+        session.handleClientDisconnection();
     }
 
     private void closeConnection() {

@@ -5,12 +5,8 @@ import it.polimi.ingsw.server.lobby.GameManagerInterface;
 import it.polimi.ingsw.server.lobby.RoomConnectionHandler;
 import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class LobbyController {
-
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
 
     private final GameManagerInterface gameManager;
 
@@ -68,11 +64,7 @@ public class LobbyController {
         }
         RoomConnectionHandler room = gameManager.getRoomByPlayer(playerName);
         if (room != null) {
-            try {
-                room.removePlayer(playerName);
-            } catch (LobbyActionException e) {
-                LOGGER.log(Level.FINE, "[LOBBY] Late lobby disconnection for: " + playerName, e);
-            }
+            room.removePlayer(playerName);
         } else {
             gameManager.unregisterNickname(playerName);
         }

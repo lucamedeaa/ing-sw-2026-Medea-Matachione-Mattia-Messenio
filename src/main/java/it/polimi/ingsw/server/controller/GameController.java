@@ -8,6 +8,7 @@ import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,23 +84,19 @@ public class GameController implements GameCompletionHandler {
     }
 
     private void submitGameTask(String description, Runnable task) {
-        gameExecutor.submit(() -> {
-            try {
-                task.run();
-            } catch (RuntimeException e) {
-                LOGGER.log(Level.SEVERE, "[CONTROLLER] Unexpected failure during " + description, e);
-                abortAfterUnexpectedFailure();
-            }
-        });
-    }
-
-    private void abortAfterUnexpectedFailure() {
         try {
-            if (game.abort()) {
-                lifecycleCallback.closeAbortedRoom(INTERNAL_ABORT_REASON, null);
-            }
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[CONTROLLER] Failed to abort game after unexpected failure", e);
+            gameExecutor.submit(() -> {
+                try {
+                    task.run();
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.SEVERE, "[CONTROLLER] Unexpected failure during " + description, e);
+                    if (game.abort()) {
+                        lifecycleCallback.closeAbortedRoom(INTERNAL_ABORT_REASON, null);
+                    }
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            LOGGER.log(Level.FINE, "[CONTROLLER] Dropped game task after game shutdown: " + description, e);
         }
     }
 }

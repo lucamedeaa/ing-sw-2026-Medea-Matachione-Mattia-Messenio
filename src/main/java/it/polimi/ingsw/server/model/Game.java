@@ -25,7 +25,7 @@ public class Game implements ModelControllerInterface {
     private int currentRound;
     private GameState currentState;
     private final List<ModelObserver> observers = new ArrayList<>();
-    private GameCompletionHandler completionHandler = result -> {};
+    private GameCompletionHandler completionHandler;
 
     private final List<GameEvent> pendingEvents = new ArrayList<>();
 
@@ -55,6 +55,9 @@ public class Game implements ModelControllerInterface {
      * Starts the game state machine.
      */
     public void start() {
+        if (currentState != null) {
+            return;
+        }
         changeState(new InitState(this));
     }
 
@@ -71,7 +74,7 @@ public class Game implements ModelControllerInterface {
      * @param completionHandler completion callback, or null to ignore completions
      */
     public void setCompletionHandler(GameCompletionHandler completionHandler) {
-        this.completionHandler = completionHandler != null ? completionHandler : result -> {};
+        this.completionHandler = completionHandler;
     }
 
     /**
@@ -80,7 +83,7 @@ public class Game implements ModelControllerInterface {
      * @return true if the game was aborted, false if it had already ended
      */
     public boolean abort(){
-        if (this.currentState.isEnded()) {
+        if (this.currentState != null && this.currentState.isEnded()) {
             return false;
         }
         this.changeState(new GameEndedState(this));
@@ -224,6 +227,8 @@ public class Game implements ModelControllerInterface {
             return;
         }
         this.changeState(new GameEndedState(this));
-        completionHandler.onGameCompleted(result);
+        if (completionHandler != null) {
+            completionHandler.onGameCompleted(result);
+        }
     }
 }

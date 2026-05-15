@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,10 +36,11 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     private final GameManagerInterface gameManager;
     private final LeaderboardService leaderboardService;
     private final Map<String, ConnectionContext> players;
-    // Room state lock. External callbacks must run after releasing this lock.
-    // If both locks are needed, acquire the connection lifecycle lock before this one. (used to create game and add player)
     private final Object roomLock = new Object();
     private boolean gameStarted;
+    private boolean roomClosed;
+    private Game game;
+    private GameController gameController;
     private ExecutorService gameExecutor;
 
     public GameRoom(String gameId, int maxPlayers, GameManagerInterface gameManager, LeaderboardService leaderboardService) {
@@ -63,7 +65,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
             }
             players.put(nickname, connection);
             if (players.size() >= maxPlayers) {
-                this.gameStarted = true;
+                prepareGame();
                 startNow = true;
             }
         }
@@ -83,57 +85,90 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     /** Initializes game, controller, and virtual views, then starts the game loop. */
     private void startGame() {
-        List<String> playerNames;
         Map<String, ConnectionContext> connections;
+        Game gameToStart;
+        GameController controller;
+        ExecutorService executor;
         synchronized (roomLock) {
-            playerNames = new ArrayList<>(players.keySet());
             connections = new HashMap<>(players);
+            gameToStart = this.game;
+            controller = this.gameController;
+            executor = this.gameExecutor;
         }
 
-        Game game = new Game(playerNames);
-        this.gameExecutor = Executors.newSingleThreadExecutor();
-        GameController controller = new GameController(game, gameExecutor, this, leaderboardService);
-        game.setCompletionHandler(controller);
-        gameExecutor.submit(() -> {
-            try {
-                for (Map.Entry<String, ConnectionContext> entry : connections.entrySet()) {
-                    String name = entry.getKey();
-                    ConnectionContext session = entry.getValue();
-                    VirtualView vv = new VirtualView(name, session);
-                    session.transitionToGameState(controller);
-                    game.addObserver(vv);
+        try {
+            executor.submit(() -> {
+                if (isRoomClosed()) {
+                    return;
                 }
-                game.start();
-            } catch (RuntimeException e) {
-                LOGGER.log(Level.SEVERE, "[ROOM] Unexpected failure while starting game " + gameId, e);
-                closeRoomAfterUnexpectedFailure();
-            }
-        });
+                try {
+                    for (Map.Entry<String, ConnectionContext> entry : connections.entrySet()) {
+                        String name = entry.getKey();
+                        ConnectionContext session = entry.getValue();
+                        VirtualView vv = new VirtualView(name, session);
+                        session.transitionToGameState(controller);
+                        gameToStart.addObserver(vv);
+                    }
+                    gameToStart.start();
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.SEVERE, "[ROOM] Unexpected failure while starting game " + gameId, e);
+                    closeAbortedRoom(INTERNAL_ABORT_REASON, null);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            LOGGER.log(Level.FINE, "[ROOM] Dropped start task for closed game " + gameId, e);
+        }
     }
 
-    private void closeRoomAfterUnexpectedFailure() {
-        try {
-            closeAbortedRoom(INTERNAL_ABORT_REASON, null);
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "[ROOM] Failed to close room " + gameId + " after unexpected failure", e);
+    private boolean isRoomClosed() {
+        synchronized (roomLock) {
+            return roomClosed;
         }
+    }
+
+    private boolean isRoomAlreadyClosedOrMarkClosed() {
+        synchronized (roomLock) {
+            if (roomClosed) {
+                return true;
+            }
+            roomClosed = true;
+            return false;
+        }
+    }
+
+    private void prepareGame() {
+        List<String> playerNames = new ArrayList<>(players.keySet());
+        this.game = new Game(playerNames);
+        this.gameExecutor = Executors.newSingleThreadExecutor();
+        this.gameController = new GameController(game, gameExecutor, this, leaderboardService);
+        this.game.setCompletionHandler(gameController);
+        this.gameStarted = true;
     }
 
     /** Removes a player and handles cleanup or disconnection logic. */
-    public void removePlayer(String nickname) throws LobbyActionException {
+    public void removePlayer(String nickname) {
         boolean roomIsEmpty = false;
         boolean successfullyRemoved = false;
+        boolean gameAlreadyStarted = false;
+        GameController controller = null;
         synchronized (roomLock) {
             if (gameStarted) {
-                throw new LobbyActionException("Game already started. Cannot leave now.");
+                players.remove(nickname);
+                gameAlreadyStarted = true;
+                controller = gameController;
+            } else {
+                ConnectionContext removed = players.remove(nickname);
+                if (players.isEmpty()) {
+                    roomIsEmpty = true;
+                } else if (removed != null) {
+                    successfullyRemoved = true;
+                }
             }
-
-            ConnectionContext removed = players.remove(nickname);
-            if (players.isEmpty()) {
-                roomIsEmpty = true;
-            } else if (removed != null) {
-                successfullyRemoved = true;
-            }
+        }
+        if (gameAlreadyStarted) {
+            gameManager.unregisterNickname(nickname);
+            controller.handlePlayerDisconnection(nickname);
+            return;
         }
         if (successfullyRemoved || roomIsEmpty) {
             gameManager.unregisterNickname(nickname);
@@ -147,6 +182,9 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     @Override
     public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {
+        if (isRoomAlreadyClosedOrMarkClosed()) {
+            return;
+        }
         Map<String, ConnectionContext> connections = snapshotConnections();
         notifyCompletedPlayers(connections, completedGame, personalBestEntries);
         closeRoomResources();
@@ -154,6 +192,9 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
 
     @Override
     public void closeAbortedRoom(String reason, String excludedNickname) {
+        if (isRoomAlreadyClosedOrMarkClosed()) {
+            return;
+        }
         Map<String, ConnectionContext> connections = snapshotConnections();
         notifyAbortedPlayers(connections, reason, excludedNickname);
         closeRoomResources();
