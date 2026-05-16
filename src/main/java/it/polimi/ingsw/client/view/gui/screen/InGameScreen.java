@@ -123,11 +123,6 @@ public class InGameScreen implements InGameView, RefreshableScreen {
     private int upperPicksAllowed = 0;
     private int lowerPicksAllowed = 0;
 
-    public void startPlaceTotemFlow(List<Integer> availableTiles) {
-        this.currentState = InteractionState.SELECTING_TOTEM_POSITION;
-        if (boardPanelController != null) boardPanelController.enableTotemSelection(availableTiles);
-    }
-
     public void onTotemPositionSelected(int tileIndex) {
         if (currentState != InteractionState.SELECTING_TOTEM_POSITION) return;
         ctx.controller().placeTotem(tileIndex);

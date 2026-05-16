@@ -141,15 +141,18 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     @Override
     public void refresh() {
         String error = ctx.lobbyModel().consumeGlobalError();
-        errorLabel.setText(error != null ? error : "");
-        if (showGamesList) {
-                List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
-                gamesListView.getItems().setAll(
-                        games.stream()
-                                .map(g -> g.getGameId() + " — Creator: " + g.getCreatorNickname() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")")
-                                .toList()
-                );
+        // Aggiorna la label solo se c'è un errore effettivo, ignora le stringhe vuote
+        if (error != null && !error.isEmpty()) {
+            errorLabel.setText(error);
+        }
 
+        List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
+        if (games != null) {
+            gamesListView.getItems().setAll(
+                    games.stream()
+                            .map(g -> g.getGameId() + " — Creator: " + g.getCreatorNickname() + " (" + g.getCurrentPlayers() + "/" + g.getMaxPlayers() + ")")
+                            .toList()
+            );
         }
     }
 
@@ -189,6 +192,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
     @FXML
     private void onCreateGame() {
+        errorLabel.setText(""); // Pulisce il messaggio precedente
         pendingNickname = nicknameField.getText().trim();
         int maxPlayers = maxPlayersComboBox.getValue();
         ctx.controller().createGame(pendingNickname, maxPlayers);
@@ -196,6 +200,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
     @FXML
     private void onJoinGame() {
+        errorLabel.setText(""); // Pulisce il messaggio precedente
         pendingNickname = nicknameField.getText().trim();
         String selected = gamesListView.getSelectionModel().getSelectedItem();
         String gameId = selected.split(" — ")[0];
@@ -204,6 +209,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
 
     @FXML
     private void onRefreshList() {
+        errorLabel.setText(""); // Pulisce il messaggio precedente
         ctx.controller().getAvailableGames();
     }
 

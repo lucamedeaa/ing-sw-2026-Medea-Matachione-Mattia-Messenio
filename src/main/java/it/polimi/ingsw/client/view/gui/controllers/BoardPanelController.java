@@ -39,6 +39,7 @@ public class BoardPanelController {
     private List<Integer> validTotemTiles = null;
     private final DoubleProperty cardWidthProp = new SimpleDoubleProperty(60.0);
     private final List<Pane> trackOverlays = new ArrayList<>();
+    private int currentColumn = 7;
 
 
     public void setParentScreen(InGameScreen parentScreen) {
@@ -49,25 +50,31 @@ public class BoardPanelController {
     public void initialize() {
         Platform.runLater(() -> {
             if (boardGrid.getParent() instanceof Region parent) {
-                parent.widthProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight()));
-                parent.heightProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight()));
+                parent.widthProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn));
+                parent.heightProperty().addListener((obs, old, newV) -> updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn));
                 // Prima chiamata per l'assetto iniziale
-                updateOptimalSize(parent.getWidth(), parent.getHeight());
+                updateOptimalSize(parent.getWidth(), parent.getHeight(),  currentColumn);
             }
         });
     }
 
-    private void updateOptimalSize(double availableWidth, double availableHeight) {
-        int cols = currentBoardPlayerCount > 0 ? getTileLayout(currentBoardPlayerCount).size() : 7;
-        if (cols == 0) return;
+    private int calculateCurrentColumns(int playerCount, int upperCardsCount) {
+        int trackCols = playerCount > 0 ? getTileLayout(playerCount).size() : 7;
+        // +1 perché la colonna 0 è riservata alla Turn Order Tile
+        int upperCols = upperCardsCount + 1;
+        return Math.max(trackCols, upperCols);
+    }
+
+    private void updateOptimalSize(double availableWidth, double availableHeight, int cols) {
+
 
         // availableHeight qui è l'altezza di tutto il pannello laterale (VBox).
         // Dobbiamo sottrarre lo spazio occupato dalla tribù, dai margini e dalle label (circa 250px)
-        double effectiveHeightForBoard = availableHeight - 250;
+        double effectiveHeightForBoard = availableHeight - 100;
 
-        double maxWidthFromWidth = (availableWidth - 35) / cols;
-        double maxCardHeight = (effectiveHeightForBoard - 12) / 3.0; // 3 righe, 12px totali di vgap
-        double maxWidthFromHeight = maxCardHeight * 0.75;
+        double maxWidthFromWidth = (availableWidth - 200) / cols;
+        double maxCardHeight = effectiveHeightForBoard / 3.0; // 3 righe, 12px totali di vgap
+        double maxWidthFromHeight = maxCardHeight / 1.62;
 
         // Il blocco non supera mai l'altezza massima disponibile, ma si stringe se la larghezza non basta
         double optimal = Math.min(maxWidthFromWidth, maxWidthFromHeight);
@@ -76,10 +83,12 @@ public class BoardPanelController {
         cardWidthProp.set(Math.max(20.0, optimal));
     }
 
+
     public void refresh(GameModel model, String targetNickname) {
         int playerCount = model.getPlayers().size();
 
         Platform.runLater(() -> {
+            currentColumn = calculateCurrentColumns(playerCount, model.getUpperRowCards().size());
             if (currentBoardPlayerCount != playerCount) {
                 boardGrid.getChildren().clear(); // Pulisce residui di partite precedenti
                 buildBoardTrack(playerCount);
@@ -398,8 +407,8 @@ public class BoardPanelController {
         return switch (playerCount) {
             case 2 -> new double[]{0.23, 0.40};
             case 3 -> new double[]{0.16, 0.35, 0.54};
-            case 4 -> new double[]{0.12, 0.37, 0.62, 0.87};
-            default -> new double[]{0.10, 0.30, 0.50, 0.70, 0.90};
+            case 4 -> new double[]{0.12, 0.32, 0.50, 0.68};
+            default -> new double[]{0.06, 0.24, 0.42, 0.61, 0.80};
         };
     }
 
