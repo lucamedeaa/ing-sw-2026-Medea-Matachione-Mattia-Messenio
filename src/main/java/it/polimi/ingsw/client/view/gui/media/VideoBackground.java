@@ -30,7 +30,6 @@ public class VideoBackground {
         media.setOnError(() -> System.err.println("Errore Media: " + media.getError()));
 
         mediaPlayer = new MediaPlayer(media);
-        mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.setVolume(globalVolume);
 

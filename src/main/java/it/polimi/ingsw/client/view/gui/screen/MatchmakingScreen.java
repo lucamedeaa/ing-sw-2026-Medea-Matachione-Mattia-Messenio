@@ -127,6 +127,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         volumeSlider.setMax(1);
         volumeSlider.setValue(VideoBackground.getGlobalVolume());
         startVideoBackground();
+        Platform.runLater(this::refresh);
     }
 
     private void startVideoBackground() {
@@ -141,9 +142,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
     public void refresh() {
         String error = ctx.lobbyModel().consumeGlobalError();
         errorLabel.setText(error != null ? error : "");
-
         if (showGamesList) {
-
                 List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
                 gamesListView.getItems().setAll(
                         games.stream()
@@ -184,7 +183,7 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         Platform.runLater(() -> {
             stopVideo();
             ctx.notificationController().setMatchmakingView(null);
-            navigator.toLobby();
+            navigator.toDisconnected(reason);
         });
     }
 
@@ -208,11 +207,15 @@ public class MatchmakingScreen implements MatchmakingView, RefreshableScreen {
         ctx.controller().getAvailableGames();
     }
 
+
     @FXML
     private void handleDisconnect() {
         stopVideo();
         ctx.controller().disconnect(() -> {
-            Platform.runLater(() -> navigator.toDisconnected("Disconnesso volontariamente."));
+            Platform.runLater(() -> {
+                ctx.notificationController().setMatchmakingView(null);
+                navigator.toDisconnected("Disconnected willingly");
+            });
         });
     }
 }

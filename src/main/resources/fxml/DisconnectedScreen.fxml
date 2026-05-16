@@ -2,16 +2,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.client.view.gui.screen.DisconnectedScreen"
-      spacing="20" alignment="CENTER"
-      prefWidth="400" prefHeight="250">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="it.polimi.ingsw.client.view.gui.screen.DisconnectedScreen"
+           style="-fx-background-color: #050505;">
 
-    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+    <VBox spacing="35" alignment="CENTER"
+          maxWidth="650" maxHeight="350"
+          style="-fx-background-color: rgba(20, 20, 20, 0.95); -fx-border-color: #ff5252; -fx-border-width: 2; -fx-border-radius: 12; -fx-background-radius: 12;">
 
-    <Label text="Disconnesso dal server" styleClass="title"/>
-    <Label fx:id="reasonLabel" wrapText="true" styleClass="error-label"/>
-    <Button text="Esci" onAction="#onExit" maxWidth="Infinity"/>
+        <padding><Insets top="40" right="50" bottom="40" left="50"/></padding>
 
-</VBox>
+        <effect>
+            <DropShadow color="#ff5252" radius="20" spread="0.15"/>
+        </effect>
+
+        <Label text="CONNECTION LOST"
+               style="-fx-font-family: 'MedievalSharp'; -fx-font-size: 38px; -fx-text-fill: #ff5252; -fx-font-weight: bold;"/>
+
+        <Label fx:id="reasonLabel" wrapText="true" textAlignment="CENTER"
+               style="-fx-font-family: 'MedievalSharp'; -fx-font-size: 22px; -fx-text-fill: #fdf5e6;"/>
+
+        <Button text="Leave Mesos" onAction="#onExit"
+                style="-fx-font-family: 'MedievalSharp'; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ff5252; -fx-font-size: 20px; -fx-border-color: #ff5252; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 30;"/>
+
+    </VBox>
+</StackPane>

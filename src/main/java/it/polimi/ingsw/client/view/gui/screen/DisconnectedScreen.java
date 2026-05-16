@@ -16,7 +16,7 @@ public class DisconnectedScreen {
 
     @FXML
     public void initialize() {
-        reasonLabel.setText(reason != null ? reason : "Connessione persa.");
+        reasonLabel.setText(reason != null ? reason : "Connection lost");
     }
 
     @FXML

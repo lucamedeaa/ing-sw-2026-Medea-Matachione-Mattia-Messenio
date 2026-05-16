@@ -76,4 +76,14 @@ public class RosterSnapshot {
         }
         return copy;
     }
+
+    public void updatePlayerResources(String nickname, int food, int prestige, int foodDiscount, int sustenanceDiscount) {
+    PlayerSnapshot player = players.get(nickname);
+    if (player != null) {
+        player.setFood(food);
+        player.setPrestige(prestige);
+        player.setFoodDiscount(foodDiscount);
+        player.setSustenanceDiscount(sustenanceDiscount);
+    }
+}
 }

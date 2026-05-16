@@ -99,6 +99,9 @@ public class InGameScreen implements InGameView, RefreshableScreen {
     public void refresh() {
         if (isNavigatingAway) return;
         Platform.runLater(() -> {
+            if (this.viewedPlayerNickname == null) {
+                this.viewedPlayerNickname = ctx.session().getNickname();
+            }
             if (ctx.gameModel() == null || ctx.gameModel().getPlayers().isEmpty()) return;
 
             if (ctx.gameModel().isGameOver()) {
@@ -119,18 +122,6 @@ public class InGameScreen implements InGameView, RefreshableScreen {
     private InteractionState currentState = InteractionState.IDLE;
     private int upperPicksAllowed = 0;
     private int lowerPicksAllowed = 0;
-
-    public void startTakeCardFlow(int upperPicks, int lowerPicks) {
-        this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
-        this.upperPicksAllowed = upperPicks;
-        this.lowerPicksAllowed = lowerPicks;
-        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
-
-        // Ordina al tabellone di rendere le carte cliccabili
-        if (boardPanelController != null) {
-            boardPanelController.enableCardSelection(upperPicks > 0, lowerPicks > 0, me);
-        }
-    }
 
     public void startPlaceTotemFlow(List<Integer> availableTiles) {
         this.currentState = InteractionState.SELECTING_TOTEM_POSITION;

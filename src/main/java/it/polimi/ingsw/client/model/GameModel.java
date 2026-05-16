@@ -172,6 +172,7 @@ public class GameModel extends ObservableModel {
                 old.setPrestige(newPrestige);
                 old.setFoodDiscount(newFoodDiscount);
                 old.setSustenanceDiscount(newSustDiscount);
+                roster.updatePlayerResources(nickname, newFood, newPrestige, newFoodDiscount, newSustDiscount);
             }
 
         notifyUI();

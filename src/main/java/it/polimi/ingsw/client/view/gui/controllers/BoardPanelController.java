@@ -11,10 +11,12 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.image.*;
 import javafx.scene.*;
 import javafx.scene.Cursor;
+import javafx.scene.paint.Color;
 
 
 import java.util.ArrayList;
@@ -236,13 +238,14 @@ public class BoardPanelController {
     public void enableCardSelection(boolean upperAllowed, boolean lowerAllowed, PlayerSnapshot myPlayer) {
         this.canPickUpper = upperAllowed;
         this.canPickLower = lowerAllowed;
-
         Platform.runLater(() -> {
             for (Node node : boardGrid.getChildren()) {
                 Integer row = GridPane.getRowIndex(node);
                 if (row == null) continue;
 
-                // Legge l'ID della carta dal nodo (se presente) per capire se è un evento
+                node.getStyleClass().removeAll("card-glow-green", "card-glow-red");
+                node.setCursor(Cursor.DEFAULT);
+
                 boolean isEvent = false;
                 boolean canAfford = true;
 
@@ -259,7 +262,7 @@ public class BoardPanelController {
                     } else {
                     // Non hai abbastanza cibo -> ombra rossa
                         node.getStyleClass().add("card-glow-red");
-                        node.setCursor(Cursor.DEFAULT); // Nessuna manina, fa capire che è bloccata
+                        node.setCursor(Cursor.DEFAULT);
                     }
                 }
                 // Altrimenti spegne eventuali illuminazioni residue
@@ -380,13 +383,21 @@ public class BoardPanelController {
         iv.setPreserveRatio(true);
         iv.fitWidthProperty().bind(cardWidthProp.multiply(0.38));
         iv.layoutXProperty().bind(cardWidthProp.subtract(iv.fitWidthProperty()).divide(2));
+
+        DropShadow borderShadow = new DropShadow();
+        borderShadow.setColor(Color.rgb(20, 20, 20, 0.85)); // Quasi nero, molto opaco
+        borderShadow.setRadius(4);
+        borderShadow.setSpread(0.4); // Spread alto indurisce l'ombra trasformandola in contorno
+        borderShadow.setOffsetY(2);  // Leggero spostamento in basso per l'effetto 3D
+        iv.setEffect(borderShadow);
+
         return iv;
     }
 
     private double[] getTurnOrderTotemYSteps(int playerCount) {
         return switch (playerCount) {
             case 2 -> new double[]{0.23, 0.40};
-            case 3 -> new double[]{0.16, 0.50, 0.84};
+            case 3 -> new double[]{0.16, 0.35, 0.54};
             case 4 -> new double[]{0.12, 0.37, 0.62, 0.87};
             default -> new double[]{0.10, 0.30, 0.50, 0.70, 0.90};
         };
@@ -460,15 +471,16 @@ public class BoardPanelController {
     private boolean isAffordable(int cardId, PlayerSnapshot player) {
         Integer baseCost = CardRegistry.getCard(cardId).foodCost();
 
-        if (baseCost == 0) {
+        if (baseCost == null || baseCost == 0) {
             return true;
         }
 
         int finalCost = Math.max(baseCost - player.getFoodDiscount(), 0);
+        boolean ris = player.getFood() >= finalCost;
         return player.getFood() >= finalCost;
     }
 
     private boolean isEvent(int cardId) {
-        return "Event".equals(it.polimi.ingsw.common.config.CardRegistry.getCard(cardId).type());
+        return "Event".equals(CardRegistry.getCard(cardId).type());
     }
 }

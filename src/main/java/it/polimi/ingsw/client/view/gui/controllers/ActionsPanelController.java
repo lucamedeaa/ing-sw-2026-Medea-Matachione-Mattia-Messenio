@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.FxActionRender;
 import it.polimi.ingsw.client.view.gui.screen.InGameScreen;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -69,15 +70,43 @@ public class ActionsPanelController {
             parentScreen.toggleLog();
         }
     }
+
+    private javafx.stage.Stage infoStage;
+
     @FXML
     private void handleShowInfo() {
+        // Se la finestra è già aperta, portala in primo piano ed evita duplicazioni
+        if (infoStage != null && infoStage.isShowing()) {
+            infoStage.toFront();
+            return;
+        }
+
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/fxml/InfoScreen.fxml"));
             javafx.scene.Parent root = loader.load();
-            javafx.stage.Stage infoStage = new javafx.stage.Stage();
-            infoStage.setTitle("Reference Guide");
-            infoStage.setScene(new javafx.scene.Scene(root));
+
+            infoStage = new javafx.stage.Stage();
+            infoStage.setTitle("Mesos - Reference Guide");
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+
+            // Inietta il foglio di stile globale per ereditare font medievali e configurazioni CSS
+            if (getClass().getResource("/style.css") != null) {
+                scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+            }
+
+            infoStage.setScene(scene);
+
+            // Associa la finestra pop-up alla schermata di gioco corrente
+            if (skipButton != null && skipButton.getScene() != null) {
+                infoStage.initOwner(skipButton.getScene().getWindow());
+            }
+
+            // Blocca l'interazione con il tabellone sottostante finché la guida è aperta
+            infoStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
+            infoStage.setResizable(false);
             infoStage.show();
+
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
@@ -86,11 +115,16 @@ public class ActionsPanelController {
     @FXML
     private void handleDisconnect() {
         ctx.controller().disconnect(() -> {
-            javafx.application.Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 if (parentScreen != null) {
-                    parentScreen.onServerDisconnected("Disconnesso volontariamente.");
+                    parentScreen.onServerDisconnected("Disconnected willingly");
                 }
             });
         });
+    }
+
+    @FXML
+    private void handleReturnToMainMenu() {
+    ctx.controller().leaveGame();
     }
 }

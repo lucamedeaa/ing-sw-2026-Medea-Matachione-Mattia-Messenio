@@ -105,7 +105,7 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
     private void handleDisconnect() {
         stopVideo();
         ctx.controller().disconnect(() -> {
-            Platform.runLater(() -> navigator.toDisconnected("Disconnesso volontariamente."));
+            Platform.runLater(() -> navigator.toDisconnected("Disconnected willingly"));
         });
     }
 
@@ -124,9 +124,11 @@ public class LobbyScreen implements LobbyView, RefreshableScreen {
 
     @Override
     public void onServerDisconnected(String reason) {
-        ctx.notificationController().setLobbyView(null);
-        stopVideo();
-        Platform.runLater(() -> navigator.toDisconnected(reason));
+        Platform.runLater(() -> {
+            stopVideo();
+            ctx.notificationController().setLobbyView(null);
+            navigator.toDisconnected(reason);
+        });
     }
 
     @Override
