@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.view.gui;
 
 import it.polimi.ingsw.client.model.UIObserver;
-import it.polimi.ingsw.client.view.gui.controllers.*;
+import it.polimi.ingsw.client.view.gui.controllers.ControllerRegistry;
 import it.polimi.ingsw.client.view.gui.screen.*;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -42,10 +42,8 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
 
     @Override
     public void onStateChanged() {
-        Platform.runLater(() -> {
-            if (currentScreen != null) {
-                currentScreen.refresh();
-            }
+        ctx.scheduler().runLater(() -> {
+            if (currentScreen != null) currentScreen.refresh();
         });
     }
 

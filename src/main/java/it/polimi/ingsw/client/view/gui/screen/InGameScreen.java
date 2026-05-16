@@ -1,22 +1,21 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
 import it.polimi.ingsw.client.model.GameModel;
-import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.gui.controllers.*;
 import it.polimi.ingsw.client.view.gui.controllers.board.BoardSelectionListener;
 import it.polimi.ingsw.client.view.gui.interaction.InteractionState;
 import it.polimi.ingsw.client.view.gui.presenter.InGamePresenter;
+import it.polimi.ingsw.client.view.gui.viewstate.GameViewState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
-
 import java.util.List;
+import java.util.Set;
 
-public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
+public class InGameScreen implements RefreshableScreen, BoardSelectionListener,InGamePanelHost {
 
     private final InGamePresenter presenter;
     private final GuiContext ctx;
@@ -58,18 +57,20 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
 
 
     /** Esegue il rendering dei sotto-pannelli. Deve essere chiamato sul thread JavaFX. */
-    public void doRefresh() {
-        String self = ctx.session().getNickname();
-        if (viewedPlayerNickname == null) viewedPlayerNickname = self;
-        GameModel model = ctx.gameModel();
-
-        if (boardPanelController != null)   boardPanelController.refresh(model, viewedPlayerNickname);
-        if (playersPanelController != null) playersPanelController.refresh(model, self);
-        if (actionsPanelController != null) actionsPanelController.refresh(model, self);
-        if (logPanelController != null)     logPanelController.refresh(model);
-        if (tribePanelController != null)   tribePanelController.refresh(model, viewedPlayerNickname);
+    public void doRefresh(GameViewState state) {
+            if (!state.actions().isMyTurn()) {
+                currentState = InteractionState.IDLE;
+                if (boardPanelController != null) boardPanelController.disableAllInteractions();
+            }
+        if (viewedPlayerNickname == null) viewedPlayerNickname = state.selfNickname();
+        if (boardPanelController   != null) boardPanelController.render(state.board());
+        if (playersPanelController != null) playersPanelController.render(
+                state.players(), state.selfNickname(), state.activePlayer(), viewedPlayerNickname);
+        if (actionsPanelController != null) actionsPanelController.render(state.actions());
+        if (logPanelController     != null) logPanelController.render(state.newLogs());
+        if (tribePanelController   != null) tribePanelController.render(
+                state.tribes().getOrDefault(viewedPlayerNickname, List.of()), viewedPlayerNickname);
     }
-
     public void showError(String error) {
         if (logPanelController != null) logPanelController.appendError(error);
     }
@@ -95,13 +96,15 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
     }
 
 
-    public void promptCardSelection(int upperPicksAllowed, int lowerPicksAllowed) {
+    public void promptCardSelection(int upperPicksAllowed, int lowerPicksAllowed, Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
         this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
         this.upperPicksAllowed = upperPicksAllowed;
         this.lowerPicksAllowed = lowerPicksAllowed;
-        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
         if (boardPanelController != null)
-            boardPanelController.enableCardSelection(upperPicksAllowed > 0, lowerPicksAllowed > 0, me);
+            boardPanelController.enableCardSelection(
+                    upperPicksAllowed > 0, lowerPicksAllowed > 0,
+                    affordableIds, unaffordableIds
+            );
     }
 
     public void onCardSelected(int row, int col) {

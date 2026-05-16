@@ -31,16 +31,15 @@ public class MatchmakingPresenter implements MatchmakingView {
 
     public void deregister() {
         ctx.notificationController().setMatchmakingView(null);
+        this.screen = null;
     }
 
     public void refresh() {
         List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
         String error = ctx.lobbyModel().consumeGlobalError();
         MatchmakingViewState state = new MatchmakingViewState(games, error);
-        Platform.runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
     }
-
-    // Azioni utente
 
     public void createGame(String nickname, int maxPlayers) {
         this.pendingNickname = nickname;
@@ -57,26 +56,24 @@ public class MatchmakingPresenter implements MatchmakingView {
         ctx.controller().getAvailableGames();
     }
 
-    public void disconnect() {
-        ctx.controller().disconnect(() -> Platform.runLater(() ->
-                navigator.toDisconnected("Disconnected willingly")));
-        // deregistrazione avviene tramite screen.onExit() → deregister()
-    }
-
     public void handleWindowClose(WindowEvent event) {
         ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
     }
 
-    // Callbacks server (MatchmakingView)
+
+    public void disconnect() {
+        ctx.controller().disconnect(() -> ctx.scheduler().runLater(() ->
+                navigator.toDisconnected("Disconnected willingly")));
+    }
 
     @Override
     public void onAvailableGames(List<GameInfoDto> games) {
-        Platform.runLater(this::refresh);
+        ctx.scheduler().runLater(this::refresh);
     }
 
     @Override
     public void onMatchmakingSuccess(String text) {
-        Platform.runLater(() -> {
+        ctx.scheduler().runLater(() -> {
             ctx.session().setNickname(pendingNickname);
             navigator.toLobby();
         });
@@ -84,12 +81,12 @@ public class MatchmakingPresenter implements MatchmakingView {
 
     @Override
     public void onError(String error) {
-        Platform.runLater(this::refresh);
+        ctx.scheduler().runLater(this::refresh);
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        Platform.runLater(() ->
-                navigator.toDisconnected(reason));
+        ctx.scheduler().runLater(() -> navigator.toDisconnected(reason));
     }
+
 }

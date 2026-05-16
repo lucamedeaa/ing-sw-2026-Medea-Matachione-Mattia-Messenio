@@ -6,9 +6,6 @@ import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
 import it.polimi.ingsw.common.network.dto.action.TakeCardActionDto;
 import it.polimi.ingsw.common.visitor.ActionVisitor;
 
-// Parallelo GUI di ActionRender TUI.
-// Legge i dati dell'azione disponibile e abilita il bottone corrispondente
-// in ActionsPanelController. Non esegue nulla — solo UI enabling.
 public class FxActionRender implements ActionVisitor {
 
     private final ActionsPanelController controller;

@@ -1,8 +1,7 @@
 package it.polimi.ingsw.client.view.gui.controllers;
 
-import it.polimi.ingsw.client.model.GameModel;
-import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.controllers.board.*;
+import it.polimi.ingsw.client.view.gui.viewstate.BoardViewState;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -10,9 +9,9 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class BoardPanelController {
     @FXML private GridPane boardGrid;
@@ -45,22 +44,21 @@ public class BoardPanelController {
         });
     }
 
-    public void refresh(GameModel model, String targetNickname) {
-        int playerCount = model.getPlayers().size();
-        Platform.runLater(() -> {
-            currentColumn = calculateCurrentColumns(playerCount, model.getUpperRowCards().size());
-            if (currentBoardPlayerCount != playerCount) {
-                boardGrid.getChildren().clear();
-                boardRenderer.buildBoardTrack(playerCount);
-                currentBoardPlayerCount = playerCount;
-            }
-            boardRenderer.renderCards(model.getUpperRowCards(), model.getLowerRowCards());
-            totemRenderer.renderTurnOrderTotems(model);
-        });
+    public void render(BoardViewState state) {
+        // già sul thread JavaFX — niente Platform.runLater
+        currentColumn = calculateCurrentColumns(state.playerCount(), state.upperCards().size());
+        if (currentBoardPlayerCount != state.playerCount()) {
+            boardGrid.getChildren().clear();
+            boardRenderer.buildBoardTrack(state.playerCount());
+            currentBoardPlayerCount = state.playerCount();
+        }
+        boardRenderer.renderCards(state.upperCards(), state.lowerCards());
+        totemRenderer.renderTurnOrderTotems(state);
     }
 
-    public void enableCardSelection(boolean upper, boolean lower, PlayerSnapshot player) {
-        boardInteraction.enableCardSelection(upper, lower, player);
+    public void enableCardSelection(boolean upper, boolean lower,
+                                    Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
+        boardInteraction.enableCardSelection(upper, lower, affordableIds, unaffordableIds);
     }
 
     public void highlightTotemPlacement(List<Integer> validIndices, boolean iAmOnOffer) {

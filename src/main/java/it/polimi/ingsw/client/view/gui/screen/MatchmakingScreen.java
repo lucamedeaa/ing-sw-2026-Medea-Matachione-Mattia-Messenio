@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.gui.screen;
 import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.MatchmakingPresenter;
 import it.polimi.ingsw.client.view.gui.viewstate.MatchmakingViewState;
@@ -43,30 +42,30 @@ public class MatchmakingScreen implements RefreshableScreen {
     }
 
     private void setupStyles() {
-        String buttonStyle = "-fx-font-family: 'MedievalSharp', serif; -fx-background-color: rgba(15,15,15,0.9); -fx-text-fill: #e67e22; -fx-font-size: 22px; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);";
-        String fieldStyle  = "-fx-font-family: 'MedievalSharp', serif; -fx-background-color: rgba(0,0,0,0.7); -fx-text-fill: white; -fx-font-size: 18px; -fx-border-color: #777; -fx-border-radius: 4; -fx-background-radius: 4; -fx-prompt-text-fill: #aaaaaa;";
-
-        createGameButton.setStyle(buttonStyle);
-        joinGameButton.setStyle(buttonStyle);
-        nicknameField.setStyle(fieldStyle);
-        maxPlayersComboBox.setStyle(fieldStyle);
+        createGameButton.getStyleClass().add("mm-button");
+        joinGameButton.getStyleClass().add("mm-button");
+        nicknameField.getStyleClass().add("mm-field");
+        maxPlayersComboBox.getStyleClass().add("mm-field");
         maxPlayersComboBox.setButtonCell(new ListCell<>() {
-
             @Override
             protected void updateItem(Integer item, boolean empty) {
                 super.updateItem(item, empty);
                 setText((!empty && item != null) ? item.toString() : null);
-                setStyle("-fx-text-fill: white; -fx-background-color: transparent; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px;");
+                if (!getStyleClass().contains("mm-combo-cell"))
+                    getStyleClass().add("mm-combo-cell");
             }
         });
-        errorLabel.setStyle("-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-text-fill: #ff5252; -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);");
-        gamesListView.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
+        errorLabel.getStyleClass().add("mm-error-label");
+        gamesListView.getStyleClass().add("mm-list");
         gamesListView.setCellFactory(lv -> new ListCell<>() {
-
             @Override
             protected void updateItem(GameInfoDto item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) { setText(null); setStyle("-fx-background-color: transparent;"); return; }
+                if (empty || item == null) {
+                    setText(null);
+                    getStyleClass().removeAll("mm-list-cell", "mm-list-cell-selected");
+                    return;
+                }
                 setText(item.getGameId() + " — Creator: " + item.getCreatorNickname()
                         + " (" + item.getCurrentPlayers() + "/" + item.getMaxPlayers() + ")");
                 applyStyle(isSelected());
@@ -79,9 +78,8 @@ public class MatchmakingScreen implements RefreshableScreen {
             }
 
             private void applyStyle(boolean selected) {
-                setStyle(selected
-                        ? "-fx-background-color: rgba(230,126,34,0.4); -fx-border-color: #e67e22; -fx-border-radius: 4; -fx-text-fill: #ffd700; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px;"
-                        : "-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-effect: dropshadow(three-pass-box, black, 8, 0.0, 0, 2);");
+                getStyleClass().removeAll("mm-list-cell", "mm-list-cell-selected");
+                getStyleClass().add(selected ? "mm-list-cell-selected" : "mm-list-cell");
             }
         });
     }
@@ -109,8 +107,8 @@ public class MatchmakingScreen implements RefreshableScreen {
     }
 
     public void render(MatchmakingViewState state) {
-        if (!state.error().isEmpty()) errorLabel.setText(state.error());
-        if (state.games() != null)   gamesListView.getItems().setAll(state.games());
+        errorLabel.setText(state.error());
+        gamesListView.getItems().setAll(state.games());
     }
 
     @Override

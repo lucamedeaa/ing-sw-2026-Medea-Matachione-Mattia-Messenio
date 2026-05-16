@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.gui.screen;
 import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.GameEndedPresenter;
 import it.polimi.ingsw.client.view.gui.viewstate.GameEndedViewState;
@@ -47,16 +46,22 @@ public class GameEndedScreen implements RefreshableScreen {
     }
 
     private void setupListViewStyle(ListView<String> lv) {
-        lv.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0;");
+        lv.getStyleClass().add("result-list");
         lv.setCellFactory(list -> new ListCell<>() {
-            @Override protected void updateItem(String item, boolean empty) {
+            @Override
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) { setText(null); setStyle("-fx-background-color: transparent;"); }
-                else { setText(item); setStyle("-fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);"); }
+                if (empty || item == null) {
+                    setText(null);
+                    getStyleClass().remove("result-list-cell");
+                } else {
+                    setText(item);
+                    if (!getStyleClass().contains("result-list-cell"))
+                        getStyleClass().add("result-list-cell");
+                }
             }
         });
     }
-
 
     public void render(GameEndedViewState state) {
         renderSessionScores(state.sessionScores());

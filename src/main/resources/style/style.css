@@ -144,3 +144,115 @@
     .card-view-wrapper {
         -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 5);
     }
+/* MatchmakingScreen */
+.mm-button {
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-background-color: rgba(15,15,15,0.9);
+    -fx-text-fill: #e67e22;
+    -fx-font-size: 22px;
+    -fx-border-color: #e67e22;
+    -fx-border-width: 2;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);
+}
+.mm-field {
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-background-color: rgba(0,0,0,0.7);
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-border-color: #777;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-prompt-text-fill: #aaaaaa;
+}
+.mm-combo-cell {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-font-size: 18px;
+}
+.mm-error-label {
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: #ff5252;
+    -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);
+}
+.mm-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-insets: 0;
+}
+.mm-list-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #fdf5e6;
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-font-size: 20px;
+    -fx-effect: dropshadow(three-pass-box, black, 8, 0.0, 0, 2);
+}
+.mm-list-cell-selected {
+    -fx-background-color: rgba(230,126,34,0.4);
+    -fx-border-color: #e67e22;
+    -fx-border-radius: 4;
+    -fx-text-fill: #ffd700;
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-font-size: 20px;
+}
+
+/* LobbyScreen */
+.lobby-status {
+    -fx-font-family: 'MedievalSharp';
+    -fx-font-size: 22px;
+    -fx-text-fill: #ffd700;
+    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-padding: 15px 30px;
+    -fx-background-radius: 20px;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);
+}
+
+/* GameEndedScreen */
+.result-list {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-insets: 0;
+}
+.result-list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #fdf5e6;
+    -fx-font-family: 'MedievalSharp', serif;
+    -fx-font-size: 18px;
+    -fx-effect: dropshadow(three-pass-box, black, 5, 0.0, 0, 2);
+}
+
+/* PlayersPanelController */
+.player-name {
+    -fx-text-fill: white;
+    -fx-font-family: 'MedievalSharp';
+    -fx-font-size: 18px;
+}
+.player-name-self {
+    -fx-text-fill: #ffd700;
+    -fx-font-family: 'MedievalSharp';
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+.player-stats-label {
+    -fx-text-fill: #e67e22;
+    -fx-font-family: 'Arial';
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+.player-row {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+.player-row-viewed {
+    -fx-background-color: rgba(230, 126, 34, 0.25);
+    -fx-border-color: #e67e22;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}

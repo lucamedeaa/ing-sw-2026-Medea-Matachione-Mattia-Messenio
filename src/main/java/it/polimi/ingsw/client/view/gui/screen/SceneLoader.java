@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
+import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
 import it.polimi.ingsw.client.view.gui.SceneId;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -64,6 +65,7 @@ public class SceneLoader {
             }
 
             stage.setScene(scene);
+            scene.getStylesheets().add(getClass().getResource(GuiAssetPaths.STYLE_CSS).toExternalForm());
             return loader.getController();
 
         } catch (IOException e) {

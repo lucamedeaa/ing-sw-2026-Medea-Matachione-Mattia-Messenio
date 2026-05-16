@@ -1,6 +1,7 @@
-package it.polimi.ingsw.client.view.gui;
+package it.polimi.ingsw.client.view.gui.controllers;
 
-import it.polimi.ingsw.client.view.gui.controllers.*;
+import it.polimi.ingsw.client.view.gui.GuiContext;
+import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.presenter.*;
 import it.polimi.ingsw.client.view.gui.screen.*;
 

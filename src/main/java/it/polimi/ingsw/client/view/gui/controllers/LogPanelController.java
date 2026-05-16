@@ -1,7 +1,5 @@
-
 package it.polimi.ingsw.client.view.gui.controllers;
 
-import it.polimi.ingsw.client.model.GameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 
@@ -11,10 +9,8 @@ public class LogPanelController {
     @FXML
     private TextArea logArea;
 
-    public void refresh(GameModel model) {
-        List<String> newLogs = model.consumeGameLogs();
+    public void render(List<String> newLogs) {
         if (newLogs.isEmpty()) return;
-
         StringBuilder sb = new StringBuilder();
         for (String log : newLogs) {
             sb.append(stripAnsi(log)).append("\n");

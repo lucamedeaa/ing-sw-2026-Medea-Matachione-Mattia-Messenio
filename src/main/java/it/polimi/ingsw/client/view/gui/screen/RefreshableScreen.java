@@ -1,5 +1,7 @@
-package it.polimi.ingsw.client.view.gui;
+package it.polimi.ingsw.client.view.gui.screen;
 
+import it.polimi.ingsw.client.view.gui.GuiContext;
+import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import javafx.stage.WindowEvent;
 
 public interface RefreshableScreen {

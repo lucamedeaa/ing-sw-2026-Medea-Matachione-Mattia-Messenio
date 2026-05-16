@@ -5,7 +5,7 @@ import java.util.List;
 
 public record MatchmakingViewState(List<GameInfoDto> games, String error) {
     public MatchmakingViewState {
-        games = (games != null) ? List.copyOf(games) : null;
+        games = (games != null) ? List.copyOf(games) : List.of();
         error = (error != null) ? error : "";
     }
 }

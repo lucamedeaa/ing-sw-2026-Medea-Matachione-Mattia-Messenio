@@ -30,8 +30,9 @@ public class GuiFxApp extends Application implements ClientUi, GuiLifecyclePort{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Font.loadFont(getClass().getResourceAsStream("/fonts/MedievalSharp-Regular.ttf"), 14);
-        GuiContext ctx = new GuiContext(staticController, lobbyModel, gameModel, session, notificationController, this);
+        Font.loadFont(getClass().getResourceAsStream(GuiAssetPaths.FONT_MEDIEVAL), 14);
+        GuiContext ctx = new GuiContext(staticController, lobbyModel, gameModel, session,
+                notificationController, this, Platform::runLater);
         GuiFxRouter router = new GuiFxRouter(primaryStage, ctx);
         primaryStage.setTitle("Mesos");
 

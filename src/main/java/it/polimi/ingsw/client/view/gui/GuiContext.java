@@ -12,5 +12,6 @@ public record GuiContext(
         GameModel gameModel,
         ClientSession session,
         ClientNotificationController notificationController,
-         GuiLifecyclePort lifecycle
+        GuiLifecyclePort lifecycle,
+        FxScheduler scheduler
 ) {}

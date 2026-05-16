@@ -24,11 +24,13 @@ public class GameEndedPresenter implements GameEndedView {
     public void onScreenReady(GameEndedScreen screen) {
         this.screen = screen;
         ctx.notificationController().setGameEndedView(this);
+        refresh();
         ctx.controller().getLeaderboard();
     }
 
     public void deregister() {
         ctx.notificationController().setGameEndedView(null);
+        this.screen = null;
     }
 
     public void refresh() {
@@ -38,10 +40,8 @@ public class GameEndedPresenter implements GameEndedView {
                 gm.getLocalResult(),
                 gm.getGlobalLeaderboard()
         );
-        Platform.runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
     }
-
-    // Azioni utente
 
     public void leave() {
         ctx.controller().leaveGame();
@@ -56,21 +56,17 @@ public class GameEndedPresenter implements GameEndedView {
         ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
     }
 
-    // Callbacks server (GameEndedView)
-
     @Override
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        Platform.runLater(() -> navigator.toMatchmaking());
+        ctx.scheduler().runLater(() -> navigator.toMatchmaking());
     }
 
     @Override
     public void onServerDisconnected(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        Platform.runLater(() -> {
-            navigator.toDisconnected(reason);
-        });
+        ctx.scheduler().runLater(() -> navigator.toDisconnected(reason));
     }
 }

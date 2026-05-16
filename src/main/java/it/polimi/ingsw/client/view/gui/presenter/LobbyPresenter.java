@@ -15,11 +15,14 @@ public class LobbyPresenter implements LobbyView {
     private final GuiContext ctx;
     private final GuiNavigator navigator;
     private LobbyScreen screen;
+    private boolean isNavigatingAway = false;
 
     public LobbyPresenter(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
         this.navigator = navigator;
     }
+
+    // Lifecycle
 
     public void onScreenReady(LobbyScreen screen) {
         this.screen = screen;
@@ -33,6 +36,7 @@ public class LobbyPresenter implements LobbyView {
 
     public void deregister() {
         ctx.notificationController().setLobbyView(null);
+        this.screen = null;
     }
 
     public void refresh() {
@@ -41,17 +45,17 @@ public class LobbyPresenter implements LobbyView {
                 ctx.session().getNickname(),
                 ctx.lobbyModel().getLobbyNotification()
         );
-        Platform.runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
     }
 
-    // Azioni utente
+    //Azioni utente
 
     public void leave() {
         ctx.controller().leaveGame();
     }
 
     public void disconnect() {
-        ctx.controller().disconnect(() -> Platform.runLater(() ->
+        ctx.controller().disconnect(() -> ctx.scheduler().runLater(() ->
                 navigator.toDisconnected("Disconnected willingly")));
     }
 
@@ -63,31 +67,32 @@ public class LobbyPresenter implements LobbyView {
 
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
-        Platform.runLater(this::refresh);
+        ctx.scheduler().runLater(this::refresh);
     }
 
     @Override
     public void onGameStarted() {
-        Platform.runLater(() -> {
-            navigator.toInGame();
-        });
+        if (isNavigatingAway) return;
+        isNavigatingAway = true;
+        ctx.scheduler().runLater(() -> navigator.toInGame());
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
-        Platform.runLater(() -> {
-            navigator.toMatchmaking();
-        });
+        if (isNavigatingAway) return;
+        isNavigatingAway = true;
+        ctx.scheduler().runLater(() -> navigator.toMatchmaking());
     }
 
     @Override
     public void onError(String error) {
-        Platform.runLater(() -> { if (screen != null) screen.showError(error); });
+        ctx.scheduler().runLater(() -> { if (screen != null) screen.showError(error); });
     }
 
     @Override
     public void onServerDisconnected(String reason) {
-        Platform.runLater(() ->
-                navigator.toDisconnected(reason));
+        if (isNavigatingAway) return;
+        isNavigatingAway = true;
+        ctx.scheduler().runLater(() -> navigator.toDisconnected(reason));
     }
 }

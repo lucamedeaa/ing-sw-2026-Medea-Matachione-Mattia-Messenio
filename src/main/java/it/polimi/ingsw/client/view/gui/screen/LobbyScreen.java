@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.gui.screen;
 import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.LobbyPresenter;
 import it.polimi.ingsw.client.view.gui.viewstate.LobbyViewState;
@@ -36,10 +35,7 @@ public class LobbyScreen implements RefreshableScreen {
     public void initialize() {
         playersContainer.setAlignment(Pos.CENTER);
         playersContainer.setSpacing(20);
-        statusLabel.setStyle("-fx-font-family: 'MedievalSharp'; -fx-font-size: 22px; " +
-                "-fx-text-fill: #ffd700; -fx-background-color: rgba(0,0,0,0.5); " +
-                "-fx-padding: 15px 30px; -fx-background-radius: 20px; " +
-                "-fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);");
+        statusLabel.getStyleClass().add("lobby-status");
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
         volumeSlider.setValue(VideoBackground.getGlobalVolume());

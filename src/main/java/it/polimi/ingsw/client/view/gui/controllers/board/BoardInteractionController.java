@@ -1,13 +1,12 @@
 package it.polimi.ingsw.client.view.gui.controllers.board;
 
-import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-
 import java.util.List;
+import java.util.Set;
 
 public class BoardInteractionController {
 
@@ -24,8 +23,7 @@ public class BoardInteractionController {
         this.listener = listener;
     }
 
-    public void enableCardSelection(boolean upper, boolean lower, PlayerSnapshot player) {
-        Platform.runLater(() -> {
+    public void enableCardSelection(boolean upper, boolean lower, Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
             for (Node node : boardGrid.getChildren()) {
                 Integer row = GridPane.getRowIndex(node);
                 if (row == null) continue;
@@ -34,25 +32,23 @@ public class BoardInteractionController {
                 node.setCursor(Cursor.DEFAULT);
                 node.setOnMouseClicked(null);
 
-                if (row != 0 && row != 2) continue; // solo righe carte
-
-                boolean isEvent = false;
-                boolean canAfford = true;
-                if (node.getUserData() instanceof Integer cardId) {
-                    isEvent = CardAffordabilityPolicy.isEvent(cardId);
-                    canAfford = CardAffordabilityPolicy.isAffordable(cardId, player);
-                }
+                if (row != 0 && row != 2) continue;
 
                 boolean rowAllowed = (row == 0 && upper) || (row == 2 && lower);
-                if (!rowAllowed || isEvent) continue;
+                if (!rowAllowed) continue;
+
+                if (!(node.getUserData() instanceof Integer cardId)) continue;
+
+                boolean isAffordable   = affordableIds.contains(cardId);
+                boolean isUnaffordable = unaffordableIds.contains(cardId);
+                if (!isAffordable && !isUnaffordable) continue; // evento
 
                 Integer colIdx = GridPane.getColumnIndex(node);
                 if (colIdx == null) continue;
                 int logicalRow = (row == 0) ? 0 : 1;
                 int logicalCol = colIdx - 1;
 
-                // Stile visivo: verde se affordable, rosso altrimenti
-                if (canAfford) {
+                if (isAffordable) {
                     node.getStyleClass().add("card-glow-green");
                     node.setCursor(Cursor.HAND);
                 } else {
@@ -60,12 +56,10 @@ public class BoardInteractionController {
                 }
                 node.setOnMouseClicked(e -> handleCardClick(logicalRow, logicalCol));
             }
-        });
     }
 
     /** iAmOnOffer calcolato da InGameScreen prima di chiamare questo metodo */
     public void highlightTotemPlacement(List<Integer> validIndices, boolean iAmOnOffer) {
-        Platform.runLater(() -> {
             if (!iAmOnOffer) {
                 if (trackOverlays.isEmpty()) return;
                 Pane turnOrder = trackOverlays.get(0);
@@ -81,11 +75,9 @@ public class BoardInteractionController {
                 });
             }
             // se iAmOnOffer: nessun highlight (come nell'originale)
-        });
     }
 
     public void disableAllInteractions() {
-        Platform.runLater(() -> {
             clearTrackHighlights();
             for (Node node : boardGrid.getChildren()) {
                 Integer row = GridPane.getRowIndex(node);
@@ -96,7 +88,6 @@ public class BoardInteractionController {
                     node.setOnMouseClicked(null);
                 }
             }
-        });
     }
 
     public void clearTrackHighlights() {
