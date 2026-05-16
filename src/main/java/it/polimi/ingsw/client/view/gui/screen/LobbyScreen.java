@@ -50,7 +50,6 @@ public class LobbyScreen implements RefreshableScreen {
                 if (stage != null) { stage.setMinWidth(1280); stage.setMinHeight(720); }
             }
         });
-        presenter.onScreenReady(this);
     }
 
     public void render(LobbyViewState state) {
@@ -81,7 +80,13 @@ public class LobbyScreen implements RefreshableScreen {
     }
 
     @Override
-    public void onExit() { videoBackground.stop(); }
+    public void onEnter() { presenter.onScreenReady(this); }
+
+    @Override
+    public void onExit() {
+        presenter.deregister();
+        videoBackground.stop();
+    }
 
     @Override
     public void refresh() { presenter.refresh(); }

@@ -54,7 +54,6 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
                 stage.setMinHeight(800);
             }
         });
-        presenter.onScreenReady(this);
     }
 
 
@@ -81,6 +80,14 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
 
     @Override
     public void refresh() { presenter.refresh(); }
+
+    @Override
+    public void onEnter() { presenter.onScreenReady(this); }
+
+    @Override
+    public void onExit() {
+        presenter.deregister();
+    }
 
     @Override
     public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {

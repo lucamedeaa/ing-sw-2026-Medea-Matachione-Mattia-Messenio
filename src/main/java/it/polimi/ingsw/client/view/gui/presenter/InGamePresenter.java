@@ -26,6 +26,10 @@ public class InGamePresenter implements InGameView {
         refresh();
     }
 
+    public void deregister() {
+        ctx.notificationController().setInGameView(null);
+    }
+
     public void refresh() {
         if (isNavigatingAway) return;
         Platform.runLater(() -> {
@@ -34,7 +38,6 @@ public class InGamePresenter implements InGameView {
             if (model == null || model.getPlayers().isEmpty()) return;
             if (model.isGameOver()) {
                 isNavigatingAway = true;
-                ctx.notificationController().setInGameView(null);
                 navigator.toGameEnded();
                 return;
             }
@@ -54,7 +57,6 @@ public class InGamePresenter implements InGameView {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
         Platform.runLater(() -> {
-            ctx.notificationController().setInGameView(null);
             navigator.toMatchmaking();
         });
     }
@@ -69,17 +71,15 @@ public class InGamePresenter implements InGameView {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
         Platform.runLater(() -> {
-            ctx.notificationController().setInGameView(null);
             navigator.toDisconnected(reason);
         });
     }
 
     public void disconnect() {
-        ctx.controller().disconnect(() -> Platform.runLater(() -> {
-            ctx.notificationController().setInGameView(null);
-            navigator.toDisconnected("Disconnected willingly");
-        }));
+        ctx.controller().disconnect(() -> Platform.runLater(() ->
+                navigator.toDisconnected("Disconnected willingly")));
     }
+
     public void skipAction() { ctx.controller().skipAction(); }
     public void leave()      { ctx.controller().leaveGame(); }
 }

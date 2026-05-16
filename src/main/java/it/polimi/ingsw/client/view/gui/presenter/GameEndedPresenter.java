@@ -27,6 +27,10 @@ public class GameEndedPresenter implements GameEndedView {
         ctx.controller().getLeaderboard();
     }
 
+    public void deregister() {
+        ctx.notificationController().setGameEndedView(null);
+    }
+
     public void refresh() {
         GameModel gm = ctx.gameModel();
         GameEndedViewState state = new GameEndedViewState(
@@ -58,10 +62,7 @@ public class GameEndedPresenter implements GameEndedView {
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        Platform.runLater(() -> {
-            ctx.notificationController().setGameEndedView(null);
-            navigator.toMatchmaking();
-        });
+        Platform.runLater(() -> navigator.toMatchmaking());
     }
 
     @Override
@@ -69,7 +70,6 @@ public class GameEndedPresenter implements GameEndedView {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
         Platform.runLater(() -> {
-            ctx.notificationController().setGameEndedView(null);
             navigator.toDisconnected(reason);
         });
     }

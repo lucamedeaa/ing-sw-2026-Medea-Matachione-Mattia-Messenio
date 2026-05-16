@@ -24,12 +24,15 @@ public class LobbyPresenter implements LobbyView {
     public void onScreenReady(LobbyScreen screen) {
         this.screen = screen;
         ctx.notificationController().setLobbyView(this);
-        // Se il gameModel è già popolato (es. riconnessione), salta subito in gioco
         if (ctx.gameModel() != null && !ctx.gameModel().getPlayers().isEmpty()) {
             onGameStarted();
             return;
         }
         refresh();
+    }
+
+    public void deregister() {
+        ctx.notificationController().setLobbyView(null);
     }
 
     public void refresh() {
@@ -56,7 +59,7 @@ public class LobbyPresenter implements LobbyView {
         ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
     }
 
-    //Callbacks server (LobbyView)
+    // Callbacks server (LobbyView)
 
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
@@ -66,7 +69,6 @@ public class LobbyPresenter implements LobbyView {
     @Override
     public void onGameStarted() {
         Platform.runLater(() -> {
-            ctx.notificationController().setLobbyView(null);
             navigator.toInGame();
         });
     }
@@ -74,7 +76,6 @@ public class LobbyPresenter implements LobbyView {
     @Override
     public void onReturnToMatchmaking(String reason) {
         Platform.runLater(() -> {
-            ctx.notificationController().setLobbyView(null);
             navigator.toMatchmaking();
         });
     }
@@ -86,9 +87,7 @@ public class LobbyPresenter implements LobbyView {
 
     @Override
     public void onServerDisconnected(String reason) {
-        Platform.runLater(() -> {
-            ctx.notificationController().setLobbyView(null);
-            navigator.toDisconnected(reason);
-        });
+        Platform.runLater(() ->
+                navigator.toDisconnected(reason));
     }
 }

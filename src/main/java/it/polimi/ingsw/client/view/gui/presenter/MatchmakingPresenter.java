@@ -23,11 +23,14 @@ public class MatchmakingPresenter implements MatchmakingView {
         this.navigator = navigator;
     }
 
-    /** Chiamato da MatchmakingScreen.initialize() dopo il binding FXML. */
     public void onScreenReady(MatchmakingScreen screen) {
         this.screen = screen;
         ctx.notificationController().setMatchmakingView(this);
         refresh();
+    }
+
+    public void deregister() {
+        ctx.notificationController().setMatchmakingView(null);
     }
 
     public void refresh() {
@@ -37,7 +40,7 @@ public class MatchmakingPresenter implements MatchmakingView {
         Platform.runLater(() -> { if (this.screen != null) this.screen.render(state); });
     }
 
-    // Azioni utente (delegate dalla screen)
+    // Azioni utente
 
     public void createGame(String nickname, int maxPlayers) {
         this.pendingNickname = nickname;
@@ -55,10 +58,9 @@ public class MatchmakingPresenter implements MatchmakingView {
     }
 
     public void disconnect() {
-        ctx.controller().disconnect(() -> Platform.runLater(() -> {
-            ctx.notificationController().setMatchmakingView(null);
-            navigator.toDisconnected("Disconnected willingly");
-        }));
+        ctx.controller().disconnect(() -> Platform.runLater(() ->
+                navigator.toDisconnected("Disconnected willingly")));
+        // deregistrazione avviene tramite screen.onExit() → deregister()
     }
 
     public void handleWindowClose(WindowEvent event) {
@@ -75,7 +77,6 @@ public class MatchmakingPresenter implements MatchmakingView {
     @Override
     public void onMatchmakingSuccess(String text) {
         Platform.runLater(() -> {
-            ctx.notificationController().setMatchmakingView(null);
             ctx.session().setNickname(pendingNickname);
             navigator.toLobby();
         });
@@ -88,9 +89,7 @@ public class MatchmakingPresenter implements MatchmakingView {
 
     @Override
     public void onServerDisconnected(String reason) {
-        Platform.runLater(() -> {
-            ctx.notificationController().setMatchmakingView(null);
-            navigator.toDisconnected(reason);
-        });
+        Platform.runLater(() ->
+                navigator.toDisconnected(reason));
     }
 }

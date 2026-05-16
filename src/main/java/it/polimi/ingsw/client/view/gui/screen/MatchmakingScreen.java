@@ -40,7 +40,6 @@ public class MatchmakingScreen implements RefreshableScreen {
         setupStyles();
         setupBindings();
         setupVideoAndStage();
-        presenter.onScreenReady(this);
     }
 
     private void setupStyles() {
@@ -115,7 +114,15 @@ public class MatchmakingScreen implements RefreshableScreen {
     }
 
     @Override
-    public void onExit() { videoBackground.stop(); }
+    public void onEnter() {
+        presenter.onScreenReady(this);
+    }
+
+    @Override
+    public void onExit() {
+        presenter.deregister();
+        videoBackground.stop();
+    }
 
     @Override
     public void refresh()

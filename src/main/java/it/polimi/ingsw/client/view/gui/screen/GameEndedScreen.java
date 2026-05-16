@@ -44,7 +44,6 @@ public class GameEndedScreen implements RefreshableScreen {
         videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
         setupListViewStyle(sessionLeaderboardView);
         setupListViewStyle(globalLeaderboardView);
-        presenter.onScreenReady(this);
     }
 
     private void setupListViewStyle(ListView<String> lv) {
@@ -108,7 +107,13 @@ public class GameEndedScreen implements RefreshableScreen {
     }
 
     @Override
-    public void onExit() { videoBackground.stop(); }
+    public void onEnter() { presenter.onScreenReady(this); }
+
+    @Override
+    public void onExit() {
+        presenter.deregister();
+        videoBackground.stop();
+    }
 
     @Override
     public void refresh() { presenter.refresh(); }

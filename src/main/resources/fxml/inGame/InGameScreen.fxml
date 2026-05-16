@@ -4,7 +4,7 @@
 
 <StackPane fx:id="rootPane" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="it.polimi.ingsw.client.view.gui.screen.InGameScreen">
 
-    <Pane style="-fx-background-image: url('/background/BgPlancia.png'); -fx-background-size: cover; -fx-background-position: center;"/>
+    <Pane style="-fx-background-image: url('/backGround/BgPlancia.png'); -fx-background-size: cover; -fx-background-position: center;"/>
     <Pane mouseTransparent="true" style="-fx-background-color: rgba(0,0,0,0.5);"/>
 
     <BorderPane>
