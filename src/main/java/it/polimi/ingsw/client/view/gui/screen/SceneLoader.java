@@ -31,46 +31,37 @@ public class SceneLoader {
             loader.setControllerFactory(controllerFactory::apply);
             Parent root = loader.load();
 
-            // Definisco se la schermata deve avere proporzioni fisse (InGame) o stretch (Lobby/Matchmaking)
-            boolean isFixedRatio = (sceneId == SceneId.IN_GAME || sceneId == SceneId.GAME_ENDED);
-
-            if (root instanceof Region region) {
-                region.setPrefSize(1920, 1080);
-                region.setMinSize(1920, 1080);
-                region.setMaxSize(1920, 1080);
-            }
-
-            Group scaleGroup = new Group(root);
-            StackPane wrapper = new StackPane(scaleGroup);
-            wrapper.setStyle("-fx-background-color: black;"); // Sfondo per le bande nere
-
+            Scene scene;
             double width = stage.getWidth() > 0 ? stage.getWidth() : 1280;
             double height = stage.getHeight() > 0 ? stage.getHeight() : 720;
-            Scene scene = new Scene(wrapper, width, height);
 
-            Scale scale = new Scale(1, 1, 0, 0);
-            root.getTransforms().add(scale);
-
-            ChangeListener<Number> resizeListener = (obs, oldV, newV) -> {
-                double scaleX = scene.getWidth() / 1920.0;
-                double scaleY = scene.getHeight() / 1080.0;
-
-                if (isFixedRatio) {
-                    // Proporzioni fisse
-                    double factor = Math.min(scaleX, scaleY);
-                    scale.setX(factor);
-                    scale.setY(factor);
-                } else {
-                    //Adattamento Full Screen (stretch)
-                    scale.setX(scaleX);
-                    scale.setY(scaleY);
+            // Applica il ridimensionamento forzato (Scale) solo per i menu e la lobby
+            if (sceneId == SceneId.MATCHMAKING || sceneId == SceneId.LOBBY || sceneId == SceneId.DISCONNECTED) {
+                if (root instanceof Region region) {
+                    region.setPrefSize(1920, 1080);
+                    region.setMinSize(1920, 1080);
+                    region.setMaxSize(1920, 1080);
                 }
-            };
+                Group scaleGroup = new Group(root);
+                StackPane wrapper = new StackPane(scaleGroup);
+                wrapper.setStyle("-fx-background-color: black;");
+                scene = new Scene(wrapper, width, height);
 
-            scene.widthProperty().addListener(resizeListener);
-            scene.heightProperty().addListener(resizeListener);
+                Scale scale = new Scale(1, 1, 0, 0);
+                root.getTransforms().add(scale);
 
-            Platform.runLater(() -> resizeListener.changed(null, null, null));
+                ChangeListener<Number> resizeListener = (obs, oldV, newV) -> {
+                    scale.setX(scene.getWidth() / 1920.0);
+                    scale.setY(scene.getHeight() / 1080.0);
+                };
+                scene.widthProperty().addListener(resizeListener);
+                scene.heightProperty().addListener(resizeListener);
+                Platform.runLater(() -> resizeListener.changed(null, null, null));
+
+            } else {
+                // Per IN_GAME e GAME_ENDED: passiamo direttamente la root alla Scene
+                scene = new Scene(root, width, height);
+            }
 
             stage.setScene(scene);
             return loader.getController();
