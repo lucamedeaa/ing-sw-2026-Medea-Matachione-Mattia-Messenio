@@ -67,7 +67,6 @@ public class BoardPanelController {
 
     private void updateOptimalSize(double availableWidth, double availableHeight, int cols) {
 
-
         // availableHeight qui è l'altezza di tutto il pannello laterale (VBox).
         // Dobbiamo sottrarre lo spazio occupato dalla tribù, dai margini e dalle label (circa 250px)
         double effectiveHeightForBoard = availableHeight - 100;
@@ -176,16 +175,6 @@ public class BoardPanelController {
             case 5 -> List.of("TURNORDER_TILE_5", "TILE_A", "TILE_B", "TILE_C", "TILE_D", "TILE_E", "TILE_F", "TILE_G");
         };
     }
-
-//mi sa inutile, però vediamo
-/*    private int[] turnOrderBonuses(int playerCount) {
-        return switch(playerCount) {
-            case 2 -> new int[]{1, -1};
-            case 3 -> new int[]{1, 0, -1};
-            case 4 -> new int[]{2, 1, 0, -1};
-            default -> new int[]{3, 1, 0, 0, -1};
-        };
-    }*/
 
 
     private void renderCards(List<Integer> upper, List<Integer> lower) {

@@ -13,6 +13,8 @@ public class GuiAssetManager {
     private static final Map<String, Image> tileCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemFullCache = new HashMap<>();
+    private static final Map<Integer, Image> cardBackCache = new HashMap<>();
+
 
     public static Image getCardImage(int cardId) {
         if (cardCache.containsKey(cardId)) {
@@ -98,6 +100,22 @@ public class GuiAssetManager {
 
         Image image = new Image(is);
         totemFullCache.put(color, image);
+        return image;
+    }
+
+    public static Image getCardBackImage(int era) {
+        if (cardBackCache.containsKey(era)) return cardBackCache.get(era);
+
+        String path = "/images/tiles/era_" + era + ".png";
+        InputStream is = GuiAssetManager.class.getResourceAsStream(path);
+
+        if (is == null) {
+            System.err.println("Dorso non trovato per Era " + era + " al percorso " + path);
+            return null;
+        }
+
+        Image image = new Image(is);
+        cardBackCache.put(era, image);
         return image;
     }
 }
