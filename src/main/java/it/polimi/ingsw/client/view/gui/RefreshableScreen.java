@@ -1,9 +1,14 @@
 package it.polimi.ingsw.client.view.gui;
 
+import javafx.stage.WindowEvent;
+
 public interface RefreshableScreen {
     void refresh();
-    default void handleWindowClose(javafx.stage.WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
-        javafx.application.Platform.exit();
-        System.exit(0);
+
+    /** Chiamato dal router prima di caricare la scena successiva. Override per cleanup (es. video). */
+    default void onExit() {}
+
+    default void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+        ctx.lifecycle().requestShutdown();
     }
 }

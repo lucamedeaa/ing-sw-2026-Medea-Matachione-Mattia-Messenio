@@ -1,31 +1,27 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
-
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.RefreshableScreen;
 import it.polimi.ingsw.client.view.gui.controllers.*;
+import it.polimi.ingsw.client.view.gui.controllers.board.BoardSelectionListener;
 import it.polimi.ingsw.client.view.gui.interaction.InteractionState;
-import it.polimi.ingsw.client.view.listeners.InGameView;
+import it.polimi.ingsw.client.view.gui.presenter.InGamePresenter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
+import javafx.stage.WindowEvent;
 
 import java.util.List;
 
+public class InGameScreen implements RefreshableScreen, BoardSelectionListener {
 
-public class InGameScreen implements InGameView, RefreshableScreen {
-
+    private final InGamePresenter presenter;
     private final GuiContext ctx;
-    private final GuiNavigator navigator;
-    private String viewedPlayerNickname;
-    private boolean isNavigatingAway = false;
 
-    // LA FIX È QUI: Usa StackPane invece di BorderPane!
     @FXML private StackPane rootPane;
-
     @FXML private BoardPanelController boardPanelController;
     @FXML private PlayersPanelController playersPanelController;
     @FXML private ActionsPanelController actionsPanelController;
@@ -33,34 +29,23 @@ public class InGameScreen implements InGameView, RefreshableScreen {
     @FXML private TribePanelController tribePanelController;
     @FXML private StackPane logOverlay;
 
-    public InGameScreen(GuiContext ctx, GuiNavigator navigator) {
-        this.ctx = ctx;
-        this.navigator = navigator;
-    }
+    private String viewedPlayerNickname;
+    private InteractionState currentState = InteractionState.IDLE;
+    private int upperPicksAllowed = 0;
+    private int lowerPicksAllowed = 0;
 
-    public void toggleLog() {
-        if (logOverlay != null) {
-            logOverlay.setVisible(!logOverlay.isVisible());
-        }
+    public InGameScreen(InGamePresenter presenter, GuiContext ctx) {
+        this.presenter = presenter;
+        this.ctx = ctx;
     }
 
     @FXML
     public void initialize() {
-        ctx.notificationController().setInGameView(this);
-
         if (actionsPanelController != null) {
-            actionsPanelController.setContext(ctx);
             actionsPanelController.setParentScreen(this);
         }
-        if (boardPanelController != null) {
-            boardPanelController.setParentScreen(this);
-        }
-        if (playersPanelController != null) {
-            playersPanelController.setParentScreen(this);
-        }
-
-
-        this.viewedPlayerNickname = ctx.session().getNickname();
+        if (boardPanelController != null) boardPanelController.setListener(this);
+        if (playersPanelController != null) playersPanelController.setParentScreen(this);
 
         Platform.runLater(() -> {
             if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null) {
@@ -68,60 +53,67 @@ public class InGameScreen implements InGameView, RefreshableScreen {
                 stage.setMinWidth(1000);
                 stage.setMinHeight(800);
             }
-            this.refresh();
         });
+        presenter.onScreenReady(this);
+    }
+
+
+    /** Esegue il rendering dei sotto-pannelli. Deve essere chiamato sul thread JavaFX. */
+    public void doRefresh() {
+        String self = ctx.session().getNickname();
+        if (viewedPlayerNickname == null) viewedPlayerNickname = self;
+        GameModel model = ctx.gameModel();
+
+        if (boardPanelController != null)   boardPanelController.refresh(model, viewedPlayerNickname);
+        if (playersPanelController != null) playersPanelController.refresh(model, self);
+        if (actionsPanelController != null) actionsPanelController.refresh(model, self);
+        if (logPanelController != null)     logPanelController.refresh(model);
+        if (tribePanelController != null)   tribePanelController.refresh(model, viewedPlayerNickname);
+    }
+
+    public void showError(String error) {
+        if (logPanelController != null) logPanelController.appendError(error);
+    }
+
+    public void toggleLog() {
+        if (logOverlay != null) logOverlay.setVisible(!logOverlay.isVisible());
     }
 
     @Override
-    public void onReturnToMatchmaking(String reason) {
-        if (isNavigatingAway) return;
-        isNavigatingAway = true;
-        ctx.notificationController().setInGameView(null);
-        Platform.runLater(navigator::toMatchmaking);
-    }
+    public void refresh() { presenter.refresh(); }
 
     @Override
-    public void onError(String error) {
-        Platform.runLater(() -> {
-            if (logPanelController != null) logPanelController.appendError(error);
-        });
+    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+        presenter.handleWindowClose(event);
     }
 
-    @Override
-    public void onServerDisconnected(String reason) {
-        if (isNavigatingAway) return;
-        isNavigatingAway = true;
-        ctx.notificationController().setInGameView(null);
-        Platform.runLater(() -> navigator.toDisconnected(reason));
+
+    public void promptCardSelection(int upperPicksAllowed, int lowerPicksAllowed) {
+        this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
+        this.upperPicksAllowed = upperPicksAllowed;
+        this.lowerPicksAllowed = lowerPicksAllowed;
+        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
+        if (boardPanelController != null)
+            boardPanelController.enableCardSelection(upperPicksAllowed > 0, lowerPicksAllowed > 0, me);
     }
 
-    @Override
-    public void refresh() {
-        if (isNavigatingAway) return;
-        Platform.runLater(() -> {
-            if (this.viewedPlayerNickname == null) {
-                this.viewedPlayerNickname = ctx.session().getNickname();
-            }
-            if (ctx.gameModel() == null || ctx.gameModel().getPlayers().isEmpty()) return;
-
-            if (ctx.gameModel().isGameOver()) {
-                isNavigatingAway = true;
-                ctx.notificationController().setInGameView(null);
-                navigator.toGameEnded();
-                return;
-            }
-
-            if (boardPanelController != null) boardPanelController.refresh(ctx.gameModel(), viewedPlayerNickname);
-            if (playersPanelController != null) playersPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
-            if (actionsPanelController != null) actionsPanelController.refresh(ctx.gameModel(), ctx.session().getNickname());
-            if (logPanelController != null) logPanelController.refresh(ctx.gameModel());
-            if (tribePanelController != null) tribePanelController.refresh(ctx.gameModel(), viewedPlayerNickname);
-        });
+    public void onCardSelected(int row, int col) {
+        if (currentState != InteractionState.SELECTING_CARD_TO_TAKE) return;
+        if (row == 0 && upperPicksAllowed <= 0) return;
+        if (row == 1 && lowerPicksAllowed <= 0) return;
+        ctx.controller().takeCard(row, col);
+        resetInteraction();
     }
 
-    private InteractionState currentState = InteractionState.IDLE;
-    private int upperPicksAllowed = 0;
-    private int lowerPicksAllowed = 0;
+    public void promptTotemPlacement(List<Integer> availableTiles) {
+        this.currentState = InteractionState.SELECTING_TOTEM_POSITION;
+        GameModel model = ctx.gameModel();
+        if (boardPanelController != null && model != null) {
+            boolean iAmOnOffer = model.getTotemPositions()
+                    .containsKey(ctx.session().getNickname());
+            boardPanelController.highlightTotemPlacement(availableTiles, iAmOnOffer);
+        }
+    }
 
     public void onTotemPositionSelected(int tileIndex) {
         if (currentState != InteractionState.SELECTING_TOTEM_POSITION) return;
@@ -138,40 +130,12 @@ public class InGameScreen implements InGameView, RefreshableScreen {
 
     public void setViewedPlayer(String nickname) {
         this.viewedPlayerNickname = nickname;
-        this.refresh();
+        refresh();
     }
 
-    public void promptTotemPlacement(List<Integer> availableTiles) {
-        this.currentState = InteractionState.SELECTING_TOTEM_POSITION;
-        String self = ctx.session().getNickname();
-        GameModel model = ctx.gameModel();
-        if (boardPanelController != null && model != null) {
-            boardPanelController.highlightTotemPlacement(availableTiles, self, model);
-        }
+    public void disconnect() {
+        presenter.disconnect();
     }
-
-    public void onCardSelected(int row, int col) {
-        if (currentState != InteractionState.SELECTING_CARD_TO_TAKE) return;
-        if (row == 0 && upperPicksAllowed <= 0) return;
-        if (row == 1 && lowerPicksAllowed <= 0) return;
-
-        ctx.controller().takeCard(row, col);
-        if (boardPanelController != null) boardPanelController.disableAllInteractions();
-        resetInteraction();
-    }
-
-    public void promptCardSelection(int upperPicksAllowed, int lowerPicksAllowed) {
-        this.currentState = InteractionState.SELECTING_CARD_TO_TAKE;
-        this.upperPicksAllowed = upperPicksAllowed;
-        this.lowerPicksAllowed = lowerPicksAllowed;
-        PlayerSnapshot me = ctx.gameModel().getPlayers().get(ctx.session().getNickname());
-
-        if (boardPanelController != null) {
-            // Chiama il metodo sul tabellone per accendere le luci verdi
-            boardPanelController.enableCardSelection(
-                upperPicksAllowed > 0,
-                lowerPicksAllowed > 0, me
-            );
-        }
-    }
+    public void skipAction() { presenter.skipAction(); }
+    public void leaveGame()  { presenter.leave(); }
 }

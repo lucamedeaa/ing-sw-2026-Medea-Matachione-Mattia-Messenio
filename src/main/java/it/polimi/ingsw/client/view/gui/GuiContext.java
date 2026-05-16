@@ -11,5 +11,6 @@ public record GuiContext(
         LobbyModel lobbyModel,
         GameModel gameModel,
         ClientSession session,
-        ClientNotificationController notificationController
+        ClientNotificationController notificationController,
+         GuiLifecyclePort lifecycle
 ) {}

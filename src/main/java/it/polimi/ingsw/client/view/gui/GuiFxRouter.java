@@ -33,6 +33,7 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
     }
 
     private void applyNavigation(SceneId sceneId) {
+        if (currentScreen != null) currentScreen.onExit();
         Object controller = sceneLoader.load(sceneId);
         currentScreen = (controller instanceof RefreshableScreen r) ? r : null;
     }

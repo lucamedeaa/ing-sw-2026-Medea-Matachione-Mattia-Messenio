@@ -8,7 +8,6 @@ import javafx.scene.control.TextArea;
 import java.util.List;
 
 public class LogPanelController {
-
     @FXML
     private TextArea logArea;
 
@@ -33,12 +32,5 @@ public class LogPanelController {
         return text.replaceAll("\\u001B\\[[;\\d]*m", "");
     }
 }
-    //Pulisce i logs cosi:
-    // public void updateLogs(List<String> logs) {
-    //    logListView.getItems().setAll(
-    //            logs.stream()
-    //                .map(this::stripAnsi)
-    //                .toList()
-    //    );
-    //}
+
 

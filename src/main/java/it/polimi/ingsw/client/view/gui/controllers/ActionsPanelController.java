@@ -13,16 +13,9 @@ import java.util.List;
 
 public class ActionsPanelController {
 
-    private GuiContext ctx;
-    private InGameScreen parentScreen; // <-- Riferimento al mediatore
-
+    private InGameScreen parentScreen;
     @FXML private Button skipButton;
 
-
-
-    public void setContext(GuiContext ctx) {
-        this.ctx = ctx;
-    }
 
     // <-- Nuovo setter per collegare il figlio al padre
     public void setParentScreen(InGameScreen parentScreen) {
@@ -31,7 +24,6 @@ public class ActionsPanelController {
 
     public void refresh(GameModel model, String myNickname) {
         // Reset totale
-
         if (!myNickname.equals(model.getActivePlayer())) {
             return;
         }
@@ -42,8 +34,7 @@ public class ActionsPanelController {
         }
     }
 
-// --- Metodi chiamati da FxActionRender ---
-
+//Metodi chiamati da FxActionRender
     public void enableTakeCard(int upperPicks, int lowerPicks) {
         if (parentScreen != null) parentScreen.promptCardSelection(upperPicks, lowerPicks);
     }
@@ -56,11 +47,14 @@ public class ActionsPanelController {
         skipButton.setDisable(false);
     }
 
-    // --- Handler degli eventi di JavaFX ---
-
     @FXML
     private void handleSkip() {
-        ctx.controller().skipAction();
+        if (parentScreen != null) parentScreen.skipAction();
+    }
+
+    @FXML
+    private void handleReturnToMainMenu() {
+        if (parentScreen != null) parentScreen.leaveGame();
     }
 
 
@@ -114,17 +108,7 @@ public class ActionsPanelController {
 
     @FXML
     private void handleDisconnect() {
-        ctx.controller().disconnect(() -> {
-            Platform.runLater(() -> {
-                if (parentScreen != null) {
-                    parentScreen.onServerDisconnected("Disconnected willingly");
-                }
-            });
-        });
+        if (parentScreen != null) parentScreen.disconnect();
     }
 
-    @FXML
-    private void handleReturnToMainMenu() {
-    ctx.controller().leaveGame();
-    }
 }

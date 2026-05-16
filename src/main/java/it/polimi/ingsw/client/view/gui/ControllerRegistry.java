@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.view.gui;
 
 import it.polimi.ingsw.client.view.gui.controllers.*;
+import it.polimi.ingsw.client.view.gui.presenter.*;
 import it.polimi.ingsw.client.view.gui.screen.*;
 
 import java.util.HashMap;
@@ -22,16 +23,17 @@ public class ControllerRegistry {
     }
 
     private void register() {
-        factories.put(MatchmakingScreen.class,     () -> new MatchmakingScreen(ctx, navigator));
-        factories.put(LobbyScreen.class,           () -> new LobbyScreen(ctx, navigator));
-        factories.put(InGameScreen.class,          () -> new InGameScreen(ctx, navigator));
-        factories.put(GameEndedScreen.class,       () -> new GameEndedScreen(ctx, navigator));
-        factories.put(DisconnectedScreen.class,    () -> new DisconnectedScreen(disconnectReason.get()));
-        factories.put(BoardPanelController.class,  BoardPanelController::new);
-        factories.put(PlayersPanelController.class,PlayersPanelController::new);
-        factories.put(ActionsPanelController.class,ActionsPanelController::new);
-        factories.put(LogPanelController.class,    LogPanelController::new);
-        factories.put(TribePanelController.class,  TribePanelController::new);
+        // Screen ricevono il proprio Presenter — nessuna dipendenza diretta su GuiContext
+        factories.put(MatchmakingScreen.class, () -> new MatchmakingScreen(new MatchmakingPresenter(ctx, navigator)));
+        factories.put(LobbyScreen.class,       () -> new LobbyScreen(new LobbyPresenter(ctx, navigator)));
+        factories.put(GameEndedScreen.class,   () -> new GameEndedScreen(new GameEndedPresenter(ctx, navigator)));
+        factories.put(InGameScreen.class,      () -> new InGameScreen(new InGamePresenter(ctx, navigator), ctx));
+        factories.put(DisconnectedScreen.class,     () -> new DisconnectedScreen(disconnectReason.get()));
+        factories.put(BoardPanelController.class,   BoardPanelController::new);
+        factories.put(PlayersPanelController.class, PlayersPanelController::new);
+        factories.put(ActionsPanelController.class, ActionsPanelController::new);
+        factories.put(LogPanelController.class,     LogPanelController::new);
+        factories.put(TribePanelController.class,   TribePanelController::new);
     }
 
     public Object createController(Class<?> controllerClass) {
