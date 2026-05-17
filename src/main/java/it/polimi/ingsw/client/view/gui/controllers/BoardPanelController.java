@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.view.gui.controllers;
 
 import it.polimi.ingsw.client.view.gui.controllers.board.*;
+import it.polimi.ingsw.client.view.gui.interaction.BoardView;
 import it.polimi.ingsw.client.view.gui.viewstate.BoardViewState;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class BoardPanelController {
+public class BoardPanelController implements BoardView {
     @FXML private GridPane boardGrid;
 
     private final DoubleProperty cardWidthProp = new SimpleDoubleProperty(60.0);

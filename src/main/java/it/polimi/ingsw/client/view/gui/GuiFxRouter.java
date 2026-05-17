@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.view.gui.controllers.ControllerRegistry;
 import it.polimi.ingsw.client.view.gui.screen.*;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GuiFxRouter implements UIObserver, GuiNavigator {
 
@@ -13,6 +14,7 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
     private RefreshableScreen currentScreen;
     private String disconnectReason = "";
     private final SceneLoader sceneLoader;
+    private final AtomicBoolean refreshPending = new AtomicBoolean(false);
 
     public GuiFxRouter(Stage stage, GuiContext ctx) {
         this.stage = stage;
@@ -48,7 +50,9 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
 
     @Override
     public void onStateChanged() {
+        if (!refreshPending.compareAndSet(false, true)) return;
         ctx.scheduler().runLater(() -> {
+            refreshPending.set(false);
             if (currentScreen != null) currentScreen.refresh();
         });
     }

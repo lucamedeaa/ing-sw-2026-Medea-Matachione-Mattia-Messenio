@@ -1,19 +1,18 @@
 package it.polimi.ingsw.client.view.gui.interaction;
 
-import it.polimi.ingsw.client.view.gui.controllers.BoardPanelController;
 import java.util.List;
 import java.util.Set;
 
 public class BoardInteractionManager {
 
     private final BoardCommandPort commands;
-    private final BoardPanelController boardPanel;
+    private final BoardView boardPanel;
 
     private InteractionState currentState = InteractionState.IDLE;
     private int upperPicksAllowed = 0;
     private int lowerPicksAllowed = 0;
 
-    public BoardInteractionManager(BoardCommandPort commands, BoardPanelController boardPanel) {
+    public BoardInteractionManager(BoardCommandPort commands, BoardView boardPanel) {
         this.commands = commands;
         this.boardPanel = boardPanel;
     }

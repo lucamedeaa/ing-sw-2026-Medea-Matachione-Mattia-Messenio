@@ -1,8 +1,6 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
 import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
-import it.polimi.ingsw.client.view.gui.GuiContext;
-import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.MatchmakingPresenter;
 import it.polimi.ingsw.client.view.gui.presenter.MatchmakingScreenPort;
@@ -59,6 +57,7 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
         errorLabel.getStyleClass().add("mm-error-label");
         gamesListView.getStyleClass().add("mm-list");
         gamesListView.setCellFactory(lv -> new ListCell<>() {
+
             @Override
             protected void updateItem(GameInfoDto item, boolean empty) {
                 super.updateItem(item, empty);

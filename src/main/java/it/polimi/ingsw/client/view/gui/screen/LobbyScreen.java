@@ -1,8 +1,6 @@
 package it.polimi.ingsw.client.view.gui.screen;
 
 import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
-import it.polimi.ingsw.client.view.gui.GuiContext;
-import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.LobbyPresenter;
 import it.polimi.ingsw.client.view.gui.presenter.LobbyScreenPort;

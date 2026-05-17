@@ -13,7 +13,7 @@ public class LobbyPresenter implements LobbyView {
     private final GuiContext ctx;
     private final GuiNavigator navigator;
     private LobbyScreenPort screen;
-    private boolean isNavigatingAway = false;
+    private volatile boolean isNavigatingAway = false;
 
     public LobbyPresenter(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;
