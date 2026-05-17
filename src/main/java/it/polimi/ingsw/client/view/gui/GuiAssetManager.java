@@ -60,13 +60,11 @@ public class GuiAssetManager {
         }
 
         // Normalizziamo il nome per sicurezza (es. da "Red" a "RED")
-        
 
         if (totemCache.containsKey(color)) {
             return totemCache.get(color);
         }
 
-        // Assicurati che il path corrisponda alla cartella reale nei tuoi resources
         String path = "/images/totem/" + color + "_COLOR.png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 

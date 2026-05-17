@@ -11,7 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.transform.Scale;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -65,6 +67,23 @@ public class SceneLoader {
 
         } catch (IOException e) {
             throw new RuntimeException("Unable to load scene: " + def.fxmlPath(), e);
+        }
+    }
+    public void loadModal(SceneDefinition def, Window owner) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(def.fxmlPath()));
+            loader.setControllerFactory(controllerFactory::apply);
+            Parent root = loader.load();
+            Stage modal = new Stage();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource(GuiAssetPaths.STYLE_CSS).toExternalForm());
+            modal.setScene(scene);
+            modal.initOwner(owner);
+            modal.initModality(Modality.WINDOW_MODAL);
+            modal.setResizable(false);
+            modal.show();
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load modal: " + def.fxmlPath(), e);
         }
     }
 }

@@ -53,10 +53,11 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
         });
     }
 
-    @Override public void toMatchmaking() { navigateTo(Scenes.MATCHMAKING); }
-    @Override public void toLobby() { navigateTo(Scenes.LOBBY); }
-    @Override public void toInGame() { navigateTo(Scenes.IN_GAME); }
-    @Override public void toGameEnded(){ navigateTo(Scenes.GAME_ENDED); }
+    @Override public void toMatchmaking()            { navigateTo(Scenes.MATCHMAKING); }
+    @Override public void toLobby()                  { navigateTo(Scenes.LOBBY); }
+    @Override public void toInGame()                 { navigateTo(Scenes.IN_GAME); }
+    @Override public void toGameEnded()              { navigateTo(Scenes.GAME_ENDED); }
+    @Override public void openModal(SceneDefinition def) { sceneLoader.loadModal(def, stage); }
 
     @Override
     public void toDisconnected(String reason) {
@@ -66,12 +67,8 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
 
     private void setupCloseHandler() {
         stage.setOnCloseRequest(event -> {
-            if (currentScreen != null) {
-                currentScreen.handleWindowClose(event);
-            }
-            if (!event.isConsumed()) {
-                ctx.lifecycle().requestShutdown(); // fallback
-            }
+            if (currentScreen != null) currentScreen.handleWindowClose(event);
+            if (!event.isConsumed()) ctx.lifecycle().requestShutdown();
         });
     }
 }

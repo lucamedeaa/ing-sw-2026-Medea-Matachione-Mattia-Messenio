@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.controllers.board.CardAffordabilityPolicy;
+import it.polimi.ingsw.client.view.gui.interaction.BoardCommandPort;
 import it.polimi.ingsw.client.view.gui.viewstate.*;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import javafx.application.Platform;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class InGamePresenter implements InGameView {
+public class InGamePresenter implements InGameView, BoardCommandPort {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
@@ -71,7 +72,7 @@ public class InGamePresenter implements InGameView {
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        ctx.scheduler().runLater(() -> navigator.toMatchmaking());
+        ctx.scheduler().runLater(navigator::toMatchmaking);
     }
 
     @Override

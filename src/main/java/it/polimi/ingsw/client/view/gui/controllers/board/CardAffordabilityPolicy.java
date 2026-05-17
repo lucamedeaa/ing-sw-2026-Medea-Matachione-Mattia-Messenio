@@ -19,13 +19,14 @@ public final class CardAffordabilityPolicy {
         return "Event".equals(CardRegistry.getCard(cardId).type());
     }
 
-    public static boolean isFirstBuilding(List<Integer> row, int index) {
-        Integer currentId = row.get(index);
-        if (currentId == null || !"Building".equals(CardRegistry.getCard(currentId).type())) return false;
-        for (int i = index - 1; i >= 0; i--) {
-            Integer prevId = row.get(i);
-            if (prevId != null) return !"Building".equals(CardRegistry.getCard(prevId).type());
-        }
-        return true;
-    }
+//    public static boolean isFirstBuilding(List<Integer> row, int index) {
+//        Integer currentId = row.get(index);
+//        if (currentId == null || !"Building".equals(CardRegistry.getCard(currentId).type())) return false;
+//        for (int i = index - 1; i >= 0; i--) {
+//            Integer prevId = row.get(i);
+//            if (prevId != null) return !"Building".equals(CardRegistry.getCard(prevId).type());
+//        }
+//        return true;
+//    }
+
 }

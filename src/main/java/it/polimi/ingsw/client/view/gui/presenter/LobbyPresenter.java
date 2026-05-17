@@ -64,14 +64,14 @@ public class LobbyPresenter implements LobbyView {
     public void onGameStarted() {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        ctx.scheduler().runLater(() -> navigator.toInGame());
+        ctx.scheduler().runLater(navigator::toInGame);
     }
 
     @Override
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        ctx.scheduler().runLater(() -> navigator.toMatchmaking());
+        ctx.scheduler().runLater(navigator::toMatchmaking);
     }
 
     @Override

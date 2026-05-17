@@ -6,5 +6,6 @@ public interface GuiNavigator {
     void toInGame();
     void toGameEnded();
     void toDisconnected(String reason);
+    void openModal(SceneDefinition def);
 }
 

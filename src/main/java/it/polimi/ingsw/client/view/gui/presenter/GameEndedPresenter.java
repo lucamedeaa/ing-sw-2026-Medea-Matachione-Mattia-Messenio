@@ -57,7 +57,7 @@ public class GameEndedPresenter implements GameEndedView {
     public void onReturnToMatchmaking(String reason) {
         if (isNavigatingAway) return;
         isNavigatingAway = true;
-        ctx.scheduler().runLater(() -> navigator.toMatchmaking());
+        ctx.scheduler().runLater(navigator::toMatchmaking);
     }
 
     @Override
