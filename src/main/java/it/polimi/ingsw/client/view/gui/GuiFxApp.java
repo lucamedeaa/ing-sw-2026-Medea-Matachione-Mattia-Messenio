@@ -61,5 +61,6 @@ public class GuiFxApp extends Application implements ClientUi, GuiLifecyclePort{
     @Override
     public void requestShutdown() {
         Platform.exit();
+        System.exit(0);
     }
 }
