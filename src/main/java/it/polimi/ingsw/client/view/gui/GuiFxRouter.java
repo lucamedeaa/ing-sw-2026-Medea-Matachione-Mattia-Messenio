@@ -6,8 +6,8 @@ import it.polimi.ingsw.client.view.gui.screen.*;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
+public class GuiFxRouter implements UIObserver, GuiNavigator {
 
-public class GuiFxRouter implements UIObserver,GuiNavigator {
     private final Stage stage;
     private final GuiContext ctx;
     private RefreshableScreen currentScreen;
@@ -19,22 +19,28 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         this.ctx = ctx;
         ctx.lobbyModel().addObserver(this);
         ctx.gameModel().addObserver(this);
-        ControllerRegistry registry = new ControllerRegistry(ctx, this, () -> this.disconnectReason);
-        this.sceneLoader = new SceneLoader(stage, registry::createController);
+
+        ControllerRegistry registry = new ControllerRegistry(ctx, this);
+        this.sceneLoader = new SceneLoader(stage, c -> {
+            if (c == DisconnectedScreen.class)
+                return new DisconnectedScreen(disconnectReason);
+            return registry.createController(c);
+        });
+
         setupCloseHandler();
     }
 
-    private void navigateTo(SceneId sceneId) {
+    private void navigateTo(SceneDefinition def) {
         if (Platform.isFxApplicationThread()) {
-            applyNavigation(sceneId);
+            applyNavigation(def);
         } else {
-            Platform.runLater(() -> applyNavigation(sceneId));
+            Platform.runLater(() -> applyNavigation(def));
         }
     }
 
-    private void applyNavigation(SceneId sceneId) {
+    private void applyNavigation(SceneDefinition def) {
         RefreshableScreen oldScreen = currentScreen;
-        Object controller = sceneLoader.load(sceneId);
+        Object controller = sceneLoader.load(def);
         currentScreen = (controller instanceof RefreshableScreen r) ? r : null;
         if (oldScreen != null) oldScreen.onExit();
         if (currentScreen != null) currentScreen.onEnter();
@@ -47,37 +53,25 @@ public class GuiFxRouter implements UIObserver,GuiNavigator {
         });
     }
 
-    @Override
-    public void toMatchmaking() {
-        navigateTo(SceneId.MATCHMAKING);
-    }
-
-    @Override
-    public void toLobby() {
-        navigateTo(SceneId.LOBBY);
-    }
-
-    @Override
-    public void toInGame() {
-        navigateTo(SceneId.IN_GAME);
-    }
-
-    @Override
-    public void toGameEnded() {
-       navigateTo(SceneId.GAME_ENDED);
-    }
+    @Override public void toMatchmaking() { navigateTo(Scenes.MATCHMAKING); }
+    @Override public void toLobby() { navigateTo(Scenes.LOBBY); }
+    @Override public void toInGame() { navigateTo(Scenes.IN_GAME); }
+    @Override public void toGameEnded(){ navigateTo(Scenes.GAME_ENDED); }
 
     @Override
     public void toDisconnected(String reason) {
         this.disconnectReason = reason != null ? reason : "Connessione al server persa";
-        navigateTo(SceneId.DISCONNECTED);
+        navigateTo(Scenes.DISCONNECTED);
     }
 
     private void setupCloseHandler() {
-    stage.setOnCloseRequest(event -> {
-        if (currentScreen != null) {
-            currentScreen.handleWindowClose(event, ctx, this);
-        }
-    });
+        stage.setOnCloseRequest(event -> {
+            if (currentScreen != null) {
+                currentScreen.handleWindowClose(event);
+            }
+            if (!event.isConsumed()) {
+                ctx.lifecycle().requestShutdown(); // fallback
+            }
+        });
     }
 }

@@ -2,19 +2,17 @@ package it.polimi.ingsw.client.view.gui.presenter;
 
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.screen.LobbyScreen;
 import it.polimi.ingsw.client.view.gui.viewstate.LobbyViewState;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
-
 import java.util.List;
 
 public class LobbyPresenter implements LobbyView {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
-    private LobbyScreen screen;
+    private LobbyScreenPort screen;
     private boolean isNavigatingAway = false;
 
     public LobbyPresenter(GuiContext ctx, GuiNavigator navigator) {
@@ -22,9 +20,7 @@ public class LobbyPresenter implements LobbyView {
         this.navigator = navigator;
     }
 
-    // Lifecycle
-
-    public void onScreenReady(LobbyScreen screen) {
+    public void onScreenReady(LobbyScreenPort screen) {
         this.screen = screen;
         ctx.notificationController().setLobbyView(this);
         if (ctx.gameModel() != null && !ctx.gameModel().getPlayers().isEmpty()) {
@@ -45,14 +41,10 @@ public class LobbyPresenter implements LobbyView {
                 ctx.session().getNickname(),
                 ctx.lobbyModel().getLobbyNotification()
         );
-        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (screen != null) screen.render(state); });
     }
 
-    //Azioni utente
-
-    public void leave() {
-        ctx.controller().leaveGame();
-    }
+    public void leave()      { ctx.controller().leaveGame(); }
 
     public void disconnect() {
         ctx.controller().disconnect(() -> ctx.scheduler().runLater(() ->
@@ -62,8 +54,6 @@ public class LobbyPresenter implements LobbyView {
     public void handleWindowClose(WindowEvent event) {
         ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
     }
-
-    // Callbacks server (LobbyView)
 
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {

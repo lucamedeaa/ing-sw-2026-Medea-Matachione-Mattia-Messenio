@@ -1,21 +1,18 @@
 package it.polimi.ingsw.client.view.gui.controllers;
 
 import it.polimi.ingsw.client.view.gui.FxActionRender;
-import it.polimi.ingsw.client.view.gui.GuiAssetPaths;
-import it.polimi.ingsw.client.view.gui.SceneId;
 import it.polimi.ingsw.client.view.gui.viewstate.ActionsViewState;
 import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 
 public class ActionsPanelController {
 
-    private InGamePanelHost parentScreen;
+    private ActionCommandHost parentScreen;
     private ActionsViewState currentState;
     @FXML private Button skipButton;
 
-    public void setParentScreen(InGamePanelHost parentScreen) {
+    public void setParentScreen(ActionCommandHost parentScreen) {
         this.parentScreen = parentScreen;
     }
 
@@ -60,34 +57,13 @@ public class ActionsPanelController {
         if (parentScreen != null) parentScreen.toggleLog();
     }
 
-    private javafx.stage.Stage infoStage;
-
-    @FXML
-    private void handleShowInfo() {
-        if (infoStage != null && infoStage.isShowing()) {
-            infoStage.toFront();
-            return;
-        }
-        try {
-            javafx.fxml.FXMLLoader loader = new FXMLLoader(getClass().getResource(SceneId.INFO.path()));
-            javafx.scene.Parent root = loader.load();
-            infoStage = new javafx.stage.Stage();
-            infoStage.setTitle("Mesos - Reference Guide");
-            javafx.scene.Scene scene = new javafx.scene.Scene(root);
-            scene.getStylesheets().add(GuiAssetPaths.STYLE_CSS);
-            infoStage.setScene(scene);
-            if (skipButton != null && skipButton.getScene() != null)
-                infoStage.initOwner(skipButton.getScene().getWindow());
-            infoStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
-            infoStage.setResizable(false);
-            infoStage.show();
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     private void handleDisconnect() {
         if (parentScreen != null) parentScreen.disconnect();
+    }
+
+    @FXML
+    private void handleShowInfo() {
+        if (parentScreen != null) parentScreen.showInfo();
     }
 }

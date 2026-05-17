@@ -2,20 +2,18 @@ package it.polimi.ingsw.client.view.gui.presenter;
 
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.screen.MatchmakingScreen;
 import it.polimi.ingsw.client.view.gui.viewstate.MatchmakingViewState;
 import it.polimi.ingsw.client.view.listeners.MatchmakingView;
 import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
-
 import java.util.List;
 
 public class MatchmakingPresenter implements MatchmakingView {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
-    private MatchmakingScreen screen;
+    private MatchmakingScreenPort screen;
     private String pendingNickname = "";
 
     public MatchmakingPresenter(GuiContext ctx, GuiNavigator navigator) {
@@ -23,7 +21,7 @@ public class MatchmakingPresenter implements MatchmakingView {
         this.navigator = navigator;
     }
 
-    public void onScreenReady(MatchmakingScreen screen) {
+    public void onScreenReady(MatchmakingScreenPort screen) {
         this.screen = screen;
         ctx.notificationController().setMatchmakingView(this);
         refresh();
@@ -38,7 +36,7 @@ public class MatchmakingPresenter implements MatchmakingView {
         List<GameInfoDto> games = ctx.lobbyModel().getAvailableGames();
         String error = ctx.lobbyModel().consumeGlobalError();
         MatchmakingViewState state = new MatchmakingViewState(games, error);
-        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (screen != null) screen.render(state); });
     }
 
     public void createGame(String nickname, int maxPlayers) {
@@ -52,24 +50,19 @@ public class MatchmakingPresenter implements MatchmakingView {
         ctx.controller().joinGame(nickname, selected.getGameId());
     }
 
-    public void refreshList() {
-        ctx.controller().getAvailableGames();
-    }
-
-    public void handleWindowClose(WindowEvent event) {
-        ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
-    }
-
+    public void refreshList() { ctx.controller().getAvailableGames(); }
 
     public void disconnect() {
         ctx.controller().disconnect(() -> ctx.scheduler().runLater(() ->
                 navigator.toDisconnected("Disconnected willingly")));
     }
 
-    @Override
-    public void onAvailableGames(List<GameInfoDto> games) {
-        ctx.scheduler().runLater(this::refresh);
+    public void handleWindowClose(WindowEvent event) {
+        ctx.controller().disconnect(() -> Platform.runLater(Platform::exit));
     }
+
+    @Override public void onAvailableGames(List<GameInfoDto> games) { ctx.scheduler().runLater(this::refresh); }
+    @Override public void onError(String error)                     { ctx.scheduler().runLater(this::refresh); }
 
     @Override
     public void onMatchmakingSuccess(String text) {
@@ -80,13 +73,7 @@ public class MatchmakingPresenter implements MatchmakingView {
     }
 
     @Override
-    public void onError(String error) {
-        ctx.scheduler().runLater(this::refresh);
-    }
-
-    @Override
     public void onServerDisconnected(String reason) {
         ctx.scheduler().runLater(() -> navigator.toDisconnected(reason));
     }
-
 }

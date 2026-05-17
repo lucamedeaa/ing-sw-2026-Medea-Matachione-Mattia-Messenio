@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.GameEndedPresenter;
+import it.polimi.ingsw.client.view.gui.presenter.GameEndedScreenPort;
 import it.polimi.ingsw.client.view.gui.viewstate.GameEndedViewState;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
@@ -15,7 +16,7 @@ import javafx.stage.WindowEvent;
 
 import java.time.format.DateTimeFormatter;
 
-public class GameEndedScreen implements RefreshableScreen {
+public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
 
     private final GameEndedPresenter presenter;
 
@@ -124,7 +125,7 @@ public class GameEndedScreen implements RefreshableScreen {
     public void refresh() { presenter.refresh(); }
 
     @Override
-    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+    public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);
     }
 

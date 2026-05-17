@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.view.gui.controllers.board;
 
-import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;

@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.gui.presenter;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.screen.GameEndedScreen;
 import it.polimi.ingsw.client.view.gui.viewstate.GameEndedViewState;
 import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import javafx.application.Platform;
@@ -13,7 +12,7 @@ public class GameEndedPresenter implements GameEndedView {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
-    private GameEndedScreen screen;
+    private GameEndedScreenPort screen;
     private volatile boolean isNavigatingAway = false;
 
     public GameEndedPresenter(GuiContext ctx, GuiNavigator navigator) {
@@ -21,7 +20,7 @@ public class GameEndedPresenter implements GameEndedView {
         this.navigator = navigator;
     }
 
-    public void onScreenReady(GameEndedScreen screen) {
+    public void onScreenReady(GameEndedScreenPort screen) {
         this.screen = screen;
         ctx.notificationController().setGameEndedView(this);
         refresh();
@@ -40,12 +39,10 @@ public class GameEndedPresenter implements GameEndedView {
                 gm.getLocalResult(),
                 gm.getGlobalLeaderboard()
         );
-        ctx.scheduler().runLater(() -> { if (this.screen != null) this.screen.render(state); });
+        ctx.scheduler().runLater(() -> { if (screen != null) screen.render(state); });
     }
 
-    public void leave() {
-        ctx.controller().leaveGame();
-    }
+    public void leave() { ctx.controller().leaveGame(); }
 
     public void refreshLeaderboard() {
         if (screen != null) screen.showSpinner();

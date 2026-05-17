@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.MatchmakingPresenter;
+import it.polimi.ingsw.client.view.gui.presenter.MatchmakingScreenPort;
 import it.polimi.ingsw.client.view.gui.viewstate.MatchmakingViewState;
 import it.polimi.ingsw.common.network.dto.GameInfoDto;
 import javafx.application.Platform;
@@ -14,7 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class MatchmakingScreen implements RefreshableScreen {
+public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenPort {
 
     private final MatchmakingPresenter presenter;
 
@@ -123,11 +124,10 @@ public class MatchmakingScreen implements RefreshableScreen {
     }
 
     @Override
-    public void refresh()
-    { presenter.refresh(); }
+    public void refresh() { presenter.refresh(); }
 
     @Override
-    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+    public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);
     }
 

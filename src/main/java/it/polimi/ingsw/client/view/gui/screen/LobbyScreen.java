@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
 import it.polimi.ingsw.client.view.gui.media.VideoBackground;
 import it.polimi.ingsw.client.view.gui.presenter.LobbyPresenter;
+import it.polimi.ingsw.client.view.gui.presenter.LobbyScreenPort;
 import it.polimi.ingsw.client.view.gui.viewstate.LobbyViewState;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -16,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
 
-public class LobbyScreen implements RefreshableScreen {
+public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
 
     private final LobbyPresenter presenter;
 
@@ -88,7 +89,7 @@ public class LobbyScreen implements RefreshableScreen {
     public void refresh() { presenter.refresh(); }
 
     @Override
-    public void handleWindowClose(WindowEvent event, GuiContext ctx, GuiNavigator navigator) {
+    public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);
     }
 

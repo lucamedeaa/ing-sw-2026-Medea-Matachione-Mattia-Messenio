@@ -16,10 +16,10 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 public class PlayersPanelController {
-    private InGamePanelHost parentScreen;
+    private ViewedPlayerHost parentScreen;
     @FXML private VBox playersList;
 
-    public void setParentScreen(InGamePanelHost parent) {
+    public void setParentScreen(ViewedPlayerHost parent) {
         this.parentScreen = parent;
     }
 

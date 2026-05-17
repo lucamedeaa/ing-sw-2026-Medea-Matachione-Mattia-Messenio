@@ -1,14 +1,14 @@
- package it.polimi.ingsw.client.view.gui.controllers;
+package it.polimi.ingsw.client.view.gui.controllers;
 
- import java.util.List;
- import java.util.Set;
+import java.util.List;
+import java.util.Set;
 
- public interface InGamePanelHost {
+public interface ActionCommandHost {
     void promptCardSelection(int upper, int lower, Set<Integer> affordableIds, Set<Integer> unaffordableIds);
     void promptTotemPlacement(List<Integer> tiles);
     void skipAction();
     void leaveGame();
     void toggleLog();
     void disconnect();
-    void setViewedPlayer(String nickname);
+    void showInfo();
 }

@@ -11,35 +11,25 @@ import java.util.function.Supplier;
 
 public class ControllerRegistry {
 
-    private final GuiContext ctx;
-    private final GuiNavigator navigator;
-    private final Supplier<String> disconnectReason;
-    private final Map<Class<?>, Supplier<Object>> factories = new HashMap<>();
+    private final Map<Class<?>, Supplier<Object>> factories;
 
-    public ControllerRegistry(GuiContext ctx, GuiNavigator navigator, Supplier<String> disconnectReason) {
-        this.ctx = ctx;
-        this.navigator = navigator;
-        this.disconnectReason = disconnectReason;
-        register();
+    public ControllerRegistry(GuiContext ctx, GuiNavigator navigator) {
+        Map<Class<?>, Supplier<Object>> m = new HashMap<>();
+        m.put(MatchmakingScreen.class, () -> new MatchmakingScreen(new MatchmakingPresenter(ctx, navigator)));
+        m.put(LobbyScreen.class,       () -> new LobbyScreen(new LobbyPresenter(ctx, navigator)));
+        m.put(InGameScreen.class,      () -> new InGameScreen(new InGamePresenter(ctx, navigator)));
+        m.put(GameEndedScreen.class,   () -> new GameEndedScreen(new GameEndedPresenter(ctx, navigator)));
+        m.put(BoardPanelController.class,   BoardPanelController::new);
+        m.put(PlayersPanelController.class, PlayersPanelController::new);
+        m.put(ActionsPanelController.class, ActionsPanelController::new);
+        m.put(LogPanelController.class,     LogPanelController::new);
+        m.put(TribePanelController.class,   TribePanelController::new);
+        this.factories = Map.copyOf(m);
     }
 
-    private void register() {
-        // Screen ricevono il proprio Presenter — nessuna dipendenza diretta su GuiContext
-        factories.put(MatchmakingScreen.class, () -> new MatchmakingScreen(new MatchmakingPresenter(ctx, navigator)));
-        factories.put(LobbyScreen.class,       () -> new LobbyScreen(new LobbyPresenter(ctx, navigator)));
-        factories.put(GameEndedScreen.class,   () -> new GameEndedScreen(new GameEndedPresenter(ctx, navigator)));
-        factories.put(InGameScreen.class,      () -> new InGameScreen(new InGamePresenter(ctx, navigator), ctx));
-        factories.put(DisconnectedScreen.class,     () -> new DisconnectedScreen(disconnectReason.get()));
-        factories.put(BoardPanelController.class,   BoardPanelController::new);
-        factories.put(PlayersPanelController.class, PlayersPanelController::new);
-        factories.put(ActionsPanelController.class, ActionsPanelController::new);
-        factories.put(LogPanelController.class,     LogPanelController::new);
-        factories.put(TribePanelController.class,   TribePanelController::new);
-    }
-
-    public Object createController(Class<?> controllerClass) {
-        Supplier<Object> factory = factories.get(controllerClass);
+    public Object createController(Class<?> c) {
+        Supplier<Object> factory = factories.get(c);
         if (factory != null) return factory.get();
-        throw new RuntimeException("No factory registered for: " + controllerClass.getName());
+        throw new RuntimeException("No factory registered for: " + c.getName());
     }
 }
