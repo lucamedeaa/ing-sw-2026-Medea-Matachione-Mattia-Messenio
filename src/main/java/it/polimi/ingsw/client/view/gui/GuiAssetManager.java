@@ -14,6 +14,7 @@ public class GuiAssetManager {
     private static final Map<TotemColor, Image> totemCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemFullCache = new HashMap<>();
     private static final Map<Integer, Image> cardBackCache = new HashMap<>();
+    private static final Map<Integer, Image> BuildingBackCache = new HashMap<>();
 
 
     public static Image getCardImage(int cardId) {
@@ -101,10 +102,10 @@ public class GuiAssetManager {
         return image;
     }
 
-    public static Image getCardBackImage(int era) {
+    public static Image getDeckBackImage(int era) {
         if (cardBackCache.containsKey(era)) return cardBackCache.get(era);
 
-        String path = "/images/tiles/era_" + era + ".png";
+        String path = "/images/tiles/BACK_ERA_" + era + ".png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
@@ -115,5 +116,22 @@ public class GuiAssetManager {
         Image image = new Image(is);
         cardBackCache.put(era, image);
         return image;
+    }
+
+    public static Image getBuildingDeckBackImage(int era) {
+        if (BuildingBackCache.containsKey(era)) return BuildingBackCache.get(era);
+
+        String path = "/images/tiles/BACK_BUILDING_ERA_" + era + ".png";
+        InputStream is = GuiAssetManager.class.getResourceAsStream(path);
+
+        if (is == null) {
+            System.err.println("Dorso non trovato per Building Era " + era + " al percorso " + path);
+            return null;
+        }
+
+        Image image = new Image(is);
+        BuildingBackCache.put(era, image);
+        return image;
+
     }
 }

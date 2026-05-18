@@ -42,6 +42,7 @@ public class GameModel extends ObservableModel {
             board.setCards(boardDTO.UpperRowCards(), boardDTO.LowerRowCards());
             board.setEra(boardDTO.currentEra());
             board.setRound(boardDTO.currentRound());
+            board.setNextDeckEra(boardDTO.nextDeckEra());
             roster.initPlayers(playersList);
             turn.setActivePlayerSnap(activePlayer);
 
@@ -291,6 +292,19 @@ public class GameModel extends ObservableModel {
 
             return board.getCurrentRound();
 
+    }
+
+    public Integer getNextDeckEra() {
+
+            return board.getNextDeckEra();
+
+    }
+
+    public void setNextDeckEra(Integer era) {
+
+            board.setNextDeckEra(era);
+
+        notifyUI();
     }
 
     public Map<String, PlayerSnapshot> getPlayers() {

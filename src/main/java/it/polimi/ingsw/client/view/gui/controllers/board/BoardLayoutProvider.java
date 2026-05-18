@@ -22,4 +22,9 @@ public final class BoardLayoutProvider {
             default -> new double[]{0.06, 0.24, 0.42, 0.61, 0.80};
         };
     }
+
+    public static int getBuildingDeckColumn(int playerCount, int era) {
+        int baseTrackSize = getTileLayout(playerCount).size();
+        return baseTrackSize + (era-1);
+    }
 }

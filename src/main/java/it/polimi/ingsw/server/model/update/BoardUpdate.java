@@ -14,13 +14,14 @@ import java.util.List;
 public record BoardUpdate(List<Integer> UpperRowCards,
                           List<Integer> LowerRowCards,
                           int currentEra,
-                          int currentRound) {
+                          int currentRound,
+                          Integer nextDeckEra) {
     /**
      * Converts this update to its network DTO.
      *
      * @return board DTO
      */
     public BoardDto toDTO() {
-        return new BoardDto(UpperRowCards, LowerRowCards, currentEra, currentRound);
+        return new BoardDto(UpperRowCards, LowerRowCards, currentEra, currentRound, nextDeckEra);
     }
 }

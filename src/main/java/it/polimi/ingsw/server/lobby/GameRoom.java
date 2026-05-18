@@ -12,10 +12,7 @@ import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 import it.polimi.ingsw.server.view.VirtualView;
 import it.polimi.ingsw.server.controller.GameController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.concurrent.ExecutorService;
@@ -48,7 +45,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         this.maxPlayers = maxPlayers;
         this.gameManager = gameManager;
         this.leaderboardService = leaderboardService;
-        this.players = new HashMap<>();
+        this.players = new LinkedHashMap<>();
         this.gameStarted = false;
     }
 

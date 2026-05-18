@@ -1,6 +1,9 @@
 package it.polimi.ingsw.client.view.gui.controllers.board;
 
+import it.polimi.ingsw.client.view.gui.GuiAssetManager;
 import javafx.geometry.Insets;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -19,7 +22,7 @@ public class BoardRenderer {
     }
 
     public void buildBoardTrack(int playerCount) {
-        boardGrid.getColumnConstraints().clear();
+        //boardGrid.getColumnConstraints().clear();
         boardGrid.getRowConstraints().clear();
         trackOverlays.clear();
         List<String> layout = BoardLayoutProvider.getTileLayout(playerCount);
@@ -46,4 +49,49 @@ public class BoardRenderer {
             if (id != null) { StackPane p = factory.createCardContainer(id); if (p!=null) boardGrid.add(p, i+1, 2); }
         }
     }
+
+    public void renderDeck(Integer nextDeckEra) {
+        // Rimuove l'eventuale mazzo principale precedente (colonna 0, riga 0)
+        boardGrid.getChildren().removeIf(node -> {
+            Integer col = GridPane.getColumnIndex(node);
+            Integer row = GridPane.getRowIndex(node);
+            return col != null && col == 0 && row != null && row == 0;
+        });
+
+        if (nextDeckEra == null) return;
+
+        // Delega la creazione alla factory per il mazzo principale
+        StackPane deckPane = factory.createDeckBackContainer(nextDeckEra);
+        if (deckPane != null) {
+            boardGrid.add(deckPane, 0, 0);
+        }
+    }
+
+    public void renderBuildingDecks(Integer currentEra, int playerCount) {
+        int baseTrackSize = trackOverlays.size();
+
+        // Pulisce le colonne a destra della traccia, riga 1
+        boardGrid.getChildren().removeIf(node -> {
+            Integer row = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+            return row != null && row == 1 && col != null && col >= baseTrackSize;
+        });
+
+        if (currentEra == null) return;
+
+        int MAX_ERA = 3;
+
+        for (int era = currentEra + 1; era <= MAX_ERA; era++) {
+            addBuildingDecks(era, playerCount);
+        }
+    }
+
+    private void addBuildingDecks(int era, int playercount) {
+        StackPane pane = factory.createBuildingDeckBackContainer(era);
+        int col = BoardLayoutProvider.getBuildingDeckColumn(playercount, era);
+        if (pane != null) {
+            boardGrid.add(pane, col, 1);
+        }
+    }
+
 }

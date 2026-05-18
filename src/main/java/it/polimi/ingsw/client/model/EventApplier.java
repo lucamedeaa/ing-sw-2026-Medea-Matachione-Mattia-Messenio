@@ -29,6 +29,9 @@ public class EventApplier implements EventVisitor {
     @Override
     public void visit(BoardRefilledDto event) {
         gameModel.refillBoardRow(event.row(), event.newCardIds());
+        if (event.nextDeckEra() != null) {
+            gameModel.setNextDeckEra(event.nextDeckEra());
+        }
     }
 
     @Override

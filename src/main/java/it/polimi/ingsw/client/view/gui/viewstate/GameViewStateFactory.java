@@ -32,7 +32,7 @@ public class GameViewStateFactory {
 
         return new GameViewState(
                 new BoardViewState(m.getPlayers().size(), m.getUpperRowCards(), m.getLowerRowCards(),
-                        playerInfos, m.getTotemPositions(), m.getReturnPositions()),
+                        playerInfos, m.getTotemPositions(), m.getReturnPositions(), m.getNextDeckEra(), m.getCurrentEra(), m.getCurrentRound()),
                 new ActionsViewState(m.getMyActions(), self.equals(m.getActivePlayer()), affordable, unaffordable),
                 playerInfos, m.getTribes(), m.consumeGameLogs(), self, m.getActivePlayer());
     }

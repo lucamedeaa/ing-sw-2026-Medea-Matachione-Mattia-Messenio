@@ -12,6 +12,7 @@ public class BoardSnapshot {
     private final List<Integer> lowerRowCards = new CopyOnWriteArrayList<>();
     private int currentEra = 1;
     private int currentRound = 1;
+    private Integer nextDeckEra;
 
     public void setCards(List<Integer> upper, List<Integer> lower) {
         upperRowCards.clear();
@@ -36,9 +37,11 @@ public class BoardSnapshot {
 
     public void setEra(int era) { this.currentEra = era; }
     public void setRound(int round) { this.currentRound = round; }
+    public void setNextDeckEra(Integer nextDeckEra) { this.nextDeckEra = nextDeckEra; }
 
     public int getCurrentEra() { return currentEra; }
     public int getCurrentRound() { return currentRound; }
+    public Integer getNextDeckEra() { return nextDeckEra; }
     public List<Integer> getUpperRowCards() { return new ArrayList<>(upperRowCards); }
     public List<Integer> getLowerRowCards() { return new ArrayList<>(lowerRowCards); }
 }

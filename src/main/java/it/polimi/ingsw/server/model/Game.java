@@ -124,7 +124,8 @@ public class Game implements ModelControllerInterface {
                 board.getRow(0).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
                 board.getRow(1).stream().map(opt -> opt.map(Card::getIDcard).orElse(null)).toList(),
                 board.getCurrentEraNumber(),
-                currentRound
+                currentRound,
+                board.getNextDeckEra()
         );
 
         List<PlayerUpdate> playersUpdates = players.stream()

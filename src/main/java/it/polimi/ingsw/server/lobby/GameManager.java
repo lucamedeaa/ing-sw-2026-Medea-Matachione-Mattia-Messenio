@@ -19,7 +19,7 @@ public class GameManager implements GameManagerInterface {
     }
 
     public boolean registerNickname(String nickname) {
-        return activeNicknames.add(nickname);
+        return activeNicknames.add(nickname.toLowerCase());
     }
 
     public void unregisterNickname(String nickname) {

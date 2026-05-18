@@ -327,4 +327,13 @@ public class Board {
     public List<Player> getCurrentPlayers() {
         return this.currentTotemOrder;
     }
+
+    /**
+     * Returns the era of the next card in the tribe deck, or null if the deck is empty.
+     *
+     * @return next deck era, or null
+     */
+    public Integer getNextDeckEra() {
+        return tribeDeck.peekNextCardEra();
+    }
 }

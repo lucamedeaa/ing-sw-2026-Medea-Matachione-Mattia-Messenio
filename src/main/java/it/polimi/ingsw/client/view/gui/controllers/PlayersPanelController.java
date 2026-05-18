@@ -18,12 +18,14 @@ import java.util.List;
 public class PlayersPanelController {
     private ViewedPlayerHost parentScreen;
     @FXML private VBox playersList;
+    @FXML private Label roundEraLabel;
 
     public void setParentScreen(ViewedPlayerHost parent) {
         this.parentScreen = parent;
     }
 
-    public void render(List<PlayerInfo> players, String selfNickname, String activePlayer, String viewedPlayer) {
+    public void render(List<PlayerInfo> players, String selfNickname, String activePlayer, String viewedPlayer, int round, int era) {
+        roundEraLabel.setText("Round " + round + " - Era " + era);
         playersList.getChildren().clear();
         for (PlayerInfo player : players) {
             HBox row = new HBox(12);

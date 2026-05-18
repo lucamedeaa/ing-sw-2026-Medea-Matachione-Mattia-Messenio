@@ -61,7 +61,7 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener, 
         if (viewedPlayerNickname == null) viewedPlayerNickname = state.selfNickname();
         if (boardPanelController   != null) boardPanelController.render(state.board());
         if (playersPanelController != null) playersPanelController.render(
-                state.players(), state.selfNickname(), state.activePlayer(), viewedPlayerNickname);
+                state.players(), state.selfNickname(), state.activePlayer(), viewedPlayerNickname, state.board().round(), state.board().currentEra());
         if (actionsPanelController != null) actionsPanelController.render(state.actions());
         if (logPanelController     != null) logPanelController.render(state.newLogs());
         if (tribePanelController   != null) tribePanelController.render(

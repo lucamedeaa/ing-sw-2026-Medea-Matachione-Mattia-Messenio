@@ -49,4 +49,13 @@ public class Deck {
         }
         return cards.removeFirst();
     }
+
+    /**
+     * Returns the era of the top card without removing it.
+     * @return era of the next card, or null if the deck is empty
+     */
+    public Integer peekNextCardEra() {
+        if (isEmpty()) return null;
+        return cards.getFirst().getEra();
+    }
 }

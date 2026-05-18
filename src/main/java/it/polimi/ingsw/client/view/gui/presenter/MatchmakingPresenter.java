@@ -62,7 +62,15 @@ public class MatchmakingPresenter implements MatchmakingView {
     }
 
     @Override public void onAvailableGames(List<GameInfoDto> games) { ctx.scheduler().runLater(this::refresh); }
-    @Override public void onError(String error)                     { ctx.scheduler().runLater(this::refresh); }
+    @Override
+    public void onError(String error) {
+        ctx.scheduler().runLater(() -> {
+            if (screen != null) {
+                MatchmakingViewState state = new MatchmakingViewState(ctx.lobbyModel().getAvailableGames(), error);
+                screen.render(state);
+            }
+        });
+    }
 
     @Override
     public void onMatchmakingSuccess(String text) {

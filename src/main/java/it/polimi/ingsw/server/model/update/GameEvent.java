@@ -22,8 +22,8 @@ public interface GameEvent {
      * @param row row index that changed
      * @param newCardIds new card identifiers in that row
      */
-    record BoardRefilledEvent(int row, List<Integer> newCardIds) implements GameEvent {
-        @Override public GameEventDto toDTO() { return new BoardRefilledDto(row, newCardIds); }
+    record BoardRefilledEvent(int row, List<Integer> newCardIds, Integer nextDeckEra) implements GameEvent {
+        @Override public GameEventDto toDTO() { return new BoardRefilledDto(row, newCardIds, nextDeckEra); }
     }
 
     /**

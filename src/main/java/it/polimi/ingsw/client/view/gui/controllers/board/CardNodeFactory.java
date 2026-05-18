@@ -17,6 +17,8 @@ public class CardNodeFactory {
         this.cardWidthProp = cardWidthProp;
     }
 
+    public DoubleProperty getCardWidthProp() { return cardWidthProp; }
+
     /** Nodo carta — nessun click handler, visuale puro */
     public StackPane createCardContainer(int cardId) {
         Image img = GuiAssetManager.getCardImage(cardId);
@@ -78,5 +80,30 @@ public class CardNodeFactory {
         pane.minHeightProperty().bind(cardWidthProp.multiply(1.62));
         pane.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
         pane.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
+    }
+    /** Nodo per il retro del mazzo principale */
+    public StackPane createDeckBackContainer(int era) {
+        Image img = GuiAssetManager.getDeckBackImage(era);
+        return buildDeckPane(img);
+    }
+
+    /** Nodo per il retro dei mazzi edificio */
+    public StackPane createBuildingDeckBackContainer(int era) {
+        Image img = GuiAssetManager.getBuildingDeckBackImage(era);
+        return buildDeckPane(img);
+    }
+
+    private StackPane buildDeckPane(Image img) {
+        if (img == null) return null;
+
+        ImageView iv = new ImageView(img);
+        iv.setPreserveRatio(false);
+        iv.setSmooth(true);
+        iv.fitWidthProperty().bind(cardWidthProp);
+        iv.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
+
+        StackPane pane = new StackPane(iv);
+        bindContainer(pane);
+        return pane;
     }
 }

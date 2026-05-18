@@ -7,12 +7,14 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javafx.scene.layout.ColumnConstraints;
 
 public class BoardPanelController implements BoardView {
     @FXML private GridPane boardGrid;
@@ -29,7 +31,7 @@ public class BoardPanelController implements BoardView {
         boardInteraction.setListener(listener);
     }
 
-    @FXML
+    /*@FXML
     public void initialize() {
         CardNodeFactory factory = new CardNodeFactory(cardWidthProp);
         boardRenderer   = new BoardRenderer(boardGrid, factory, trackOverlays);
@@ -43,17 +45,51 @@ public class BoardPanelController implements BoardView {
                 updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn);
             }
         });
+    }*/
+
+    @FXML
+    public void initialize() {
+        CardNodeFactory factory = new CardNodeFactory(cardWidthProp);
+        boardRenderer   = new BoardRenderer(boardGrid, factory, trackOverlays);
+        totemRenderer   = new TotemRenderer(trackOverlays, factory);
+        boardInteraction = new BoardInteractionController(boardGrid, trackOverlays);
+
+        Platform.runLater(() -> {
+            if (boardGrid.getScene() != null) {
+                setupSceneListeners(boardGrid.getScene());
+            } else {
+                boardGrid.sceneProperty().addListener((obs, oldS, newS) -> {
+                    if (newS != null) setupSceneListeners(newS);
+                });
+            }
+        });
+    }
+
+    private void setupSceneListeners(javafx.scene.Scene scene) {
+        // Sottraiamo 250px per i pannelli a destra e 220px per il pannello inferiore
+        scene.widthProperty().addListener((o, old, n) ->
+            updateOptimalSize(n.doubleValue() - 250, scene.getHeight() - 220, currentColumn));
+
+        scene.heightProperty().addListener((o, old, n) ->
+            updateOptimalSize(scene.getWidth() - 250, n.doubleValue() - 220, currentColumn));
+
+        updateOptimalSize(scene.getWidth() - 250, scene.getHeight() - 220, currentColumn);
     }
 
     public void render(BoardViewState state) {
         // già sul thread JavaFX — niente Platform.runLater
-        currentColumn = calculateCurrentColumns(state.playerCount(), state.upperCards().size());
-        if (currentBoardPlayerCount != state.playerCount()) {
+        int newCols = calculateCurrentColumns(state.playerCount(), state.upperCards().size());
+        if (currentBoardPlayerCount != state.playerCount() || currentColumn != newCols) {
+            currentColumn = newCols;
             boardGrid.getChildren().clear();
+
+            setupGridConstraints(currentColumn);
             boardRenderer.buildBoardTrack(state.playerCount());
             currentBoardPlayerCount = state.playerCount();
         }
         boardRenderer.renderCards(state.upperCards(), state.lowerCards());
+        boardRenderer.renderDeck(state.nextDeckEra());
+        boardRenderer.renderBuildingDecks(state.currentEra(), state.playerCount());
         totemRenderer.renderTurnOrderTotems(state);
     }
 
@@ -71,7 +107,7 @@ public class BoardPanelController implements BoardView {
     }
 
     private int calculateCurrentColumns(int playerCount, int upperCardsCount) {
-        int trackCols = playerCount > 0 ? BoardLayoutProvider.getTileLayout(playerCount).size() : 7;
+        int trackCols = playerCount > 0 ? BoardLayoutProvider.getTileLayout(playerCount).size() + 2 : 7;
         return Math.max(trackCols, upperCardsCount + 1);
     }
 
@@ -80,5 +116,16 @@ public class BoardPanelController implements BoardView {
         double fromW = (w - 200) / cols;
         double fromH = (effectiveH / 3.0) / 1.62;
         cardWidthProp.set(Math.max(20.0, Math.min(fromW, fromH)));
+    }
+
+    private void setupGridConstraints(int totalColumns) {
+        boardGrid.getColumnConstraints().clear();
+        for (int i = 0; i < totalColumns; i++) {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.minWidthProperty().bind(cardWidthProp);
+            cc.prefWidthProperty().bind(cardWidthProp);
+            cc.maxWidthProperty().bind(cardWidthProp);
+            boardGrid.getColumnConstraints().add(cc);
+        }
     }
 }

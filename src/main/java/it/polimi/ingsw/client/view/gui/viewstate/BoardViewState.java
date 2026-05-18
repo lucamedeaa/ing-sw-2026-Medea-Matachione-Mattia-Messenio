@@ -11,7 +11,10 @@ public record BoardViewState(
         List<Integer> lowerCards,
         List<PlayerInfo> players,
         Map<String, Integer> totemPositions,
-        Map<String, Integer> returnPositions
+        Map<String, Integer> returnPositions,
+        Integer nextDeckEra,
+        Integer currentEra,
+        Integer round
 ) {
     public BoardViewState {
         // upperCards e lowerCards possono contenere null (slot vuoti della board)

@@ -10,7 +10,8 @@ import java.util.List;
 public record BoardDto(List<Integer> UpperRowCards,
                        List<Integer> LowerRowCards,
                        int currentEra,
-                       int currentRound) implements Serializable {
+                       int currentRound,
+                       Integer nextDeckEra) implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 

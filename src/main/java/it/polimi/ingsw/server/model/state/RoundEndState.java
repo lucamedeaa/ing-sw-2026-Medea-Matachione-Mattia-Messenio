@@ -92,7 +92,7 @@ public class RoundEndState extends GameState {
                 .map(opt -> opt.map(Card::getIDcard).orElse(null))
                 .toList();
 
-        game.pushEvent(new BoardRefilledEvent(0, upperIds));
-        game.pushEvent(new BoardRefilledEvent(1, lowerIds));
+        game.pushEvent(new BoardRefilledEvent(0, upperIds, game.getBoard().getNextDeckEra()));
+        game.pushEvent(new BoardRefilledEvent(1, lowerIds, game.getBoard().getNextDeckEra()));
     }
 }
