@@ -12,7 +12,7 @@
           style="-fx-background-image: url('/images/ui/pergamena.png'); -fx-background-size: 100% 100%; -fx-background-repeat: no-repeat;">
 
         <padding>
-            <Insets top="150" right="50" bottom="50" left="50"/>
+            <Insets top="200" right="50" bottom="50" left="50"/>
         </padding>
 
         <Label text="Matchmaking" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 52px; -fx-text-fill: #fdf5e6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 15, 0.0, 0, 5);"/>

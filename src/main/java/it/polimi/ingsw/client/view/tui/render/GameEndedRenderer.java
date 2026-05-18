@@ -3,6 +3,9 @@ package it.polimi.ingsw.client.view.tui.render;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.common.network.dto.PlayerGameCompletedDto;
+import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
+
+import java.util.List;
 
 public class GameEndedRenderer {
     private final OutputPort out;
@@ -11,8 +14,10 @@ public class GameEndedRenderer {
         this.out = out;
     }
 
+    // IL METODO ORA ACCETTA 5 PARAMETRI
     public void render(
             PlayerGameCompletedDto local,
+            List<PlayerScoreDto> sessionScores,
             LeaderboardSnapshotDto leaderboard,
             String myNickname,
             boolean showLeaderboard
@@ -23,6 +28,7 @@ public class GameEndedRenderer {
         out.print(ColorAnsi.WHITE_BOLD + "                 THE CHRONICLES OF MESOS ARE WRITTEN               " + ColorAnsi.RESET);
         out.print(ColorAnsi.BLACK_BOLD + "━".repeat(60) + ColorAnsi.RESET + "\n");
 
+        renderSessionScores(sessionScores, myNickname);
         renderLocalResult(local);
         renderPersonalBest(local);
 
@@ -31,6 +37,21 @@ public class GameEndedRenderer {
         }
 
         renderFooter(showLeaderboard);
+    }
+
+    private void renderSessionScores(List<PlayerScoreDto> sessionScores, String myNickname) {
+        out.print("  " + ColorAnsi.CYAN_BOLD + "MATCH RESULTS:" + ColorAnsi.RESET);
+
+        int position = 1;
+        for (PlayerScoreDto score : sessionScores) {
+            String highlight = score.nickname().equals(myNickname) ? ColorAnsi.GREEN_BOLD : ColorAnsi.WHITE_BOLD;
+
+            out.print("    " + highlight + position + "° - " + score.nickname() + ColorAnsi.RESET
+                    + "  " + ColorAnsi.YELLOW_BOLD + score.finalScore() + " PP" + ColorAnsi.RESET
+                    + "  (Food: " + score.remainingFood() + ")");
+            position++;
+        }
+        out.print("");
     }
 
     private void renderLocalResult(PlayerGameCompletedDto local) {
@@ -53,6 +74,7 @@ public class GameEndedRenderer {
                 + " " + ColorAnsi.GREEN_BOLD + local.personalBestScore() + " PP" + ColorAnsi.RESET
                 + " (Food: " + local.personalBestRemainingFood() + ")\n");
     }
+
     private void renderLeaderboard(LeaderboardSnapshotDto leaderboard, String myNickname) {
         out.print(ColorAnsi.BLACK_BOLD + "━".repeat(60) + ColorAnsi.RESET);
 
@@ -96,6 +118,7 @@ public class GameEndedRenderer {
             ));
         }
     }
+
     private void renderFooter(boolean showLeaderboard) {
         out.print("\n" + ColorAnsi.BLACK_BOLD + "━".repeat(60) + ColorAnsi.RESET);
 

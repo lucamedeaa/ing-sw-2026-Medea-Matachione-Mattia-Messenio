@@ -64,6 +64,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
             var local = gameModel.getLocalResult();
             var global = gameModel.getGlobalLeaderboard();
+            var sessionScores = gameModel.getLeaderboard();
 
             if (local == null) {
                 out.clearScreen();
@@ -72,8 +73,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
             }
 
 
-            renderer.render(local, showLeaderboard ? global : null, session.getNickname(), showLeaderboard);
-
+        renderer.render(local, sessionScores, showLeaderboard ? global : null, session.getNickname(), showLeaderboard);
     }
 
     private void showLeaderboard() {

@@ -16,7 +16,7 @@
     <!-- Layer 3: content -->
     <BorderPane>
         <center>
-            <VBox alignment="CENTER" spacing="14" BorderPane.alignment="CENTER" style="-fx-padding: 140 20 0 20;">
+            <VBox alignment="CENTER" spacing="14" BorderPane.alignment="CENTER" style="-fx-padding: 150 20 0 20;">
                 <HBox maxWidth="760" minHeight="240" spacing="28" alignment="CENTER_LEFT"
                       style="-fx-background-color: rgba(0,0,0,0.6); -fx-background-radius: 12;
                              -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 12;
