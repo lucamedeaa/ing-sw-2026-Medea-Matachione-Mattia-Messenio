@@ -31,22 +31,6 @@ public class BoardPanelController implements BoardView {
         boardInteraction.setListener(listener);
     }
 
-    /*@FXML
-    public void initialize() {
-        CardNodeFactory factory = new CardNodeFactory(cardWidthProp);
-        boardRenderer   = new BoardRenderer(boardGrid, factory, trackOverlays);
-        totemRenderer   = new TotemRenderer(trackOverlays, factory);
-        boardInteraction = new BoardInteractionController(boardGrid, trackOverlays);
-
-        Platform.runLater(() -> {
-            if (boardGrid.getParent() instanceof Region parent) {
-                parent.widthProperty().addListener((o,old,n) -> updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn));
-                parent.heightProperty().addListener((o,old,n) -> updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn));
-                updateOptimalSize(parent.getWidth(), parent.getHeight(), currentColumn);
-            }
-        });
-    }*/
-
     @FXML
     public void initialize() {
         CardNodeFactory factory = new CardNodeFactory(cardWidthProp);

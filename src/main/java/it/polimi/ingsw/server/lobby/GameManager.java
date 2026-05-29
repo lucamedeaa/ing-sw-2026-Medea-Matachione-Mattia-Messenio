@@ -24,7 +24,7 @@ public class GameManager implements GameManagerInterface {
 
     public void unregisterNickname(String nickname) {
         if (nickname != null) {
-            activeNicknames.remove(nickname);
+            activeNicknames.remove(nickname.toLowerCase());
         }
     }
 

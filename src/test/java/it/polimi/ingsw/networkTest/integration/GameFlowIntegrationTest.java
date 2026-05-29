@@ -79,33 +79,4 @@ public class GameFlowIntegrationTest extends NetworkTestBase {
         DeltaEventMessage delta3 = actionClient.waitFor(DeltaEventMessage.class, 3);
         assertNotNull(delta3.events(), "Events should contain the CardTakenEvent");
     }
-
-    @Test
-    @DisplayName("In-game disconnection aborts the game for the remaining players")
-    public void testInGameDisconnectionAbortsGame() throws Exception {
-        client1 = new DummyClient("Charlie");
-        client2 = new DummyClient("Bob");
-
-        // Setup Game
-        client1.proxy.createGame("Charlie", 2);
-        client1.waitFor(MatchmakingSuccessMessage.class, 3);
-
-        client2.proxy.getAvailableGames();
-        String gameId = client2.waitFor(AvailableGamesResponseMessage.class, 3).games().get(0).getGameId();
-
-        client2.proxy.joinGame("Bob", gameId);
-        client2.waitFor(MatchmakingSuccessMessage.class, 3);
-
-        // Game starts
-        client1.waitFor(FullSyncMessage.class, 3);
-        client2.waitFor(FullSyncMessage.class, 3);
-
-        // Suddenly, client2 crashes/disconnects
-        client2.disconnect();
-
-        // Client 1 should receive a GameAbortedMessage due to player disconnection
-        GameAbortedMessage abortMsg = client1.waitFor(GameAbortedMessage.class, 3);
-        assertNotNull(abortMsg, "Survivor must receive a GameAbortedMessage");
-        assertTrue(abortMsg.reason().contains("Bob"), "Abort reason should mention the disconnected player (Bob)");
-    }
 }

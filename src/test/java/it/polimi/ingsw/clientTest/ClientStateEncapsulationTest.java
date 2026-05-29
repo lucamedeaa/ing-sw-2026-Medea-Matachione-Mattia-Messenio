@@ -27,7 +27,7 @@ public class ClientStateEncapsulationTest {
 
             // Setup dello stato iniziale
             PlayerDto p1 = new PlayerDto("Alice", 5, 0, TotemColor.ORANGE, 0, 0);
-            BoardDto emptyBoard = new BoardDto(List.of(), List.of(), 1, 1);
+            BoardDto emptyBoard = new BoardDto(List.of(), List.of(), 1, 1, 1);
             model.setFullState(emptyBoard, List.of(p1), "Alice");
 
             // La UI "legge" lo stato (es. inizio del rendering)

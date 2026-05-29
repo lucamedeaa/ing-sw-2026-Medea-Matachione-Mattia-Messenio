@@ -11,7 +11,7 @@ public class DipViolationTest {
 
     @Test
     public void testPresenterMocking_isImpossible() {
-        ControllerRegistry registry = new ControllerRegistry(null, null, () -> "test");
+        ControllerRegistry registry = new ControllerRegistry(null, null);
 
         // Tentativo di creare una InGameScreen tramite il registry per fare un Unit Test della view.
         Object controller = registry.createController(InGameScreen.class);
