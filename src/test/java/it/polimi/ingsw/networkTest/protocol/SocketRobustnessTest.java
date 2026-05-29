@@ -26,13 +26,19 @@ public class SocketRobustnessTest extends NetworkTestBase {
             // Chiusura del socket malamente per generare un EOFException nel Server
             badClient.close();
 
-            // Attesa per dare tempo al thread del server di lanciare l'eccezione
-            Thread.sleep(200);
+            // Retry health-check connection instead of fixed sleep
+            Socket goodClient = null;
+            for (int attempt = 0; attempt < 10; attempt++) {
+                try {
+                    goodClient = new Socket("localhost", serverPort);
+                    clientSockets.add(goodClient);
+                    break;
+                } catch (IOException e) {
+                    Thread.sleep(100);
+                }
+            }
 
-            // Verifica che il server stia ancora girando e possa accettare altri client
-            Socket goodClient = new Socket("localhost", serverPort);
-            clientSockets.add(goodClient);
-
+            assertNotNull(goodClient, "Server must accept new connections after a client crashes");
             assertTrue(goodClient.isConnected());
             assertFalse(serverSocket.isClosed(), "The ServerSocket must not close due to a client error");
         }

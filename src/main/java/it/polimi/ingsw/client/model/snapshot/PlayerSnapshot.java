@@ -21,6 +21,7 @@ public class PlayerSnapshot {
      *
      * @param dto source player data
      */
+
     public PlayerSnapshot(PlayerDto dto) {
         this.nickname = dto.nickname();
         this.food = dto.food();

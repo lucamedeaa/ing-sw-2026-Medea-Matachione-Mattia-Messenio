@@ -50,8 +50,8 @@ public class LobbySpotRecoveryTest extends NetworkTestBase {
         //  Ghost disconnects abruptly (pulls the plug)
         ghost.disconnect();
 
-        // Wait a moment for the server to process the EOFException and trigger handleClientDisconnection
-        Thread.sleep(500);
+        // Wait for the server to process the disconnect and notify the host
+        host.waitFor(RoomUpdateMessage.class, 3);
 
         // Savior joins (Should be 2/3 now, because Ghost was removed)
         savior.proxy.joinGame("Savior", gameId3);

@@ -36,9 +36,6 @@ public class NicknameLifecycleAndGhostingTest extends NetworkTestBase {
         originalAlice.proxy.leaveGame();
         originalAlice.waitFor(GameLeftSuccessMessage.class, 2);
 
-        // Allow server a tiny window to clean up
-        Thread.sleep(100);
-
         //  A new legitimate client wants to use the name "Alice" now that it's free
         DummyClient newAlice = new DummyClient("NewAlice");
         newAlice.proxy.createGame("Alice", 2);

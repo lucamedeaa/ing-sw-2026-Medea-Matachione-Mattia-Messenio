@@ -31,6 +31,7 @@ public abstract class NetworkTestBase {
     protected LobbyController lobbyController;
     private ExecutorService serverExecutor;
     protected List<Socket> clientSockets = new ArrayList<>();
+    protected List<DummyClient> dummyClients = new ArrayList<>();
 
     @BeforeEach
     void setup() throws IOException {
@@ -52,6 +53,11 @@ public abstract class NetworkTestBase {
 
     @AfterEach
     void tearDown() throws IOException {
+        for (DummyClient dc : dummyClients) {
+            try { dc.disconnect(); } catch (Exception ignored) {}
+        }
+        dummyClients.clear();
+
         for (Socket s : clientSockets) {
             if (s != null && !s.isClosed()) {
                 s.close();
@@ -79,6 +85,7 @@ public abstract class NetworkTestBase {
             this.connection = new SocketServerConnection("localhost", serverPort, this);
             new Thread(connection).start();
             this.proxy = new SocketServerProxy(connection);
+            dummyClients.add(this);
         }
 
         //è un metodo che serve per aspettare in modo asincrono l'arrivo di uno specifico messaggio di rete durante un test, impostanto un tempo limite per evitare che il test si blocchi

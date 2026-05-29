@@ -8,12 +8,14 @@ import it.polimi.ingsw.server.model.enums.TotemColor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Timeout(10)
 public class ClientStateEncapsulationTest {
 
     @Nested

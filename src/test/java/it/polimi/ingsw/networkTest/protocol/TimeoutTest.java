@@ -3,6 +3,7 @@ package it.polimi.ingsw.networkTest.protocol;
 import it.polimi.ingsw.networkTest.NetworkTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 the server would remain stuck indefinitely in the readObject() function.
 The test checks that the setSoTimeout(10000) configured in the SocketClientHandler is triggered and forces the session to close.*/
 
+@Timeout(20)
 public class TimeoutTest extends NetworkTestBase {
 
     @Test

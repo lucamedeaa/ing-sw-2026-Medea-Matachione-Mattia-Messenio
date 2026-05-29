@@ -13,6 +13,7 @@ import it.polimi.ingsw.networkTest.NetworkTestBase;
 import org.junit.jupiter.api.Test;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +34,7 @@ public class ConcurrentMatchmakingTest extends NetworkTestBase {
         ExecutorService burst = Executors.newFixedThreadPool(attackers);
         CountDownLatch starterGun = new CountDownLatch(1);
         AtomicInteger successCount = new AtomicInteger(0);
+        AtomicReference<Throwable> firstError = new AtomicReference<>();
 
         for (int i = 0; i < attackers; i++) {
             final int id = i;
@@ -45,13 +47,20 @@ public class ConcurrentMatchmakingTest extends NetworkTestBase {
                     // Check if they got in
                     Object response = guest.waitFor(ServerMessage.class, 2); // Simple wait
                     if (response instanceof MatchmakingSuccessMessage) successCount.incrementAndGet();
-                } catch (Exception ignored) {}
+                } catch (Throwable t) {
+                    firstError.compareAndSet(null, t);
+                }
             });
         }
 
         starterGun.countDown();
         burst.shutdown();
-        burst.awaitTermination(5, TimeUnit.SECONDS);
+        burst.awaitTermination(10, TimeUnit.SECONDS);
+
+        // Rethrow if any burst thread failed unexpectedly
+        if (firstError.get() != null) {
+            fail("Burst thread failed: " + firstError.get().getMessage());
+        }
 
         // Host already in + SuccessCount should be Exactly Capacity (2)
         // So only 1 guest should have succeeded.
