@@ -24,6 +24,13 @@ public class DoublePrestigeShamanTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that DoublePrestigeShaman doubles the prestige gained by adding the positive increment again.
+     *
+     * EXPECTATION:
+     * Player gains the increment value as extra prestige, and the method returns 0.
+     */
     @Test
     void testPositiveIncrementAddsPrestigeAgain() {
         int result = doublePrestigeShaman.onShamanicRitualEvent(player, 10, -5);
@@ -33,6 +40,13 @@ public class DoublePrestigeShamanTest {
         assertEquals(0, result, "Il metodo deve restituire sempre 0");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that DoublePrestigeShaman does not add any prestige when the increment is zero.
+     *
+     * EXPECTATION:
+     * Player's prestige stays at 0, and the method returns 0.
+     */
     @Test
     void testZeroIncrementAddsNothing() {
         int result = doublePrestigeShaman.onShamanicRitualEvent(player, 0, -5);
@@ -42,6 +56,13 @@ public class DoublePrestigeShamanTest {
         assertEquals(0, result, "Il metodo deve restituire sempre 0");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that DoublePrestigeShaman ignores the decrement parameter entirely.
+     *
+     * EXPECTATION:
+     * Prestige remains unaffected by the decrement value; method returns 0.
+     */
     @Test
     void testDecrementIsIgnored() {
         int result = doublePrestigeShaman.onShamanicRitualEvent(player, 0, -10);
@@ -51,6 +72,13 @@ public class DoublePrestigeShamanTest {
         assertEquals(0, result, "Il metodo deve restituire sempre 0");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that prestige bonuses from DoublePrestigeShaman accumulate over multiple event calls.
+     *
+     * EXPECTATION:
+     * Two calls with increment 5 each result in 10 total prestige points.
+     */
     @Test
     void testMultipleCallsAccumulatePrestige() {
         doublePrestigeShaman.onShamanicRitualEvent(player, 5, -2);

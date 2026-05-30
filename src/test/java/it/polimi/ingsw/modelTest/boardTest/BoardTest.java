@@ -31,30 +31,65 @@ public class BoardTest extends ModelTest {
     @DisplayName("Board construction")
     class Construction {
 
+        /**
+         * SUMMARY:
+         * Verifies that a Board can be constructed with 2 players without throwing any exception.
+         *
+         * EXPECTATION:
+         * No exception is thrown during 2-player board initialization.
+         */
         @Test
         @DisplayName("2-player board initialises without exceptions")
         void twoPlayerBoardInitialises() {
             assertDoesNotThrow(() -> board(2));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a Board can be constructed with 3 players without throwing any exception.
+         *
+         * EXPECTATION:
+         * No exception is thrown during 3-player board initialization.
+         */
         @Test
         @DisplayName("3-player board initialises without exceptions")
         void threePlayerBoardInitialises() {
             assertDoesNotThrow(() -> board(3));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a Board can be constructed with 4 players without throwing any exception.
+         *
+         * EXPECTATION:
+         * No exception is thrown during 4-player board initialization.
+         */
         @Test
         @DisplayName("4-player board initialises without exceptions")
         void fourPlayerBoardInitialises() {
             assertDoesNotThrow(() -> board(4));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a Board can be constructed with 5 players without throwing any exception.
+         *
+         * EXPECTATION:
+         * No exception is thrown during 5-player board initialization.
+         */
         @Test
         @DisplayName("5-player board initialises without exceptions")
         void fivePlayerBoardInitialises() {
             assertDoesNotThrow(() -> board(5));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that constructing a Board with an invalid player count (1) throws an exception.
+         *
+         * EXPECTATION:
+         * An IllegalArgumentException is thrown when creating a board with only 1 player.
+         */
         @Test
         @DisplayName("Invalid player count throws IllegalArgumentException")
         void invalidPlayerCountThrows() {
@@ -62,6 +97,13 @@ public class BoardTest extends ModelTest {
             assertThrows(IllegalArgumentException.class, () -> new Board(1, p));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the offer track is properly initialized after board construction.
+         *
+         * EXPECTATION:
+         * The offer track is non-null and contains at least one tile.
+         */
         @Test
         @DisplayName("offerTrack is non-null and non-empty after construction")
         void offerTrackNonEmpty() {
@@ -70,6 +112,13 @@ public class BoardTest extends ModelTest {
             assertFalse(b.getOfferTrack().isEmpty());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that all offer tiles on the track are free immediately after board construction.
+         *
+         * EXPECTATION:
+         * Every OfferTile in the offer track returns true for isFree().
+         */
         @Test
         @DisplayName("All offer tiles are free after construction")
         void allTilesFreeAtStart() {
@@ -84,6 +133,13 @@ public class BoardTest extends ModelTest {
     @DisplayName("Turn order (totem management)")
     class TurnOrder {
 
+        /**
+         * SUMMARY:
+         * Verifies that getCurrentPlayer returns a valid player right after board construction.
+         *
+         * EXPECTATION:
+         * getCurrentPlayer returns a non-null Player object.
+         */
         @Test
         @DisplayName("getCurrentPlayer returns a non-null player at start")
         void getCurrentPlayerNonNull() {
@@ -92,6 +148,13 @@ public class BoardTest extends ModelTest {
             assertNotNull(b.getCurrentPlayer());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that getCurrentPlayer throws when all players' totems have been consumed.
+         *
+         * EXPECTATION:
+         * An IllegalStateException is thrown when no more totems remain in the current order.
+         */
         @Test
         @DisplayName("getCurrentPlayer throws when all totems consumed")
         void getCurrentPlayerThrowsWhenEmpty() {
@@ -102,6 +165,13 @@ public class BoardTest extends ModelTest {
             assertThrows(IllegalStateException.class, b::getCurrentPlayer);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that calling consumeCurrentPlayer advances the turn to a different player.
+         *
+         * EXPECTATION:
+         * The current player after consuming is different from the one before consuming.
+         */
         @Test
         @DisplayName("consumeCurrentPlayer advances to next player")
         void consumeCurrentPlayerAdvances() {
@@ -113,6 +183,13 @@ public class BoardTest extends ModelTest {
             assertNotEquals(first, second);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that allTotemsPlaced returns false at the start of a round before any totems are consumed.
+         *
+         * EXPECTATION:
+         * allTotemsPlaced() returns false on a freshly constructed board.
+         */
         @Test
         @DisplayName("allTotemsPlaced is false at start")
         void allTotemsPlacedFalseAtStart() {
@@ -120,6 +197,13 @@ public class BoardTest extends ModelTest {
             assertFalse(b.allTotemsPlaced());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that allTotemsPlaced returns true once every player's totem has been consumed.
+         *
+         * EXPECTATION:
+         * allTotemsPlaced() returns true after all players have been consumed.
+         */
         @Test
         @DisplayName("allTotemsPlaced is true after consuming all players")
         void allTotemsPlacedTrueAfterAll() {
@@ -130,6 +214,13 @@ public class BoardTest extends ModelTest {
             assertTrue(b.allTotemsPlaced());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that returnTotem transfers a player to the next round's totem order, making them available after cleanup.
+         *
+         * EXPECTATION:
+         * After returnTotem and cleanupForNextRound, getCurrentPlayer returns a non-null player.
+         */
         @Test
         @DisplayName("returnTotem adds player to nextTotemOrder (visible via cleanupForNextRound)")
         void returnTotemTransfersToNextOrder() {
@@ -143,6 +234,13 @@ public class BoardTest extends ModelTest {
             assertNotNull(b.getCurrentPlayer());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the first player to return their totem receives a positive food bonus.
+         *
+         * EXPECTATION:
+         * The first returner's food increases by at least 1 compared to before returning.
+         */
         @Test
         @DisplayName("returnTotem: first returner gets positive food bonus (2 players)")
         void firstReturnerGetsPositiveFoodBonus() {
@@ -155,6 +253,13 @@ public class BoardTest extends ModelTest {
             assertTrue(first.getFood() >= foodBefore + 1);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the last player to return their totem receives a food penalty in a 2-player game.
+         *
+         * EXPECTATION:
+         * The last returner's food is less than or equal to their food before returning.
+         */
         @Test
         @DisplayName("returnTotem: last returner loses food (2 players)")
         void lastReturnerLosesFood() {
@@ -176,6 +281,13 @@ public class BoardTest extends ModelTest {
     @DisplayName("Offer track & placeTotem")
     class OfferTrackTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that calling placeTotem on a free tile marks it as occupied.
+         *
+         * EXPECTATION:
+         * The tile at the specified index is no longer free after placeTotem is called.
+         */
         @Test
         @DisplayName("placeTotem occupies a free tile")
         void placeTotemOccupiesTile() {
@@ -186,6 +298,13 @@ public class BoardTest extends ModelTest {
             assertFalse(b.getOfferTrack().get(0).isFree());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that placing a totem on an already-occupied tile throws an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException is thrown when a second player tries to occupy the same tile.
+         */
         @Test
         @DisplayName("placeTotem on already-occupied tile throws InvalidGameActionException")
         void placeTotemOnOccupiedThrows() {
@@ -197,6 +316,13 @@ public class BoardTest extends ModelTest {
             assertThrows(InvalidGameActionException.class, () -> b.placeTotem(0, p2));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that placeTotem rejects a negative tile index.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException is thrown when index is -1.
+         */
         @Test
         @DisplayName("placeTotem with negative index throws InvalidGameActionException")
         void placeTotemNegativeIndexThrows() {
@@ -205,6 +331,13 @@ public class BoardTest extends ModelTest {
             assertThrows(InvalidGameActionException.class, () -> b.placeTotem(-1, ps.get(0)));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that placeTotem rejects an index equal to the offer track size (out of bounds).
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException is thrown when the index is out of bounds.
+         */
         @Test
         @DisplayName("placeTotem with out-of-bounds index throws InvalidGameActionException")
         void placeTotemOutOfBoundsThrows() {
@@ -220,6 +353,13 @@ public class BoardTest extends ModelTest {
     @DisplayName("Card access: peekCard & takeCard")
     class CardAccess {
 
+        /**
+         * SUMMARY:
+         * Verifies that peekCard returns a valid card from the upper row at position (0, 0).
+         *
+         * EXPECTATION:
+         * peekCard(0, 0) returns a non-null Card object.
+         */
         @Test
         @DisplayName("peekCard(0, 0) returns a non-null card from upper row")
         void peekUpperRowReturnsCard() {
@@ -227,6 +367,13 @@ public class BoardTest extends ModelTest {
             assertNotNull(b.peekCard(0, 0));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that peekCard returns a valid card from the lower row at position (1, 0).
+         *
+         * EXPECTATION:
+         * peekCard(1, 0) returns a non-null Card object.
+         */
         @Test
         @DisplayName("peekCard(1, 0) returns a non-null card from lower row")
         void peekLowerRowReturnsCard() {
@@ -234,6 +381,13 @@ public class BoardTest extends ModelTest {
             assertNotNull(b.peekCard(1, 0));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that takeCard removes the card from the slot, making subsequent peeks invalid.
+         *
+         * EXPECTATION:
+         * After takeCard(0, 0), calling peekCard(0, 0) throws InvalidGameActionException.
+         */
         @Test
         @DisplayName("takeCard removes the card (second peek on same slot throws)")
         void takeCardRemovesCard() {
@@ -242,6 +396,13 @@ public class BoardTest extends ModelTest {
             assertThrows(InvalidGameActionException.class, () -> b.peekCard(0, 0));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that takeCard returns the exact same Card object that was previously peeked.
+         *
+         * EXPECTATION:
+         * The card returned by takeCard is the same instance (assertSame) as the one returned by peekCard.
+         */
         @Test
         @DisplayName("takeCard returns the correct card (same object as peek)")
         void takeCardReturnsSameAspeek() {
@@ -251,6 +412,13 @@ public class BoardTest extends ModelTest {
             assertSame(peeked, taken);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that peeking a slot from which a card was already taken throws an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException is thrown when peeking a previously taken lower-row slot.
+         */
         @Test
         @DisplayName("peekCard on already-taken slot throws InvalidGameActionException")
         void peekOnTakenSlotThrows() {
@@ -266,6 +434,13 @@ public class BoardTest extends ModelTest {
     @DisplayName("cleanupForNextRound")
     class RoundCleanup {
 
+        /**
+         * SUMMARY:
+         * Verifies that cleanupForNextRound executes without error after all totems have been consumed and returned.
+         *
+         * EXPECTATION:
+         * No exception is thrown when cleanupForNextRound is called after a complete round cycle.
+         */
         @Test
         @DisplayName("cleanupForNextRound does not throw with a full round of returns")
         void cleanupDoesNotThrow() {
@@ -278,6 +453,13 @@ public class BoardTest extends ModelTest {
             assertDoesNotThrow(() -> b.cleanupForNextRound(ps));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that after cleanupForNextRound, the totem order is reset so totems are available again.
+         *
+         * EXPECTATION:
+         * allTotemsPlaced() returns false after cleanup, indicating a new round can begin.
+         */
         @Test
         @DisplayName("After cleanupForNextRound, allTotemsPlaced is false again")
         void afterCleanupTotemsAvailable() {
@@ -297,6 +479,13 @@ public class BoardTest extends ModelTest {
     @DisplayName("resolveFinalEvents")
     class FinalEvents {
 
+        /**
+         * SUMMARY:
+         * Smoke test verifying that resolveFinalEvents can be called on a freshly constructed board without errors.
+         *
+         * EXPECTATION:
+         * No exception is thrown when resolveFinalEvents is invoked on an initial 3-player board.
+         */
         @Test
         @DisplayName("resolveFinalEvents does not throw on an initial board")
         void resolveFinalEventsDoesNotThrow() {

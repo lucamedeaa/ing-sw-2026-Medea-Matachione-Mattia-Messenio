@@ -25,6 +25,13 @@ public class BuilderMasteryTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that BuilderMastery returns only its base prestige points when the player has no Builder cards.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns 4 (base prestige only).
+     */
     @Test
     void testNoBuilders() {
         player.addCard(builderMastery);
@@ -32,6 +39,13 @@ public class BuilderMasteryTest {
                 "Senza builder deve restituire solo i prestigePoints dell'edificio");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that BuilderMastery adds a single Builder's prestige points to its own base prestige.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns 6 (Builder 2 PP + base 4 PP).
+     */
     @Test
     void testSingleBuilder() {
         // Builder Constructor: idcard, era, foodDiscount, endGamePrestigePoints
@@ -43,6 +57,13 @@ public class BuilderMasteryTest {
                 "1 builder (2 PP) + prestige (4) = 6");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that BuilderMastery sums the prestige points from multiple Builders with its own base.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns the sum of all Builders' PP plus base prestige.
+     */
     @Test
     void testMultipleBuilders() {
         player.addCard(new Builder(1));
@@ -54,6 +75,13 @@ public class BuilderMasteryTest {
                 "Somma builder + prestigePoints");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that BuilderMastery only counts Builder character cards, not other building cards.
+     *
+     * EXPECTATION:
+     * Non-Builder cards are ignored; result is Builder PP + base prestige only.
+     */
     @Test
     void testOnlyCountsBuilders() {
         player.addCard(new Builder(1));
@@ -65,6 +93,13 @@ public class BuilderMasteryTest {
                 "Deve contare solo i Builder");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that getFinalPoints is idempotent and returns consistent results across multiple calls.
+     *
+     * EXPECTATION:
+     * Two consecutive calls return the same value.
+     */
     @Test
     void testMultipleCallsConsistency() {
         player.addCard(new Builder(1));

@@ -50,6 +50,14 @@ public class ScoringStateTest extends ModelTest {
     @DisplayName("ScoringState start")
     class StartTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that running the scoring phase transitions the game to GameEndedState
+         * and that the game is flagged as ended.
+         *
+         * EXPECTATION:
+         * The current state should be GameEndedState and isEnded() should return true.
+         */
         @Test
         @DisplayName("start ends the game")
         void startEndsGame() {
@@ -61,6 +69,13 @@ public class ScoringStateTest extends ModelTest {
             assertTrue(game.getCurrentState().isEnded());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the scoring phase produces exactly one PlayerGameResult per player.
+         *
+         * EXPECTATION:
+         * The result should be non-null and contain 3 player results for a 3-player game.
+         */
         @Test
         @DisplayName("start produces one result per player")
         void startProducesOneResultPerPlayer() {
@@ -72,6 +87,14 @@ public class ScoringStateTest extends ModelTest {
             assertEquals(3, result.playerResults().size());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the leaderboard is sorted by final score in descending order
+         * when players have different prestige values.
+         *
+         * EXPECTATION:
+         * The player with the highest prestige should be first, followed by the others in descending order.
+         */
         @Test
         @DisplayName("leaderboard is ordered by final score descending")
         void leaderboardOrderedByFinalScoreDescending() {
@@ -90,6 +113,14 @@ public class ScoringStateTest extends ModelTest {
             assertEquals(players.get(0).getNickname(), leaderboard.get(2).nickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that remaining food is used as a tiebreaker when two players
+         * have the same final score.
+         *
+         * EXPECTATION:
+         * The player with more remaining food should be ranked higher.
+         */
         @Test
         @DisplayName("remaining food breaks ties on final score")
         void remainingFoodBreaksScoreTies() {
@@ -109,6 +140,14 @@ public class ScoringStateTest extends ModelTest {
             assertEquals(players.get(0).getNickname(), leaderboard.get(1).nickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that two players with identical scores and identical food
+         * share the same leaderboard position.
+         *
+         * EXPECTATION:
+         * Both players should have position 1.
+         */
         @Test
         @DisplayName("players with same score and food share the same position")
         void sameScoreAndFoodShareSamePosition() {
@@ -133,6 +172,14 @@ public class ScoringStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getAvailableActions returns an empty list in ScoringState,
+         * since no player actions are possible during final scoring.
+         *
+         * EXPECTATION:
+         * The returned list of available actions should be empty.
+         */
         @Test
         @DisplayName("getAvailableActions returns empty list")
         void getAvailableActionsReturnsEmptyList() {
@@ -148,12 +195,56 @@ public class ScoringStateTest extends ModelTest {
     @DisplayName("Active player")
     class ActivePlayerTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getActivePlayerNickname returns null in ScoringState,
+         * since no player is active during scoring.
+         *
+         * EXPECTATION:
+         * The active player nickname should be null.
+         */
         @Test
         @DisplayName("getActivePlayerNickname returns null")
         void getActivePlayerNicknameReturnsNull() {
             ScoringState state = new ScoringState(game(2));
 
             assertNull(state.getActivePlayerNickname());
+        }
+    }
+
+    @Nested
+    @DisplayName("Three-way tie")
+    class ThreeWayTieTests {
+
+        /**
+         * SUMMARY:
+         * Verifies that when 3 players finish with identical scores and identical food,
+         * all 3 share position 1 on the leaderboard.
+         *
+         * EXPECTATION:
+         * All three PlayerGameResult entries should have position 1.
+         */
+        @Test
+        @DisplayName("three players with same score and food all share position 1")
+        void threePlayersWithSameScoreAndFoodSharePosition() {
+            Game game = game(3);
+            List<Player> players = game.getPlayers();
+
+            players.get(0).addPrestige(15);
+            players.get(1).addPrestige(15);
+            players.get(2).addPrestige(15);
+
+            setFood(players.get(0), 4);
+            setFood(players.get(1), 4);
+            setFood(players.get(2), 4);
+
+            CompletedGameResult result = runScoring(game);
+            List<PlayerGameResult> leaderboard = result.playerResults();
+
+            assertEquals(3, leaderboard.size());
+            assertEquals(1, leaderboard.get(0).position());
+            assertEquals(1, leaderboard.get(1).position());
+            assertEquals(1, leaderboard.get(2).position());
         }
     }
 }

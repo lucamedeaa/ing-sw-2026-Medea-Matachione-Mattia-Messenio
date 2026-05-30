@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ShamanTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that adding multiple Shamans correctly sums their individual star contributions.
+     *
+     * EXPECTATION:
+     * Two shamans with a combined total of 3 stars result in getStarsNumber returning 3.
+     */
     @Test
     @DisplayName("Shaman adds correct number of stars")
     void shamanAddsStars() {

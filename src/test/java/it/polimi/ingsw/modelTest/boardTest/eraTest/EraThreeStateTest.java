@@ -12,12 +12,26 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EraThreeStateTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that EraThreeState correctly reports its era number as 3.
+     *
+     * EXPECTATION:
+     * getEraNumber() returns 3.
+     */
     @Test
     @DisplayName("getEraNumber returns 3")
     void eraNumberIsThree() {
         assertEquals(3, new EraThreeState().getEraNumber());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that EraThreeState is the terminal era, meaning getNextEra returns the same instance.
+     *
+     * EXPECTATION:
+     * getNextEra() returns the exact same EraThreeState object (assertSame).
+     */
     @Test
     @DisplayName("getNextEra returns itself (era 3 is terminal)")
     void nextEraIsItself() {
@@ -25,12 +39,26 @@ public class EraThreeStateTest extends ModelTest {
         assertSame(era, era.getNextEra());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that transitionSetup for EraThreeState completes without throwing any exception.
+     *
+     * EXPECTATION:
+     * No exception is thrown when transitionSetup is called on a 2-player board.
+     */
     @Test
     @DisplayName("transitionSetup does not throw")
     void transitionSetupDoesNotThrow() {
         Board board = new Board(2, newPlayers(2));
         assertDoesNotThrow(() -> new EraThreeState().transitionSetup(board));
     }
+    /**
+     * SUMMARY:
+     * Verifies that transitionSetup for EraThreeState clears the lower row, shifts buildings, and adds new era 3 buildings to the upper row.
+     *
+     * EXPECTATION:
+     * The upper row contains at least one persistent card with era == 3 after transition.
+     */
     @Test
     @DisplayName("transitionSetup clears lower, shifts buildings and adds era three buildings")
     void transitionSetupClearsLowerAndAddsEraThreeBuildings() throws Exception {

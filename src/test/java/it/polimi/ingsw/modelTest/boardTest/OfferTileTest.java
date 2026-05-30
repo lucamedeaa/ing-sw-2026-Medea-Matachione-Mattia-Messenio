@@ -9,7 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class OfferTileTest extends ModelTest {
     /**
-     * A free tile can be occupied.
+     * SUMMARY:
+     * Verifies that a newly created offer tile is initially free (not occupied by any player).
+     *
+     * EXPECTATION:
+     * isFree() returns true on a freshly created tile.
      */
     @Test
     @DisplayName("Free tile: isFree() = true")
@@ -19,7 +23,11 @@ public class OfferTileTest extends ModelTest {
     }
 
     /**
-     * After setOccupyingPlayer, isFree() = false.
+     * SUMMARY:
+     * Verifies that after setting an occupying player on a tile, it is no longer free.
+     *
+     * EXPECTATION:
+     * isFree() returns false after setOccupyingPlayer is called.
      */
     @Test
     @DisplayName("Occupied tile: isFree() = false")
@@ -31,7 +39,11 @@ public class OfferTileTest extends ModelTest {
     }
 
     /**
-     * clearOccupyingPlayer restores the tile to free.
+     * SUMMARY:
+     * Verifies that clearOccupyingPlayer restores a previously occupied tile back to free.
+     *
+     * EXPECTATION:
+     * isFree() returns true after calling clearOccupyingPlayer on an occupied tile.
      */
     @Test
     @DisplayName("clearOccupyingPlayer frees the tile")
@@ -44,7 +56,11 @@ public class OfferTileTest extends ModelTest {
     }
 
     /**
-     * TileTemplate A: 3 bonus food, 0 upper picks, 0 lower picks.
+     * SUMMARY:
+     * Verifies that TileTemplate A creates a tile with the correct food bonus and zero card picks.
+     *
+     * EXPECTATION:
+     * The tile has foodBonus=3, upperRowPicks=0, and lowerRowPicks=0.
      */
     @Test
     @DisplayName("TileTemplate A has foodBonus=3 and no picks")
@@ -56,7 +72,11 @@ public class OfferTileTest extends ModelTest {
     }
 
     /**
-     * TileTemplate G: 2 upper picks, 1 lower pick, 0 food.
+     * SUMMARY:
+     * Verifies that TileTemplate G creates a tile with the correct card pick counts and zero food bonus.
+     *
+     * EXPECTATION:
+     * The tile has upperRowPicks=2, lowerRowPicks=1, and foodBonus=0.
      */
     @Test
     @DisplayName("TileTemplate G has 2 upper + 1 lower picks")

@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InventorTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that the Inventor scoring formula multiplies number of inventors by number of distinct icons.
+     *
+     * EXPECTATION:
+     * 3 inventors with 3 distinct icons yields 9 total points.
+     */
     @Test
     @DisplayName("Inventor score: n_inventors * distinct_icons")
     void inventorScoreMultipliesByDistinctIcons() {
@@ -23,6 +30,13 @@ public class InventorTest extends ModelTest {
         assertEquals(9, p.calculateTotalScore());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that inventors sharing the same icon count as only 1 distinct icon in the scoring formula.
+     *
+     * EXPECTATION:
+     * 2 inventors with the same icon yields 2 points (2 × 1 distinct icon).
+     */
     @Test
     @DisplayName("Inventors with the same icon count as 1 distinct icon")
     void duplicateIconCountsOnce() {

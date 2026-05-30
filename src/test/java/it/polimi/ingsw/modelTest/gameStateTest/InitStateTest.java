@@ -35,6 +35,13 @@ public class InitStateTest extends ModelTest {
     @DisplayName("InitState start")
     class StartTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that calling start() on InitState transitions the game to PlacementState.
+         *
+         * EXPECTATION:
+         * The game's current state should be an instance of PlacementState after start() is invoked.
+         */
         @Test
         @DisplayName("start transitions to PlacementState")
         void startTransitionsToPlacementState() {
@@ -46,6 +53,15 @@ public class InitStateTest extends ModelTest {
             assertTrue(game.getCurrentState() instanceof PlacementState);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() sends a full synchronization to all registered observers,
+         * including board and player updates.
+         *
+         * EXPECTATION:
+         * The observer should receive a full sync with a non-null BoardUpdate and
+         * a PlayerUpdate list matching the number of players (2).
+         */
         @Test
         @DisplayName("start sends a full sync to observers")
         void startSendsFullSync() {
@@ -68,6 +84,14 @@ public class InitStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getAvailableActions returns an empty list during the InitState,
+         * since no player actions are allowed before the game starts.
+         *
+         * EXPECTATION:
+         * The returned list of available actions should be empty.
+         */
         @Test
         @DisplayName("getAvailableActions returns empty list")
         void getAvailableActionsReturnsEmptyList() {
@@ -82,6 +106,14 @@ public class InitStateTest extends ModelTest {
     @DisplayName("Active player")
     class ActivePlayerTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getActivePlayerNickname returns null in InitState,
+         * since no player is active before the game begins.
+         *
+         * EXPECTATION:
+         * The active player nickname should be null.
+         */
         @Test
         @DisplayName("getActivePlayerNickname returns null")
         void getActivePlayerNicknameReturnsNull() {

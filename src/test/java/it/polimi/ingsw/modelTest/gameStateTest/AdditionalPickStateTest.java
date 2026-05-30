@@ -82,6 +82,14 @@ public class AdditionalPickStateTest extends ModelTest {
     @DisplayName("AdditionalPickState start")
     class StartTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that when no player has bonus picks, start() transitions
+         * the game out of AdditionalPickState (to RoundEndState).
+         *
+         * EXPECTATION:
+         * The current state should no longer be AdditionalPickState.
+         */
         @Test
         @DisplayName("when no player has bonus picks, state transitions to RoundEndState")
         void transitionsToRoundEndStateWhenNoBonusPicks() {
@@ -93,6 +101,13 @@ public class AdditionalPickStateTest extends ModelTest {
             assertFalse(game.getCurrentState() instanceof AdditionalPickState);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() selects the first player who has bonus picks as the active player.
+         *
+         * EXPECTATION:
+         * The active player nickname should match the player who was given a bonus pick.
+         */
         @Test
         @DisplayName("start selects first player with bonus picks")
         void startSelectsFirstPlayerWithBonusPicks() {
@@ -107,6 +122,13 @@ public class AdditionalPickStateTest extends ModelTest {
             assertEquals(player.getNickname(), state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() skips players without bonus picks and selects the first eligible one.
+         *
+         * EXPECTATION:
+         * The active player should be the second player (who has a bonus pick), not the first.
+         */
         @Test
         @DisplayName("start skips players without bonus picks")
         void startSkipsPlayersWithoutBonusPicks() {
@@ -129,6 +151,14 @@ public class AdditionalPickStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that the active player has both TakeCardAction and SkipAction available
+         * during the additional pick phase.
+         *
+         * EXPECTATION:
+         * The actions list should contain at least one TakeCardAction and one SkipAction.
+         */
         @Test
         @DisplayName("active player has TakeCardAction and SkipAction")
         void activePlayerHasTakeAndSkipActions() {
@@ -146,6 +176,13 @@ public class AdditionalPickStateTest extends ModelTest {
             assertTrue(actions.stream().anyMatch(a -> a instanceof SkipAction));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that an inactive player has no available actions during the additional pick phase.
+         *
+         * EXPECTATION:
+         * The available actions list for the inactive player should be empty.
+         */
         @Test
         @DisplayName("inactive player has no available actions")
         void inactivePlayerHasNoActions() {
@@ -167,6 +204,13 @@ public class AdditionalPickStateTest extends ModelTest {
     @DisplayName("takeCard validation")
     class TakeCardValidation {
 
+        /**
+         * SUMMARY:
+         * Verifies that a non-active player cannot take a bonus card, receiving an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("wrong player cannot take bonus card")
         void wrongPlayerCannotTakeBonusCard() {
@@ -188,6 +232,14 @@ public class AdditionalPickStateTest extends ModelTest {
                     () -> state.takeCard(inactive, 0, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the bonus pick can only take cards from the upper row (row 0),
+         * not from the lower row (row 1).
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown when taking from row 1.
+         */
         @Test
         @DisplayName("bonus pick can only take from upper row")
         void cannotTakeFromLowerRow() {
@@ -207,6 +259,13 @@ public class AdditionalPickStateTest extends ModelTest {
                     () -> state.takeCard(player, 1, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that an event card cannot be taken with a bonus pick.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot take event card with bonus pick")
         void cannotTakeEventCard() {
@@ -226,6 +285,14 @@ public class AdditionalPickStateTest extends ModelTest {
                     () -> state.takeCard(player, 0, eventIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a building cannot be taken with a bonus pick when the player
+         * has insufficient food.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot take building without enough food")
         void cannotTakeUnaffordableBuilding() {
@@ -251,6 +318,13 @@ public class AdditionalPickStateTest extends ModelTest {
     @DisplayName("takeCard effects")
     class TakeCardEffects {
 
+        /**
+         * SUMMARY:
+         * Verifies that taking a bonus card removes it from the board.
+         *
+         * EXPECTATION:
+         * Attempting to peek the taken card's position should throw InvalidGameActionException.
+         */
         @Test
         @DisplayName("taking a bonus card removes it from board")
         void takeCardRemovesCardFromBoard() {
@@ -276,6 +350,13 @@ public class AdditionalPickStateTest extends ModelTest {
                     () -> board.peekCard(0, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that taking a building with a bonus pick deducts its final cost from the player's food.
+         *
+         * EXPECTATION:
+         * The player's food should decrease by the building's final cost (after discount).
+         */
         @Test
         @DisplayName("taking a building pays its final cost")
         void takeBuildingPaysFinalCost() {
@@ -304,6 +385,13 @@ public class AdditionalPickStateTest extends ModelTest {
             assertEquals(foodBefore - finalCost, first.getFood());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that after using a bonus pick, the turn advances to the next eligible player.
+         *
+         * EXPECTATION:
+         * The active player should become the second player.
+         */
         @Test
         @DisplayName("after using bonus pick, turn advances to next eligible player")
         void takeCardAdvancesToNextEligiblePlayer() {
@@ -333,6 +421,13 @@ public class AdditionalPickStateTest extends ModelTest {
     @DisplayName("skipBonus")
     class SkipBonusTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that a non-active player cannot skip the bonus pick phase.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("wrong player cannot skip bonus")
         void wrongPlayerCannotSkipBonus() {
@@ -350,6 +445,13 @@ public class AdditionalPickStateTest extends ModelTest {
                     () -> state.skipBonus(inactive));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that calling skipBonus advances the turn to the next eligible player.
+         *
+         * EXPECTATION:
+         * The active player should become the second player after the first player skips.
+         */
         @Test
         @DisplayName("skipBonus advances to next eligible player")
         void skipBonusAdvancesToNextEligiblePlayer() {

@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HunterTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that the first Hunter with an icon grants exactly 1 food (counts itself in the tribe).
+     *
+     * EXPECTATION:
+     * Player receives 1 food after adding the first hunter with an icon.
+     */
     @Test
     @DisplayName("First hunter WITH icon gives exactly 1 food")
     void firstHunterWithIconGivesOneFood() {
@@ -21,6 +28,13 @@ public class HunterTest extends ModelTest {
                 "The first hunter with an icon must give 1 food (only him in the tribe)");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that a second Hunter with an icon counts all present hunters in the tribe for food.
+     *
+     * EXPECTATION:
+     * Player receives 2 food total (the second icon-hunter counts both hunters).
+     */
     @Test
     @DisplayName("Second hunter WITH icon counts all present hunters")
     void secondHunterWithIconCountsAll() {
@@ -31,6 +45,13 @@ public class HunterTest extends ModelTest {
         assertEquals(2, p.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that adding a Hunter without an icon does not grant any additional food.
+     *
+     * EXPECTATION:
+     * Player's food remains unchanged after adding a no-icon hunter.
+     */
     @Test
     @DisplayName("Hunter without icon added after another gives no food")
     void addingNoIconHunterAfterIconHunterGivesNoFood() {

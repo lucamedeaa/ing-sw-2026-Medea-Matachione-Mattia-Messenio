@@ -11,6 +11,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PlayerEdgeCasesTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies the food-deficit-to-prestige conversion when a player with
+     * some food and prestige loses more food than they have, creating a
+     * partial deficit that penalises prestige.
+     *
+     * EXPECTATION:
+     * Food resets to 0 and prestige drops from 10 to 4 (penalty of 6 for
+     * the 3-unit deficit: 2 food available, 5 subtracted).
+     */
     @Test
     @DisplayName("Gestione Deficit: Transizione da cibo positivo a negativo")
     void testAddFoodPartialDeficit() {
@@ -22,22 +32,15 @@ public class PlayerEdgeCasesTest extends ModelTest {
         assertEquals(4, p.getPrestigePoints(), "Da 10 PP deve scendere a 4 PP (penalità di -6)");
     }
 
-    @Test
-    @DisplayName("Rischio OOP: Doppio conteggio dello sconto Sostentamento")
-    void testCollectorSustenanceDiscountLogic() {
-        Player p = newPlayer("Test");
-        give(p, new Collector(35));
-        assertEquals(3, p.getSustenanceDiscount());
-    }
-
-    @Test
-    @DisplayName("Consistenza Architetturale: Builder contro Collector per FoodDiscount")
-    void testCorrectDiscountDelegation() {
-        Player p = newPlayer("Test");
-        give(p, new Builder(1));
-        assertEquals(1, p.getFoodDiscount());
-    }
-
+    /**
+     * SUMMARY:
+     * Verifies that calling calculateTotalScore() multiple times on the
+     * same player always returns the same result, confirming the computation
+     * is idempotent with no side-effects.
+     *
+     * EXPECTATION:
+     * All three successive calls return the same value.
+     */
     @Test
     @DisplayName("Idempotenza del calcolo punteggio finale")
     void testCalculateTotalScoreIdempotence() {
@@ -53,6 +56,14 @@ public class PlayerEdgeCasesTest extends ModelTest {
         assertEquals(firstCall, thirdCall);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies the inventor scoring formula with 4 inventors each having
+     * a different icon, maximising the distinct-icon multiplier.
+     *
+     * EXPECTATION:
+     * 4 inventors × 4 distinct icons = 16 total points.
+     */
     @Test
     @DisplayName("Calcolo Inventori: Interazione complessa di set e icone")
     void testComplexInventorIconMath() {

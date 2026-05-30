@@ -15,6 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CavePaintingsTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that a player with 0 artists (below threshold) loses 2 prestige points during CavePaintings.
+     *
+     * EXPECTATION:
+     * Player's prestige drops to -2.
+     */
     @Test
     @DisplayName("0 artists < upper(1) -> loses 2 PP")
     void zeroArtistsBelowThreshold() {
@@ -27,6 +34,13 @@ public class CavePaintingsTest extends ModelTest {
         assertEquals(-2, p.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that a player with artists at or above the threshold gains prestige during CavePaintings.
+     *
+     * EXPECTATION:
+     * Player gains 1 prestige point with 1 artist meeting the upper threshold.
+     */
     @Test
     @DisplayName("1 artist >= upper(1) -> gains 1*1=1 PP")
     void oneArtistAtThresholdGains() {
@@ -40,6 +54,13 @@ public class CavePaintingsTest extends ModelTest {
         assertEquals(1, p.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the ArtistFood building triggers during CavePaintings, adding 1 food per artist.
+     *
+     * EXPECTATION:
+     * Player receives 2 food (1 per each of the 2 artists) from the ArtistFood building effect.
+     */
     @Test
     @DisplayName("ArtistFood adds 1 food per artist during CavePaintings")
     void artistFoodBuildingAddsFoodOnEvent() {

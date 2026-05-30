@@ -24,6 +24,13 @@ public class HunterBonusTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the HunterBonus building grants no food or prestige when the player has no Hunter cards.
+     *
+     * EXPECTATION:
+     * Both food and prestige points remain 0.
+     */
     @Test
     void testNoHuntersGivesNothing() {
         hunterBonus.onHuntEvent(player);
@@ -31,6 +38,13 @@ public class HunterBonusTest {
         assertEquals(0, player.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that HunterBonus grants exactly 1 food and 1 prestige point per hunter for a single hunter.
+     *
+     * EXPECTATION:
+     * Player receives 1 food and 1 prestige point.
+     */
     @Test
     void testOneHunterGivesOneFoodAndOnePrestige() {
         player.addCard(new Hunter(12));
@@ -39,6 +53,13 @@ public class HunterBonusTest {
         assertEquals(1, player.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that HunterBonus scales linearly with the number of hunters (3 hunters).
+     *
+     * EXPECTATION:
+     * Player receives 3 food and 3 prestige points (1 per hunter).
+     */
     @Test
     void testMultipleHuntersGiveCorrectBonus() {
         player.addCard(new Hunter(12));
@@ -49,6 +70,13 @@ public class HunterBonusTest {
         assertEquals(3, player.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that food and prestige from HunterBonus accumulate across multiple Hunt event invocations.
+     *
+     * EXPECTATION:
+     * Two calls with 2 hunters yield 4 food and 4 prestige points total.
+     */
     @Test
     void testMultipleCallsAccumulate() {
         player.addCard(new Hunter(12));
@@ -59,12 +87,5 @@ public class HunterBonusTest {
 
         assertEquals(4, player.getFood());
         assertEquals(4, player.getPrestigePoints());
-    }
-
-    @Test
-    void testDoesNotCountNonHunters() {
-        hunterBonus.onHuntEvent(player);
-        assertEquals(0, player.getFood());
-        assertEquals(0, player.getPrestigePoints());
     }
 }

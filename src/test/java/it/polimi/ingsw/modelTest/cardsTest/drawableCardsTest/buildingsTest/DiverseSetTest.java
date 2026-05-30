@@ -25,6 +25,13 @@ public class DiverseSetTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that completing a character set before acquiring DiverseSet does not retroactively grant food.
+     *
+     * EXPECTATION:
+     * Player's food is 0 because the set was completed before the building was acquired.
+     */
     @Test
     void testNoRewardOnAcquisition() {
         player.addCard(new Hunter(12));
@@ -37,6 +44,13 @@ public class DiverseSetTest {
         assertEquals(0, player.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that completing one full character set after owning DiverseSet grants 5 food.
+     *
+     * EXPECTATION:
+     * Player receives exactly 5 food upon completing one set of all 6 character types.
+     */
     @Test
     void testOneNewCompleteSetGivesFiveFood() {
         player.addCard(diverseSet);
@@ -49,6 +63,13 @@ public class DiverseSetTest {
         assertEquals(5, player.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that completing two full character sets after owning DiverseSet grants 10 food total.
+     *
+     * EXPECTATION:
+     * Player receives 10 food (5 per completed set × 2 sets).
+     */
     @Test
     void testTwoNewCompleteSetsGiveTenFood() {
         player.addCard(diverseSet);
@@ -67,6 +88,13 @@ public class DiverseSetTest {
         assertEquals(10, player.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that an incomplete character set (missing one type) does not trigger any food reward.
+     *
+     * EXPECTATION:
+     * Player's food remains 0 when only 5 of 6 character types are present.
+     */
     @Test
     void testIncompleteSetGivesNoFood() {
         player.addCard(diverseSet);
@@ -78,6 +106,13 @@ public class DiverseSetTest {
         assertEquals(0, player.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that building cards do not count toward completing a character set for DiverseSet.
+     *
+     * EXPECTATION:
+     * Adding a VictoryPoints building does not substitute for the missing Inventor; food remains 0.
+     */
     @Test
     void testBuildingDoesNotContributeToSet() {
         player.addCard(diverseSet);
@@ -90,6 +125,13 @@ public class DiverseSetTest {
         assertEquals(0, player.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that adding a duplicate character type after a complete set does not grant extra food.
+     *
+     * EXPECTATION:
+     * Food stays at 5 after adding a second Hunter (no new complete set formed).
+     */
     @Test
     void testNoExtraRewardWithoutNewFullSet() {
         player.addCard(diverseSet);

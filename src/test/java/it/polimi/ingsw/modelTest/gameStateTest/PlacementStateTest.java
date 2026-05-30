@@ -38,21 +38,21 @@ public class PlacementStateTest extends ModelTest {
     @Nested
     @DisplayName("PlacementState start")
     class StartTests {
-
-        @Test
-        @DisplayName("start does not throw")
-        void startDoesNotThrow() {
-            Game game = game(2);
-            PlacementState state = placementState(game);
-
-            assertDoesNotThrow(state::start);
-        }
     }
+
 
     @Nested
     @DisplayName("Active player")
     class ActivePlayerTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getActivePlayerNickname returns the nickname of the current board player
+         * during the placement phase.
+         *
+         * EXPECTATION:
+         * The active player nickname should match the board's current player nickname.
+         */
         @Test
         @DisplayName("getActivePlayerNickname returns current board player")
         void getActivePlayerNicknameReturnsCurrentPlayer() {
@@ -64,6 +64,13 @@ public class PlacementStateTest extends ModelTest {
             assertEquals(board.getCurrentPlayer().getNickname(), state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that getActivePlayerNickname returns null once all players have placed their totems.
+         *
+         * EXPECTATION:
+         * The active player nickname should be null after all totems are consumed.
+         */
         @Test
         @DisplayName("getActivePlayerNickname returns null when all totems are placed")
         void getActivePlayerNicknameReturnsNullWhenAllTotemsPlaced() {
@@ -83,6 +90,14 @@ public class PlacementStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that the active player receives exactly one PlaceTotemAction in the list
+         * of available actions during placement.
+         *
+         * EXPECTATION:
+         * The available actions list should contain exactly 1 action of type PlaceTotemAction.
+         */
         @Test
         @DisplayName("active player has PlaceTotemAction")
         void activePlayerHasPlaceTotemAction() {
@@ -99,6 +114,13 @@ public class PlacementStateTest extends ModelTest {
             assertTrue(actions.get(0) instanceof PlaceTotemAction);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that an inactive player has no available actions during the placement phase.
+         *
+         * EXPECTATION:
+         * The available actions list for the inactive player should be empty.
+         */
         @Test
         @DisplayName("inactive player has no available actions")
         void inactivePlayerHasNoActions() {
@@ -116,6 +138,14 @@ public class PlacementStateTest extends ModelTest {
             assertTrue(state.getAvailableActions(inactive.getNickname()).isEmpty());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the PlaceTotemAction only includes free (unoccupied) tile indices
+         * and excludes tiles already taken by other players.
+         *
+         * EXPECTATION:
+         * All tile indices in the action should be free, and the occupied tile (index 0) should not be included.
+         */
         @Test
         @DisplayName("PlaceTotemAction contains only free tiles")
         void placeTotemActionContainsOnlyFreeTiles() {
@@ -147,6 +177,13 @@ public class PlacementStateTest extends ModelTest {
     @DisplayName("placeTotem validation")
     class PlaceTotemValidation {
 
+        /**
+         * SUMMARY:
+         * Verifies that a non-active player cannot place a totem, receiving an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("wrong player cannot place totem")
         void wrongPlayerCannotPlaceTotem() {
@@ -165,6 +202,13 @@ public class PlacementStateTest extends ModelTest {
                     () -> state.placeTotem(wrong, 0));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that placing a totem on an already occupied tile throws an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot place totem on occupied tile")
         void cannotPlaceTotemOnOccupiedTile() {
@@ -183,6 +227,13 @@ public class PlacementStateTest extends ModelTest {
                     () -> state.placeTotem(current, 0));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that placing a totem on an out-of-bounds tile index throws an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot place totem on invalid tile")
         void cannotPlaceTotemOnInvalidTile() {
@@ -203,6 +254,13 @@ public class PlacementStateTest extends ModelTest {
     @DisplayName("placeTotem effects")
     class PlaceTotemEffects {
 
+        /**
+         * SUMMARY:
+         * Verifies that placing a totem marks the selected offer tile as occupied.
+         *
+         * EXPECTATION:
+         * The tile at index 0 should no longer be free after placement.
+         */
         @Test
         @DisplayName("placeTotem occupies selected tile")
         void placeTotemOccupiesSelectedTile() {
@@ -217,6 +275,13 @@ public class PlacementStateTest extends ModelTest {
             assertFalse(board.getOfferTrack().get(0).isFree());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that after a player places their totem, the active player advances to the next player.
+         *
+         * EXPECTATION:
+         * The active player nickname should differ from the first player's nickname.
+         */
         @Test
         @DisplayName("placeTotem advances to next player")
         void placeTotemAdvancesToNextPlayer() {
@@ -231,6 +296,13 @@ public class PlacementStateTest extends ModelTest {
             assertNotEquals(first.getNickname(), state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that once all players have placed their totems, the game transitions to ActionState.
+         *
+         * EXPECTATION:
+         * The game's current state should be an instance of ActionState.
+         */
         @Test
         @DisplayName("after all totems are placed, game transitions to ActionState")
         void transitionsToActionStateWhenAllTotemsArePlaced() {

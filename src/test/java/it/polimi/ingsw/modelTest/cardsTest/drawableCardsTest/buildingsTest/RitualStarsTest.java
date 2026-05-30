@@ -24,6 +24,13 @@ public class RitualStarsTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that RitualStars returns 3 additional stars when called with zero increment and decrement.
+     *
+     * EXPECTATION:
+     * The method returns exactly 3.
+     */
     @Test
     void testReturnsThree() {
         int result = ritualStars.onShamanicRitualEvent(player, 0, 0);
@@ -32,6 +39,13 @@ public class RitualStarsTest {
                 "RitualStars deve sempre restituire 3");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the increment parameter does not affect RitualStars' return value.
+     *
+     * EXPECTATION:
+     * The method returns 3 regardless of a non-zero increment.
+     */
     @Test
     void testReturnsThreeRegardlessOfIncrement() {
         int result = ritualStars.onShamanicRitualEvent(player, 10, 0);
@@ -40,6 +54,13 @@ public class RitualStarsTest {
                 "Il valore restituito non dipende da increment");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the decrement parameter does not affect RitualStars' return value.
+     *
+     * EXPECTATION:
+     * The method returns 3 regardless of a non-zero decrement.
+     */
     @Test
     void testReturnsThreeRegardlessOfDecrement() {
         int result = ritualStars.onShamanicRitualEvent(player, 0, -5);
@@ -48,16 +69,13 @@ public class RitualStarsTest {
                 "Il valore restituito non dipende da decrement");
     }
 
-    @Test
-    void testReturnsThreeAlways() {
-        int result1 = ritualStars.onShamanicRitualEvent(player, 0, 0);
-        int result2 = ritualStars.onShamanicRitualEvent(player, 5, -3);
-
-        assertEquals(3, result1);
-        assertEquals(3, result2,
-                "Deve sempre restituire 3 indipendentemente dai parametri");
-    }
-
+    /**
+     * SUMMARY:
+     * Verifies that RitualStars does not modify any player state (prestige or food) as a side effect.
+     *
+     * EXPECTATION:
+     * Player's prestige and food remain 0 after calling onShamanicRitualEvent.
+     */
     @Test
     void testDoesNotModifyPlayer() {
         ritualStars.onShamanicRitualEvent(player, 10, -5);

@@ -25,6 +25,13 @@ public class SetScorerTest {
         return new Player(name, TotemColor.ORANGE);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that SetScorer returns only its base prestige when no complete character set exists.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns 6 (base prestige only, no set bonus).
+     */
     @Test
     void testNoCompleteSet() {
         player.addCard(new Hunter(10)); // false
@@ -35,6 +42,13 @@ public class SetScorerTest {
                 "Senza set completi deve restituire solo i prestigePoints base");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that SetScorer awards a 6-point bonus for one complete set of all 6 character types.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns 12 (6 base + 6 bonus for one complete set).
+     */
     @Test
     void testOneCompleteSet() {
         player.addCard(new Hunter(10));
@@ -48,6 +62,13 @@ public class SetScorerTest {
                 "Un set completo deve dare 6 punti bonus + 6 base");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that SetScorer awards 12 bonus points for two complete character sets.
+     *
+     * EXPECTATION:
+     * getFinalPoints returns 18 (6 base + 12 bonus for two complete sets).
+     */
     @Test
     void testTwoCompleteSets() {
         player.addCard(new Hunter(10));
@@ -67,6 +88,13 @@ public class SetScorerTest {
                 "Due set completi devono dare 12 punti bonus + 6 base");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that building cards are excluded from the character set count.
+     *
+     * EXPECTATION:
+     * A VictoryPoints building does not substitute for the missing Inventor; result is base 6 only.
+     */
     @Test
     void testBuildingsDoNotCountInSet() {
         player.addCard(new Hunter(10));
@@ -80,6 +108,13 @@ public class SetScorerTest {
                 "Gli edifici non devono contribuire al completamento del set");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the number of completed sets is determined by the minimum count across all character types.
+     *
+     * EXPECTATION:
+     * Extra hunters (3) don't create a third set; result is 18 (6 base + 12 for two complete sets).
+     */
     @Test
     void testMinimumCountDeterminesCompletedSets() {
         player.addCard(new Hunter(10));

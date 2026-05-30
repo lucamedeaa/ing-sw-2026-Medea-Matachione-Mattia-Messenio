@@ -35,6 +35,13 @@ public class RoundEndStateTest extends ModelTest {
     @DisplayName("RoundEndState start")
     class StartTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that calling start() on RoundEndState increments the game's round counter by one.
+         *
+         * EXPECTATION:
+         * The current round after start() should be one more than the round before.
+         */
         @Test
         @DisplayName("start increments round")
         void startIncrementsRound() {
@@ -47,6 +54,13 @@ public class RoundEndStateTest extends ModelTest {
             assertEquals(roundBefore + 1, game.getCurrentRound());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() transitions the game to PlacementState when the game has not reached the final round.
+         *
+         * EXPECTATION:
+         * The game's current state should be an instance of PlacementState.
+         */
         @Test
         @DisplayName("start transitions to PlacementState when game is not over")
         void startTransitionsToPlacementStateWhenGameIsNotOver() {
@@ -57,6 +71,14 @@ public class RoundEndStateTest extends ModelTest {
             assertTrue(game.getCurrentState() instanceof PlacementState);
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() ends the game when it is already at round 10 (the final round),
+         * transitioning to either ScoringState or GameEndedState.
+         *
+         * EXPECTATION:
+         * The round should remain 10, and the current state should be ScoringState or GameEndedState.
+         */
         @Test
         @DisplayName("start ends the game at the end of round 10")
         void startEndsGameWhenRoundIsTen() {
@@ -82,6 +104,14 @@ public class RoundEndStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getAvailableActions returns an empty list in RoundEndState,
+         * since no player actions are possible during round transitions.
+         *
+         * EXPECTATION:
+         * The returned list of available actions should be empty.
+         */
         @Test
         @DisplayName("getAvailableActions returns empty list")
         void getAvailableActionsReturnsEmptyList() {
@@ -97,6 +127,14 @@ public class RoundEndStateTest extends ModelTest {
     @DisplayName("Active player")
     class ActivePlayerTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that getActivePlayerNickname returns null in RoundEndState,
+         * since no player is active during round transitions.
+         *
+         * EXPECTATION:
+         * The active player nickname should be null.
+         */
         @Test
         @DisplayName("getActivePlayerNickname returns null")
         void getActivePlayerNicknameReturnsNull() {

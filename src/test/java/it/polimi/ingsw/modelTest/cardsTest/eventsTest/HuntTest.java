@@ -15,6 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HuntTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that executing a Hunt event with 3 hunters grants the correct food and prestige points.
+     *
+     * EXPECTATION:
+     * Player receives 3 food and 3 prestige points from 3 hunters.
+     */
     @Test
     @DisplayName("Hunt with 3 hunters: correct food and PP")
     void huntWithThreeHunters() {
@@ -30,6 +37,13 @@ public class HuntTest extends ModelTest {
         assertEquals(3, p.getPrestigePoints()); // Era 1 -> 3
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that the HunterBonus building adds extra food and prestige per hunter during a Hunt event.
+     *
+     * EXPECTATION:
+     * With 2 hunters and HunterBonus, player receives 4 food and 4 prestige (2 base + 2 bonus each).
+     */
     @Test
     @DisplayName("HunterBonus adds extra food and PP per hunter during Hunt")
     void hunterBonusBuildingAddsExtraFoodAndPrestige() {

@@ -14,6 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CollectorTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that adding a Collector card does not directly grant any food to the player.
+     *
+     * EXPECTATION:
+     * Player's food remains 0 after adding a Collector.
+     */
     @Test
     @DisplayName("Adding a Collector does not give direct food")
     void collectorGivesNoFoodWhenAdded() {
@@ -24,6 +31,13 @@ public class CollectorTest extends ModelTest {
         assertEquals(0, p.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that a Collector's food discount exactly offsets the Sustenance cost for 3 characters.
+     *
+     * EXPECTATION:
+     * No prestige is lost and no food is consumed when the discount equals the feeding cost.
+     */
     @Test
     @DisplayName("1 Collector with discount 3 exactly covers 3 characters at Sustenance")
     void collectorDiscountCoversThreeCharacters() {

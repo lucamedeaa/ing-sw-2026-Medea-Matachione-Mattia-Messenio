@@ -18,6 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShamanicRitualTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that the player with the majority of stars gains prestige while the minority player loses prestige.
+     *
+     * EXPECTATION:
+     * The majority player gains 10 PP and the minority player loses 5 PP.
+     */
     @Test
     @DisplayName("Majority of stars gains, minority loses")
     void majorityGainsMinorityLoses() {
@@ -34,6 +41,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertEquals(-5, poor.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that when all players tie on stars, everyone receives the gain (no losers).
+     *
+     * EXPECTATION:
+     * Both tied players gain 5 prestige points each.
+     */
     @Test
     @DisplayName("Absolute tie: everyone gains and loses")
     void totalTieEveryoneGainsAndLoses() {
@@ -50,6 +64,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertEquals(5, b.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that when two players tie at the maximum star count, both gain prestige while the third loses.
+     *
+     * EXPECTATION:
+     * Both tied-max players gain 10 PP; the minority player loses 5 PP.
+     */
     @Test
     @DisplayName("Tie at maximum: both gain PP")
     void tieAtMaxBothGain() {
@@ -69,6 +90,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertEquals(-5, c.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that RitualShield prevents prestige loss for the losing player during a ShamanicRitual.
+     *
+     * EXPECTATION:
+     * The shielded player's prestige does not go negative.
+     */
     @Test
     @DisplayName("RitualShield neutralizes PP loss at the Ritual")
     void ritualShieldBlocksPrestigeLoss() {
@@ -85,6 +113,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertTrue(shielded.getPrestigePoints() >= 0);
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that RitualShield selectively blocks decrements while leaving increments unaffected.
+     *
+     * EXPECTATION:
+     * Player gains 5 prestige (from the neutralized -5 decrement converted to positive).
+     */
     @Test
     @DisplayName("RitualShield: Selectively blocks decrements while preserving increments")
     void ritualShieldBothIncrementAndDecrement() {
@@ -96,6 +131,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertEquals(5, p.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that RitualStars adds 3 extra stars to the player's shamanic count, making them the majority.
+     *
+     * EXPECTATION:
+     * The starred player gains 10 PP (wins majority) while the base player loses 5 PP.
+     */
     @Test
     @DisplayName("RitualStars adds 3 stars to the shamanic count")
     void ritualStarsAddsThreeToCount() {
@@ -111,6 +153,13 @@ public class ShamanicRitualTest extends ModelTest {
         assertEquals(-5, base.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that DoublePrestigeShaman doubles the prestige gained by the winning player at the ritual.
+     *
+     * EXPECTATION:
+     * The winner gains 20 PP (10 base gain doubled) instead of the normal 10.
+     */
     @Test
     @DisplayName("DoublePrestigeShaman doubles the PP gained at the Ritual")
     void doublePrestigeShamanDoublesGain() {

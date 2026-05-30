@@ -93,6 +93,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("ActionState start")
     class StartTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that the active player is null before start() is called on ActionState.
+         *
+         * EXPECTATION:
+         * getActivePlayerNickname() should return null.
+         */
         @Test
         @DisplayName("active player is null before start")
         void activePlayerNullBeforeStart() {
@@ -102,6 +109,13 @@ public class ActionStateTest extends ModelTest {
             assertNull(state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that start() selects the player whose totem is on the first occupied offer tile.
+         *
+         * EXPECTATION:
+         * The active player nickname should match the player placed on that tile.
+         */
         @Test
         @DisplayName("start selects player on first occupied offer tile")
         void startSelectsFirstOccupiedTile() {
@@ -117,6 +131,14 @@ public class ActionStateTest extends ModelTest {
             assertEquals(player.getNickname(), state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that when a player is placed on offer tile 0, the food bonus from that tile
+         * is applied exactly once upon start().
+         *
+         * EXPECTATION:
+         * The player's food should increase by the tile's bonus (6) after start().
+         */
         @Test
         @DisplayName("offer tile food bonus is applied once")
         void offerTileFoodBonusAppliedOnce() {
@@ -138,6 +160,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("Available actions")
     class AvailableActionsTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that an inactive player has no available actions during the action phase.
+         *
+         * EXPECTATION:
+         * The available actions list for the inactive player should be empty.
+         */
         @Test
         @DisplayName("inactive player has no available actions")
         void inactivePlayerHasNoActions() {
@@ -155,6 +184,13 @@ public class ActionStateTest extends ModelTest {
             assertTrue(state.getAvailableActions(inactive.getNickname()).isEmpty());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the active player receives a TakeCardAction among the available actions.
+         *
+         * EXPECTATION:
+         * At least one action in the list should be an instance of TakeCardAction.
+         */
         @Test
         @DisplayName("active player has TakeCardAction")
         void activePlayerHasTakeCardAction() {
@@ -172,6 +208,13 @@ public class ActionStateTest extends ModelTest {
             assertTrue(actions.stream().anyMatch(a -> a instanceof TakeCardAction));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a SkipAction is available when no pickable characters remain on the board.
+         *
+         * EXPECTATION:
+         * At least one action in the list should be an instance of SkipAction.
+         */
         @Test
         @DisplayName("SkipAction is available when no character can be picked")
         void skipAvailableWhenNoCharacterCanBePicked() {
@@ -196,6 +239,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("takeCard validation")
     class TakeCardValidation {
 
+        /**
+         * SUMMARY:
+         * Verifies that a non-active player cannot take a card, receiving an exception.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("wrong player cannot take card")
         void wrongPlayerCannotTakeCard() {
@@ -217,6 +267,13 @@ public class ActionStateTest extends ModelTest {
                     () -> state.takeCard(inactive, 0, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a player cannot take a card from a row where they have no remaining picks.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot take from row without remaining picks")
         void cannotTakeFromRowWithoutPicks() {
@@ -236,6 +293,13 @@ public class ActionStateTest extends ModelTest {
                     () -> state.takeCard(player, 1, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that an event card (e.g., Hunt) cannot be taken by a player.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot take event card")
         void cannotTakeEventCard() {
@@ -255,6 +319,13 @@ public class ActionStateTest extends ModelTest {
                     () -> state.takeCard(player, 0, eventIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a player cannot take a building card when they have insufficient food.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot take building without enough food")
         void cannotTakeUnaffordableBuilding() {
@@ -281,6 +352,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("takeCard effects")
     class TakeCardEffects {
 
+        /**
+         * SUMMARY:
+         * Verifies that taking a character card adds it to the player's tribe.
+         *
+         * EXPECTATION:
+         * The tribe size should increase by 1 and the tribe should contain the taken card.
+         */
         @Test
         @DisplayName("taking a character adds it to the player's tribe")
         void takeCharacterAddsItToTribe() {
@@ -305,6 +383,13 @@ public class ActionStateTest extends ModelTest {
             assertTrue(player.getTribe().contains(character));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that taking a card removes it from the board so it cannot be peeked again.
+         *
+         * EXPECTATION:
+         * Attempting to peek the taken card's position should throw InvalidGameActionException.
+         */
         @Test
         @DisplayName("taking a card removes it from board")
         void takeCardRemovesCardFromBoard() {
@@ -326,6 +411,13 @@ public class ActionStateTest extends ModelTest {
                     () -> board.peekCard(0, cardIdx));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that taking a building card deducts its final cost (after discount) from the player's food.
+         *
+         * EXPECTATION:
+         * The player's food should decrease by the building's final cost.
+         */
         @Test
         @DisplayName("taking a building pays its final cost")
         void takeCardPaysFinalCost() {
@@ -352,6 +444,14 @@ public class ActionStateTest extends ModelTest {
             assertEquals(foodBefore - finalCost, player.getFood());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that the turn automatically advances to the next player when the current
+         * player has exhausted all their picks.
+         *
+         * EXPECTATION:
+         * The active player should be the second player after the first player takes a card.
+         */
         @Test
         @DisplayName("turn advances automatically when picks are exhausted")
         void turnAdvancesWhenPicksAreExhausted() {
@@ -380,6 +480,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("endPlayerTurn")
     class EndPlayerTurnTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that endPlayerTurn clears the current tile and advances to the next player.
+         *
+         * EXPECTATION:
+         * The first player's tile should be free and the active player should be the second player.
+         */
         @Test
         @DisplayName("endPlayerTurn clears current tile and advances")
         void endPlayerTurnClearsTileAndAdvances() {
@@ -401,6 +508,13 @@ public class ActionStateTest extends ModelTest {
             assertEquals(second.getNickname(), state.getActivePlayerNickname());
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that endPlayerTurn transitions out of ActionState when no occupied tiles remain.
+         *
+         * EXPECTATION:
+         * The game's current state should no longer be ActionState.
+         */
         @Test
         @DisplayName("endPlayerTurn leaves ActionState when no occupied tiles remain")
         void endPlayerTurnLeavesActionStateWhenNoPlayersRemain() {
@@ -423,6 +537,13 @@ public class ActionStateTest extends ModelTest {
     @DisplayName("skipBonus")
     class SkipBonusTests {
 
+        /**
+         * SUMMARY:
+         * Verifies that a non-active player cannot skip their bonus.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("wrong player cannot skip")
         void wrongPlayerCannotSkip() {
@@ -442,6 +563,13 @@ public class ActionStateTest extends ModelTest {
                     () -> state.skipBonus(inactive));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that a player cannot skip when there are still pickable characters on the board.
+         *
+         * EXPECTATION:
+         * An InvalidGameActionException should be thrown.
+         */
         @Test
         @DisplayName("cannot skip while a character can still be picked")
         void cannotSkipWithCharacterAvailable() {
@@ -460,6 +588,13 @@ public class ActionStateTest extends ModelTest {
                     () -> state.skipBonus(player));
         }
 
+        /**
+         * SUMMARY:
+         * Verifies that calling skipBonus ends the current player's turn and advances to the next player.
+         *
+         * EXPECTATION:
+         * The active player should become the second player after the first player skips.
+         */
         @Test
         @DisplayName("skipBonus ends current player's turn")
         void skipEndsTurn() {

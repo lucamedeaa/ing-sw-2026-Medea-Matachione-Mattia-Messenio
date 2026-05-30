@@ -16,6 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SustenanceTest extends ModelTest {
 
+    /**
+     * SUMMARY:
+     * Verifies that when a player has insufficient food, food is reset to zero and prestige is lost proportionally.
+     *
+     * EXPECTATION:
+     * Food becomes 0 and player loses 1 PP for 1 unfed character.
+     */
     @Test
     @DisplayName("With insufficient food: food is reset and proportional PP are lost")
     void insufficientFoodAzzerasCiboAndLosesPrestige() {
@@ -32,6 +39,13 @@ public class SustenanceTest extends ModelTest {
         assertEquals(-1, p.getPrestigePoints(), "Loses 1 PP for 1 unfed character");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that when a player has exactly enough food for all characters, no prestige is lost.
+     *
+     * EXPECTATION:
+     * Prestige remains 0 and food is consumed (reset to 0).
+     */
     @Test
     @DisplayName("With sufficient food no PP are lost")
     void sufficientFoodNoPPLoss() {
@@ -47,6 +61,13 @@ public class SustenanceTest extends ModelTest {
         assertEquals(0, p.getFood());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that building cards are excluded from the character count when calculating feeding cost.
+     *
+     * EXPECTATION:
+     * Only the Artist counts toward feeding; 1 food covers it, so no PP are lost.
+     */
     @Test
     @DisplayName("Buildings are not counted in the total to feed")
     void buildingsNotCountedInSustenance() {
@@ -61,6 +82,13 @@ public class SustenanceTest extends ModelTest {
         assertEquals(0, p.getPrestigePoints(), "The building must not be counted");
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that having zero food with 3 characters results in the maximum prestige loss.
+     *
+     * EXPECTATION:
+     * Player loses 3 PP (1 per unfed character × 3 characters).
+     */
     @Test
     @DisplayName("Zero food and 3 characters: loses 3 * numPP")
     void zeroFoodThreeCharactersMaxLoss() {
@@ -75,6 +103,13 @@ public class SustenanceTest extends ModelTest {
         assertEquals(-3, p.getPrestigePoints());
     }
 
+    /**
+     * SUMMARY:
+     * Verifies that when the Collector discount exceeds the total feeding cost, no food is subtracted.
+     *
+     * EXPECTATION:
+     * Player's food remains at 5 and no prestige is lost.
+     */
     @Test
     @DisplayName("Discount greater than total: no food is subtracted")
     void discountExceedsTotalNoFoodTaken() {
