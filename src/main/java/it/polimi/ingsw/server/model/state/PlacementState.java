@@ -49,16 +49,16 @@ public class PlacementState extends GameState {
 
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
-        //  Controllo turno
+
         if (!playerNickname.equals(getActivePlayerNickname())) {
             return List.of();
         }
 
-        //  Recupero il tracciato
+
         Board board = game.getBoard();
         List<OfferTile> track = board.getOfferTrack();
 
-        //  Filtro gli indici delle tessere libere
+
         List<Integer> freeTiles = new ArrayList<>();
         for (int i = 0; i < track.size(); i++) {
             if (track.get(i).isFree()) {

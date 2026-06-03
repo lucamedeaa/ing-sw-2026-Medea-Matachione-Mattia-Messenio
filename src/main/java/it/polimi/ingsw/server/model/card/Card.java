@@ -74,12 +74,6 @@ public abstract class Card {
     }
 
     /**
-     * Adds the card to a player.
-     * @param player the target player
-     */
-    public void addCard(Player player) {}
-
-    /**
      * Returns the card era.
      * @return era value
      */
@@ -147,9 +141,9 @@ public abstract class Card {
     /**
      * Hook triggered when a card is added to the tribe.
      * @param owner the owning player
-     * @param newcard the newly added card
+     * @param newCard the newly added card
      */
-    public void onCardAddedToTribe(Player owner, Card newcard){}
+    public void onCardAddedToTribe(Player owner, Card newCard){}
 
     /**
      * Hook triggered during Cave Paintings event.
@@ -192,6 +186,4 @@ public abstract class Card {
     public Integer getIDcard() {
         return IDcard;
     }
-
-
 }

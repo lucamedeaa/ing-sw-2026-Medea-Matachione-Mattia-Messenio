@@ -23,8 +23,6 @@ public class RoundEndState extends GameState {
     @Override
     public void start() {
 
-
-        // Snapshot risorse pre-risoluzione
         Map<String, int[]> before = new HashMap<>();
         for (Player p : game.getPlayers()) {
             before.put(p.getNickname(), new int[]{p.getFood(), p.getPrestigePoints()});
@@ -61,7 +59,6 @@ public class RoundEndState extends GameState {
 
     private void notifyChanges(java.util.Map<String, int[]> before, String reason) {
         for (Player p : game.getPlayers()) {
-            // Invia l'evento per TUTTI, indipendentemente dai guadagni
             game.pushEvent(new PlayerResourcesChangedEvent(
                     p.getNickname(), p.getFood(), p.getPrestigePoints(), p.getFoodDiscount(), p.getSustenanceDiscount(),reason
             ));
@@ -75,7 +72,7 @@ public class RoundEndState extends GameState {
 
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
-        return List.of(); // Nessuna azione disponibile
+        return List.of();
     }
 
     @Override
@@ -84,7 +81,6 @@ public class RoundEndState extends GameState {
     }
 
     private void notifyBoardState() {
-        // Estraiamo gli ID usando il tuo nuovo metodo getIDcard()
         List<Integer> upperIds = game.getBoard().getRow(0).stream()
                 .map(opt -> opt.map(Card::getIDcard).orElse(null))
                 .toList();

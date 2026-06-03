@@ -26,11 +26,11 @@ public class InitState extends GameState {
 
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
-        return List.of(); // Nessuna azione disponibile
+        return List.of();
     }
 
     @Override
     public String getActivePlayerNickname() {
-        return null; // Nessun giocatore attivo
+        return null;
     }
 }

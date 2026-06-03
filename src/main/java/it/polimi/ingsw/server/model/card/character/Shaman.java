@@ -11,7 +11,7 @@ public class Shaman extends Character {
     public Shaman(int idcard) {
         super(idcard);
         this.foodCost = 0;
-        this.starsCount = CardRegistry.getCard(idcard).stars(); // Assegnazione diretta intero
+        this.starsCount = CardRegistry.getCard(idcard).stars();
     }
 
     /** Returns the number of stars contributed by this card. @return stars count */

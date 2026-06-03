@@ -16,7 +16,6 @@ public class GameEndedState extends GameState {
 
     @Override
     public void start() {
-        // No initialization is needed for a terminal state.
     }
 
     @Override

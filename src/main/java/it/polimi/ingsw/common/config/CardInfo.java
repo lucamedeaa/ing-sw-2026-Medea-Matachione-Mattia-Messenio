@@ -1,25 +1,21 @@
 package it.polimi.ingsw.common.config;
 
-/**
- * Rappresenta i dati statici di una carta caricati dal JSON.
- */
 public record CardInfo(
         String name,
         String type,
         int era,
         int foodCost,
         int prestigePoints,
-        Integer foodDiscount,        // Specifica per i Builder
-        Integer bonusPrestige,       // Punti extra a fine partita (Builder/Edifici)
-        Boolean hasIcon,             // Specifica per gli Hunter
-        Integer stars,               // Specifica per gli Shaman
-        Integer sustenanceDiscount,  // Specifica per i Collector
-        String inventorIcon,         // Specifica per gli Inventor
-        Integer val1,                // Parametri generici per gli Eventi
+        Integer foodDiscount,
+        Integer bonusPrestige,
+        Boolean hasIcon,
+        Integer stars,
+        Integer sustenanceDiscount,
+        String inventorIcon,
+        Integer val1,
         Integer val2,
         Integer val3
 ) {
-    // Metodi di utilità per evitare NullPointerException nel modello
     public Integer foodDiscount() { return foodDiscount != null ? foodDiscount : 0; }
     public Integer bonusPrestige() { return bonusPrestige != null ? bonusPrestige : 0; }
     public Boolean hasIcon() { return hasIcon != null ? hasIcon : false; }
