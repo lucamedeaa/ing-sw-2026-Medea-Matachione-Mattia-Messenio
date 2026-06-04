@@ -125,7 +125,6 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
     @Override
     public void onError(String error) {
-
     }
 
     @Override

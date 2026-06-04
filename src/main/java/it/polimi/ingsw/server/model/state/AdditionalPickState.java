@@ -85,22 +85,19 @@ public class AdditionalPickState extends GameState {
         game.pushEvent(new CardTakenEvent(player.getNickname(), rowIdx, cardIdx));
 
 
-        //if (finalCost > 0) {
-            game.pushEvent(new PlayerResourcesChangedEvent(
-                    player.getNickname(),
-                    player.getFood(),
-                    player.getPrestigePoints(),
-                    player.getFoodDiscount(),
-                    player.getSustenanceDiscount(),
-                    "Buildings Purchase (-" + finalCost + " food)"
-            ));
-        //}
+        game.pushEvent(new PlayerResourcesChangedEvent(
+                player.getNickname(),
+                player.getFood(),
+                player.getPrestigePoints(),
+                player.getFoodDiscount(),
+                player.getSustenanceDiscount(),
+                "Buildings Purchase (-" + finalCost + " food)"
+        ));
 
         game.pushEvent(new CardAddedToTribeEvent(player.getNickname(), purchasedCard.getIDcard()));
 
         if (remainingUpperPicks <= 0 || !canAffordAnyPickableCardInUpperRow()) {
             if (remainingUpperPicks > 0) {
-                // Aveva pick restanti ma non abbastanza cibo
                 game.pushEvent(new PlayerResourcesChangedEvent(
                         player.getNickname(),
                         player.getFood(),
@@ -158,7 +155,6 @@ public class AdditionalPickState extends GameState {
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         if (playerNickname.equals(getActivePlayerNickname())) {
-            // Il giocatore in fase bonus può pescare dalla prima fila o saltare il bonus
             return List.of(new TakeCardAction(1,0), new SkipAction());
         }
         return List.of();

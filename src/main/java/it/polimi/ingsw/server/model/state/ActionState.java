@@ -32,7 +32,6 @@ public class ActionState extends GameState {
     @Override
     public void start() {
         this.currentColumnIndex = 0;
-        //this.getAvailableActions(currentPlayer.getNickname());
         findNextPlayer();
     }
 
@@ -203,14 +202,11 @@ public class ActionState extends GameState {
     private void checkTurnConditions() {
         if (currentPlayer == null) return;
 
-        // Condizione base: ha finito i pick?
         boolean picksExhausted = (remainingUpperPicks <= 0 && remainingLowerPicks <= 0);
 
-        // Condizione di stallo: può ancora fare mosse legali?
         boolean canDoMandatory = existsCharacterToPick(0) || existsCharacterToPick(1);
         boolean canDoOptional = canAffordAnyBuildingInRow(0) || canAffordAnyBuildingInRow(1);
 
-        // Se ha finito i pick O non può più fare nulla, il turno finisce
         if (picksExhausted || (!canDoMandatory && !canDoOptional)) {
             if (!picksExhausted) {
                 game.pushEvent(new PlayerResourcesChangedEvent(
@@ -237,8 +233,6 @@ public class ActionState extends GameState {
         List<AvailableAction> actions = new ArrayList<>();
         actions.add(new TakeCardAction(remainingUpperPicks, remainingLowerPicks));
 
-        // Lo SKIP è permesso solo se non ci sono più Personaggi obbligatori da raccogliere
-        // nelle righe dove il giocatore ha ancora dei pick.
         boolean mustPickCharacter = existsCharacterToPick(0) || existsCharacterToPick(1);
 
         if (!mustPickCharacter) {
@@ -259,7 +253,6 @@ public class ActionState extends GameState {
             throw new InvalidGameActionException("You cannot skip, you must pick a character.");
         }
 
-        // Azzera i pick rimanenti per forzare la fine del turno
         this.remainingUpperPicks = 0;
         this.remainingLowerPicks = 0;
 

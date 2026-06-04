@@ -77,7 +77,7 @@ public class RoundEndState extends GameState {
 
     @Override
     public String getActivePlayerNickname() {
-        return null; // Nessun giocatore attivo
+        return null;
     }
 
     private void notifyBoardState() {

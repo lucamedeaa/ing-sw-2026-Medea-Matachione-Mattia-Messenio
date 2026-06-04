@@ -113,11 +113,11 @@ public class Board {
         }
 
         List<Optional<Card>> newUpperRow = new ArrayList<>();
-        // Personaggi a sinistra
+
         for (Card c : drawnCharacters) {
             newUpperRow.add(Optional.of(c));
         }
-        // Building (rimasti/nuovi) a destra
+
         newUpperRow.addAll(this.upperRow);
         this.upperRow = newUpperRow;
     }
@@ -177,7 +177,7 @@ public class Board {
 
     /** Moves non-persistent cards from the upper row to the lower row and keeps persistent cards in place according to board rules. */
     private void moveTopToLow() {
-        // flatMap distrugge gli spazi bianchi vuoti, estraendo solo le carte vere
+
         List<Card> cardsSlidingDown = upperRow.stream()
                 .flatMap(Optional::stream)
                 .filter(card -> !card.isPersistent())
@@ -189,7 +189,6 @@ public class Board {
         lowerRow.clear();
         upperRow.clear();
 
-        // Ricostruzione compatta senza spazi vuoti
         cardsSlidingDown.forEach(this::addBottomRow);
         remainingUpper.forEach(this::addTopRow);
     }
