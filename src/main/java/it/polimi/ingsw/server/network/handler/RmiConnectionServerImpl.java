@@ -43,7 +43,7 @@ public class RmiConnectionServerImpl extends UnicastRemoteObject implements RMIC
     public RMIServerSession connect(RMIClientCallback clientCallback) throws RemoteException {
         LOGGER.info("[RMI] New connection request received. Creating dedicated handler...");
 
-        RMmiClientHandler clientHandler = new RMmiClientHandler(gameManager, lobbyController, clientCallback);
+        RmiClientHandler clientHandler = new RmiClientHandler(gameManager, lobbyController, clientCallback);
         LOGGER.info("[RMI] Handler created and returned to client successfully.");
         return clientHandler;
     }

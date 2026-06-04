@@ -9,6 +9,7 @@ import it.polimi.ingsw.server.leaderboard.LeaderboardService;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +51,7 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
-    public void handleTakeCard(String nickname, int row, int col, java.util.function.Consumer<String> onError) {
+    public void handleTakeCard(String nickname, int row, int col, Consumer<String> onError) {
         submitGameTask("take card for " + nickname, () -> {
             try {
                 game.takeCard(nickname, row, col);
@@ -61,7 +62,7 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
-    public void handlePlaceTotem(String nickname, int positionIndex, java.util.function.Consumer<String> onError) {
+    public void handlePlaceTotem(String nickname, int positionIndex, Consumer<String> onError) {
         submitGameTask("place totem for " + nickname, () -> {
             try {
                 game.placeTotem(nickname, positionIndex);
@@ -72,7 +73,7 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
-    public void handleSkipBonus(String nickname, java.util.function.Consumer<String> onError) {
+    public void handleSkipBonus(String nickname, Consumer<String> onError) {
         submitGameTask("skip bonus for " + nickname, () -> {
             try {
                 game.skipBonus(nickname);

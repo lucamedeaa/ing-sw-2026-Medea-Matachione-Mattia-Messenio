@@ -23,9 +23,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** RMI client handler exposing native RPC methods for client actions. */
-public class RMmiClientHandler extends UnicastRemoteObject implements ClientProxy, RMIServerSession {
+public class RmiClientHandler extends UnicastRemoteObject implements ClientProxy, RMIServerSession {
 
-    private static final Logger LOGGER = Logger.getLogger(RMmiClientHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RmiClientHandler.class.getName());
 
     private final RMIClientCallback callback;
     private final ConnectionSession session;
@@ -33,7 +33,7 @@ public class RMmiClientHandler extends UnicastRemoteObject implements ClientProx
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final AtomicLong lastPingTime = new AtomicLong();
 
-    public RMmiClientHandler(
+    public RmiClientHandler(
             GameManagerInterface gameManager,
             LobbyController lobbyController,
             RMIClientCallback callback
