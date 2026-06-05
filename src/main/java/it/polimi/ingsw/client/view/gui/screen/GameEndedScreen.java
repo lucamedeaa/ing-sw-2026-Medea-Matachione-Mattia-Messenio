@@ -7,9 +7,11 @@ import it.polimi.ingsw.client.view.gui.presenter.GameEndedScreenPort;
 import it.polimi.ingsw.client.view.gui.viewstate.GameEndedViewState;
 import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.time.format.DateTimeFormatter;
@@ -39,7 +41,14 @@ public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
         volumeSlider.setValue(VideoBackground.getGlobalVolume());
+
         videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
+        Platform.runLater(() -> {
+            if (videoContainer != null && videoContainer.getScene() != null) {
+                Stage stage = (Stage) videoContainer.getScene().getWindow();
+                if (stage != null) { stage.setMinWidth(1280); stage.setMinHeight(720); }
+            }
+        });
         setupListViewStyle(sessionLeaderboardView);
         setupListViewStyle(globalLeaderboardView);
     }

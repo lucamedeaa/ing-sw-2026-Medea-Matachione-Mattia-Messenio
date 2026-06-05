@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -49,7 +50,7 @@ public class BoardPanelController implements BoardView {
         });
     }
 
-    private void setupSceneListeners(javafx.scene.Scene scene) {
+    private void setupSceneListeners(Scene scene) {
         // Sottraiamo 250px per i pannelli a destra e 220px per il pannello inferiore
         scene.widthProperty().addListener((o, old, n) ->
             updateOptimalSize(n.doubleValue() - 250, scene.getHeight() - 220, currentColumn));
@@ -61,7 +62,6 @@ public class BoardPanelController implements BoardView {
     }
 
     public void render(BoardViewState state) {
-        // già sul thread JavaFX — niente Platform.runLater
         int newCols = calculateCurrentColumns(state.playerCount(), state.upperCards().size());
         if (currentBoardPlayerCount != state.playerCount() || currentColumn != newCols) {
             currentColumn = newCols;
@@ -71,6 +71,12 @@ public class BoardPanelController implements BoardView {
             boardRenderer.buildBoardTrack(state.playerCount());
             currentBoardPlayerCount = state.playerCount();
         }
+
+        Scene scene = boardGrid.getScene();
+        if (scene != null) {
+        updateOptimalSize(scene.getWidth() - 250, scene.getHeight() - 220, currentColumn);
+        }
+
         boardRenderer.renderCards(state.upperCards(), state.lowerCards());
         boardRenderer.renderDeck(state.nextDeckEra());
         boardRenderer.renderBuildingDecks(state.currentEra(), state.playerCount());
