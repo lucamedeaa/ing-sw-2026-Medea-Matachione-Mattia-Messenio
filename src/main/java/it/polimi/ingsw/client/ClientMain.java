@@ -11,11 +11,15 @@ import it.polimi.ingsw.client.network.factory.NetworkClientFactory;
 import it.polimi.ingsw.client.network.factory.RMIConnectionFactory;
 import it.polimi.ingsw.client.network.factory.SocketConnectionFactory;
 import it.polimi.ingsw.client.view.ClientEventDispatcher;
+import it.polimi.ingsw.client.view.tui.TextUserInterface;
 import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.ClientUi;
 import it.polimi.ingsw.client.view.UiFactory;
 import it.polimi.ingsw.client.network.ServerProxy;
+import javafx.application.Platform;
 
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.util.Scanner;
 import java.util.List;
 import java.util.logging.Level;
@@ -111,10 +115,10 @@ public class ClientMain {
 
                 ClientEventDispatcher uiDispatcher;
 
-                if (uiChoice == 1) { // Caso TUI
-                    it.polimi.ingsw.client.view.tui.TextUserInterface tui = (it.polimi.ingsw.client.view.tui.TextUserInterface) ui;
+                if (uiChoice == 1) {
+                    TextUserInterface tui = (TextUserInterface) ui;
                     uiDispatcher = tui::dispatch;
-                } else { // Caso GUI
+                } else {
                     uiDispatcher = javafx.application.Platform::runLater; // Dispatcher nativo JavaFX
                 }
 
@@ -125,14 +129,14 @@ public class ClientMain {
                 // Passiamo safeReceiver (il decoratore) invece del receiver base
                 server = networkFactory.createConnection(type, ip, port, safeReceiver);
 
-            } catch (java.rmi.NotBoundException e) {
+            } catch (NotBoundException e) {
                 // Errore previsto: Il server c'è ma il servizio "MesosServer" non è registrato
                 System.out.println("\n " + ColorAnsi.BG_RED_WHITE_TEXT + " RMI ERROR " + ColorAnsi.RESET + " No mention of the Mesos service was found on the ancient stones.");
                 server = null;
                 ip = "";
                 networkChoice = 0;
                 port = 0;
-            } catch (java.io.IOException e) {
+            } catch (IOException e) {
                 // Errore previsto: Server spento, connessione rifiutata, timeout
                 System.out.println("\n " + ColorAnsi.BG_RED_WHITE_TEXT + " DISTANT ECHO " + ColorAnsi.RESET + " Unable to contact the port: " + e.getMessage());
                 System.out.println(" " + ColorAnsi.ITALIC + "Please try entering the details again." + ColorAnsi.RESET + "\n");
