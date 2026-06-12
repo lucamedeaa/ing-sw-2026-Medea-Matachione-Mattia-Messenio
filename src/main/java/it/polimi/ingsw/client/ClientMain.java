@@ -122,7 +122,7 @@ public class ClientMain {
                     uiDispatcher = javafx.application.Platform::runLater; // Dispatcher nativo JavaFX
                 }
 
-                // ricevitore sicuro che rimbalza i messaggi sul thread UI
+                // impedisce alla rete di modificare lo stato del client mentre la UI lo sta usando, facendo eseguire tutte le notifiche dal thread corretto e nell’ordine corrett
                 ServerNotificationReceiver safeReceiver =
                         new DispatchingNotificationReceiver(uiDispatcher, receiver);
 
