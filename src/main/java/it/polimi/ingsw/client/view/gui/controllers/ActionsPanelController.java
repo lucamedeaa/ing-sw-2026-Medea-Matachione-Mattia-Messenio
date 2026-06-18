@@ -6,6 +6,8 @@ import it.polimi.ingsw.common.network.dto.action.ActionDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
+import java.util.List;
+
 public class ActionsPanelController {
 
     private ActionCommandHost parentScreen;
@@ -34,7 +36,7 @@ public class ActionsPanelController {
         );
     }
 
-    public void enablePlaceTotem(java.util.List<Integer> availableTiles) {
+    public void enablePlaceTotem(List<Integer> availableTiles) {
         if (parentScreen != null) parentScreen.promptTotemPlacement(availableTiles);
     }
 

@@ -51,7 +51,7 @@ public class BoardRenderer {
     }
 
     public void renderDeck(Integer nextDeckEra) {
-        // Rimuove l'eventuale mazzo principale precedente (colonna 0, riga 0)
+
         boardGrid.getChildren().removeIf(node -> {
             Integer col = GridPane.getColumnIndex(node);
             Integer row = GridPane.getRowIndex(node);
@@ -70,7 +70,7 @@ public class BoardRenderer {
     public void renderBuildingDecks(Integer currentEra, int playerCount) {
         int baseTrackSize = trackOverlays.size();
 
-        // Pulisce le colonne a destra della traccia, riga 1
+
         boardGrid.getChildren().removeIf(node -> {
             Integer row = GridPane.getRowIndex(node);
             Integer col = GridPane.getColumnIndex(node);
