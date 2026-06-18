@@ -137,7 +137,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         else if (inGameView != null) inGameView.onServerDisconnected(reason);
         else if (gameEndedView != null) gameEndedView.onServerDisconnected(reason);
         else {
-            System.err.println("\n[ERRORE DI CONNESSIONE]: " + reason);
+            System.err.println("\n[CONNECTION ERROR]: " + reason);
             System.exit(1);
         }
     }
