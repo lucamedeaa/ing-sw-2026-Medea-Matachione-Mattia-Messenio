@@ -14,6 +14,7 @@ public final class BoardLayoutProvider {
         };
     }
 
+    // vertical position of each totem as a fraction of tile height`
     public static double[] getTotemYSteps(int playerCount) {
         return switch (playerCount) {
             case 2  -> new double[]{0.23, 0.40};

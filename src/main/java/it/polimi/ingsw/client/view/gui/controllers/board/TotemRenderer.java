@@ -29,14 +29,14 @@ public class TotemRenderer {
             Integer offer = offerPos.get(p.nickname());
             Integer ret   = retPos.get(p.nickname());
 
-            if (offer != null) {
+            if (offer != null) { //totem placed on the offer track, at its tile
                 int visualCol = offer + 1;
                 if (visualCol < trackOverlays.size()) {
                     Pane overlay = trackOverlays.get(visualCol);
                     tv.layoutYProperty().bind(overlay.heightProperty().multiply(0.18));
                     overlay.getChildren().add(tv);
                 }
-            } else {
+            } else { //not on offer: stack it in the return area (ret=its slot, else next free)
                 Pane overlay = trackOverlays.get(0);
                 int yIdx = (ret != null) ? ret : fallback++;
                 if (yIdx >= 0 && yIdx < ySteps.length) {

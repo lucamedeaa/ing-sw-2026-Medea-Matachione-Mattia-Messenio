@@ -22,7 +22,7 @@ public class GameViewStateFactory {
         Set<Integer> affordable   = new HashSet<>();
         Set<Integer> unaffordable = new HashSet<>();
         if (me != null) {
-            Stream.concat(m.getUpperRowCards().stream(), m.getLowerRowCards().stream())
+            Stream.concat(m.getUpperRowCards().stream(), m.getLowerRowCards().stream()) // split board cards into affordable / unaffordable-but-selectable; events are skipped
                     .filter(id -> id != null && !CardAffordabilityPolicy.isEvent(id))
                     .forEach(id -> {
                         if (CardAffordabilityPolicy.isAffordable(id, me)) affordable.add(id);

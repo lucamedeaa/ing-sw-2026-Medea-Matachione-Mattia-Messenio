@@ -24,7 +24,7 @@ public class LogPanelController {
 
     private String stripAnsi(String text) {
         if (text == null) return "";
-        // Regex per rimuovere i codici di colore ANSI
+        // Regex that strips ANSI color codes
         return text.replaceAll("\\u001B\\[[;\\d]*m", "");
     }
 }

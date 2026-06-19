@@ -22,7 +22,6 @@ public class BoardRenderer {
     }
 
     public void buildBoardTrack(int playerCount) {
-        //boardGrid.getColumnConstraints().clear();
         boardGrid.getRowConstraints().clear();
         trackOverlays.clear();
         List<String> layout = BoardLayoutProvider.getTileLayout(playerCount);
@@ -35,6 +34,8 @@ public class BoardRenderer {
         }
     }
 
+    // Grid layout: row 0 = upper cards, row 1 = track/tiles, row 2 = lower cards.
+    // Column 0 is reserved for the main deck, so playable cards start at column 1.
     public void renderCards(List<Integer> upper, List<Integer> lower) {
         boardGrid.getChildren().removeIf(node -> {
             Integer row = GridPane.getRowIndex(node);
@@ -60,7 +61,7 @@ public class BoardRenderer {
 
         if (nextDeckEra == null) return;
 
-        // Delega la creazione alla factory per il mazzo principale
+        // Delegate node creation to the factory
         StackPane deckPane = factory.createDeckBackContainer(nextDeckEra);
         if (deckPane != null) {
             boardGrid.add(deckPane, 0, 0);

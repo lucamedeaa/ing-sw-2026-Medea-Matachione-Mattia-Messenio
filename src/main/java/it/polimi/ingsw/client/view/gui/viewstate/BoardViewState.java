@@ -17,7 +17,7 @@ public record BoardViewState(
         Integer round
 ) {
     public BoardViewState {
-        // upperCards e lowerCards possono contenere null (slot vuoti della board)
+        // upperCards/lowerCards may contain null (empty slots), so List.copyOf can't be used here
         upperCards      = upperCards      != null ? Collections.unmodifiableList(new ArrayList<>(upperCards))  : List.of();
         lowerCards      = lowerCards      != null ? Collections.unmodifiableList(new ArrayList<>(lowerCards))  : List.of();
         players         = players         != null ? List.copyOf(players)        : List.of();

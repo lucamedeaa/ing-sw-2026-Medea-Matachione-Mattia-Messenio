@@ -1,26 +1,20 @@
 package it.polimi.ingsw.client.view.gui.presenter;
 
 import it.polimi.ingsw.client.model.GameModel;
-import it.polimi.ingsw.client.model.snapshot.PlayerSnapshot;
 import it.polimi.ingsw.client.view.gui.GuiContext;
 import it.polimi.ingsw.client.view.gui.GuiNavigator;
-import it.polimi.ingsw.client.view.gui.controllers.board.CardAffordabilityPolicy;
 import it.polimi.ingsw.client.view.gui.interaction.BoardCommandPort;
 import it.polimi.ingsw.client.view.gui.viewstate.*;
 import it.polimi.ingsw.client.view.listeners.InGameView;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 public class InGamePresenter implements InGameView, BoardCommandPort {
 
     private final GuiContext ctx;
     private final GuiNavigator navigator;
     private InGameScreenPort screen;
-    private volatile boolean isNavigatingAway = false;
+    private volatile boolean isNavigatingAway = false;    // guards against refresh/navigation racing while we're already leaving the screen
 
     public InGamePresenter(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;

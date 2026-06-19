@@ -40,12 +40,12 @@ public class BoardInteractionController {
 
                 boolean isAffordable   = affordableIds.contains(cardId);
                 boolean isUnaffordable = unaffordableIds.contains(cardId);
-                if (!isAffordable && !isUnaffordable) continue; // evento
+                if (!isAffordable && !isUnaffordable) continue; // neither affordable nor unaffordable -> event card, not selectable
 
                 Integer colIdx = GridPane.getColumnIndex(node);
                 if (colIdx == null) continue;
-                int logicalRow = (row == 0) ? 0 : 1;
-                int logicalCol = colIdx - 1;
+                int logicalRow = (row == 0) ? 0 : 1; //grid row 0/2 -> logical upper(0)/lower(1)
+                int logicalCol = colIdx - 1; //column 0 holds the deck, card start at 1
 
                 if (isAffordable) {
                     node.getStyleClass().add("card-glow-green");
@@ -57,7 +57,7 @@ public class BoardInteractionController {
             }
     }
 
-    /** iAmOnOffer calcolato da InGameScreen prima di chiamare questo metodo */
+    /** iAmOnOffer is computed by InGameScreen before this method is called. */
     public void highlightTotemPlacement(List<Integer> validIndices, boolean iAmOnOffer) {
             if (!iAmOnOffer) {
                 if (trackOverlays.isEmpty()) return;
@@ -73,7 +73,7 @@ public class BoardInteractionController {
                     showOfferTileOptions(validIndices);
                 });
             }
-            // se iAmOnOffer: nessun highlight (come nell'originale)
+        // when iAmOnOffer: no highlight needed
     }
 
     public void disableAllInteractions() {

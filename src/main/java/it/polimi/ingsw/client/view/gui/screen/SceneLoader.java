@@ -38,6 +38,7 @@ public class SceneLoader {
             double height = stage.getHeight() > 0 ? stage.getHeight() : def.minHeight();
 
             Scene scene;
+            // scaleToFill: render at a fixed 1920x1080 and scale the whole scene to the window`
             if (def.scaleToFill()) {
                 if (root instanceof Region region) {
                     region.setPrefSize(1920, 1080);

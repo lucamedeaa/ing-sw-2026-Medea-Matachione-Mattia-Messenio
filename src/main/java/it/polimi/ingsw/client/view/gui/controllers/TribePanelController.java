@@ -15,7 +15,7 @@ public class TribePanelController {
     @FXML private HBox cardsContainer;
 
     public void render(List<Integer> cardIds, String viewedPlayer) {
-        // già sul thread JavaFX — niente Platform.runLater
+        // already on the JavaFX thread — no Platform.runLater needed
         cardsContainer.getChildren().clear();
         tribeOwnerLabel.setText("TRIBÙ DI " + viewedPlayer.toUpperCase());
         for (Integer id : cardIds) {

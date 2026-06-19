@@ -14,8 +14,7 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
     private RefreshableScreen currentScreen;
     private String disconnectReason = "";
     private final SceneLoader sceneLoader;
-    private final AtomicBoolean refreshPending = new AtomicBoolean(false);
-
+    private final AtomicBoolean refreshPending = new AtomicBoolean(false);   // coalesces bursts of model updates into a single UI refresh
     public GuiFxRouter(Stage stage, GuiContext ctx) {
         this.stage = stage;
         this.ctx = ctx;

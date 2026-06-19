@@ -19,21 +19,21 @@ public class CardNodeFactory {
 
     public DoubleProperty getCardWidthProp() { return cardWidthProp; }
 
-    /** Nodo carta — nessun click handler, visuale puro */
+    /** Pure visual card node — no click handler attached. */
     public StackPane createCardContainer(int cardId) {
         Image img = GuiAssetManager.getCardImage(cardId);
         if (img == null) return null;
         ImageView iv = new ImageView(img);
         iv.setPreserveRatio(false); iv.setSmooth(true);
         iv.fitWidthProperty().bind(cardWidthProp);
-        iv.fitHeightProperty().bind(cardWidthProp.multiply(1.62));
+        iv.fitHeightProperty().bind(cardWidthProp.multiply(1.62)); // 1.62 = card aspect ratio (height / width)
         StackPane pane = new StackPane(iv);
         pane.setUserData(cardId);
         bindContainer(pane);
         return pane;
     }
 
-    /** Nodo tessera + overlay sovrapposto — restituisce entrambi */
+    /** Tile node with a transparent overlay on top — returns both. */
     public record TileNode(StackPane container, Pane overlay) {}
 
     public TileNode createTileNode(String tileCode) {
@@ -58,7 +58,7 @@ public class CardNodeFactory {
         return new TileNode(container, overlay);
     }
 
-    /** Nodo totem */
+   /** Totem image node. */
     public ImageView createTotemView(TotemColor color) {
         Image img = GuiAssetManager.getTotemImage(color);
         if (img == null) return null;
@@ -81,13 +81,13 @@ public class CardNodeFactory {
         pane.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
         pane.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
     }
-    /** Nodo per il retro del mazzo principale */
+   /** Back-of-deck node for the main deck. */
     public StackPane createDeckBackContainer(int era) {
         Image img = GuiAssetManager.getDeckBackImage(era);
         return buildDeckPane(img);
     }
 
-    /** Nodo per il retro dei mazzi edificio */
+    /** Back-of-deck node for the building decks. */
     public StackPane createBuildingDeckBackContainer(int era) {
         Image img = GuiAssetManager.getBuildingDeckBackImage(era);
         return buildDeckPane(img);

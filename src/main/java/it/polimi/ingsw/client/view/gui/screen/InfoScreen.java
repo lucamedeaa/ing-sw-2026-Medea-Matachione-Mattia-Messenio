@@ -11,7 +11,7 @@ public class InfoScreen {
 
     @FXML
     public void initialize() {
-        // Il contenuto è interamente gestito in modo strutturato tramite FXML
+     // Content is defined entirely in FXML; nothing to wire up here.
     }
 
     @FXML

@@ -8,7 +8,7 @@ import java.util.List;
 public record GameEndedViewState(
         List<PlayerScoreDto> sessionScores,
         PlayerGameCompletedDto localResult,
-        LeaderboardSnapshotDto globalLeaderboard  // null = spinner visibile
+        LeaderboardSnapshotDto globalLeaderboard  // null = leaderboard not loaded yet (spinner shown)
 ) {
     public GameEndedViewState {
         sessionScores = (sessionScores != null) ? List.copyOf(sessionScores) : List.of();

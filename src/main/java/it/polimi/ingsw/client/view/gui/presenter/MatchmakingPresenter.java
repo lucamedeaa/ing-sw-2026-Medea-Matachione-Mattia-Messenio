@@ -14,7 +14,7 @@ public class MatchmakingPresenter implements MatchmakingView {
     private final GuiContext ctx;
     private final GuiNavigator navigator;
     private MatchmakingScreenPort screen;
-    private String pendingNickname = "";
+    private String pendingNickname = "";   // kept until the server confirms matchmaking, then committed to the session
 
     public MatchmakingPresenter(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;

@@ -84,7 +84,7 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener, 
     @Override
     public void promptTotemPlacement(List<Integer> availableTiles) {
         if (lastState == null) return;
-        boolean iAmOnOffer = lastState.board().totemPositions().containsKey(lastState.selfNickname());
+        boolean iAmOnOffer = lastState.board().totemPositions().containsKey(lastState.selfNickname()); // "on offer" = my totem is already on the offer track
         interactionManager.promptTotemPlacement(availableTiles, iAmOnOffer);
     }
     @Override public void skipAction() { presenter.skipAction(); }

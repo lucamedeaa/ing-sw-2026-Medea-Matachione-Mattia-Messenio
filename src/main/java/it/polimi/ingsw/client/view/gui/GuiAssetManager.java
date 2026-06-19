@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class GuiAssetManager {
 
-    // Cache per evitare di allocare nuova memoria per immagini già caricate
+    // Cache so each image is loaded from disk only once
     private static final Map<Integer, Image> cardCache = new HashMap<>();
     private static final Map<String, Image> tileCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemCache = new HashMap<>();
     private static final Map<TotemColor, Image> totemFullCache = new HashMap<>();
     private static final Map<Integer, Image> cardBackCache = new HashMap<>();
-    private static final Map<Integer, Image> BuildingBackCache = new HashMap<>();
+    private static final Map<Integer, Image> buildingBackCache = new HashMap<>();
 
 
     public static Image getCardImage(int cardId) {
@@ -22,13 +22,13 @@ public class GuiAssetManager {
             return cardCache.get(cardId);
         }
 
-        // Il path parte dalla radice di 'resources'
+        // Path is resolved from the resources root
         String path = "/images/cards/" + cardId + ".png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
             System.err.println("ERRORE CRITICO: Immagine non trovata per l'ID " + cardId + " al percorso " + path);
-            return null; // Oppure ritorna un'immagine di errore/placeholder
+            return null;
         }
 
         Image image = new Image(is);
@@ -60,8 +60,6 @@ public class GuiAssetManager {
             return null;
         }
 
-        // Normalizziamo il nome per sicurezza (es. da "Red" a "RED")
-
         if (totemCache.containsKey(color)) {
             return totemCache.get(color);
         }
@@ -88,7 +86,7 @@ public class GuiAssetManager {
             return totemFullCache.get(color);
         }
 
-        // Costruisce il nuovo path con il prefisso TOTEM_ e il nome del colore
+        // Build path as TOTEM_<COLOR>
         String path = "/images/totem/TOTEM_" + color.name() + ".png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
@@ -119,7 +117,7 @@ public class GuiAssetManager {
     }
 
     public static Image getBuildingDeckBackImage(int era) {
-        if (BuildingBackCache.containsKey(era)) return BuildingBackCache.get(era);
+        if (buildingBackCache.containsKey(era)) return buildingBackCache.get(era);
 
         String path = "/images/tiles/BACK_BUILDING_ERA_" + era + ".png";
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
@@ -130,7 +128,7 @@ public class GuiAssetManager {
         }
 
         Image image = new Image(is);
-        BuildingBackCache.put(era, image);
+        buildingBackCache.put(era, image);
         return image;
 
     }

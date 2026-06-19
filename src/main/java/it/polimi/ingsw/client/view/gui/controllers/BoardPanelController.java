@@ -11,11 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javafx.scene.layout.ColumnConstraints;
 
 public class BoardPanelController implements BoardView {
     @FXML private GridPane boardGrid;
@@ -51,7 +49,7 @@ public class BoardPanelController implements BoardView {
     }
 
     private void setupSceneListeners(Scene scene) {
-        // Sottraiamo 250px per i pannelli a destra e 220px per il pannello inferiore
+        //Subtract 250px for the right-side panels and 220px for the bottom panel`
         scene.widthProperty().addListener((o, old, n) ->
             updateOptimalSize(n.doubleValue() - 250, scene.getHeight() - 220, currentColumn));
 
@@ -104,7 +102,7 @@ public class BoardPanelController implements BoardView {
     private void updateOptimalSize(double w, double h, int cols) {
         double effectiveH = h - 100;
         double fromW = (w - 200) / cols;
-        double fromH = (effectiveH / 3.0) / 1.62;
+        double fromH = (effectiveH / 3.0) / 1.62; // 3 card rows; 1.62 = card height/width ratio
         cardWidthProp.set(Math.max(20.0, Math.min(fromW, fromH)));
     }
 

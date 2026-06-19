@@ -13,7 +13,7 @@ public class GameEndedPresenter implements GameEndedView {
     private final GuiContext ctx;
     private final GuiNavigator navigator;
     private GameEndedScreenPort screen;
-    private volatile boolean isNavigatingAway = false;
+    private volatile boolean isNavigatingAway = false;     // guards against double navigation when several callbacks fire while leaving`
 
     public GameEndedPresenter(GuiContext ctx, GuiNavigator navigator) {
         this.ctx = ctx;

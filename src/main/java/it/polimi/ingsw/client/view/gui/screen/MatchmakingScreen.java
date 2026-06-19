@@ -19,7 +19,7 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
 
     @FXML private TextField nicknameField;
     @FXML private ComboBox<Integer> maxPlayersComboBox;
-    @FXML private ListView<GameInfoDto> gamesListView;   // GameInfoDto, non più String
+    @FXML private ListView<GameInfoDto> gamesListView;
     @FXML private Label errorLabel;
     @FXML private Button createGameButton;
     @FXML private Button joinGameButton;
