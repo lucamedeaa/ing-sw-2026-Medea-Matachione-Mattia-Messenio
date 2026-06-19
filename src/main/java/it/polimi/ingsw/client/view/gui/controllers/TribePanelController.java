@@ -17,7 +17,7 @@ public class TribePanelController {
     public void render(List<Integer> cardIds, String viewedPlayer) {
         // already on the JavaFX thread — no Platform.runLater needed
         cardsContainer.getChildren().clear();
-        tribeOwnerLabel.setText("TRIBÙ DI " + viewedPlayer.toUpperCase());
+        tribeOwnerLabel.setText("TRIBE OF " + viewedPlayer.toUpperCase());
         for (Integer id : cardIds) {
             Image img = GuiAssetManager.getCardImage(id);
             if (img != null) {

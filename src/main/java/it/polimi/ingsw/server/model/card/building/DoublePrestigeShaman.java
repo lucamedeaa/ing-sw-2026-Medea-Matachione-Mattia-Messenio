@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.model.Player;
 /** Building that doubles the prestige gained during the Shamanic Ritual event. */
 public class DoublePrestigeShaman extends Building {
 
-    /** Constructs the DoublePrestigeShaman building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public DoublePrestigeShaman(int idcard) {
         super(idcard);
     }

@@ -30,7 +30,8 @@ public class Sustenance extends Event {
      */
     public Sustenance(int idcard) {
         super(idcard);
-        this.numPrestRem = CardRegistry.getCard(idcard).val1();    }
+        this.numPrestRem = CardRegistry.getCard(idcard).val1();
+    }
 
     /**
      * Executes the event:

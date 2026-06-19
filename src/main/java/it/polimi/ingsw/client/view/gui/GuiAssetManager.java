@@ -27,7 +27,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("ERRORE CRITICO: Immagine non trovata per l'ID " + cardId + " al percorso " + path);
+            System.err.println("Critical error: image not found for card ID " + cardId + " at path " + path);
             return null;
         }
 
@@ -46,7 +46,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("ERRORE CRITICO: Immagine tile non trovata al percorso " + path);
+            System.err.println("Critical error: tile image not found at path " + path);
             return null;
         }
 
@@ -68,7 +68,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + color + " al percorso " + path);
+            System.err.println("Critical error: totem image not found for color " + color + " at path " + path);
             return null;
         }
 
@@ -91,7 +91,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("ERRORE CRITICO: Immagine totem non trovata per il colore " + color.name() + " al percorso " + path);
+            System.err.println("Critical error: totem image not found for color " + color.name() + " at path " + path);
             return null;
         }
 
@@ -107,7 +107,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("Dorso non trovato per Era " + era + " al percorso " + path);
+            System.err.println("Deck back image not found for era " + era + " at path " + path);
             return null;
         }
 
@@ -123,7 +123,7 @@ public class GuiAssetManager {
         InputStream is = GuiAssetManager.class.getResourceAsStream(path);
 
         if (is == null) {
-            System.err.println("Dorso non trovato per Building Era " + era + " al percorso " + path);
+            System.err.println("Building deck back image not found for era " + era + " at path " + path);
             return null;
         }
 

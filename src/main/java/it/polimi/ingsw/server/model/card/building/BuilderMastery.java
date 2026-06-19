@@ -6,8 +6,6 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 
 /** Building that grants additional end-game points by counting BUILDER card points a second time. */
 public class BuilderMastery extends Building {
-
-    /** Constructs the BuilderMastery building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public BuilderMastery(int idcard) {
         super(idcard);
     }

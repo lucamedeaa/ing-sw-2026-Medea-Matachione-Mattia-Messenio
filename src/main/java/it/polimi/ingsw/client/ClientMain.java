@@ -16,8 +16,6 @@ import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.ClientUi;
 import it.polimi.ingsw.client.view.UiFactory;
 import it.polimi.ingsw.client.network.ServerProxy;
-import javafx.application.Platform;
-
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.Scanner;
@@ -56,7 +54,7 @@ public class ClientMain {
         EventApplier eventApplier = new EventApplier(gameModel);
         ClientNotificationController receiver = new ClientNotificationController(lobbyModel, gameModel, eventApplier);
 
-        // Prepariamo la UI e passiamo il receiver
+        // Create the UI and attach the notification controller
         ClientUi ui = UiFactory.create(uiChoice, lobbyModel, gameModel, scanner);
         ui.setNotificationController(receiver);
 
@@ -66,7 +64,7 @@ public class ClientMain {
         int port = 0;
 
         while (server == null) {
-            // Richiesta IP
+            // Ask for the server IP address
             if (ip.isEmpty()) {
                 System.out.println(" " + ColorAnsi.WHITE_BOLD + "Enter the server’s IP address:" + ColorAnsi.RESET);
                 System.out.print(" " + ColorAnsi.GREEN_BOLD + ">" + ColorAnsi.RESET + " ");
@@ -77,7 +75,7 @@ public class ClientMain {
                 }
             }
 
-            // Scelta Rete
+            // Ask for the network protocol
             if (networkChoice == 0) {
                 System.out.println(" " + ColorAnsi.WHITE_BOLD + "Which network path would you like to follow?" + ColorAnsi.RESET);
                 System.out.println(" " + ColorAnsi.YELLOW_BOLD + "[ 1 ]" + ColorAnsi.RESET + " " + ColorAnsi.ITALIC + "Socket [TCP]" + ColorAnsi.RESET + "          " + ColorAnsi.YELLOW_BOLD + "[ 2 ]" + ColorAnsi.RESET + " " + ColorAnsi.ITALIC + "RMI" + ColorAnsi.RESET);
@@ -90,7 +88,7 @@ public class ClientMain {
                 }
             }
 
-            // Richiesta Porta
+            // Ask for the server port
             if (port <= 0 || port > 65535) {
                 System.out.println(" " + ColorAnsi.WHITE_BOLD + "Which gate do you want to knock on? (port):" + ColorAnsi.RESET);
                 System.out.print(" " + ColorAnsi.GREEN_BOLD + ">" + ColorAnsi.RESET + " ");
@@ -119,25 +117,25 @@ public class ClientMain {
                     TextUserInterface tui = (TextUserInterface) ui;
                     uiDispatcher = tui::dispatch;
                 } else {
-                    uiDispatcher = javafx.application.Platform::runLater; // Dispatcher nativo JavaFX
+                    uiDispatcher = javafx.application.Platform::runLater; // Native JavaFX dispatcher
                 }
 
-                // impedisce alla rete di modificare lo stato del client mentre la UI lo sta usando, facendo eseguire tutte le notifiche dal thread corretto e nell’ordine corrett
+                // Ensures that network notifications are handled on the correct UI thread
                 ServerNotificationReceiver safeReceiver =
                         new DispatchingNotificationReceiver(uiDispatcher, receiver);
 
-                // Passiamo safeReceiver (il decoratore) invece del receiver base
+                // Use the decorated receiver instead of the base receiver
                 server = networkFactory.createConnection(type, ip, port, safeReceiver);
 
             } catch (NotBoundException e) {
-                // Errore previsto: Il server c'è ma il servizio "MesosServer" non è registrato
+                // Expected RMI error: server reachable, but the Mesos service is not registered
                 System.out.println("\n " + ColorAnsi.BG_RED_WHITE_TEXT + " RMI ERROR " + ColorAnsi.RESET + " No mention of the Mesos service was found on the ancient stones.");
                 server = null;
                 ip = "";
                 networkChoice = 0;
                 port = 0;
             } catch (IOException e) {
-                // Errore previsto: Server spento, connessione rifiutata, timeout
+                // Expected connection error: server offline, connection refused, or timeout
                 System.out.println("\n " + ColorAnsi.BG_RED_WHITE_TEXT + " DISTANT ECHO " + ColorAnsi.RESET + " Unable to contact the port: " + e.getMessage());
                 System.out.println(" " + ColorAnsi.ITALIC + "Please try entering the details again." + ColorAnsi.RESET + "\n");
                 server = null;
@@ -145,7 +143,7 @@ public class ClientMain {
                 networkChoice = 0;
                 port = 0;
             } catch (RuntimeException e) {
-                // concetto di FAULT BARRIER: Cattura i crash interni di RMI o bug di programmazione.
+                // Fault barrier for internal RMI failures or unexpected programming errors
                 System.out.println("\n " + ColorAnsi.BG_RED_WHITE_TEXT + " CRITICAL ERROR OR INCORRECT PROTOCOL " + ColorAnsi.RESET);
                 System.out.println(" An unexpected error has occurred (e.g. port with an incompatible protocol):");
                 System.out.println(" Technical details: " + e.getClass().getName() + " - " + e.getMessage());

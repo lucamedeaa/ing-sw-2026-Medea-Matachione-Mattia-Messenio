@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.model.Player;
 /** Building that prevents prestige loss during the Shamanic Ritual event. */
 public class RitualShield extends Building {
 
-    /** Constructs the RitualShield building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public RitualShield(int idcard) {
         super(idcard);
     }

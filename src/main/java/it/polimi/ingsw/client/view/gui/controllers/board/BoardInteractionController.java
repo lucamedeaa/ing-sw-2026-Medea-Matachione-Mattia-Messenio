@@ -73,7 +73,6 @@ public class BoardInteractionController {
                     showOfferTileOptions(validIndices);
                 });
             }
-        // when iAmOnOffer: no highlight needed
     }
 
     public void disableAllInteractions() {

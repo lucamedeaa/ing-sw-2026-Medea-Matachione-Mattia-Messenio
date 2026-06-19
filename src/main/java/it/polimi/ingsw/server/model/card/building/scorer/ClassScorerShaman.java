@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants end-game points based on the number of SHAMAN characters owned. */
 public class ClassScorerShaman extends ClassScorer {
 
-    /** Constructs the ClassScorerShaman building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to SHAMAN logic) */
+    /** Constructs the ClassScorerShaman building. @param idcard the card identifier */
     public ClassScorerShaman(int idcard){
         super(idcard);
     }

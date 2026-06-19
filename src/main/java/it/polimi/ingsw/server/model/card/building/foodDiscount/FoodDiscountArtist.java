@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants a food discount during Sustenance based on the number of ARTIST characters owned. */
 public class FoodDiscountArtist extends FoodDiscount {
 
-    /** Constructs the FoodDiscountArtist building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to ARTIST logic) */
+    /** Constructs the FoodDiscountArtist building. @param idcard the card identifier */
     public FoodDiscountArtist(int idcard){
         super(idcard);
     }

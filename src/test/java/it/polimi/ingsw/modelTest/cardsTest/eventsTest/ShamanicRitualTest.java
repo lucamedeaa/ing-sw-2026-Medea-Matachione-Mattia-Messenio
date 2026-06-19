@@ -43,10 +43,10 @@ public class ShamanicRitualTest extends ModelTest {
 
     /**
      * SUMMARY:
-     * Verifies that when all players tie on stars, everyone receives the gain (no losers).
+     * Verifies that when all players tie on stars, everyone receives both the gain and the loss.
      *
      * EXPECTATION:
-     * Both tied players gain 5 prestige points each.
+     * Both tied players end with 5 prestige points each.
      */
     @Test
     @DisplayName("Absolute tie: everyone gains and loses")
@@ -115,10 +115,10 @@ public class ShamanicRitualTest extends ModelTest {
 
     /**
      * SUMMARY:
-     * Verifies that RitualShield selectively blocks decrements while leaving increments unaffected.
+     * Verifies that RitualShield cancels only the prestige loss.
      *
      * EXPECTATION:
-     * Player gains 5 prestige (from the neutralized -5 decrement converted to positive).
+     * The shield restores 5 prestige points by compensating the -5 decrement.
      */
     @Test
     @DisplayName("RitualShield: Selectively blocks decrements while preserving increments")

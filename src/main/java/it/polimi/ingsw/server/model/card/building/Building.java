@@ -12,7 +12,9 @@ public abstract class Building extends Card {
     protected int foodCost;
     protected int prestigePoints;
 
-    /** Constructs a Building card. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
+    /** Builds a Building card from registry data.
+     * @param idcard the card identifier
+     */
     public Building(int idcard) {
         super(idcard, CardRegistry.getCard(idcard).era());
         CardInfo info = CardRegistry.getCard(idcard);

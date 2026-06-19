@@ -10,7 +10,6 @@ public class Builder extends Character {
     private final int foodDiscount;
     private final int endGamePrestigePoints;
 
-    /** Constructs a Builder card. @param idcard the card identifier @param era the card era @param foodDiscount food discount provided @param endGamePrestigePoints prestige points awarded at game end */
     public Builder(int idcard) {
         super(idcard);
         CardInfo info = CardRegistry.getCard(idcard);

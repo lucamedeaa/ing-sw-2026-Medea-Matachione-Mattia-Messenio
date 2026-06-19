@@ -3,7 +3,6 @@ package it.polimi.ingsw.server.model.card.building;
 /** Building that grants additional food when returning the totem based on turn order bonuses. */
 public class TurnBonus extends Building {
 
-    /** Constructs the TurnBonus building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public TurnBonus(int idcard) {
         super(idcard);
     }

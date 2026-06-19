@@ -1,9 +1,6 @@
 package it.polimi.ingsw.client.view.gui.controllers.board;
 
-import it.polimi.ingsw.client.view.gui.GuiAssetManager;
 import javafx.geometry.Insets;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -61,7 +58,6 @@ public class BoardRenderer {
 
         if (nextDeckEra == null) return;
 
-        // Delegate node creation to the factory
         StackPane deckPane = factory.createDeckBackContainer(nextDeckEra);
         if (deckPane != null) {
             boardGrid.add(deckPane, 0, 0);
@@ -87,9 +83,9 @@ public class BoardRenderer {
         }
     }
 
-    private void addBuildingDecks(int era, int playercount) {
+    private void addBuildingDecks(int era, int playerCount) {
         StackPane pane = factory.createBuildingDeckBackContainer(era);
-        int col = BoardLayoutProvider.getBuildingDeckColumn(playercount, era);
+        int col = BoardLayoutProvider.getBuildingDeckColumn(playerCount, era);
         if (pane != null) {
             boardGrid.add(pane, col, 1);
         }

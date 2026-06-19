@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants end-game points based on the number of HUNTER characters owned. */
 public class ClassScorerHunter extends ClassScorer {
 
-    /** Constructs the ClassScorerHunter building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to HUNTER logic) */
+    /** Constructs the ClassScorerHunter building. @param idcard the card identifier */
     public ClassScorerHunter(int idcard){
         super(idcard);
     }

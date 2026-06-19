@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants a food discount during Sustenance based on the number of INVENTOR characters owned. */
 public class FoodDiscountInventor extends FoodDiscount {
 
-    /** Constructs the FoodDiscountInventor building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to INVENTOR logic) */
+    /** Constructs the FoodDiscountInventor building. @param idcard the card identifier */
     public FoodDiscountInventor(int idcard){
         super(idcard);
     }

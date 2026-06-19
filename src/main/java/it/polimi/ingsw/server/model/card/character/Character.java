@@ -8,7 +8,9 @@ import it.polimi.ingsw.server.model.card.Card;
 public abstract class Character extends Card {
     protected int foodCost;
 
-    /** Constructs a Character card. @param idcard the card identifier @param era the card era */
+    /** Constructs a Character card.
+     * @param idcard the card identifier
+     */
     public Character(int idcard) {
         super(idcard, CardRegistry.getCard(idcard).era());
     }

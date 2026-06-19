@@ -13,7 +13,6 @@ public class DiverseSet extends Building {
     private int setsAlreadyRewarded = 0;
     private boolean initialized = false;
 
-    /** Constructs the DiverseSet building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era */
     public DiverseSet(int idcard) {
         super(idcard);
         this.targetSet = EnumSet.allOf(CharacterType.class);

@@ -21,11 +21,11 @@ public class SustenanceTest extends ModelTest {
      * Verifies that when a player has insufficient food, food is reset to zero and prestige is lost proportionally.
      *
      * EXPECTATION:
-     * Food becomes 0 and player loses 1 PP for 1 unfed character.
+     * Food becomes 0 and the player loses 1 PP for 1 unfed character card.
      */
     @Test
     @DisplayName("With insufficient food: food is reset and proportional PP are lost")
-    void insufficientFoodAzzerasCiboAndLosesPrestige() {
+    void insufficientFoodResetsFoodAndLosesPrestige() {
         Player p = new Player("Frank", TotemColor.ORANGE);
         p.addCard(new Artist(19));
         p.addCard(new Artist(20));
@@ -41,10 +41,10 @@ public class SustenanceTest extends ModelTest {
 
     /**
      * SUMMARY:
-     * Verifies that when a player has exactly enough food for all characters, no prestige is lost.
+     * Verifies that when a player has exactly enough food for all character cards, no prestige is lost.
      *
      * EXPECTATION:
-     * Prestige remains 0 and food is consumed (reset to 0).
+     * Prestige remains 0 and food is fully consumed.
      */
     @Test
     @DisplayName("With sufficient food no PP are lost")
@@ -84,10 +84,10 @@ public class SustenanceTest extends ModelTest {
 
     /**
      * SUMMARY:
-     * Verifies that having zero food with 3 characters results in the maximum prestige loss.
+     * Verifies that having zero food with 3 character cards results in the maximum prestige loss.
      *
      * EXPECTATION:
-     * Player loses 3 PP (1 per unfed character × 3 characters).
+     * The player loses 3 PP, one for each unfed character card.
      */
     @Test
     @DisplayName("Zero food and 3 characters: loses 3 * numPP")

@@ -6,7 +6,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants end-game points based on the number of COLLECTOR characters owned. */
 public class ClassScorerCollector extends ClassScorer {
 
-    /** Constructs the ClassScorerCollector building. @param idcard the card identifier @param foodCost food cost to acquire @param prestigePoints base prestige points @param era the card era @param characters character type (unused, fixed to COLLECTOR logic) */
+    /** Constructs the ClassScorerCollector building. @param idcard the card identifier */
     public ClassScorerCollector(int idcard){
         super(idcard);
     }

@@ -5,7 +5,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Represents an Artist character card. Provides no food cost and contributes as an ARTIST type. */
 public class Artist extends Character {
 
-    /** Constructs an Artist card. @param idcard the card identifier @param era the card era */
+    /** Constructs an Artist card. @param idcard the card identifier */
     public Artist(int idcard) {
         super(idcard);
         this.foodCost = 0;

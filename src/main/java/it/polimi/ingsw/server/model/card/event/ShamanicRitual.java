@@ -52,7 +52,7 @@ public class ShamanicRitual extends Event {
         int[] stars = new int[players.size()];
         int max = 0, min;
 
-        // Calcolo delle stelle
+        // Compute ritual scores
         for (int i = 0; i < players.size(); i++) {
             stars[i] = players.get(i).getStarsNumber();
             for (Card card : players.get(i).getTribe()) {
@@ -60,14 +60,14 @@ public class ShamanicRitual extends Event {
             }
         }
 
-        // Ricerca max e min
+        // Find highest and lowest scores
         min = stars[0];
         for (int x : stars) {
             max = Math.max(max, x);
             min = Math.min(min, x);
         }
 
-        // Applicazione effetti
+        // Apply bonuses and penalties
         for (int i = 0; i < players.size(); i++) {
             Player player = players.get(i);
             String reason = "Shamanic ritual: " + stars[i] + " stars. No bonuses or penalties.";
@@ -85,7 +85,7 @@ public class ShamanicRitual extends Event {
                     card.onShamanicRitualEvent(player, 0, decrPrestigePoints);
                 }
                 if (max == min) {
-                    reason += " e (MIN) " + decrPrestigePoints + " PP"; // Caso estremo di pareggio totale
+                    reason += " and (MIN) " + decrPrestigePoints + " PP"; // Complete tie case
                 } else {
                     reason = "Shamanic ritual: " + stars[i] + " stars (MIN). " + decrPrestigePoints + " PP";
                 }

@@ -9,7 +9,7 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class Hunter extends Character {
     private final boolean hasIcon;
 
-    /** Constructs a Hunter card. @param idcard the card identifier @param era the card era @param hasIcon whether the card has the special icon */
+    /** Constructs a Hunter card. @param idcard the card identifier @param era the card era */
     public Hunter(int idcard) {
         super(idcard);
         this.foodCost = 0;

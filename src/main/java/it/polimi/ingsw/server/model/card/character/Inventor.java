@@ -10,11 +10,11 @@ import java.util.Set;
 public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
-    /** Constructs an Inventor card. @param idcard the card identifier @param era the card era @param inventorIcon the associated inventor icon */
+    /** Constructs an Inventor card. @param idcard the card identifier */
     public Inventor(int idcard) {
         super(idcard);
         this.foodCost = 0;
-        this.inventorIcon = InventorIcon.valueOf(CardRegistry.getCard(idcard).inventorIcon()); // Enumerativo diretto
+        this.inventorIcon = InventorIcon.valueOf(CardRegistry.getCard(idcard).inventorIcon());
     }
 
     /** Returns the character type. @return CharacterType.INVENTOR */
