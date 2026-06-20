@@ -131,19 +131,13 @@ public class ActionState extends GameState {
     public void endPlayerTurn() {
         Board board = game.getBoard();
         currentTile.clearOccupyingPlayer();
-
-        // salvo le risorse PRIMA di muovere il totem
         int foodBefore = this.currentPlayer.getFood();
         int ppBefore = this.currentPlayer.getPrestigePoints();
-
-        //  Muovo il totem (questo applica il +/- cibo in background)
         board.returnTotem(this.currentPlayer);
-
-        // invio l'evento grafico di movimento del totem
         int returnIdx = board.getNextTotemOrderSize() - 1;
         game.pushEvent(new TotemReturnedEvent(this.currentPlayer.getNickname(), returnIdx));
 
-        //  se le risorse sono cambiatemando SUBITO la notifica al client
+        // If resources changed, immediately notify the client
         int foodDiff = this.currentPlayer.getFood() - foodBefore;
         int prestigeDiff = this.currentPlayer.getPrestigePoints() - ppBefore;
 
@@ -191,7 +185,7 @@ public class ActionState extends GameState {
 
         return game.getBoard().getRow(rowIdx).stream()
                 .flatMap(Optional::stream)
-                .filter(Card::isPersistent) // Solo Edifici
+                .filter(Card::isPersistent) // Just buildings
                 .anyMatch(card -> {
                     int cost = Math.max(card.getFoodCost() - currentPlayer.getFoodDiscount(), 0);
                     return currentPlayer.getFood() >= cost;

@@ -21,7 +21,6 @@ public class HunterTest extends ModelTest {
     @DisplayName("First hunter WITH icon gives exactly 1 food")
     void firstHunterWithIconGivesOneFood() {
         Player p = newPlayer("Alice");
-        // Updated Constructor: idcard, era, hasIcon
         p.addCard(new Hunter(10));
 
         assertEquals(1, p.getFood(),

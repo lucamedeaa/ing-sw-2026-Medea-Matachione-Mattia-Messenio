@@ -64,15 +64,15 @@ public class EraThreeStateTest extends ModelTest {
     void transitionSetupClearsLowerAndAddsEraThreeBuildings() throws Exception {
         Board board = new Board(2, newPlayers(2));
 
-        // Forza l'aggiornamento dello stato interno della Board all'Era 3
+        // Force the Board internal state to Era 3
         java.lang.reflect.Field field = Board.class.getDeclaredField("currentEraState");
         field.setAccessible(true);
         field.set(board, new EraThreeState());
 
-        // Esegue il setup dell'Era 3
+        // Run the Era 3 setup
         new EraThreeState().transitionSetup(board);
 
-        // Verifica che la riga superiore contenga edifici dell'Era 3
+        // Verify that the upper row contains Era 3 buildings
         boolean hasEra3Buildings = board.getRow(0).stream()
                 .flatMap(Optional::stream)
                 .filter(Card::isPersistent)

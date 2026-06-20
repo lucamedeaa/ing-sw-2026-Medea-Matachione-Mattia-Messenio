@@ -16,7 +16,6 @@ public class ArtistFoodTest {
 
     @BeforeEach
     void setUp() {
-        // Updated Constructor: idcard, foodCost, prestigePoints, era
         artistFood = new ArtistFood(102);
         player = newPlayer("Alice");
     }

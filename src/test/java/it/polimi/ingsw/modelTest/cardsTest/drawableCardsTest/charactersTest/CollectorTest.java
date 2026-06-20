@@ -25,7 +25,6 @@ public class CollectorTest extends ModelTest {
     @DisplayName("Adding a Collector does not give direct food")
     void collectorGivesNoFoodWhenAdded() {
         Player p = newPlayer("Eve");
-        // Updated Constructor: idcard, era, discount
         p.addCard(new Collector(35));
 
         assertEquals(0, p.getFood());
@@ -46,7 +45,6 @@ public class CollectorTest extends ModelTest {
         p.addCard(new Artist(19));
         p.addCard(new Artist(20));
 
-        // Sustenance Constructor: idcard, era, numPrestRem
         Sustenance s = new Sustenance(61);
         s.execute(List.of(p));
 

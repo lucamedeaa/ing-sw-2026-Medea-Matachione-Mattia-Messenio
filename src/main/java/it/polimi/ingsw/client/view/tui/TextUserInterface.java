@@ -61,23 +61,16 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
     /** {@inheritDoc} */
     @Override
     public void start() {
-        // Avvio lo stato iniziale tramite l'executor
         uiExecutor.submit(router::toMatchmaking);
-
-        // Il Main Thread aspetta l'input
         while (running.get()) {
             if (scanner.hasNextLine()) {
                 String input = scanner.nextLine();
-
-                //L'elaborazione dell'input viene accodata all'UI Executor
                 uiExecutor.submit(() -> {
                     if (currentState != null && running.get()) {
                         currentState.handleInput(input);
                     }
                 });
             }else {
-                // Se hasNextLine() restituisce false, significa che
-                // l'input stream è stato chiuso (EOF, es. Ctrl+D o pipe terminata).
                 break;
             }
         }
@@ -104,8 +97,7 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
     /** {@inheritDoc} */
     @Override
     public void updateState(UIState newState) {
-        //Anche i cambi di stato passano dalla coda, garantendo che
-        //onExit(), onEnter() e render() non si sovrappongano a handleInput()
+        // State changes are queued so lifecycle callbacks and input handling do not overlap.
         uiExecutor.submit(() -> {
             if (!running.get()) return;
 

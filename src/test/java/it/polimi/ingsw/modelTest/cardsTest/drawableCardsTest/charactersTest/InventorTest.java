@@ -21,12 +21,10 @@ public class InventorTest extends ModelTest {
     @DisplayName("Inventor score: n_inventors * distinct_icons")
     void inventorScoreMultipliesByDistinctIcons() {
         Player p = newPlayer("Bob");
-        // Updated Constructor: idcard, era, inventorIcon
         p.addCard(new Inventor(39));
         p.addCard(new Inventor(40));
         p.addCard(new Inventor(44));
 
-        // 3 inventors * 3 distinct icons = 9 points
         assertEquals(9, p.calculateTotalScore());
     }
 
@@ -44,7 +42,6 @@ public class InventorTest extends ModelTest {
         p.addCard(new Inventor(39));
         p.addCard(new Inventor(72));
 
-        // 2 inventors * 1 distinct icon = 2 points
         assertEquals(2, p.calculateTotalScore());
     }
 }

@@ -168,7 +168,7 @@ public class Board {
         Collections.shuffle(this.currentTotemOrder);
         this.nextTotemOrder = new ArrayList<>();
 
-        int[] initialFood = {2, 3, 3, 4, 4}; //food bonus in base all'ordine dei totem nel primo round
+        int[] initialFood = {2, 3, 3, 4, 4};
 
         for (int i = 0; i < currentTotemOrder.size(); i++) {
             currentTotemOrder.get(i).addFood(initialFood[i]);

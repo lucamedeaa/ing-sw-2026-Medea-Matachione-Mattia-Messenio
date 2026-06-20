@@ -26,7 +26,6 @@ public class CavePaintingsTest extends ModelTest {
     @DisplayName("0 artists < upper(1) -> loses 2 PP")
     void zeroArtistsBelowThreshold() {
         Player p = new Player("Henry", TotemColor.ORANGE);
-        // CavePaintings Constructor: idcard, era, upperNumArtists, decrPrestigePoints, incrPrestigePoints
         CavePaintings cp = new CavePaintings(53);
 
         cp.execute(List.of(p));
@@ -45,7 +44,6 @@ public class CavePaintingsTest extends ModelTest {
     @DisplayName("1 artist >= upper(1) -> gains 1*1=1 PP")
     void oneArtistAtThresholdGains() {
         Player p = new Player("Henry", TotemColor.ORANGE);
-        // Artist Constructor: idcard, era
         p.addCard(new Artist(19));
 
         CavePaintings cp = new CavePaintings(53);
@@ -67,8 +65,6 @@ public class CavePaintingsTest extends ModelTest {
         Player p = new Player("Henry", TotemColor.ORANGE);
         p.addCard(new Artist(19));
         p.addCard(new Artist(20));
-
-        // ArtistFood Constructor: idcard, foodCost, prestigePoints, era
         p.addCard(new ArtistFood(102));
 
         CavePaintings cp = new CavePaintings(53);

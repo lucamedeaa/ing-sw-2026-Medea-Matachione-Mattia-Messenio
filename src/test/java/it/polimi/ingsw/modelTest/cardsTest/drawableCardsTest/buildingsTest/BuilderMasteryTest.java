@@ -16,7 +16,6 @@ public class BuilderMasteryTest {
 
     @BeforeEach
     void setUp() {
-        // Updated Constructor: idcard, foodCost, prestigePoints, era
         builderMastery = new BuilderMastery(103);
         player = newPlayer("Alice");
     }
@@ -48,11 +47,9 @@ public class BuilderMasteryTest {
      */
     @Test
     void testSingleBuilder() {
-        // Builder Constructor: idcard, era, foodDiscount, endGamePrestigePoints
         player.addCard(new Builder(1));
         player.addCard(builderMastery);
 
-        // Builder PP (2) + BuilderMastery PP (4) = 6
         assertEquals(6, builderMastery.getFinalPoints(player),
                 "1 builder (2 PP) + prestige (4) = 6");
     }

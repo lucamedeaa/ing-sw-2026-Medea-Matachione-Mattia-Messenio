@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest extends ModelTest {
 
-    // Helpers — build boards with different player counts
 
     private Board board(int n) {
         List<Player> players = newPlayers(n);
@@ -26,7 +25,6 @@ public class BoardTest extends ModelTest {
         return newPlayers(n);
     }
 
-    // Construction
     @Nested
     @DisplayName("Board construction")
     class Construction {
@@ -128,7 +126,6 @@ public class BoardTest extends ModelTest {
     }
 
 
-    // Turn order
     @Nested
     @DisplayName("Turn order (totem management)")
     class TurnOrder {
@@ -276,7 +273,7 @@ public class BoardTest extends ModelTest {
         }
     }
 
-    // Offer track / totem placement
+
     @Nested
     @DisplayName("Offer track & placeTotem")
     class OfferTrackTests {
@@ -474,7 +471,6 @@ public class BoardTest extends ModelTest {
         }
     }
 
-    // resolveFinalEvents (smoke test — must not throw)
     @Nested
     @DisplayName("resolveFinalEvents")
     class FinalEvents {

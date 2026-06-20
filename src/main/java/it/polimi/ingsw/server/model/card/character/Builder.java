@@ -13,8 +13,8 @@ public class Builder extends Character {
     public Builder(int idcard) {
         super(idcard);
         CardInfo info = CardRegistry.getCard(idcard);
-        this.foodDiscount = info.foodDiscount(); // NON info.foodCost()
-        this.endGamePrestigePoints = info.bonusPrestige(); // NON info.prestigePoints()
+        this.foodDiscount = info.foodDiscount();
+        this.endGamePrestigePoints = info.bonusPrestige();
     }
 
     /** Returns the food discount provided by this card. @return food discount value */

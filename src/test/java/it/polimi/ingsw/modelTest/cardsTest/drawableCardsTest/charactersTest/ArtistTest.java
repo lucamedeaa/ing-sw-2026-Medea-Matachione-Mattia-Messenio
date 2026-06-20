@@ -21,7 +21,6 @@ public class ArtistTest extends ModelTest {
     @DisplayName("Artist pair: 3 artists give 10 PP (integer division)")
     void artistPairScoreIsIntegerDivision() {
         Player p = newPlayer("Carol");
-        // Updated Constructor: idcard, era
         p.addCard(new Artist(19));
         p.addCard(new Artist(20));
         p.addCard(new Artist(21));

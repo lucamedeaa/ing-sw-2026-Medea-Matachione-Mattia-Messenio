@@ -21,7 +21,6 @@ public class ShamanTest extends ModelTest {
     @DisplayName("Shaman adds correct number of stars")
     void shamanAddsStars() {
         Player p = newPlayer("Bob");
-        // Updated Constructor: idcard, era, starsCount
         p.addCard(new Shaman(28));
         p.addCard(new Shaman(29));
 

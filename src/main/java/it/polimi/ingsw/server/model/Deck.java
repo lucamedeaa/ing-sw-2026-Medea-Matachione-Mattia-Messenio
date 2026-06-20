@@ -20,7 +20,6 @@ public class Deck {
      */
     public Deck(List<Card> cards) {
         this.cards = new ArrayList<>(cards);
-        //Collections.shuffle(this.cards);
     }
 
     /**

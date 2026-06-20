@@ -54,10 +54,6 @@ public class ActionCommand implements GameCommand {
             ActionExecutor executor = new ActionExecutor(controller, gameModel, out, args);
             selectedAction.accept(executor);
 
-            //if(executor.isCommandSent()){
-              //  gameModel.setAvailableActions(List.of());
-            //}
-
         } catch (NumberFormatException e) {
             gameModel.setGlobalError("'" + args[0] + "' this is not a valid number.");
         }

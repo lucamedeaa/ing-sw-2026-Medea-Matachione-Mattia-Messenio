@@ -91,7 +91,6 @@ public class CardBoxRenderer {
                         detailText = "-" + info.val1() + "f/char";
                     }
                 }
-                // Per Artist, Building standard, ecc., detailText rimane ""
             }
         }
 

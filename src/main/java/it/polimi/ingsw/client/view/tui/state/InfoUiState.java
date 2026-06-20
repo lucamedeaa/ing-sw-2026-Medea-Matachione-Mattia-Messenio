@@ -64,7 +64,7 @@ public class InfoUiState implements UIState, InGameView {
     /** {@inheritDoc} */
     @Override
     public void onError(String error) {
-        // Gli errori non bloccanti non rompono la visualizzazione delle regole
+        // Non-blocking errors do not disrupt the rules view
     }
 
     /** {@inheritDoc} */

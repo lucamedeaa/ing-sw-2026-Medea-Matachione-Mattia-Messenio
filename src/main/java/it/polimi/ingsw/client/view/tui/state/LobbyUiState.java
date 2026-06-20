@@ -61,7 +61,6 @@ public class LobbyUiState implements UIState, LobbyView {
         this.gameModel = gameModel;
 
         registerCommands();
-        //this.notificationController.setLobbyView(this);
     }
 
 
@@ -69,18 +68,11 @@ public class LobbyUiState implements UIState, LobbyView {
     @Override
     public void onEnter() {
         this.notificationController.setLobbyView(this);
-        // serve per recuperare eventuali eventi persi durante la transizione.
-        // Se il modello ha già dei dati, la view deve considerarsi inizializzata.
-
-
-        // Se il FullSync è arrivato prima
-        // che questa view fosse registrata, il GameModel avrà già i giocatori.
-
-            // Se i player del gioco non sono vuoti, significa che il FullSync è arrivato prima
-            if (!gameModel.getPlayers().isEmpty()) {
-                onGameStarted();
-            }
-
+        // If FullSync arrived before this view was registered, the GameModel is already populated
+        // and the lobby must immediately transition to the in-game screen.
+        if (!gameModel.getPlayers().isEmpty()) {
+            onGameStarted();
+        }
     }
 
     /** {@inheritDoc} */
@@ -136,24 +128,19 @@ public class LobbyUiState implements UIState, LobbyView {
     /** {@inheritDoc} */
     @Override
     public void onGameStarted() {
-        //  Mi de-registro
         notificationController.setLobbyView(null);
-
-        // va in gioco
         navigator.toInGame();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
-        //notificationController.setLobbyView(null);
         navigator.toMatchmaking();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
-        //notificationController.setLobbyView(null);
         navigator.toDisconnected(reason);
     }
 }

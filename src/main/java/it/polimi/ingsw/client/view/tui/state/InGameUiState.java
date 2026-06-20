@@ -52,7 +52,6 @@ public class InGameUiState implements UIState, InGameView {
         this.lifecyclePort = lifecyclePort;
 
         registerCommands();
-        //this.notificationController.setInGameView(this);
     }
 
     /** {@inheritDoc} */
@@ -98,7 +97,6 @@ public class InGameUiState implements UIState, InGameView {
     @Override
     public void handleInput(String input) {
         if (gameModel.isGameOver()) {
-            //notificationController.setInGameView(null);
             navigator.toGameEnded();
             return;
         }
@@ -130,14 +128,12 @@ public class InGameUiState implements UIState, InGameView {
     /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
-        //notificationController.setInGameView(null);
         navigator.toMatchmaking();
     }
 
     /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
-        //notificationController.setInGameView(null);
         navigator.toDisconnected(reason);
     }
 

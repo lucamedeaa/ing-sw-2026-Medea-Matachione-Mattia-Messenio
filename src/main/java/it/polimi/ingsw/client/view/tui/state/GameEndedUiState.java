@@ -52,10 +52,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
         this.notificationController = notificationController;
         this.renderer = new GameEndedRenderer(out);
         this.lifecyclePort = lifecyclePort;
-
-       // this.notificationController.setGameEndedView(this);
         registerCommands();
-        //new GetLeaderboardCommand(controller).execute();
     }
 
     /** {@inheritDoc} */
@@ -96,7 +93,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
     private void showLeaderboard() {
         showLeaderboard = true;
-        // Invia la richiesta, il server risponderà e il model farà scattare il render asincrono
+        // The server response updates the model and triggers a later render with fresh data.
         new GetLeaderboardCommand(controller).execute();
         render();
     }
@@ -104,7 +101,6 @@ public class GameEndedUiState implements UIState, GameEndedView {
     /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
-       //notificationController.setGameEndedView(null);
         navigator.toMatchmaking();
     }
 
@@ -131,7 +127,6 @@ public class GameEndedUiState implements UIState, GameEndedView {
     /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
-        //notificationController.setGameEndedView(null);
         navigator.toDisconnected(reason);
     }
 }

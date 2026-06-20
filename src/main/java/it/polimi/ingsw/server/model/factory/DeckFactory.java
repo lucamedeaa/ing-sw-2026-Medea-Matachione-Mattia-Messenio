@@ -28,7 +28,6 @@ public class DeckFactory {
     public static Deck buildTribeDeck(int playerCount) {
         List<Card> cards = new ArrayList<>();
 
-        // --- CARTE BASE (SEMPRE PRESENTI) ---
         // Builders
         cards.add(new Builder(1));
         cards.add(new Builder(2));
@@ -93,7 +92,7 @@ public class DeckFactory {
         cards.add(new Inventor(51));
         cards.add(new Inventor(52));
 
-        // Eventi
+        // Events
         cards.add(new CavePaintings(53));
         cards.add(new CavePaintings(54));
         cards.add(new CavePaintings(55));
@@ -107,7 +106,6 @@ public class DeckFactory {
         cards.add(new Sustenance(62));
         cards.add(new Sustenance(63));
 
-        // --- CARTE AGGIUNTIVE (3+ GIOCATORI) ---
         if (playerCount >= 3) {
             cards.add(new Artist(64));
             cards.add(new Artist(65));
@@ -122,7 +120,6 @@ public class DeckFactory {
             cards.add(new Shaman(74));
         }
 
-        // --- CARTE AGGIUNTIVE (4+ GIOCATORI) ---
         if (playerCount >= 4) {
             cards.add(new Shaman(75));
             cards.add(new Shaman(76));
@@ -136,7 +133,6 @@ public class DeckFactory {
             cards.add(new Hunter(84));
         }
 
-        // --- CARTE AGGIUNTIVE (5 GIOCATORI) ---
         if (playerCount >= 5) {
             cards.add(new Shaman(85));
             cards.add(new Shaman(86));
@@ -151,7 +147,6 @@ public class DeckFactory {
             cards.add(new Artist(95));
         }
 
-        // --- SUDDIVISIONE E MESCOLAMENTO PER ERA ---
         List<Card> era1 = new ArrayList<>();
         List<Card> era2 = new ArrayList<>();
         List<Card> era3 = new ArrayList<>();

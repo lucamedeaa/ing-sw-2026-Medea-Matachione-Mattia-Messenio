@@ -15,7 +15,6 @@ public class RitualStarsTest {
 
     @BeforeEach
     void setUp() {
-        // Updated Constructor: idcard, foodCost, prestigePoints, era
         ritualStars = new RitualStars(104);
         player = newPlayer("Alice");
     }

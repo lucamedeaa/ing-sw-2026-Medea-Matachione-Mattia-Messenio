@@ -123,7 +123,6 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         CommandFactory factory = commandRegistry.get(commandKey);
         if (factory == null) {
             lobbyModel.setGlobalError("Unknown command. Use: create, join, list, 0.");
-            //render();
             return;
         }
 
@@ -132,7 +131,6 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             command.execute();
         } catch (IllegalArgumentException e) {
             lobbyModel.setGlobalError(e.getMessage());
-            //render();
         }
     }
 
@@ -151,10 +149,6 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
     /** {@inheritDoc} */
     @Override
     public void onMatchmakingSuccess(String text) {
-        //  MI DE-REGISTRO prima di morire
-        //notificationController.setMatchmakingView(null);
-
-        //  va in Lobby
         session.setNickname(this.pendingNickname);
         navigator.toLobby();
     }
@@ -162,7 +156,6 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
     /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
-        //notificationController.setMatchmakingView(null);
         navigator.toDisconnected(reason);
     }
 
