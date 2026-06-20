@@ -5,13 +5,27 @@ import it.polimi.ingsw.common.network.dto.GameInfoDto;
 
 import java.util.List;
 
+/**
+ * Renderer for the matchmaking screen and available-game list.
+ */
 public class MatchmakingRenderer {
     private final OutputPort out;
 
+    /**
+     * Creates a matchmaking renderer.
+     *
+     * @param out output port used for printing
+     */
     public MatchmakingRenderer(OutputPort out) {
         this.out = out;
     }
 
+    /**
+     * Renders matchmaking commands, optional available games, and the latest message.
+     *
+     * @param availableGames games to show, or null when the list is hidden
+     * @param lastError latest informational or error message
+     */
     public void render(List<GameInfoDto> availableGames, String lastError) {
         out.clearScreen();
         ColorAnsi.printLogo(out::print);

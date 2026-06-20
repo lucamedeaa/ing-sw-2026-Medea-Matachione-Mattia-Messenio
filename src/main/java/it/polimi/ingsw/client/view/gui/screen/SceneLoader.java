@@ -18,16 +18,31 @@ import javafx.stage.Window;
 import java.io.IOException;
 import java.util.function.Function;
 
+/**
+ * Loads JavaFX scenes and modal windows from FXML definitions.
+ */
 public class SceneLoader {
 
     private final Stage stage;
     private final Function<Class<?>, Object> controllerFactory;
 
+    /**
+     * Creates a scene loader for the primary stage.
+     *
+     * @param stage primary JavaFX stage
+     * @param controllerFactory factory used by FXML loaders to create controllers
+     */
     public SceneLoader(Stage stage, Function<Class<?>, Object> controllerFactory) {
         this.stage = stage;
         this.controllerFactory = controllerFactory;
     }
 
+    /**
+     * Loads a scene into the primary stage.
+     *
+     * @param def scene definition to load
+     * @return controller created by the FXML loader
+     */
     public Object load(SceneDefinition def) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(def.fxmlPath()));
@@ -70,6 +85,13 @@ public class SceneLoader {
             throw new RuntimeException("Unable to load scene: " + def.fxmlPath(), e);
         }
     }
+
+    /**
+     * Loads a scene as a modal window owned by the supplied window.
+     *
+     * @param def scene definition to load
+     * @param owner owner window for modality
+     */
     public void loadModal(SceneDefinition def, Window owner) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(def.fxmlPath()));

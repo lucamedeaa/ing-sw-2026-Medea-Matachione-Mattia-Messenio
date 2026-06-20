@@ -7,14 +7,30 @@ import it.polimi.ingsw.common.network.dto.PlayerScoreDto;
 
 import java.util.List;
 
+/**
+ * Renderer for the game completion screen, including match results and leaderboard data.
+ */
 public class GameEndedRenderer {
     private final OutputPort out;
 
+    /**
+     * Creates a game-ended renderer.
+     *
+     * @param out output port used for printing
+     */
     public GameEndedRenderer(OutputPort out) {
         this.out = out;
     }
 
-    // IL METODO ORA ACCETTA 5 PARAMETRI
+    /**
+     * Renders the local result, match ranking, and optionally the global leaderboard.
+     *
+     * @param local completion data for the local player
+     * @param sessionScores final scores for the completed match
+     * @param leaderboard leaderboard snapshot, or null while it is loading
+     * @param myNickname nickname of the local player
+     * @param showLeaderboard true when the full leaderboard section must be shown
+     */
     public void render(
             PlayerGameCompletedDto local,
             List<PlayerScoreDto> sessionScores,

@@ -11,6 +11,9 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 
+/**
+ * JavaFX implementation of the client UI entry point.
+ */
 public class GuiFxApp extends Application implements ClientUi, GuiLifecyclePort{
     private static ServerController staticController;
     private static GameModel gameModel;
@@ -18,16 +21,26 @@ public class GuiFxApp extends Application implements ClientUi, GuiLifecyclePort{
     private static LobbyModel lobbyModel;
     private static ClientNotificationController notificationController;
 
+    /**
+     * Required no-argument constructor used by the JavaFX launcher.
+     */
     public GuiFxApp() {
         // Required by JavaFX
     }
 
+    /**
+     * Creates a GUI application bound to the shared client models.
+     *
+     * @param lobbyModel client-side lobby model
+     * @param gameModel client-side game model
+     */
     public GuiFxApp(LobbyModel lobbyModel, GameModel gameModel) {
         GuiFxApp.gameModel = gameModel;
         session = new ClientSession();
         GuiFxApp.lobbyModel = lobbyModel;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start(Stage primaryStage) throws Exception {
         Font.loadFont(getClass().getResourceAsStream(GuiAssetPaths.FONT_MEDIEVAL), 14);
@@ -43,21 +56,25 @@ public class GuiFxApp extends Application implements ClientUi, GuiLifecyclePort{
         primaryStage.show();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setController(ServerController controller) {
         staticController = controller;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         Application.launch(GuiFxApp.class);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setNotificationController(ClientNotificationController notificationController) {
         GuiFxApp.notificationController = notificationController;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void requestShutdown() {
         Platform.exit();

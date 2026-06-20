@@ -9,11 +9,20 @@ import javafx.scene.layout.*;
 
 import java.util.List;
 
+/**
+ * FXML controller for the tribe card panel.
+ */
 public class TribePanelController {
 
     @FXML private Label tribeOwnerLabel;
     @FXML private HBox cardsContainer;
 
+    /**
+     * Renders the selected player's tribe cards.
+     *
+     * @param cardIds card identifiers in the tribe
+     * @param viewedPlayer nickname of the displayed player
+     */
     public void render(List<Integer> cardIds, String viewedPlayer) {
         // already on the JavaFX thread — no Platform.runLater needed
         cardsContainer.getChildren().clear();

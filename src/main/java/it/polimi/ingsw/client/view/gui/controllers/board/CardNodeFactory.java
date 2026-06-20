@@ -10,16 +10,34 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+/**
+ * Factory for JavaFX nodes used to render board cards, tiles, deck backs, and totems.
+ */
 public class CardNodeFactory {
     private final DoubleProperty cardWidthProp;
 
+    /**
+     * Creates a node factory bound to a shared card width property.
+     *
+     * @param cardWidthProp width property used to size generated nodes
+     */
     public CardNodeFactory(DoubleProperty cardWidthProp) {
         this.cardWidthProp = cardWidthProp;
     }
 
+    /**
+     * Returns the shared card width property.
+     *
+     * @return card width property
+     */
     public DoubleProperty getCardWidthProp() { return cardWidthProp; }
 
-    /** Pure visual card node — no click handler attached. */
+    /**
+     * Creates a visual card node without attaching click handlers.
+     *
+     * @param cardId card identifier
+     * @return card container, or null if the image is missing
+     */
     public StackPane createCardContainer(int cardId) {
         Image img = GuiAssetManager.getCardImage(cardId);
         if (img == null) return null;
@@ -33,9 +51,20 @@ public class CardNodeFactory {
         return pane;
     }
 
-    /** Tile node with a transparent overlay on top — returns both. */
+    /**
+     * Tile node with its transparent interaction overlay.
+     *
+     * @param container visible tile container
+     * @param overlay transparent overlay used for highlights and clicks
+     */
     public record TileNode(StackPane container, Pane overlay) {}
 
+    /**
+     * Creates a tile node and its overlay.
+     *
+     * @param tileCode tile resource code
+     * @return tile node pair, or null if the image is missing
+     */
     public TileNode createTileNode(String tileCode) {
         Image img = GuiAssetManager.getTileImage(tileCode);
 
@@ -58,7 +87,12 @@ public class CardNodeFactory {
         return new TileNode(container, overlay);
     }
 
-   /** Totem image node. */
+    /**
+     * Creates a totem image node.
+     *
+     * @param color totem color
+     * @return totem image view, or null if the image is missing
+     */
     public ImageView createTotemView(TotemColor color) {
         Image img = GuiAssetManager.getTotemImage(color);
         if (img == null) return null;
@@ -81,13 +115,24 @@ public class CardNodeFactory {
         pane.maxHeightProperty().bind(cardWidthProp.multiply(1.62));
         pane.prefHeightProperty().bind(cardWidthProp.multiply(1.62));
     }
-   /** Back-of-deck node for the main deck. */
+
+    /**
+     * Creates a back-of-deck node for the main deck.
+     *
+     * @param era deck era
+     * @return deck back container, or null if the image is missing
+     */
     public StackPane createDeckBackContainer(int era) {
         Image img = GuiAssetManager.getDeckBackImage(era);
         return buildDeckPane(img);
     }
 
-    /** Back-of-deck node for the building decks. */
+    /**
+     * Creates a back-of-deck node for a building deck.
+     *
+     * @param era building deck era
+     * @return deck back container, or null if the image is missing
+     */
     public StackPane createBuildingDeckBackContainer(int era) {
         Image img = GuiAssetManager.getBuildingDeckBackImage(era);
         return buildDeckPane(img);

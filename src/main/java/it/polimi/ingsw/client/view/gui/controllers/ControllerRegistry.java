@@ -9,10 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * Factory registry used by the FXML loader to create GUI controllers with their presenters.
+ */
 public class ControllerRegistry {
 
     private final Map<Class<?>, Supplier<Object>> factories;
 
+    /**
+     * Creates a registry for the supplied GUI context and navigator.
+     *
+     * @param ctx shared GUI context
+     * @param navigator scene navigator
+     */
     public ControllerRegistry(GuiContext ctx, GuiNavigator navigator) {
         Map<Class<?>, Supplier<Object>> m = new HashMap<>();
         m.put(MatchmakingScreen.class, () -> new MatchmakingScreen(new MatchmakingPresenter(ctx, navigator)));
@@ -28,6 +37,12 @@ public class ControllerRegistry {
         this.factories = Map.copyOf(m);
     }
 
+    /**
+     * Creates a controller instance for the requested class.
+     *
+     * @param c requested controller class
+     * @return new controller instance
+     */
     public Object createController(Class<?> c) {
         Supplier<Object> factory = factories.get(c);
         if (factory != null) return factory.get();

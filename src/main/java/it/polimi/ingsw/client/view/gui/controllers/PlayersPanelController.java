@@ -15,15 +15,33 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
+/**
+ * FXML controller for the player summary panel.
+ */
 public class PlayersPanelController {
     private ViewedPlayerHost parentScreen;
     @FXML private VBox playersList;
     @FXML private Label roundEraLabel;
 
+    /**
+     * Sets the host screen that tracks the currently viewed player.
+     *
+     * @param parent host screen
+     */
     public void setParentScreen(ViewedPlayerHost parent) {
         this.parentScreen = parent;
     }
 
+    /**
+     * Renders player rows and the current round/era label.
+     *
+     * @param players players to render
+     * @param selfNickname nickname of the local player
+     * @param activePlayer nickname of the active player
+     * @param viewedPlayer nickname currently shown in the tribe panel
+     * @param round current round
+     * @param era current era
+     */
     public void render(List<PlayerInfo> players, String selfNickname, String activePlayer, String viewedPlayer, int round, int era) {
         roundEraLabel.setText("Round " + round + " - Era " + era);
         playersList.getChildren().clear();

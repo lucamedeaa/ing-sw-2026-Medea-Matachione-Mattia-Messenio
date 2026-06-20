@@ -6,10 +6,19 @@ import it.polimi.ingsw.common.config.CardRegistry;
 
 import java.util.List;
 
+/**
+ * Utility renderer for compact ASCII card boxes used by TUI screens.
+ */
 public class CardBoxRenderer {
 
     private static final String RESET = "AnsiColor.RESET";
 
+    /**
+     * Returns the ANSI color associated with the card type.
+     *
+     * @param id card identifier, or null for an empty slot
+     * @return ANSI color code
+     */
     public static String ansiColor(Integer id) {
         if (id == null) return ColorAnsi.GRAY;
         CardInfo info = CardRegistry.getCard(id);
@@ -33,6 +42,12 @@ public class CardBoxRenderer {
         };
     }
 
+    /**
+     * Builds the seven-line textual box for a card.
+     *
+     * @param id card identifier, or null for an empty slot
+     * @return array containing the rendered box lines
+     */
     public static String[] cardBox(Integer id) {
         if (id == null) {
             return new String[]{
@@ -91,6 +106,13 @@ public class CardBoxRenderer {
         };
     }
 
+    /**
+     * Prints one or more wrapped rows of rendered card boxes.
+     *
+     * @param out output port used for printing
+     * @param cards cards to render
+     * @param showIndices true to print board indices above the cards
+     */
     public static void printCardRow(OutputPort out, List<Integer> cards, boolean showIndices) {
         if (cards == null || cards.isEmpty()) {
             out.print("  (no cards)");

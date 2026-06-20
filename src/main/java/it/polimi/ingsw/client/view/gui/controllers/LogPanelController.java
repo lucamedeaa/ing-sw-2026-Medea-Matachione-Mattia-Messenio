@@ -5,10 +5,18 @@ import javafx.scene.control.TextArea;
 
 import java.util.List;
 
+/**
+ * FXML controller for the in-game log panel.
+ */
 public class LogPanelController {
     @FXML
     private TextArea logArea;
 
+    /**
+     * Appends new log messages to the log area.
+     *
+     * @param newLogs log messages to append
+     */
     public void render(List<String> newLogs) {
         if (newLogs.isEmpty()) return;
         StringBuilder sb = new StringBuilder();
@@ -18,6 +26,11 @@ public class LogPanelController {
         logArea.appendText(sb.toString());
     }
 
+    /**
+     * Appends an error message to the log area.
+     *
+     * @param error error text
+     */
     public void appendError(String error) {
         logArea.appendText("ERRORE: " + stripAnsi(error) + "\n");
     }
@@ -28,5 +41,4 @@ public class LogPanelController {
         return text.replaceAll("\\u001B\\[[;\\d]*m", "");
     }
 }
-
 

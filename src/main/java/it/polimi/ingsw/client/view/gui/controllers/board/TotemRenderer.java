@@ -8,14 +8,28 @@ import javafx.scene.layout.Pane;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Renders player totems onto turn-order and offer-track overlays.
+ */
 public class TotemRenderer {
     private final List<Pane> trackOverlays;
     private final CardNodeFactory factory;
 
+    /**
+     * Creates a totem renderer.
+     *
+     * @param trackOverlays overlays where totems are placed
+     * @param factory node factory used to create totem views
+     */
     public TotemRenderer(List<Pane> trackOverlays, CardNodeFactory factory) {
         this.trackOverlays = trackOverlays; this.factory = factory;
     }
 
+    /**
+     * Renders all player totems according to the board state.
+     *
+     * @param state board view state
+     */
     public void renderTurnOrderTotems(BoardViewState state) {
         trackOverlays.forEach(p -> p.getChildren().clear());
         Map<String, Integer> offerPos = state.totemPositions();

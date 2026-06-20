@@ -11,6 +11,9 @@ import it.polimi.ingsw.common.visitor.ActionVisitor;
 
 import java.util.List;
 
+/**
+ * Visitor that validates action-specific command arguments and sends the resulting action to the server.
+ */
 public class ActionExecutor implements ActionVisitor {
     private final ServerCommandPort server;
     private final GameModel gameModel;
@@ -19,6 +22,14 @@ public class ActionExecutor implements ActionVisitor {
     private boolean commandSent = false;
 
 
+    /**
+     * Creates an executor for a selected action.
+     *
+     * @param server server command port
+     * @param gameModel model used to validate board selections
+     * @param out output port used for local messages
+     * @param inputParts tokenized command input
+     */
     public ActionExecutor(ServerCommandPort server, GameModel gameModel, OutputPort out, String[] inputParts) {
         this.server = server;
         this.gameModel = gameModel;
@@ -27,6 +38,11 @@ public class ActionExecutor implements ActionVisitor {
 
     }
 
+    /**
+     * Returns whether this executor successfully sent a command to the server.
+     *
+     * @return true if a command was sent, false otherwise
+     */
     public boolean isCommandSent() {
         return commandSent;
     }
@@ -35,6 +51,7 @@ public class ActionExecutor implements ActionVisitor {
         return str.matches("0|[1-9]\\d*");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(PlaceTotemActionDto action) {
         if (inputParts.length != 2 || !isStrictInteger(inputParts[1])) {
@@ -54,6 +71,7 @@ public class ActionExecutor implements ActionVisitor {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(TakeCardActionDto action) {
         if (inputParts.length != 3 || !isStrictInteger(inputParts[1]) || !isStrictInteger(inputParts[2])) {
@@ -114,6 +132,8 @@ public class ActionExecutor implements ActionVisitor {
 
         return true;
     }
+
+    /** {@inheritDoc} */
     @Override
     public void visit(SkipActionDto action) {
         server.skipAction();

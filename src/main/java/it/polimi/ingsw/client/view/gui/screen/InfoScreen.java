@@ -4,11 +4,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
+/**
+ * Controller for the static information modal.
+ */
 public class InfoScreen {
 
     @FXML
     private Button closeButton;
 
+    /**
+     * Initializes the static information screen.
+     */
     @FXML
     public void initialize() {
      // Content is defined entirely in FXML; nothing to wire up here.

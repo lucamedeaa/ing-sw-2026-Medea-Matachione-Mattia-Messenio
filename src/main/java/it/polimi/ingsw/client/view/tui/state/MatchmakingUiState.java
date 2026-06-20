@@ -15,6 +15,9 @@ import java.util.*;
 
 import static java.util.Arrays.copyOfRange;
 
+/**
+ * State that renders matchmaking and turns user commands into lobby requests.
+ */
 public class MatchmakingUiState implements UIState, MatchmakingView {
     private final TuiNavigator navigator;
     private final LobbyModel lobbyModel;
@@ -30,6 +33,17 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
     private final ApplicationLifecyclePort lifecyclePort;
 
+    /**
+     * Creates a matchmaking state.
+     *
+     * @param navigator navigator used for screen transitions
+     * @param lobbyModel model containing matchmaking data
+     * @param controller server command port
+     * @param session local client session
+     * @param out output port used for rendering and feedback
+     * @param notificationController notification controller used to receive matchmaking events
+     * @param lifecyclePort lifecycle port used by disconnect commands
+     */
     public MatchmakingUiState(TuiNavigator navigator, LobbyModel lobbyModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.lobbyModel = lobbyModel;
@@ -46,11 +60,14 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
 
         //render();
     }
+
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         this.notificationController.setMatchmakingView(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         this.notificationController.setMatchmakingView(null);
@@ -81,6 +98,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         commandRegistry.put("0", args -> new DisconnectCommand(controller, lifecyclePort, out));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render() {
         String error = lobbyModel.consumeGlobalError();
@@ -94,6 +112,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         renderer.render(gamesToDisplay, error);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleInput(String input) {
         if (input == null || input.isBlank()) return;
@@ -117,16 +136,19 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onAvailableGames(List<GameInfoDto> games) {
         this.showGamesList = true;
         render();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onError(String error) {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onMatchmakingSuccess(String text) {
         //  MI DE-REGISTRO prima di morire
@@ -137,6 +159,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
         navigator.toLobby();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
         //notificationController.setMatchmakingView(null);

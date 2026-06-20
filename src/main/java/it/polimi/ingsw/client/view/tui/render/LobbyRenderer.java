@@ -3,13 +3,28 @@ package it.polimi.ingsw.client.view.tui.render;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import java.util.List;
 
+/**
+ * Renderer for the lobby screen shown while players are gathering.
+ */
 public class LobbyRenderer {
     private final OutputPort out;
 
+    /**
+     * Creates a lobby renderer.
+     *
+     * @param out output port used for printing
+     */
     public LobbyRenderer(OutputPort out) {
         this.out = out;
     }
 
+    /**
+     * Renders current lobby participants and the latest lobby notification.
+     *
+     * @param currentPlayers nicknames currently in the lobby
+     * @param notification latest lobby notification
+     * @param myNickname nickname of the local player
+     */
     public void render(List<String> currentPlayers, String notification, String myNickname) {
         out.clearScreen();
         out.print(ColorAnsi.YELLOW_BOLD + "█".repeat(52) + ColorAnsi.RESET);

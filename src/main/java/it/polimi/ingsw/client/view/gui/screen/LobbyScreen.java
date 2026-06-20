@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import javafx.application.Platform;
 import javafx.stage.WindowEvent;
 
+/**
+ * FXML controller for the lobby screen.
+ */
 public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
 
     private final LobbyPresenter presenter;
@@ -26,10 +29,18 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
 
     private final VideoBackground videoBackground = new VideoBackground();
 
+    /**
+     * Creates a lobby screen.
+     *
+     * @param presenter presenter that drives the screen
+     */
     public LobbyScreen(LobbyPresenter presenter) {
         this.presenter = presenter;
     }
 
+    /**
+     * Initializes lobby layout, background video, and stage constraints.
+     */
     @FXML
     public void initialize() {
         playersContainer.setAlignment(Pos.CENTER);
@@ -47,6 +58,7 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
         });
     }
 
+    /** {@inheritDoc} */
     public void render(LobbyViewState state) {
         playersContainer.getChildren().clear();
 
@@ -69,23 +81,28 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
         }
     }
 
+    /** {@inheritDoc} */
     public void showError(String error) {
         statusLabel.setText(error);
         statusLabel.setVisible(true);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() { presenter.onScreenReady(this); }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         presenter.deregister();
         videoBackground.stop();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void refresh() { presenter.refresh(); }
 
+    /** {@inheritDoc} */
     @Override
     public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);

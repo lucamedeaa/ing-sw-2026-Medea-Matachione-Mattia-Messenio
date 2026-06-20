@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * State that renders a joined lobby and handles lobby-level commands.
+ */
 public class LobbyUiState implements UIState, LobbyView {
     private final TuiNavigator navigator;
     private final LobbyModel lobbyModel;
@@ -34,6 +37,18 @@ public class LobbyUiState implements UIState, LobbyView {
 
     private final ApplicationLifecyclePort lifecyclePort;
 
+    /**
+     * Creates a lobby state.
+     *
+     * @param navigator navigator used for screen transitions
+     * @param lobbyModel model containing lobby data
+     * @param gameModel model used to detect early game synchronization
+     * @param controller server command port
+     * @param session local client session
+     * @param out output port used for rendering and feedback
+     * @param notificationController notification controller used to receive lobby events
+     * @param lifecyclePort lifecycle port used by disconnect commands
+     */
     public LobbyUiState(TuiNavigator navigator, LobbyModel lobbyModel, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.lobbyModel = lobbyModel;
@@ -50,6 +65,7 @@ public class LobbyUiState implements UIState, LobbyView {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         this.notificationController.setLobbyView(this);
@@ -67,6 +83,7 @@ public class LobbyUiState implements UIState, LobbyView {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         this.notificationController.setLobbyView(null);
@@ -77,6 +94,7 @@ public class LobbyUiState implements UIState, LobbyView {
         commandRegistry.put("d", args -> new DisconnectCommand(controller, lifecyclePort, out));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render() {
         String error = lobbyModel.consumeGlobalError();
@@ -94,6 +112,7 @@ public class LobbyUiState implements UIState, LobbyView {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleInput(String input) {
         if (input == null || input.isBlank()) return;
@@ -102,16 +121,19 @@ public class LobbyUiState implements UIState, LobbyView {
         if (factory != null) factory.create(parts).execute();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
         //render(); //gia fatto in chiusura del batch
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onError(String error) {
         // estisci l'errore in lobby
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onGameStarted() {
         //  Mi de-registro
@@ -121,12 +143,14 @@ public class LobbyUiState implements UIState, LobbyView {
         navigator.toInGame();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
         //notificationController.setLobbyView(null);
         navigator.toMatchmaking();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
         //notificationController.setLobbyView(null);

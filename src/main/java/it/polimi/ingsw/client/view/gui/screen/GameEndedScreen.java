@@ -16,6 +16,9 @@ import javafx.stage.WindowEvent;
 
 import java.time.format.DateTimeFormatter;
 
+/**
+ * FXML controller for the game-ended screen.
+ */
 public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
 
     private final GameEndedPresenter presenter;
@@ -32,10 +35,18 @@ public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
 
     private final VideoBackground videoBackground = new VideoBackground();
 
+    /**
+     * Creates a game-ended screen.
+     *
+     * @param presenter presenter that drives the screen
+     */
     public GameEndedScreen(GameEndedPresenter presenter) {
         this.presenter = presenter;
     }
 
+    /**
+     * Initializes controls, background video, and list styles.
+     */
     @FXML
     public void initialize() {
         volumeSlider.setMin(0);
@@ -71,6 +82,7 @@ public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
         });
     }
 
+    /** {@inheritDoc} */
     public void render(GameEndedViewState state) {
         renderSessionScores(state.sessionScores());
         renderLocalResult(state);
@@ -114,23 +126,28 @@ public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
         }
     }
 
+    /** {@inheritDoc} */
     public void showSpinner() {
         globalSpinner.setVisible(true);
         globalLeaderboardView.setVisible(false);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() { presenter.onScreenReady(this); }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         presenter.deregister();
         videoBackground.stop();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void refresh() { presenter.refresh(); }
 
+    /** {@inheritDoc} */
     @Override
     public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);

@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Loads and caches JavaFX images used by the GUI.
+ */
 public class GuiAssetManager {
 
     // Cache so each image is loaded from disk only once
@@ -16,7 +19,12 @@ public class GuiAssetManager {
     private static final Map<Integer, Image> cardBackCache = new HashMap<>();
     private static final Map<Integer, Image> buildingBackCache = new HashMap<>();
 
-
+    /**
+     * Returns the image for a card.
+     *
+     * @param cardId card identifier
+     * @return loaded card image, or null if the resource is missing
+     */
     public static Image getCardImage(int cardId) {
         if (cardCache.containsKey(cardId)) {
             return cardCache.get(cardId);
@@ -37,6 +45,12 @@ public class GuiAssetManager {
     }
 
 
+    /**
+     * Returns the image for a board tile.
+     *
+     * @param tileName resource name of the tile
+     * @return loaded tile image, or null if the resource is missing
+     */
     public static Image getTileImage(String tileName) {
         if (tileCache.containsKey(tileName)) {
             return tileCache.get(tileName);
@@ -55,6 +69,12 @@ public class GuiAssetManager {
         return image;
     }
 
+    /**
+     * Returns the compact totem image for a color.
+     *
+     * @param color totem color
+     * @return loaded totem image, or null if color or resource is missing
+     */
     public static Image getTotemImage(TotemColor color) {
         if (color == null) {
             return null;
@@ -77,6 +97,12 @@ public class GuiAssetManager {
         return image;
     }
 
+    /**
+     * Returns the full-size totem image for a color.
+     *
+     * @param color totem color
+     * @return loaded totem image, or null if color or resource is missing
+     */
     public static Image getTotemImageFull(TotemColor color) {
         if (color == null) {
             return null;
@@ -100,6 +126,12 @@ public class GuiAssetManager {
         return image;
     }
 
+    /**
+     * Returns the main deck back image for an era.
+     *
+     * @param era era number
+     * @return loaded deck back image, or null if the resource is missing
+     */
     public static Image getDeckBackImage(int era) {
         if (cardBackCache.containsKey(era)) return cardBackCache.get(era);
 
@@ -116,6 +148,12 @@ public class GuiAssetManager {
         return image;
     }
 
+    /**
+     * Returns the building deck back image for an era.
+     *
+     * @param era era number
+     * @return loaded building deck back image, or null if the resource is missing
+     */
     public static Image getBuildingDeckBackImage(int era) {
         if (buildingBackCache.containsKey(era)) return buildingBackCache.get(era);
 

@@ -7,21 +7,43 @@ import javafx.scene.layout.Pane;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Applies selectable highlights and click handlers to board nodes.
+ */
 public class BoardInteractionController {
 
     private final GridPane boardGrid;
     private final List<Pane> trackOverlays;
     private BoardSelectionListener listener;
 
+    /**
+     * Creates an interaction controller for a board grid.
+     *
+     * @param boardGrid board grid containing cards and tiles
+     * @param trackOverlays overlays over turn-order and offer-track tiles
+     */
     public BoardInteractionController(GridPane boardGrid, List<Pane> trackOverlays) {
         this.boardGrid = boardGrid;
         this.trackOverlays = trackOverlays;
     }
 
+    /**
+     * Sets the listener that receives selected card and totem positions.
+     *
+     * @param listener board selection listener
+     */
     public void setListener(BoardSelectionListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Enables card selection highlights on allowed rows.
+     *
+     * @param upper true if upper row cards are selectable
+     * @param lower true if lower row cards are selectable
+     * @param affordableIds affordable selectable card identifiers
+     * @param unaffordableIds unaffordable selectable card identifiers
+     */
     public void enableCardSelection(boolean upper, boolean lower, Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
             for (Node node : boardGrid.getChildren()) {
                 Integer row = GridPane.getRowIndex(node);
@@ -57,7 +79,12 @@ public class BoardInteractionController {
             }
     }
 
-    /** iAmOnOffer is computed by InGameScreen before this method is called. */
+    /**
+     * Highlights the turn-order tile before showing offer-track placement options.
+     *
+     * @param validIndices valid offer-track indices
+     * @param iAmOnOffer true if the local player's totem is already on the offer track
+     */
     public void highlightTotemPlacement(List<Integer> validIndices, boolean iAmOnOffer) {
             if (!iAmOnOffer) {
                 if (trackOverlays.isEmpty()) return;
@@ -75,6 +102,9 @@ public class BoardInteractionController {
             }
     }
 
+    /**
+     * Clears all card and tile interactions.
+     */
     public void disableAllInteractions() {
             clearTrackHighlights();
             for (Node node : boardGrid.getChildren()) {
@@ -88,6 +118,9 @@ public class BoardInteractionController {
             }
     }
 
+    /**
+     * Clears all track highlights and click handlers.
+     */
     public void clearTrackHighlights() {
         for (Pane p : trackOverlays) {
             p.getStyleClass().removeAll("tile-glow-white", "tile-glow-yellow");

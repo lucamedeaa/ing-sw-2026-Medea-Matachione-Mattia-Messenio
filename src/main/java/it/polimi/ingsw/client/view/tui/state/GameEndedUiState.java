@@ -14,6 +14,9 @@ import it.polimi.ingsw.client.view.listeners.GameEndedView;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * State that renders post-game results and handles leaderboard-related commands.
+ */
 public class GameEndedUiState implements UIState, GameEndedView {
     private final TuiNavigator navigator;
     private final GameModel gameModel;
@@ -29,6 +32,17 @@ public class GameEndedUiState implements UIState, GameEndedView {
 
     private final ApplicationLifecyclePort lifecyclePort;
 
+    /**
+     * Creates the game-ended state.
+     *
+     * @param navigator navigator used to return to matchmaking or open disconnection state
+     * @param gameModel model containing completion and leaderboard data
+     * @param controller server command port
+     * @param session local client session
+     * @param out output port used for rendering and feedback
+     * @param notificationController notification controller used to receive game-ended events
+     * @param lifecyclePort lifecycle port used by disconnect commands
+     */
     public GameEndedUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.gameModel = gameModel;
@@ -43,11 +57,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
         registerCommands();
         //new GetLeaderboardCommand(controller).execute();
     }
+
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         this.notificationController.setGameEndedView(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         this.notificationController.setGameEndedView(null);
@@ -59,6 +76,7 @@ public class GameEndedUiState implements UIState, GameEndedView {
         commandRegistry.put("l", args -> new ShowLeaderboardCommand(this::showLeaderboard));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render() {
 
@@ -83,12 +101,14 @@ public class GameEndedUiState implements UIState, GameEndedView {
         render();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
        //notificationController.setGameEndedView(null);
         navigator.toMatchmaking();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleInput(String input) {
         if (input == null || input.isBlank()) return;
@@ -107,6 +127,8 @@ public class GameEndedUiState implements UIState, GameEndedView {
             out.print("Error: " + e.getMessage());
         }
     }
+
+    /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
         //notificationController.setGameEndedView(null);

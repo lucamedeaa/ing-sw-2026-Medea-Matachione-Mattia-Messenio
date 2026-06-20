@@ -15,6 +15,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Text-based client UI that serializes input, rendering, and state transitions on a single executor.
+ */
 public class TextUserInterface implements ClientUi, UIObserver, StateContainer, ApplicationLifecyclePort {
     private  UIState currentState;
     private final Scanner scanner;
@@ -24,6 +27,13 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
     private final AtomicBoolean running = new AtomicBoolean(true);
     private final AtomicBoolean renderPending = new AtomicBoolean(false);
 
+    /**
+     * Creates a text UI bound to the shared client models and input scanner.
+     *
+     * @param lobbyModel client-side lobby model
+     * @param gameModel client-side game model
+     * @param scanner scanner used to read terminal input
+     */
     public TextUserInterface(LobbyModel lobbyModel, GameModel gameModel, Scanner scanner) {
         this.scanner = scanner;
 
@@ -38,14 +48,17 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public void setController(ServerController controller) {
         router.setController(controller);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setNotificationController(ClientNotificationController nc) { router.setNotificationController(nc); }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         // Avvio lo stato iniziale tramite l'executor
@@ -73,14 +86,22 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
         }
     }
 
+    /**
+     * Schedules a task on the serialized TUI executor.
+     *
+     * @param task task to execute on the TUI thread
+     */
     public void dispatch(Runnable task) {
         uiExecutor.submit(task);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onStateChanged() {
         requestRender();
     }
+
+    /** {@inheritDoc} */
     @Override
     public void updateState(UIState newState) {
         //Anche i cambi di stato passano dalla coda, garantendo che
@@ -106,6 +127,8 @@ public class TextUserInterface implements ClientUi, UIObserver, StateContainer, 
             });
         }
     }
+
+    /** {@inheritDoc} */
     @Override
     public void requestShutdown() {
         running.set(false);

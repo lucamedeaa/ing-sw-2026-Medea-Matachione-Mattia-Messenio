@@ -9,10 +9,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+/**
+ * Factory that adapts {@link GameModel} data into GUI-specific view-state records.
+ */
 public class GameViewStateFactory {
 
     private GameViewStateFactory() {}
 
+    /**
+     * Builds the current in-game view state for a local player.
+     *
+     * @param m client-side game model
+     * @param self nickname of the local player
+     * @return view state consumed by the in-game screen
+     */
     public static GameViewState from(GameModel m, String self) {
         List<PlayerInfo> playerInfos = m.getPlayers().values().stream()
                 .map(p -> new PlayerInfo(p.getNickname(), p.getTotemColor(), p.getFood(), p.getPrestige()))

@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * FXML controller for the board panel, including cards, tracks, decks, and board interactions.
+ */
 public class BoardPanelController implements BoardView {
     @FXML private GridPane boardGrid;
 
@@ -26,10 +29,18 @@ public class BoardPanelController implements BoardView {
     private TotemRenderer totemRenderer;
     private BoardInteractionController boardInteraction;
 
+    /**
+     * Sets the listener that receives board selections.
+     *
+     * @param listener selection listener
+     */
     public void setListener(BoardSelectionListener listener) {
         boardInteraction.setListener(listener);
     }
 
+    /**
+     * Initializes board renderers and scene-size listeners.
+     */
     @FXML
     public void initialize() {
         CardNodeFactory factory = new CardNodeFactory(cardWidthProp);
@@ -59,6 +70,11 @@ public class BoardPanelController implements BoardView {
         updateOptimalSize(scene.getWidth() - 250, scene.getHeight() - 220, currentColumn);
     }
 
+    /**
+     * Renders the complete board state.
+     *
+     * @param state board view state
+     */
     public void render(BoardViewState state) {
         int newCols = calculateCurrentColumns(state.playerCount(), state.upperCards().size());
         if (currentBoardPlayerCount != state.playerCount() || currentColumn != newCols) {
@@ -81,15 +97,18 @@ public class BoardPanelController implements BoardView {
         totemRenderer.renderTurnOrderTotems(state);
     }
 
+    /** {@inheritDoc} */
     public void enableCardSelection(boolean upper, boolean lower,
                                     Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
         boardInteraction.enableCardSelection(upper, lower, affordableIds, unaffordableIds);
     }
 
+    /** {@inheritDoc} */
     public void highlightTotemPlacement(List<Integer> validIndices, boolean iAmOnOffer) {
         boardInteraction.highlightTotemPlacement(validIndices, iAmOnOffer);
     }
 
+    /** {@inheritDoc} */
     public void disableAllInteractions() {
         boardInteraction.disableAllInteractions();
     }

@@ -2,13 +2,24 @@ package it.polimi.ingsw.client.view.tui.render;
 
 import it.polimi.ingsw.client.view.tui.OutputPort;
 
+/**
+ * Renderer for the in-game card and command reference screen.
+ */
 public class InfoRenderer {
     private final OutputPort out;
 
+    /**
+     * Creates an information renderer.
+     *
+     * @param out output port used for printing
+     */
     public InfoRenderer(OutputPort out) {
         this.out = out;
     }
 
+    /**
+     * Renders the static card and command reference.
+     */
     public void render() {
         out.clearScreen();
         System.out.print(ColorAnsi.CLEAR);

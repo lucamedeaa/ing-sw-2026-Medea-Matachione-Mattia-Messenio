@@ -14,6 +14,9 @@ import javafx.stage.WindowEvent;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * FXML controller for the main in-game screen.
+ */
 public class InGameScreen implements RefreshableScreen, BoardSelectionListener, InGameScreenPort, ViewedPlayerHost, ActionCommandHost {
 
     private final InGamePresenter presenter;
@@ -31,11 +34,20 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener, 
     private String viewedPlayerNickname;
     private BoardInteractionManager interactionManager;
 
+    /**
+     * Creates an in-game screen.
+     *
+     * @param presenter presenter that drives the screen
+     * @param modalOpener modal opener used for auxiliary screens
+     */
     public InGameScreen(InGamePresenter presenter, ModalOpener modalOpener) {
         this.presenter = presenter;
         this.modalOpener = modalOpener;
     }
 
+    /**
+     * Wires nested controllers and initializes stage constraints.
+     */
     @FXML
     public void initialize() {
         if (boardPanelController != null) {
@@ -54,6 +66,7 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener, 
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void doRefresh(GameViewState state) {
         this.lastState = state;
@@ -68,31 +81,57 @@ public class InGameScreen implements RefreshableScreen, BoardSelectionListener, 
                 state.tribes().getOrDefault(viewedPlayerNickname, List.of()), viewedPlayerNickname);
     }
 
+    /** {@inheritDoc} */
     @Override public void showError(String error)          { if (logPanelController != null) logPanelController.appendError(error); }
+
+    /** {@inheritDoc} */
     @Override public void refresh()                        { presenter.refresh(); }
+
+    /** {@inheritDoc} */
     @Override public void onEnter()                        { presenter.onScreenReady(this); }
+
+    /** {@inheritDoc} */
     @Override public void onExit()                         { presenter.deregister(); }
+
+    /** {@inheritDoc} */
     @Override public void handleWindowClose(WindowEvent e) { presenter.handleWindowClose(e); }
 
+    /** {@inheritDoc} */
     @Override public void onCardSelected(int row, int col) { interactionManager.onCardSelected(row, col); }
+
+    /** {@inheritDoc} */
     @Override public void onTotemPositionSelected(int idx) { interactionManager.onTotemPositionSelected(idx); }
 
+    /** {@inheritDoc} */
     @Override
     public void promptCardSelection(int upper, int lower, Set<Integer> affordableIds, Set<Integer> unaffordableIds) {
         interactionManager.promptCardSelection(upper, lower, affordableIds, unaffordableIds);
     }
+
+    /** {@inheritDoc} */
     @Override
     public void promptTotemPlacement(List<Integer> availableTiles) {
         if (lastState == null) return;
         boolean iAmOnOffer = lastState.board().totemPositions().containsKey(lastState.selfNickname()); // "on offer" = my totem is already on the offer track
         interactionManager.promptTotemPlacement(availableTiles, iAmOnOffer);
     }
+
+    /** {@inheritDoc} */
     @Override public void skipAction() { presenter.skipAction(); }
+
+    /** {@inheritDoc} */
     @Override public void leaveGame()  { presenter.leave(); }
+
+    /** {@inheritDoc} */
     @Override public void disconnect() { presenter.disconnect(); }
+
+    /** {@inheritDoc} */
     @Override public void toggleLog()  { if (logOverlay != null) logOverlay.setVisible(!logOverlay.isVisible()); }
+
+    /** {@inheritDoc} */
     @Override public void showInfo()   { modalOpener.openModal(Scenes.INFO); }
 
+    /** {@inheritDoc} */
     @Override
     public void setViewedPlayer(String nickname) {
         this.viewedPlayerNickname = nickname;

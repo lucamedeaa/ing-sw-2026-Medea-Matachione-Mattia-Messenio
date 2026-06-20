@@ -2,9 +2,18 @@ package it.polimi.ingsw.client.view.gui.controllers.board;
 
 import java.util.List;
 
+/**
+ * Provides GUI board layout data for different player counts.
+ */
 public final class BoardLayoutProvider {
     private BoardLayoutProvider() {}
 
+    /**
+     * Returns the visual tile layout for the given player count.
+     *
+     * @param playerCount number of players
+     * @return ordered tile resource names
+     */
     public static List<String> getTileLayout(int playerCount) {
         return switch (playerCount) {
             default -> List.of("TURNORDER_TILE_2","TILE_B","TILE_C","TILE_E","TILE_F");
@@ -15,6 +24,12 @@ public final class BoardLayoutProvider {
     }
 
     // vertical position of each totem as a fraction of tile height`
+    /**
+     * Returns vertical totem placement fractions for the return area.
+     *
+     * @param playerCount number of players
+     * @return vertical placement fractions
+     */
     public static double[] getTotemYSteps(int playerCount) {
         return switch (playerCount) {
             case 2  -> new double[]{0.23, 0.40};
@@ -24,6 +39,13 @@ public final class BoardLayoutProvider {
         };
     }
 
+    /**
+     * Returns the visual grid column for a building deck.
+     *
+     * @param playerCount number of players
+     * @param era building deck era
+     * @return grid column index
+     */
     public static int getBuildingDeckColumn(int playerCount, int era) {
         int baseTrackSize = getTileLayout(playerCount).size();
         return baseTrackSize + (era-1);

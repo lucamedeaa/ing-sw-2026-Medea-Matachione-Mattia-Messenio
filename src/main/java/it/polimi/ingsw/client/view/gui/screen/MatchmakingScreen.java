@@ -13,6 +13,9 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+/**
+ * FXML controller for the matchmaking screen.
+ */
 public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenPort {
 
     private final MatchmakingPresenter presenter;
@@ -28,10 +31,18 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
 
     private final VideoBackground videoBackground = new VideoBackground();
 
+    /**
+     * Creates a matchmaking screen.
+     *
+     * @param presenter presenter that drives the screen
+     */
     public MatchmakingScreen(MatchmakingPresenter presenter) {
         this.presenter = presenter;
     }
 
+    /**
+     * Initializes controls, bindings, styles, and background video.
+     */
     @FXML
     public void initialize() {
         maxPlayersComboBox.getItems().addAll(2, 3, 4, 5);
@@ -71,6 +82,7 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
                 applyStyle(isSelected());
             }
 
+            /** {@inheritDoc} */
             @Override
             public void updateSelected(boolean selected) {
                 super.updateSelected(selected);
@@ -106,25 +118,30 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
         });
     }
 
+    /** {@inheritDoc} */
     public void render(MatchmakingViewState state) {
         errorLabel.setText(state.error());
         gamesListView.getItems().setAll(state.games());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         presenter.onScreenReady(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         presenter.deregister();
         videoBackground.stop();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void refresh() { presenter.refresh(); }
 
+    /** {@inheritDoc} */
     @Override
     public void handleWindowClose(WindowEvent event) {
         presenter.handleWindowClose(event);

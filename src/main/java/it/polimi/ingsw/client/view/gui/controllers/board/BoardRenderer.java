@@ -7,17 +7,32 @@ import javafx.scene.layout.StackPane;
 
 import java.util.List;
 
+/**
+ * Renders board cards, tracks, and deck backs into the board grid.
+ */
 public class BoardRenderer {
     private final GridPane boardGrid;
     private final CardNodeFactory factory;
     private final List<Pane> trackOverlays;
 
+    /**
+     * Creates a board renderer.
+     *
+     * @param boardGrid board grid to populate
+     * @param factory node factory used to create card and tile nodes
+     * @param trackOverlays overlays collected for track interactions
+     */
     public BoardRenderer(GridPane boardGrid, CardNodeFactory factory, List<Pane> trackOverlays) {
         this.boardGrid = boardGrid;
         this.factory = factory;
         this.trackOverlays = trackOverlays;
     }
 
+    /**
+     * Builds the static turn-order and offer-track tile row.
+     *
+     * @param playerCount number of players
+     */
     public void buildBoardTrack(int playerCount) {
         boardGrid.getRowConstraints().clear();
         trackOverlays.clear();
@@ -33,6 +48,12 @@ public class BoardRenderer {
 
     // Grid layout: row 0 = upper cards, row 1 = track/tiles, row 2 = lower cards.
     // Column 0 is reserved for the main deck, so playable cards start at column 1.
+    /**
+     * Renders upper and lower board card rows.
+     *
+     * @param upper upper-row card identifiers
+     * @param lower lower-row card identifiers
+     */
     public void renderCards(List<Integer> upper, List<Integer> lower) {
         boardGrid.getChildren().removeIf(node -> {
             Integer row = GridPane.getRowIndex(node);
@@ -48,6 +69,11 @@ public class BoardRenderer {
         }
     }
 
+    /**
+     * Renders the main deck back.
+     *
+     * @param nextDeckEra era of the next deck card
+     */
     public void renderDeck(Integer nextDeckEra) {
 
         boardGrid.getChildren().removeIf(node -> {
@@ -64,6 +90,12 @@ public class BoardRenderer {
         }
     }
 
+    /**
+     * Renders future building deck backs.
+     *
+     * @param currentEra current game era
+     * @param playerCount number of players
+     */
     public void renderBuildingDecks(Integer currentEra, int playerCount) {
         int baseTrackSize = trackOverlays.size();
 

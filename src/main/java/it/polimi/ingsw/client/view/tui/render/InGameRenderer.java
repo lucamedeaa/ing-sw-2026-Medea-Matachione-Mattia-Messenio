@@ -9,13 +9,30 @@ import it.polimi.ingsw.client.model.snapshot.PlayerResources;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Renderer for the main in-game TUI screen.
+ */
 public class InGameRenderer {
     private final OutputPort out;
 
+    /**
+     * Creates an in-game renderer.
+     *
+     * @param out output port used for printing
+     */
     public InGameRenderer(OutputPort out) {
         this.out = out;
     }
 
+    /**
+     * Renders board rows, tracks, players, local tribe, logs, and available actions.
+     *
+     * @param gameModel model containing the current game snapshot
+     * @param myNickname nickname of the local player
+     * @param deltas resource deltas to show in the turn recap
+     * @param logs recent game log messages
+     * @param lastError latest consumed error message, if any
+     */
     public void render(
             GameModel gameModel,
             String myNickname,
@@ -111,6 +128,12 @@ public class InGameRenderer {
         }
     }
 
+    /**
+     * Renders the tribe of a single player.
+     *
+     * @param model model containing tribe data
+     * @param nickname player whose tribe must be rendered
+     */
     public void renderPlayerTribe(GameModel model, String nickname) {
         List<Integer> tribe = model.getTribes().getOrDefault(nickname, List.of());
         out.print("  " + nickname.toUpperCase() + "'S TRIBE");

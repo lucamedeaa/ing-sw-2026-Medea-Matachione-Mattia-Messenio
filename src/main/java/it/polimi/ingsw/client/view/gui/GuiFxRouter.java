@@ -7,6 +7,9 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * JavaFX router that loads scenes, tracks the active screen, and coalesces model refreshes.
+ */
 public class GuiFxRouter implements UIObserver, GuiNavigator {
 
     private final Stage stage;
@@ -15,6 +18,13 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
     private String disconnectReason = "";
     private final SceneLoader sceneLoader;
     private final AtomicBoolean refreshPending = new AtomicBoolean(false);   // coalesces bursts of model updates into a single UI refresh
+
+    /**
+     * Creates a router for the given primary stage and shared GUI context.
+     *
+     * @param stage primary JavaFX stage
+     * @param ctx shared GUI context
+     */
     public GuiFxRouter(Stage stage, GuiContext ctx) {
         this.stage = stage;
         this.ctx = ctx;
@@ -47,6 +57,7 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
         if (currentScreen != null) currentScreen.onEnter();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onStateChanged() {
         if (!refreshPending.compareAndSet(false, true)) return;
@@ -56,12 +67,22 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
         });
     }
 
+    /** {@inheritDoc} */
     @Override public void toMatchmaking()            { navigateTo(Scenes.MATCHMAKING); }
+
+    /** {@inheritDoc} */
     @Override public void toLobby()                  { navigateTo(Scenes.LOBBY); }
+
+    /** {@inheritDoc} */
     @Override public void toInGame()                 { navigateTo(Scenes.IN_GAME); }
+
+    /** {@inheritDoc} */
     @Override public void toGameEnded()              { navigateTo(Scenes.GAME_ENDED); }
+
+    /** {@inheritDoc} */
     @Override public void openModal(SceneDefinition def) { sceneLoader.loadModal(def, stage); }
 
+    /** {@inheritDoc} */
     @Override
     public void toDisconnected(String reason) {
         this.disconnectReason = reason != null ? reason : "Connessione al server persa";

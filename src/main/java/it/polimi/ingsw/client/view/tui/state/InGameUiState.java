@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * State that manages the main in-game TUI screen and its local commands.
+ */
 public class InGameUiState implements UIState, InGameView {
     private final TuiNavigator navigator;
     private final GameModel gameModel;
@@ -27,6 +30,17 @@ public class InGameUiState implements UIState, InGameView {
     private final Map<String, CommandFactory> commandRegistry = new HashMap<>();
     private final ApplicationLifecyclePort lifecyclePort;
 
+    /**
+     * Creates an in-game state.
+     *
+     * @param navigator navigator used for local screen transitions
+     * @param gameModel model containing the game snapshot
+     * @param controller server command port
+     * @param session local client session
+     * @param out output port used for rendering and feedback
+     * @param notificationController notification controller used to receive in-game events
+     * @param lifecyclePort lifecycle port used by disconnect commands
+     */
     public InGameUiState(TuiNavigator navigator, GameModel gameModel, ServerCommandPort controller, ClientSession session, OutputPort out, ClientNotificationController notificationController, ApplicationLifecyclePort lifecyclePort) {
         this.navigator = navigator;
         this.gameModel = gameModel;
@@ -41,11 +55,13 @@ public class InGameUiState implements UIState, InGameView {
         //this.notificationController.setInGameView(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         this.notificationController.setInGameView(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         this.notificationController.setInGameView(null);
@@ -66,6 +82,7 @@ public class InGameUiState implements UIState, InGameView {
         commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render() {
         if (gameModel.getPlayers().isEmpty()) {
@@ -77,6 +94,7 @@ public class InGameUiState implements UIState, InGameView {
         renderer.render(gameModel, session.getNickname(), deltas,logs, error);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleInput(String input) {
         if (gameModel.isGameOver()) {
@@ -104,16 +122,19 @@ public class InGameUiState implements UIState, InGameView {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onError(String error) {
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
         //notificationController.setInGameView(null);
         navigator.toMatchmaking();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
         //notificationController.setInGameView(null);

@@ -7,6 +7,9 @@ import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 import it.polimi.ingsw.client.view.tui.render.ViewTribeRenderer;
 
+/**
+ * State that displays a selected player's tribe during a match.
+ */
 public class ViewTribeUiState implements UIState, InGameView {
     private final TuiNavigator navigator;
     private final GameModel gameModel;
@@ -15,6 +18,15 @@ public class ViewTribeUiState implements UIState, InGameView {
     private final String targetPlayer;
     private final ClientNotificationController notificationController;
 
+    /**
+     * Creates a tribe inspection state.
+     *
+     * @param navigator navigator used to return to the game or handle disconnections
+     * @param gameModel model containing tribe data
+     * @param out output port used for rendering
+     * @param targetPlayer nickname of the inspected player
+     * @param notificationController notification controller used to receive in-game events
+     */
     public ViewTribeUiState(TuiNavigator navigator, GameModel gameModel, OutputPort out, String targetPlayer, ClientNotificationController notificationController) {
         this.navigator = navigator;
         this.gameModel = gameModel;
@@ -25,6 +37,7 @@ public class ViewTribeUiState implements UIState, InGameView {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public void render() {
 
@@ -32,6 +45,7 @@ public class ViewTribeUiState implements UIState, InGameView {
             renderer.render(targetPlayer, tribe);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleInput(String input) {
         if (input.trim().equalsIgnoreCase("q")) {
@@ -41,23 +55,29 @@ public class ViewTribeUiState implements UIState, InGameView {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onEnter() {
         if (notificationController != null) notificationController.setInGameView(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onExit() {
         if (notificationController != null) notificationController.setInGameView(null);
     }
+
+    /** {@inheritDoc} */
     @Override
     public void onReturnToMatchmaking(String reason) {
         navigator.toMatchmaking();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onError(String error) {}
 
+    /** {@inheritDoc} */
     @Override
     public void onServerDisconnected(String reason) {
         navigator.toDisconnected(reason);

@@ -8,14 +8,29 @@ import javafx.scene.media.MediaView;
 
 import java.net.URL;
 
+/**
+ * Helper that manages a looping video background and shared volume setting.
+ */
 public class VideoBackground {
     private MediaPlayer mediaPlayer;
     private StackPane currentContainer;
 
     private static double globalVolume = 0.15;
 
+    /**
+     * Returns the last selected global video volume.
+     *
+     * @return global volume in the range 0..1
+     */
     public static double getGlobalVolume() { return globalVolume; }
 
+    /**
+     * Starts a looping video inside the target container.
+     *
+     * @param container container that will host the media view
+     * @param resourcePath classpath path to the video resource
+     * @param volumeProperty optional property used to update the shared volume
+     */
     public void start(StackPane container, String resourcePath, ObservableValue<? extends Number> volumeProperty) {
         stop();
         currentContainer = container;
@@ -52,6 +67,9 @@ public class VideoBackground {
         container.getChildren().setAll(mediaView);
     }
 
+    /**
+     * Stops playback, releases the media player, and clears the current container.
+     */
     public void stop() {
         if (mediaPlayer != null) {
             mediaPlayer.volumeProperty().unbind();
