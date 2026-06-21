@@ -1,0 +1,5 @@
+# Card Pick
+
+This diagram traces one intent, picking a card, from a single player's click out to every connected client. The action reaches the server as a `TakeCardMessage`, where the `InGameConnectionState` session forwards it to the controller. The controller runs the move asynchronously on the game executor via `submitGameTask`, so network threads never execute game logic. The model applies the rules and only enqueues domain events; nothing is published until `commitEvents()`, which lets one logical move carry several events as a single atomic update.
+
+The Observer pattern then fans that update out. Each `VirtualView` receives it, filters the available actions to its own player, and emits a `deltaEvent`. On the client the Visitor pattern applies it through `visit(CardTakenDto)`, which removes the card, and because the events and the new turn state are applied together the UI refreshes once. The alternative branch is the mirror case: an illegal move throws `InvalidGameActionException`, which is caught and routed back only to the acting player as an `error("Move error: ...")` popup, leaving the shared board unchanged.
