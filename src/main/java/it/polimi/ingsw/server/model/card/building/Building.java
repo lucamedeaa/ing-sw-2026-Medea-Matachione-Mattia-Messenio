@@ -22,6 +22,10 @@ public abstract class Building extends Card {
         this.prestigePoints = info.prestigePoints();
     }
 
+    /**
+     *
+     * @return the food cost of the building
+     */
     @Override
     public int getFoodCost() {
         return this.foodCost;

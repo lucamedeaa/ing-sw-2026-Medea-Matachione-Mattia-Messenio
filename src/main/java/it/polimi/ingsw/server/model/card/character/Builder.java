@@ -10,6 +10,10 @@ public class Builder extends Character {
     private final int foodDiscount;
     private final int endGamePrestigePoints;
 
+    /**
+     * Constructs a Builder card.
+     * @param idcard @param idcard the card identifier
+     */
     public Builder(int idcard) {
         super(idcard);
         CardInfo info = CardRegistry.getCard(idcard);

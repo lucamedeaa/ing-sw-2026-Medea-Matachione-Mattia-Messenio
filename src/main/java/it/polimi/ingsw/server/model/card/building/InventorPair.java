@@ -14,6 +14,10 @@ public class InventorPair extends Building {
     private boolean init;
     private final EnumMap<InventorIcon, Integer> iconCount;
 
+    /**
+     * Constructs the InventorPair building.
+     * @param idcard the card identifier
+     */
     public InventorPair(int idcard) {
         super(idcard);
         init = false;

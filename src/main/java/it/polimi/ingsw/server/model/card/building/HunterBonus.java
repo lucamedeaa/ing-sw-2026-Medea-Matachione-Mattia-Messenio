@@ -6,6 +6,10 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 /** Building that grants additional food and prestige during the Hunt event based on the number of HUNTER characters owned. */
 public class HunterBonus extends Building {
 
+    /**
+     * Constructs the HunterBonus building.
+     * @param idcard the card identifier
+     */
     public HunterBonus(int idcard) {
         super(idcard);
     }

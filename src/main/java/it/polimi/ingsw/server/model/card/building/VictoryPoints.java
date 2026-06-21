@@ -5,6 +5,10 @@ import it.polimi.ingsw.server.model.Player;
 /** Building that grants a fixed additional amount of prestige points at the end of the game. */
 public class VictoryPoints extends Building {
 
+    /**
+     * Constructs the VictoryPoints building.
+     * @param idcard the card identifier
+     */
     public VictoryPoints(int idcard) {
         super(idcard);
     }

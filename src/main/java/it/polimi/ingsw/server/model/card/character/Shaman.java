@@ -7,7 +7,8 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class Shaman extends Character {
     private final int starsCount;
 
-    /** Constructs a Shaman card. @param idcard the card identifier */
+    /** Constructs a Shaman card.
+     * @param idcard the card identifier */
     public Shaman(int idcard) {
         super(idcard);
         this.foodCost = 0;

@@ -13,13 +13,19 @@ public class DiverseSet extends Building {
     private int setsAlreadyRewarded = 0;
     private boolean initialized = false;
 
+    /**
+     * Constructs the DiverseSet building.
+     * @param idcard the card identifier
+     */
     public DiverseSet(int idcard) {
         super(idcard);
         this.targetSet = EnumSet.allOf(CharacterType.class);
         this.targetSet.remove(CharacterType.NONCHARACTER);
     }
 
-    /** Tracks completed full sets and grants food when new sets are formed after initialization. @param owner the owning player @param newcard the newly added card */
+    /** Tracks completed full sets and grants food when new sets are formed after initialization.
+     *  @param owner the owning player
+     *  @param newcard the newly added card */
     @Override
     public void onCardAddedToTribe(Player owner, Card newcard) {
         if (!initialized) {
@@ -36,7 +42,9 @@ public class DiverseSet extends Building {
         }
     }
 
-    /** Counts how many complete sets of all character types the player has. @param owner the owning player @return number of complete sets */
+    /** Counts how many complete sets of all character types the player has.
+     * @param owner the owning player
+     * @return number of complete sets */
     private int countFullSets(Player owner) {
         return (int) targetSet.stream()
                 .mapToInt(owner::countCharactersOfType)

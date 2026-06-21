@@ -25,7 +25,6 @@ public class Sustenance extends Event {
     private final int numPrestRem;
     /**
      * Constructs the Sustenance event.
-     *
      * @param idcard the card identifier
      */
     public Sustenance(int idcard) {
@@ -36,7 +35,6 @@ public class Sustenance extends Event {
     /**
      * Executes the event:
      * computes food requirements and applies food and prestige changes.
-     *
      * @param players list of involved players
      */
     @Override
@@ -85,7 +83,6 @@ public class Sustenance extends Event {
 
     /**
      * Defines the resolution priority of the event.
-     *
      * @return priority value (1)
      */
     @Override

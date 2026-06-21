@@ -3,6 +3,10 @@ package it.polimi.ingsw.server.model.card.building;
 /** Building that grants an additional pick from the upper row during the bonus phase. */
 public class LatePurchase extends Building {
 
+    /**
+     * Constructs the LatePurchase building.
+     * @param idcard the card identifier
+     */
     public LatePurchase(int idcard) {
         super(idcard);
     }

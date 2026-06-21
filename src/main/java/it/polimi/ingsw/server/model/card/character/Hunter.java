@@ -9,11 +9,12 @@ import it.polimi.ingsw.server.model.enums.CharacterType;
 public class Hunter extends Character {
     private final boolean hasIcon;
 
-    /** Constructs a Hunter card. @param idcard the card identifier @param era the card era */
+    /** Constructs a Hunter card.
+     * @param idcard the card identifier */
     public Hunter(int idcard) {
         super(idcard);
         this.foodCost = 0;
-        this.hasIcon = CardRegistry.getCard(idcard).hasIcon(); // Assegnazione diretta boolean
+        this.hasIcon = CardRegistry.getCard(idcard).hasIcon();
     }
 
     /** Applies instant effect: if the card has an icon, grants food equal to the number of HUNTER cards in the tribe. @param owner the owning player */

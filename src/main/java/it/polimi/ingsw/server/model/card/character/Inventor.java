@@ -10,7 +10,8 @@ import java.util.Set;
 public class Inventor extends Character {
     private final InventorIcon inventorIcon;
 
-    /** Constructs an Inventor card. @param idcard the card identifier */
+    /** Constructs an Inventor card.
+     * @param idcard the card identifier */
     public Inventor(int idcard) {
         super(idcard);
         this.foodCost = 0;
