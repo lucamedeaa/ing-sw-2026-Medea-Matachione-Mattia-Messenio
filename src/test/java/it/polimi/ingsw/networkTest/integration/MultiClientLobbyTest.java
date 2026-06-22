@@ -16,9 +16,16 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/*Verificare la concorrenza e il broadcasting. Se un client crea una stanza, un secondo client che entra nella stessa stanza deve scatenare un RoomUpdateMessage per entrambi.
-Questo dimostra che il ConnectionSession e il GameRoom comunicano correttamente attraverso i thread separati dei due client.*/
-
+/**
+ * SUMMARY:
+ * Verifies multi-client matchmaking concurrency and broadcast handling, ensuring that
+ * joining clients correctly trigger and propagate lobby updates across distinct session threads.
+ *
+ * EXPECTATION:
+ * When a secondary client targets and connects to an active room id, the subsystem
+ * handles concurrent serialization across independent threads and distributes synchronization
+ * updates out to the initial host session listeners.
+ */
 public class MultiClientLobbyTest extends NetworkTestBase {
 
     @Test

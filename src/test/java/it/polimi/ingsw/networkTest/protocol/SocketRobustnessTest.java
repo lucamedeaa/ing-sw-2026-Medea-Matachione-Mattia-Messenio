@@ -10,6 +10,14 @@ import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies that abrupt client disconnections do not compromise server availability or stability.
+ *
+ * EXPECTATION:
+ * The underlying server loop survives unexpected TCP reset drops and continues to accept
+ * incoming connection payloads from subsequent legitimate clients.
+ */
 public class SocketRobustnessTest extends NetworkTestBase {
 
     @Nested
@@ -19,14 +27,10 @@ public class SocketRobustnessTest extends NetworkTestBase {
         @Test
         @DisplayName("The server does not crash if the socket is closed abruptly")
         void serverSurvivesSuddenClose() throws IOException, InterruptedException {
-            // Connessione ad un client finto
             Socket badClient = new Socket("localhost", serverPort);
             clientSockets.add(badClient);
-
-            // Chiusura del socket malamente per generare un EOFException nel Server
             badClient.close();
 
-            // Retry health-check connection instead of fixed sleep
             Socket goodClient = null;
             for (int attempt = 0; attempt < 10; attempt++) {
                 try {

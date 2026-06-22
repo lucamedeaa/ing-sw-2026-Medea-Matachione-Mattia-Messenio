@@ -14,15 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest extends ModelTest {
 
-    // ── Helper
-
     private Game game(int n) {
         List<String> names = new java.util.ArrayList<>();
         for (int i = 1; i <= n; i++) names.add("Player" + i);
         return new Game(names);
     }
-
-    // ── Construction
 
     @Nested
     @DisplayName("Construction")
@@ -141,8 +137,6 @@ public class GameTest extends ModelTest {
         }
     }
 
-    // ── incrementRound
-
     @Nested
     @DisplayName("Round management")
     class RoundManagement {
@@ -164,8 +158,6 @@ public class GameTest extends ModelTest {
         }
     }
 
-    // ── Player lookup through commands
-
     @Nested
     @DisplayName("Player command lookup")
     class PlayerCommandLookup {
@@ -185,8 +177,6 @@ public class GameTest extends ModelTest {
             assertThrows(InvalidGameActionException.class, () -> g.takeCard("Unknown", 0, 0));
         }
     }
-
-    // ── Observer
 
     @Nested
     @DisplayName("Observer notifications")
@@ -239,7 +229,6 @@ public class GameTest extends ModelTest {
         }
     }
 
-    // ── start
 
     @Nested
     @DisplayName("start")

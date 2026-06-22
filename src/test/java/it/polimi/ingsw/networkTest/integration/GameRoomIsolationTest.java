@@ -1,9 +1,3 @@
-/*
- * Goal: Verify strict memory and broadcast isolation between different GameRooms.
- * The server must handle multiple concurrent games. If an event occurs in Game A
- * (e.g., a player takes an action or suddenly disconnects), the players in Game B
- * must not receive the broadcast, and Game B's state machine must remain intact.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.*;
@@ -12,6 +6,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies network and memory isolation between distinct game rooms, ensuring actions
+ * or disconnections in one match do not leak broadcasts or affect other active matches.
+ *
+ * EXPECTATION:
+ * State modifications, messaging updates, and abrupt network crashes occurring inside one
+ * virtual game container have no cross-contamination impact on unrelated concurrent lobbies.
+ */
 public class GameRoomIsolationTest extends NetworkTestBase {
 
     @Test

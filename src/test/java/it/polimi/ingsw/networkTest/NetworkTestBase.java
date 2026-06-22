@@ -1,8 +1,3 @@
-/* * Goal: Provide a robust testing framework for network integration tests.
- * It manages a local server instance with dynamic port assignment and
- * provides a non-destructive DummyClient that stores all incoming server messages
- * in a thread-safe buffer to avoid race conditions during assertions.
- */
 package it.polimi.ingsw.networkTest;
 
 import it.polimi.ingsw.client.network.SocketServerConnection;
@@ -24,19 +19,25 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+/**
+ * Base class for integration network testing. Sets up an in-memory test server
+ * and handles connection cleanup between tests.
+ */
 public abstract class NetworkTestBase {
     protected int serverPort;
     protected ServerSocket serverSocket;
     protected GameManager gameManager;
     protected LobbyController lobbyController;
+
     private ExecutorService serverExecutor;
     protected List<Socket> clientSockets = new ArrayList<>();
     protected List<DummyClient> dummyClients = new ArrayList<>();
 
     @BeforeEach
     void setup() throws IOException {
-        gameManager = new GameManager(null); // Mocking Leaderboard for network tests
+        gameManager = new GameManager(null);
         lobbyController = new LobbyController(gameManager);
+
         serverSocket = new ServerSocket(0);
         serverPort = serverSocket.getLocalPort();
         serverExecutor = Executors.newCachedThreadPool();
@@ -68,12 +69,14 @@ public abstract class NetworkTestBase {
         if (serverSocket != null && !serverSocket.isClosed()) {
             serverSocket.close();
         }
-
         if (serverExecutor != null) {
             serverExecutor.shutdownNow();
         }
     }
 
+    /**
+     * Mock client used to simulate player network behavior and capture incoming server packets.
+     */
     public class DummyClient implements ClientMessageVisitor {
         public final String nickname;
         public final SocketServerProxy proxy;
@@ -88,29 +91,37 @@ public abstract class NetworkTestBase {
             dummyClients.add(this);
         }
 
-        //è un metodo che serve per aspettare in modo asincrono l'arrivo di uno specifico messaggio di rete durante un test, impostanto un tempo limite per evitare che il test si blocchi
-        // è un approccio che si chiama "polling" : il thread del test controlla ripetutamente una coda (history) per vedere se un thread in background ha ricevuto il pacchetto atteso
-
-        //<T extends ServerMessage>: Dichiara un tipo generico T (tipo di ritorno) che è vincolato a essere una classe che eredita da ServerMessage.
-        //Class<T> clazz: È il parametro in cui passi la classe che stai aspettando (es. MatchmakingSuccessMessage.class). Passare il token della classe permette a Java di fare controlli sui tipi a runtime.
+        /**
+         * Asynchronously polls the internal message history until a specific type of network packet arrives.
+         * * @param clazz The expected message class (e.g., MatchmakingSuccessMessage.class)
+         * @param timeoutSec Maximum time to wait before failing the test
+         * @return The received message downcasted to type T
+         */
         public <T extends ServerMessage> T waitFor(Class<T> clazz, int timeoutSec) {
             long end = System.currentTimeMillis() + (timeoutSec * 1000L);
+
             while (System.currentTimeMillis() < end) {
                 for (ServerMessage msg : history) {
-                    if (clazz.isInstance(msg)) { //clazz.isInstance(msg): È l'equivalente a runtime dell'operatore instanceof
+                    if (clazz.isInstance(msg)) {
                         history.remove(msg);
-                        return clazz.cast(msg); //clazz.cast(msg): Converte in modo sicuro l'oggetto generico ServerMessage nel tipo specifico T per restituirlo.
+                        return clazz.cast(msg);
                     }
                 }
-                try { Thread.sleep(50); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-                //Se il messaggio non è nella history, il ciclo si ferma per 50 millisecondi prima di riprovare.
-                // Questo evita di consumare il 100% della CPU in un loop a vuoto, dando al thread di rete il tempo materiale per ricevere e processare i pacchetti.
+
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
-            fail("Timeout: " + clazz.getSimpleName() + " not received for " + nickname);
+
+            fail("Timeout: " + clazz.getSimpleName() + " not received for player: " + nickname);
             return null;
         }
 
-        public void disconnect() { connection.disconnect(); }
+        public void disconnect() {
+            connection.disconnect();
+        }
 
         @Override public void visit(FullSyncMessage m) { history.add(m); }
         @Override public void visit(DeltaEventMessage m) { history.add(m); }

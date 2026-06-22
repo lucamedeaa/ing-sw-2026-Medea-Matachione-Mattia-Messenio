@@ -14,10 +14,16 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/*Demonstrate that the logic for UnsupportedConnectionCommands works.
-A newly connected client is in the LobbyConnectionState. If it attempts to force a game move (e.g. TakeCardMessage),
-the server must reject it by sending an ErrorMessage, without passing the command on to the model controller.*/
-
+/**
+ * SUMMARY:
+ * Verifies that the server network state machine strictly blocks and rejects out-of-state
+ * connection commands, protecting the underlying game loop from illegal phase violations.
+ *
+ * EXPECTATION:
+ * When an unauthenticated or lobby-bound client submits an in-game transaction payload,
+ * the network session protocol interceptor traps the message and dispatches a validation error
+ * back to the source client, aborting downstream model execution.
+ */
 public class StateMachineViolationTest extends NetworkTestBase {
 
     @Test

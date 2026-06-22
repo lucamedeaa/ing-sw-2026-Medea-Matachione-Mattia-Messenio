@@ -1,9 +1,3 @@
-/*
- * Goal: Verify the core game loop and disconnection handling using the NetworkTestBase.
- * This test ensures players can join, synchronize the board, place totems, and take cards.
- * It also verifies that an unexpected disconnection during the game cleanly aborts the match
- * and notifies the remaining players.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.*;
@@ -14,6 +8,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies the complete game lifecycle (matchmaking, phases, and actions)
+ * and confirms that unexpected disconnections cleanly abort active matches.
+ *
+ * EXPECTATION:
+ * The components orchestrating the full round game lifecycle smoothly transition state
+ * and emit synchronization data to all linked sessions concurrently across sequences.
+ */
 public class GameFlowIntegrationTest extends NetworkTestBase {
 
     private DummyClient client1;
@@ -56,7 +59,7 @@ public class GameFlowIntegrationTest extends NetworkTestBase {
         DummyClient activeClient = activePlayer.equals("Alice") ? client1 : client2;
         DummyClient waitingClient = activePlayer.equals("Alice") ? client2 : client1;
 
-        // Active player places totem on tile 0
+
         activeClient.proxy.placeTotem(0);
 
         // Wait for DeltaEvent indicating the placement was successful and turn changed

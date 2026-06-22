@@ -135,11 +135,7 @@ public class InitStateTest extends ModelTest {
         }
 
         @Override
-        public void onFullSync(BoardUpdate board,
-                               List<PlayerUpdate> players,
-                               String activePlayer,
-                               List<AvailableAction> actions,
-                               InitTurnOrderTileUpdate turnOrderTile) {
+        public void onFullSync(BoardUpdate board, List<PlayerUpdate> players, String activePlayer, List<AvailableAction> actions, InitTurnOrderTileUpdate turnOrderTile) {
             this.fullSyncReceived = true;
             this.boardUpdate = board;
             this.playersUpdates = players;

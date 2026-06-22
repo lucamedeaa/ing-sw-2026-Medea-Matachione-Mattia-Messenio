@@ -12,10 +12,14 @@ import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/*The server allocates resources for each connection. If a client unplugs the network cable without sending a DisconnectionMessage,
-the server would remain stuck indefinitely in the readObject() function.
-The test checks that the setSoTimeout(10000) configured in the SocketClientHandler is triggered and forces the session to close.*/
-
+/**
+ * SUMMARY:
+ * Verifies that idle clients are automatically disconnected after the configured socket timeout expires.
+ *
+ * EXPECTATION:
+ * The server automatically detects inactive TCP links, terminates the socket session, and yields
+ * an EOF (-1) signal back to the client read stream without leaking server resources.
+ */
 @Timeout(20)
 public class TimeoutTest extends NetworkTestBase {
 

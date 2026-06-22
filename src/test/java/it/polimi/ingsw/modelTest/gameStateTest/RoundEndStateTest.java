@@ -88,7 +88,7 @@ public class RoundEndStateTest extends ModelTest {
                 game.incrementRound();
             }
 
-            assertEquals(10, game.getCurrentRound(), "Prima di RoundEndState, il round attuale deve essere 10");
+            assertEquals(10, game.getCurrentRound(), "Before RoundEndState, the current round must be 10");
 
             RoundEndState state = roundEndState(game);
             state.start();

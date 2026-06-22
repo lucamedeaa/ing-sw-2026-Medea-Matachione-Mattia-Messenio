@@ -1,10 +1,3 @@
-/*
- * Goal: Verify that the network state machine resets correctly after a game is forcefully aborted.
- * If Player A disconnects mid-game, Player B receives a GameAbortedMessage.
- * This test ensures that Player B's ConnectionSession is successfully reverted back to
- * LobbyConnectionState, allowing them to immediately create or join a NEW game
- * without having to restart their client.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.FullSyncMessage;
@@ -15,6 +8,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies that the network state machine resets correctly post-abort, ensuring surviving
+ * clients seamlessly revert to the lobby state and can immediately start new matches.
+ *
+ * EXPECTATION:
+ * When an active match terminates unexpectedly due to a player disconnection, the server
+ * rolls back the connection session state of the remaining players to the lobby phase,
+ * immediately authorizing new game creation requests.
+ */
 public class PostAbortRecoveryTest extends NetworkTestBase {
 
     @Test
@@ -44,7 +47,7 @@ public class PostAbortRecoveryTest extends NetworkTestBase {
         assertNotNull(abortMsg, "Survivor did not receive abort notification.");
 
         // Survivor tries to create a NEW game immediately.
-        // If the ConnectionSession is still stuck in InGameConnectionState, 
+        // If the ConnectionSession is still stuck in InGameConnectionState,
         // this will return an ErrorMessage ("Command not valid...").
         // If recovery worked, it will return MatchmakingSuccessMessage.
 

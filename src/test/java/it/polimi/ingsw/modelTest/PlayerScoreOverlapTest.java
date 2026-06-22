@@ -105,11 +105,11 @@ public class PlayerScoreOverlapTest extends ModelTest {
      * calculateTotalScore() returns 28 (3 from Builder + 25 from VictoryPoints).
      */
     @Test
-    @DisplayName("Sovrapposizione: Costruttori ed Edifici")
+    @DisplayName("Overlap: Builders and Buildings")
     void testBuildersAndBuildingsScoring() {
         Player p = newPlayer("TestPlayer");
-        give(p, new Builder(3)); // Fornisce 3 PP a fine partita
-        give(p, new VictoryPoints(109)); // Fornisce 25 PP
+        give(p, new Builder(3)); // Provides 3 PP at the end of the game
+        give(p, new VictoryPoints(109)); // Provides 25 PP
         assertEquals(28, p.calculateTotalScore());
     }
 
@@ -124,7 +124,7 @@ public class PlayerScoreOverlapTest extends ModelTest {
      * + 4 builder + 25 building).
      */
     @Test
-    @DisplayName("Sovrapposizione complessa: Prestigio + Artisti + Inventori + Edifici + Costruttori")
+    @DisplayName("Complex Overlap: Prestige + Artists + Inventors + Buildings + Builders")
     void testComplexOverlapping() {
         Player p = newPlayer("TestPlayer");
 
@@ -132,11 +132,11 @@ public class PlayerScoreOverlapTest extends ModelTest {
 
         give(p, new Artist(19));
         give(p, new Artist(20));
-        give(p, new Artist(21)); // 1 coppia -> +10
+        give(p, new Artist(21)); // 1 pair -> +10
 
         give(p, new Inventor(39)); // SPEARHEAD
         give(p, new Inventor(44)); // ROPE
-        give(p, new Inventor(39)); // Duplicato. Totale Inventori 3. Icone 2. -> 3*2 = +6
+        give(p, new Inventor(39)); // Duplicate. Total Inventors 3. Distinct Icons 2. -> 3*2 = +6
 
         give(p, new Builder(4)); // +4 PP
 

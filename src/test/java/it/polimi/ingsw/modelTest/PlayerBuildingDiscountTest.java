@@ -21,21 +21,21 @@ public class PlayerBuildingDiscountTest extends ModelTest {
      * returns 3 (from Collector), with no cross-contamination.
      */
     @Test
-    @DisplayName("Isolamento Sconti: I Raccoglitori non devono scontare gli Edifici")
+    @DisplayName("Discount Isolation: Collectors must not discount Building purchases")
     void testBuilderAndCollectorDiscountSeparation() {
         Player p = newPlayer("TestPlayer");
 
-        // 2 di sconto per l'acquisto di Edifici
+        // 2 units of discount for purchasing Buildings
         give(p, new Builder(2));
 
-        // 3 di sconto per l'evento Sostentamento
-        give(p, new Collector(35));
+        // 3 units of discount for Sustenance events
+        give(p, new Collector(3));
 
         assertEquals(2, p.getFoodDiscount(),
-            "Lo sconto per l'acquisto degli edifici (getFoodDiscount) deve contare solo i Costruttori. Hai incluso erroneamente i Raccoglitori.");
+                "The building purchase discount (getFoodDiscount) must only count Builders. Collectors were erroneously included.");
 
-        // Il sostentamento deve ricevere lo sconto corretto, ignorando il Costruttore
+        // Sustenance must receive the correct discount, ignoring the Builder
         assertEquals(3, p.getSustenanceDiscount(),
-            "Lo sconto del sostentamento (getSustenanceDiscount) deve contare solo i Raccoglitori. Hai incluso erroneamente i Costruttori o applicato doppi conteggi.");
+                "The sustenance discount (getSustenanceDiscount) must only count Collectors. Builders were erroneously included or double-counted.");
     }
 }

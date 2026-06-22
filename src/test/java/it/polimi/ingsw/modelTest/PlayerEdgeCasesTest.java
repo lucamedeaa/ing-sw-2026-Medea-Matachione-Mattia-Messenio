@@ -22,14 +22,14 @@ public class PlayerEdgeCasesTest extends ModelTest {
      * the 3-unit deficit: 2 food available, 5 subtracted).
      */
     @Test
-    @DisplayName("Gestione Deficit: Transizione da cibo positivo a negativo")
+    @DisplayName("Deficit Management: Transition from positive to negative food")
     void testAddFoodPartialDeficit() {
         Player p = newPlayer("Test");
         p.addPrestige(10);
         p.addFood(2);
         p.addFood(-5);
-        assertEquals(0, p.getFood(), "Il cibo non deve mai scendere sotto zero");
-        assertEquals(4, p.getPrestigePoints(), "Da 10 PP deve scendere a 4 PP (penalità di -6)");
+        assertEquals(0, p.getFood(), "Food must never drop below zero");
+        assertEquals(4, p.getPrestigePoints(), "From 10 PP it must drop to 4 PP (penalty of -6)");
     }
 
     /**
@@ -42,7 +42,7 @@ public class PlayerEdgeCasesTest extends ModelTest {
      * All three successive calls return the same value.
      */
     @Test
-    @DisplayName("Idempotenza del calcolo punteggio finale")
+    @DisplayName("Idempotence of the final score calculation")
     void testCalculateTotalScoreIdempotence() {
         Player p = newPlayer("Test");
         give(p, new Inventor(39));
@@ -65,7 +65,7 @@ public class PlayerEdgeCasesTest extends ModelTest {
      * 4 inventors × 4 distinct icons = 16 total points.
      */
     @Test
-    @DisplayName("Calcolo Inventori: Interazione complessa di set e icone")
+    @DisplayName("Inventor Calculation: Complex interaction of sets and icons")
     void testComplexInventorIconMath() {
         Player p = newPlayer("Test");
         give(p, new Inventor(39)); // SPEARHEAD
@@ -73,7 +73,7 @@ public class PlayerEdgeCasesTest extends ModelTest {
         give(p, new Inventor(41)); // BREAD
         give(p, new Inventor(42)); // CANOE
 
-        // 4 Inventori * 4 icone diverse = 16
+        // 4 Inventors * 4 distinct icons = 16
         assertEquals(16, p.calculateTotalScore());
     }
 }

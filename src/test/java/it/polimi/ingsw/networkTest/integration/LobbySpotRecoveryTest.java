@@ -1,9 +1,3 @@
-/*
- * Goal: Verify that if a player disconnects abruptly while waiting in a game lobby
- * (before the game starts), the server correctly cleans up their "ghost" session.
- * Specifically, it ensures that the disconnected player is removed from the GameRoom,
- * freeing up their slot so that another player can join and successfully start the game.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.AvailableGamesResponseMessage;
@@ -15,6 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies that pre-game disconnections cleanly purge ghost sessions from lobbies,
+ * freeing slots immediately and allowing subsequent clients to join and start the match.
+ *
+ * EXPECTATION:
+ * When a lobby player abruptly drops their socket connection before a match begins,
+ * the server reclaims their allocated slot, broadcasts a room status update to survivors,
+ * and successfully fills the vacant position on subsequent join attempts.
+ */
 public class LobbySpotRecoveryTest extends NetworkTestBase {
 
     @Test
@@ -31,9 +35,6 @@ public class LobbySpotRecoveryTest extends NetworkTestBase {
         AvailableGamesResponseMessage gamesMsg = host.waitFor(AvailableGamesResponseMessage.class, 2);
         String gameId = gamesMsg.games().get(0).getGameId();
 
-        //  Ghost joins the game. The room is now full, triggering the game start.
-        // Wait, if it's 2 players, joining starts it immediately. 
-        // Let's test a 3-player lobby to test pure lobby recovery.
         host.disconnect(); // Reset state
 
         host = new DummyClient("Host");

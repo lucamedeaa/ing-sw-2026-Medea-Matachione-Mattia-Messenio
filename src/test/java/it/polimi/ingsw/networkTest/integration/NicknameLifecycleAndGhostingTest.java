@@ -1,9 +1,3 @@
-/*
- * Goal: Ensure robust tracking and freeing of unique identifiers (nicknames).
- * A nickname must be strictly locked while a player is in the lobby or in a game.
- * However, if the player gracefully leaves or abruptly disconnects, the GameManager
- * MUST release the nickname, allowing a new client to claim it immediately.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.ErrorMessage;
@@ -14,6 +8,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * SUMMARY:
+ * Verifies nickname lifecycle management, ensuring unique identifiers are locked during
+ * active sessions and immediately released for reuse upon disconnection or graceful exit.
+ *
+ * EXPECTATION:
+ * The network registry prevents distinct clients from registering the same nominal identifier
+ * concurrently, yet flushes the ownership key instantly when the original session leaves or resets.
+ */
 public class NicknameLifecycleAndGhostingTest extends NetworkTestBase {
 
     @Test
@@ -24,7 +27,7 @@ public class NicknameLifecycleAndGhostingTest extends NetworkTestBase {
         originalAlice.proxy.createGame("Alice", 2);
         originalAlice.waitFor(MatchmakingSuccessMessage.class, 2);
 
-        //  An imposter tries to join or create a game using the name "Alice"
+        //  An impostor tries to join or create a game using the name "Alice"
         DummyClient imposter = new DummyClient("Imposter");
         imposter.proxy.createGame("Alice", 3); // Tries to use "Alice"
 

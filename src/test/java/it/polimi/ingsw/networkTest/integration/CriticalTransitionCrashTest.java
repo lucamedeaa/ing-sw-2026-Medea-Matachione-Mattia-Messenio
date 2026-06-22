@@ -1,15 +1,19 @@
-/*
- * Goal: Verify that the server handles disconnections during critical state transitions.
- * Specifically, it simulates a player leaving the game exactly when the turn should end,
- * ensuring the RoomConnectionHandler doesn't attempt to broadcast to a null proxy
- * or leave the ModelController in a locked/deadlocked state.
- */
 package it.polimi.ingsw.networkTest.integration;
 
 import it.polimi.ingsw.common.message.server.*;
 import it.polimi.ingsw.networkTest.NetworkTestBase;
 import org.junit.jupiter.api.Test;
 
+/**
+ * SUMMARY:
+ * Verifies server resilience when a client disconnects during state transitions,
+ * ensuring no null broadcasts, deadlocks, or leaked game instances occur.
+ *
+ * EXPECTATION:
+ * If a critical turn-ending packet is immediately followed by a connection drop,
+ * the game engine safely unwinds its execution state and issues an abort message
+ * to surviving players instead of locking up.
+ */
 public class CriticalTransitionCrashTest extends NetworkTestBase {
 
     @Test
@@ -38,8 +42,6 @@ public class CriticalTransitionCrashTest extends NetworkTestBase {
         first.waitFor(DeltaEventMessage.class, 2);
         second.waitFor(DeltaEventMessage.class, 2);
 
-        // Now in ActionState. first takes a card and dies.
-        // Ha posizionato su 0 (Template B: 1 presa in basso), quindi deve prendere da row 1
         first.proxy.takeCard(1, 0);
         first.disconnect();
 

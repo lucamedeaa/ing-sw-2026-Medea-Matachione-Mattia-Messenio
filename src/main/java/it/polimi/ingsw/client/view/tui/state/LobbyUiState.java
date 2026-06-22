@@ -116,13 +116,11 @@ public class LobbyUiState implements UIState, LobbyView {
     /** {@inheritDoc} */
     @Override
     public void onRoomUpdate(String notification, List<String> currentPlayers) {
-        //render(); //gia fatto in chiusura del batch
     }
 
     /** {@inheritDoc} */
     @Override
     public void onError(String error) {
-        // estisci l'errore in lobby
     }
 
     /** {@inheritDoc} */

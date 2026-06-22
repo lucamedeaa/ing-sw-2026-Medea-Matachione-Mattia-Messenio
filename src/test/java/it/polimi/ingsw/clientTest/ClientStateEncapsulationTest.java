@@ -15,6 +15,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Verifies that state requests return a deep copy or immutable snapshot,
+ * preventing background network threads from inducing data races in the UI.
+ */
 @Timeout(10)
 public class ClientStateEncapsulationTest {
 
@@ -27,24 +31,23 @@ public class ClientStateEncapsulationTest {
         void testGetPlayersReturnsDeepCopy() {
             GameModel model = new GameModel();
 
-            // Setup dello stato iniziale
+            // Setup initial state
             PlayerDto p1 = new PlayerDto("Alice", 5, 0, TotemColor.ORANGE, 0, 0);
             BoardDto emptyBoard = new BoardDto(List.of(), List.of(), 1, 1, 1);
             model.setFullState(emptyBoard, List.of(p1), "Alice");
 
-            // La UI "legge" lo stato (es. inizio del rendering)
+            // UI reads the state (e.g., at the start of rendering)
             Map<String, PlayerSnapshot> uiSnapshotMap = model.getPlayers();
             PlayerSnapshot aliceSnapshot = uiSnapshotMap.get("Alice");
 
-            // Il Network Thread aggiorna il modello mentre la UI sta elaborando
+            // Network Thread updates the model while the UI is processing
             model.updatePlayerResources("Alice", 15, 0, 0, 0);
 
-            // Verifica: lo snapshot in mano alla UI DEVE rimanere inalterato.
-            // Se fallisce (restituisce 15), significa che hai restituito una Shallow Copy
-            // di un oggetto mutabile, esponendo l'app a Data Races.
+            // Verification: the snapshot held by the UI MUST remain unaltered.
+            // If it fails (returns 15), a Shallow Copy of a mutable object was returned, exposing the application to Data Races.
             assertEquals(5, aliceSnapshot.getFood(),
-                    "VULNERABILITA': Il PlayerSnapshot in mano alla UI ha subito una mutazione " +
-                            "in background. Devi implementare una Deep Copy o usare record immutabili.");
+                    "VULNERABILITY: The PlayerSnapshot held by the UI was mutated in the background. " +
+                            "You must implement a Deep Copy or use immutable records.");
         }
     }
 }
