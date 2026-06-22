@@ -25,7 +25,7 @@
                         <Insets top="24" right="30" bottom="24" left="30"/>
                     </padding>
 
-                    <Label text="Giocatori in lobby" minWidth="240"
+                    <Label text="Players in Lobby" minWidth="240"
                            style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 34px; -fx-text-fill: #e67e22; -fx-effect: dropshadow(three-pass-box, black, 8, 0, 0, 3);"/>
 
                     <Separator orientation="VERTICAL"/>
@@ -44,12 +44,12 @@
                     <Slider fx:id="volumeSlider" min="0" max="1" value="0.5" prefWidth="230"/>
                 </HBox>
 
-                <Button text="ABBANDONA PARTITA"
+                <Button text="LEAVE MATCH"
                         onAction="#handleLeave"
                         prefWidth="320"
                         style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
 
-                <Button text="DISCONNETTITI"
+                <Button text="DISCONNECT"
                         onAction="#handleDisconnect"
                         prefWidth="320"
                         style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ff5252; -fx-border-color: #ff5252; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>

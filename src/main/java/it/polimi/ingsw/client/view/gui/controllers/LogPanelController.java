@@ -32,7 +32,7 @@ public class LogPanelController {
      * @param error error text
      */
     public void appendError(String error) {
-        logArea.appendText("ERRORE: " + stripAnsi(error) + "\n");
+        logArea.appendText("ERROR: " + stripAnsi(error) + "\n");
     }
 
     private String stripAnsi(String text) {

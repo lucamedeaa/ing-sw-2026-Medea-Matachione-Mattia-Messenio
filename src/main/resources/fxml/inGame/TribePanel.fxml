@@ -9,7 +9,7 @@
 
     <padding><Insets top="10" right="15" bottom="10" left="15"/></padding>
 
-    <Label fx:id="tribeOwnerLabel" text="LA TUA TRIBÙ" styleClass="panel-title"/>
+    <Label fx:id="tribeOwnerLabel" text="YOUR TRIBE" styleClass="panel-title"/>
 
     <ScrollPane fitToHeight="true" pannable="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
         <HBox fx:id="cardsContainer" spacing="15" alignment="CENTER_LEFT" styleClass="cards-hbox"/>

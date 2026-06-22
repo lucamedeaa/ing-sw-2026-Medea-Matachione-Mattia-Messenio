@@ -101,10 +101,10 @@ public class GameEndedScreen implements RefreshableScreen, GameEndedScreenPort {
     private void renderLocalResult(GameEndedViewState state) {
         var local = state.localResult();
         if (local != null) {
-            positionLabel.setText("Posizione: " + local.localPosition() + " / " + local.playerCount());
-            scoreLabel.setText("Punteggio: " + local.localScore());
-            foodLabel.setText("Cibo rimanente: " + local.localRemainingFood());
-            personalBestLabel.setText("Miglior punteggio globale: "
+            positionLabel.setText("Position: " + local.localPosition() + " / " + local.playerCount());
+            scoreLabel.setText("Score: " + local.localScore());
+            foodLabel.setText("Remaining Food: " + local.localRemainingFood());
+            personalBestLabel.setText("Global Best Score: "
                     + local.personalBestScore() + " pt  (pos. " + local.globalPersonalBestPosition() + ")");
         }
     }

@@ -18,13 +18,13 @@
         <Label text="Matchmaking" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 52px; -fx-text-fill: #fdf5e6; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.9), 15, 0.0, 0, 5);"/>
 
         <HBox spacing="10" alignment="CENTER">
-            <TextField fx:id="nicknameField" promptText="Nome del Capotribù..." HBox.hgrow="ALWAYS"
+            <TextField fx:id="nicknameField" promptText="Tribe Leader Name..." HBox.hgrow="ALWAYS"
                        style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(0, 0, 0, 0.7); -fx-text-fill: white; -fx-border-color: #777; -fx-border-radius: 4; -fx-background-radius: 4; -fx-prompt-text-fill: #aaaaaa;"/>
 
-            <ComboBox fx:id="maxPlayersComboBox" promptText="Membri"
+            <ComboBox fx:id="maxPlayersComboBox" promptText="Players"
                       style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-font-weight: bold; -fx-background-color: rgba(0, 0, 0, 0.9); -fx-text-fill: #ffffff; -fx-border-color: #ffffff; -fx-border-width: 2; -fx-border-radius: 4; -fx-background-radius: 4; -fx-prompt-text-fill: #ffffff;" />
 
-            <Button fx:id="createGameButton" text="FONDA VILLAGGIO" onAction="#onCreateGame"
+            <Button fx:id="createGameButton" text="FOUND VILLAGE" onAction="#onCreateGame"
                     style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
         </HBox>
 
@@ -35,14 +35,15 @@
 
         <Separator style="-fx-background-color: #8d6e63; -fx-opacity: 0.5;"/>
 
-        <Button text="ASCOLTA GLI ECO (Aggiorna)" onAction="#onRefreshList" maxWidth="Infinity"
+        <Button text="LISTEN TO THE ECHOES (Refresh)" onAction="#onRefreshList" maxWidth="Infinity"
                 style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
 
         <ListView fx:id="gamesListView" VBox.vgrow="ALWAYS" minHeight="200"
                   style="-fx-background-color: transparent; -fx-control-inner-background: transparent; -fx-background-insets: 0; -fx-padding: 10;"/>
 
-        <Button fx:id="joinGameButton" text="UNISCITI ALLA CACCIA" onAction="#onJoinGame" maxWidth="Infinity"
+        <Button fx:id="joinGameButton" text="JOIN THE HUNT" onAction="#onJoinGame" maxWidth="Infinity"
                 style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 22px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0.0, 0, 4);"/>
+
         <Label fx:id="errorLabel" style="-fx-font-family: 'serif'; -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #b71c1c;"/>
 
         <Separator style="-fx-background-color: #ff5252; -fx-opacity: 0.5;"/>

@@ -27,19 +27,19 @@
                     </columnConstraints>
 
                     <Label text="Builder:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #2ecc71; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="Grants food discount for buildings, gives PP at game end (e.g. -1f discount, +2pp final)." GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="Grants food discounts for buildings and prestige points at the end of the game (e.g. -1 food discount, +2 final PP)." GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Hunter:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="sym:✓ grants instant food equal to Hunters in tribe. Hunt event: grants food per Hunter in tribe." GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="sym:✓ grants instant food equal to the number of Hunters in the tribe. Hunt event: grants food per Hunter in the tribe." GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Artist:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #9b59b6; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="No direct effect — score via CavePaintings." GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="No direct effect — scores through Cave Paintings." GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Shaman:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                     <Label text="★x1 / ★x2 / ★x3 ritual stars." GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Collector:" GridPane.rowIndex="4" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="Provides 3 food discount during the Sustenance event." GridPane.rowIndex="4" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="Provides a 3-food discount during the Sustenance event." GridPane.rowIndex="4" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Inventor:" GridPane.rowIndex="5" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #2980b9; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                     <Label text="Has an icon — matching pairs score ONLY with InventorPair. Icons: Spearhead, Leather, Bread, Canoe, Mortar, Rope, Flute, Statue, Fishhook, Necklace." GridPane.rowIndex="5" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
@@ -54,23 +54,23 @@
                         <ColumnConstraints hgrow="ALWAYS"/>
                     </columnConstraints>
 
-                    <Label text="CavePaintings:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="Thresholds and PP rewards depend on the specific card." GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="Cave Paintings:" GridPane.rowIndex="0" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                    <Label text="Thresholds and prestige point rewards depend on the specific card." GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Hunt:" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="Grants food based on Hunter count." GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="Grants food based on the number of Hunters." GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
-                    <Label text="ShamanicRitual:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="Highest stars gain PP, lowest lose PP (ties apply)." GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="Shamanic Ritual:" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                    <Label text="Players with the most stars gain PP, while players with the fewest lose PP (ties apply)." GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Sustenance:" GridPane.rowIndex="3" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e67e22; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="-1f per character (Collectors discount). if food insufficient: -N pp per missing food." GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="-1 food per character (Collectors apply discounts). If food is insufficient: -N PP for each missing food." GridPane.rowIndex="3" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
                 </GridPane>
             </VBox>
 
             <VBox spacing="10" style="-fx-background-color: rgba(255,255,255,0.03); -fx-padding: 15; -fx-background-radius: 8; -fx-border-color: #333; -fx-border-radius: 8;">
                 <Label text="BUILDINGS" style="-fx-font-family: 'MedievalSharp'; -fx-font-size: 20px; -fx-text-fill: #ffd700;"/>
-                <Label text="Bought by spending food; grant prestige at the end of the game." style="-fx-font-family: 'Arial'; -fx-text-fill: #aaa; -fx-font-size: 13px; -fx-view-order: 1;"/>
+                <Label text="Buildings are purchased using food and grant prestige points at the end of the game." style="-fx-font-family: 'Arial'; -fx-text-fill: #aaa; -fx-font-size: 13px; -fx-view-order: 1;"/>
 
                 <GridPane hgap="15" vgap="10">
                     <columnConstraints>
@@ -82,7 +82,7 @@
                     <Label text="RitualShield, DiverseSet, InventorPair, TurnBonus, FoodDsc(Art), FoodDsc(Col)" GridPane.rowIndex="0" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;"/>
 
                     <Label text="Era 2 (5-7f):" GridPane.rowIndex="1" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #f39c12; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                    <Label text="ArtistFood, BuildrMastery, RitualStars, DblPrestige, FoodDsc(Inv), SetScorer, HunterBonus" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
+                    <Label text="ArtistFood, BuilderMastery, RitualStars, DoublePrestige, FoodDsc(Inv), SetScorer, HunterBonus" GridPane.rowIndex="1" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>
 
                     <Label text="Era 3 (6-10f):" GridPane.rowIndex="2" GridPane.columnIndex="0" style="-fx-font-family: 'Arial'; -fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                     <Label text="VictoryPoints, LatePurchase, ClassScorer(Inv/Art/Sha/Hun/Col/Bui)" GridPane.rowIndex="2" GridPane.columnIndex="1" style="-fx-font-family: 'Arial'; -fx-text-fill: #fdf5e6; -fx-font-size: 14px;" wrapText="true"/>

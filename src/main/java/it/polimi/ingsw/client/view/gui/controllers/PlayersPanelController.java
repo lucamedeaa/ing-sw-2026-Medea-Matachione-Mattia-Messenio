@@ -70,7 +70,7 @@ public class PlayersPanelController {
             name.getStyleClass().add(player.nickname().equals(selfNickname)
                     ? "player-name-self" : "player-name");
 
-            Label stats = new Label(player.prestige() + " PP  |  " + player.food() + " Cibo");
+            Label stats = new Label(player.prestige() + " PP  |  " + player.food() + " Food ");
             stats.getStyleClass().add("player-stats-label");
 
             info.getChildren().addAll(name, stats);

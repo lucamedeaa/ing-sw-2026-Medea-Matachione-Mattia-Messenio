@@ -10,7 +10,8 @@
 
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <Label text="Cronache della Tribù" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-text-fill: #e67e22;"/>
+    <Label text="Tribe Chronicles" style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 20px; -fx-text-fill: #e67e22;"/>
+
     <TextArea fx:id="logArea" editable="false" wrapText="true"
               style="-fx-control-inner-background: transparent; -fx-background-color: transparent; -fx-text-fill: #fdf5e6; -fx-font-family: 'Arial'; -fx-font-size: 14px;"
               VBox.vgrow="ALWAYS"/>

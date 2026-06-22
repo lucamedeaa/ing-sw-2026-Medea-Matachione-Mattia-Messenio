@@ -9,7 +9,7 @@
 
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
 
-    <Button fx:id="skipButton" text="Salta azione" onAction="#handleSkip"
+    <Button fx:id="skipButton" text="Skip Action" onAction="#handleSkip"
             style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;" disable="true"/>
 
     <Separator style="-fx-background-color: #e67e22; -fx-opacity: 0.2;"/>
@@ -17,15 +17,15 @@
     <Button text="Log" onAction="#handleToggleLog"
             style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;"/>
 
-    <Button text="Mostra Info" onAction="#handleShowInfo"
+    <Button text="Show Info" onAction="#handleShowInfo"
             style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ffd700; -fx-border-color: #ffd700; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;"/>
 
     <Separator style="-fx-background-color: #ff5252; -fx-opacity: 0.2;"/>
 
     <Button text="Return to Main Menu" onAction="#handleReturnToMainMenu"
-        style="-fx-font-family: 'MedievalSharp'; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-font-size: 14px; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-max-width: Infinity;"/>
+            style="-fx-font-family: 'MedievalSharp'; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #e67e22; -fx-font-size: 14px; -fx-border-color: #e67e22; -fx-border-width: 2; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-max-width: Infinity;"/>
 
-    <Button text="Exit the game" onAction="#handleDisconnect"
+    <Button text="Exit the Game" onAction="#handleDisconnect"
             style="-fx-font-family: 'MedievalSharp', serif; -fx-font-size: 18px; -fx-background-color: rgba(15, 15, 15, 0.9); -fx-text-fill: #ff5252; -fx-border-color: #ff5252; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; -fx-cursor: hand; -fx-pref-width: 200;"/>
 
 </VBox>
