@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.view.tui.command;
 
-import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.client.view.tui.TuiNavigator;
 
 /**
@@ -14,10 +13,9 @@ public class ViewTribeCommand implements GameCommand {
      * Creates a command that navigates to a player's tribe.
      *
      * @param navigator TUI navigator
-     * @param out output port reserved for command feedback
      * @param targetPlayer nickname of the player to inspect
      */
-    public ViewTribeCommand(TuiNavigator navigator, OutputPort out, String targetPlayer) {
+    public ViewTribeCommand(TuiNavigator navigator, String targetPlayer) {
         this.navigator = navigator;
         this.targetPlayer = targetPlayer;
     }

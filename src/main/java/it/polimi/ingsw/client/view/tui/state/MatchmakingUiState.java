@@ -93,7 +93,7 @@ public class MatchmakingUiState implements UIState, MatchmakingView {
             return new JoinGameCommand(controller, out, nickname, gameId);
         });
 
-        commandRegistry.put("list", args -> new AvailableGamesCommand(controller, out));
+        commandRegistry.put("list", args -> new AvailableGamesCommand(controller));
         commandRegistry.put("disconnect", args -> new DisconnectCommand(controller, lifecyclePort, out));
         commandRegistry.put("0", args -> new DisconnectCommand(controller, lifecyclePort, out));
     }

@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.tui.command;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 import it.polimi.ingsw.common.config.CardRegistry;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.action.PlaceTotemActionDto;
 import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
 import it.polimi.ingsw.common.network.dto.action.TakeCardActionDto;
@@ -38,14 +37,6 @@ public class ActionExecutor implements ActionVisitor {
 
     }
 
-    /**
-     * Returns whether this executor successfully sent a command to the server.
-     *
-     * @return true if a command was sent, false otherwise
-     */
-    public boolean isCommandSent() {
-        return commandSent;
-    }
 
     private boolean isStrictInteger(String str) {
         return str.matches("0|[1-9]\\d*");

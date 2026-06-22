@@ -18,7 +18,6 @@ public class GetLeaderboardCommand implements GameCommand {
     /** {@inheritDoc} */
     @Override
     public void execute() {
-        // Invia la richiesta di rete al server
         server.getLeaderboard();
     }
 }

@@ -14,7 +14,6 @@ import it.polimi.ingsw.client.view.tui.command.ServerCommandPort;
 import it.polimi.ingsw.client.view.tui.render.ColorAnsi;
 import it.polimi.ingsw.client.view.tui.render.LobbyRenderer;
 import it.polimi.ingsw.client.view.listeners.LobbyView;
-import it.polimi.ingsw.server.model.Game;
 
 import java.util.HashMap;
 import java.util.List;

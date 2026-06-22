@@ -147,11 +147,9 @@ public class InGameRenderer {
             PlayerResources res = deltas.getOrDefault(nickname, new PlayerResources(0, 0, 0, 0));
             int df = res.food();
             int dp = res.prestige();
-            int dd = res.discount();
 
             String foodStr = (df >= 0 ? "+" : "") + df;
             String ppStr   = (dp >= 0 ? "+" : "") + dp;
-            //String discStr = dd == 0 ? "0" : (dd > 0 ? "-" + dd : "+" + Math.abs(dd));
 
             String pColor = getTotemAnsiColor(gameModel, nickname);
 

@@ -38,8 +38,6 @@ public final class ColorAnsi {
     /** ANSI foreground color for cyan text. */
     public static final String CYAN = "\033[36m";
 
-    /** ANSI foreground color for white text. */
-    public static final String WHITE = "\033[37m";
 
     /** ANSI foreground color for gray text. */
     public static final String GRAY = "\033[90m";

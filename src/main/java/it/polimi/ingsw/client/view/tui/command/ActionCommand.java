@@ -3,7 +3,6 @@ package it.polimi.ingsw.client.view.tui.command;
 import it.polimi.ingsw.client.model.GameModel;
 import it.polimi.ingsw.client.view.tui.OutputPort;
 
-import java.util.List;
 
 /**
  * Command that executes one of the currently available game actions.

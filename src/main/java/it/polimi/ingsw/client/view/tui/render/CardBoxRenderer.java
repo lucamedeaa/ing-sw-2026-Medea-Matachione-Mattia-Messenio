@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class CardBoxRenderer {
 
-    private static final String RESET = "AnsiColor.RESET";
-
     /**
      * Returns the ANSI color associated with the card type.
      *
@@ -63,7 +61,6 @@ public class CardBoxRenderer {
 
         CardInfo info = CardRegistry.getCard(id);
 
-        // Formattazione UI applicata SOLO QUI, partendo dai numeri puri
         String costString = info.foodCost() > 0 ? "cost: " + info.foodCost() + "f" : "";
         String ppString = info.prestigePoints() > 0 ? "+" + info.prestigePoints() + " pp" : "";
         String costPp = costString.isEmpty() && ppString.isEmpty() ? "" : costString + " " + ppString;
@@ -118,7 +115,7 @@ public class CardBoxRenderer {
             return;
         }
 
-        int chunkSize = 8; // Numero massimo di carte per riga
+        int chunkSize = 8;
         for (int start = 0; start < cards.size(); start += chunkSize) {
             int end = Math.min(start + chunkSize, cards.size());
             List<Integer> chunk = cards.subList(start, end);

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.view.tui.render;
 
 import it.polimi.ingsw.client.view.tui.OutputPort;
-import it.polimi.ingsw.common.network.dto.BoardDto;
 import it.polimi.ingsw.common.network.dto.action.PlaceTotemActionDto;
 import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
 import it.polimi.ingsw.common.network.dto.action.TakeCardActionDto;

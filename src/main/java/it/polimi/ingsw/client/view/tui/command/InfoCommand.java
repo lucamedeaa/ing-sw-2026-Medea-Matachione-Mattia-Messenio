@@ -13,9 +13,8 @@ public class InfoCommand implements GameCommand {
      * Creates a command that navigates to the information screen.
      *
      * @param navigator TUI navigator
-     * @param out output port reserved for command feedback
      */
-    public InfoCommand(TuiNavigator navigator, OutputPort out) {
+    public InfoCommand(TuiNavigator navigator) {
         this.navigator = navigator;
     }
 

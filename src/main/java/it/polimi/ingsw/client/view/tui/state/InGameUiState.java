@@ -74,9 +74,9 @@ public class InGameUiState implements UIState, InGameView {
             if (!gameModel.getPlayers().containsKey(args[1])) {
                 throw new IllegalArgumentException("Player not found: " + args[1]);
             }
-            return new ViewTribeCommand(navigator, out, args[1]);
+            return new ViewTribeCommand(navigator, args[1]);
         });
-        commandRegistry.put("i", args -> new InfoCommand(navigator, out));
+        commandRegistry.put("i", args -> new InfoCommand(navigator));
         commandRegistry.put("quit", args -> new DisconnectCommand(controller, lifecyclePort, out));
         commandRegistry.put("leave", args -> new LeaveGameCommand(controller, out));
     }
