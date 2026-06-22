@@ -13,17 +13,17 @@ public class CardRegistry {
 
     static {
         try (InputStream is = CardRegistry.class.getResourceAsStream("/cards.json")) {
-            if (is == null) throw new IllegalStateException("cards.json non trovato!");
+            if (is == null) throw new IllegalStateException("cards.json not found!");
             ObjectMapper mapper = new ObjectMapper();
             CARDS = Collections.unmodifiableMap(mapper.readValue(is, new TypeReference<>() {}));
         } catch (Exception e) {
-            throw new ExceptionInInitializerError("Errore caricamento carte: " + e.getMessage());
+            throw new ExceptionInInitializerError("Card loading error: " + e.getMessage());
         }
     }
 
     public static CardInfo getCard(int id) {
         CardInfo def = CARDS.get(id);
-        if (def == null) throw new IllegalArgumentException("Carta non trovata: " + id);
+        if (def == null) throw new IllegalArgumentException("Card not found: " + id);
         return def;
     }
 }
