@@ -36,46 +36,55 @@ public class RmiServerProxy implements ServerProxy {
         this.pinger.scheduleAtFixedRate(() -> invoke(serverSession::ping), 5, 5, TimeUnit.SECONDS);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void createGame(String nickname, int maxPlayers) {
         invoke(() -> serverSession.createGame(nickname, maxPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void joinGame(String nickname, String gameId) {
         invoke(() -> serverSession.joinGame(nickname, gameId));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getAvailableGames() {
         invoke(serverSession::getAvailableGames);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         invoke(serverSession::leaveGame);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void placeTotem(int positionIndex) {
         invoke(() -> serverSession.placeTotem(positionIndex));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void takeCard(int row, int col) {
         invoke(() -> serverSession.takeCard(row, col));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipAction() {
         invoke(serverSession::skipAction);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getLeaderboard() {
         invoke(serverSession::getLeaderboard);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void disconnect() {
         if (active.compareAndSet(true, false)) {

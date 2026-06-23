@@ -184,6 +184,11 @@ public abstract class Card {
      */
     public abstract CharacterType getCharacter();
 
+    /**
+     * Returns the i dcard.
+     *
+     * @return the i dcard
+     */
     public Integer getIDcard() {
         return IDcard;
     }

@@ -81,51 +81,61 @@ public class SocketClientHandler implements ClientProxy, Runnable {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
         sendMessage(new FullSyncMessage(board, players, activePlayer, actions, turnOrderTile));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
         sendMessage(new DeltaEventMessage(events, nextActions, activePlayer));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void error(String error) {
         sendMessage(new ErrorMessage(error));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void matchmakingSuccess(String text) {
         sendMessage(new MatchmakingSuccessMessage(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void availableGames(List<GameInfoDto> games) {
         sendMessage(new AvailableGamesResponseMessage(games));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameAborted(String reason) {
         sendMessage(new GameAbortedMessage(reason));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
         sendMessage(new RoomUpdateMessage(notification, currentPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameLeftSuccess(String text) {
         sendMessage(new GameLeftSuccessMessage(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameCompleted(PlayerGameCompletedDto completedGame) {
         sendMessage(new GameCompletedMessage(completedGame));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaderboard(LeaderboardSnapshotDto leaderboard) {
         sendMessage(new LeaderboardResponseMessage(leaderboard));

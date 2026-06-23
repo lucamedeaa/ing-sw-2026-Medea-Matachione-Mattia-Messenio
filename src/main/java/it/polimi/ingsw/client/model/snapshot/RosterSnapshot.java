@@ -32,35 +32,75 @@ public class RosterSnapshot {
         }
     }
 
+    /**
+     * Stores the board position occupied by a player's totem.
+     *
+     * @param nickname player nickname
+     * @param positionIndex offer tile position index
+     */
     public void updateTotemPosition(String nickname, int positionIndex) {
         playerTotemPositions.put(nickname, positionIndex);
         playerReturnPositions.remove(nickname);
     }
 
+    /**
+     * Moves a player's totem back to the return track.
+     *
+     * @param nickname player nickname
+     * @param returnIndex totem return-track index
+     */
     public void returnTotemToTrack(String nickname, int returnIndex) {
         playerTotemPositions.remove(nickname);
         playerReturnPositions.put(nickname, returnIndex);
     }
 
+    /**
+     * Adds a card to a player's tribe.
+     *
+     * @param nickname player nickname
+     * @param cardId card identifier
+     */
     public void addCardToTribe(String nickname, Integer cardId) {
         playerTribes.computeIfAbsent(nickname, k -> new CopyOnWriteArrayList<>()).add(cardId);
 
     }
 
+    /**
+     * Replaces the cards in a player's tribe.
+     *
+     * @param nickname player nickname
+     * @param newTribeCards replacement tribe card identifiers
+     */
     public void updateTribe(String nickname, List<Integer> newTribeCards) {
         playerTribes.put(nickname, new ArrayList<>(newTribeCards));
     }
 
 
+    /** Clears the return positions. */
     public void clearReturnPositions() {
         playerReturnPositions.clear();
     }
 
     //public Map<String, PlayerSnapshot> getPlayers() { return new HashMap<>(players); }
+    /**
+     * Returns the totem positions.
+     *
+     * @return the totem positions
+     */
     public Map<String, Integer> getTotemPositions() { return new HashMap<>(playerTotemPositions); }
+    /**
+     * Returns the return positions.
+     *
+     * @return the return positions
+     */
     public Map<String, Integer> getReturnPositions() { return new HashMap<>(playerReturnPositions); }
     //public Map<String, List<Integer>> getTribes() { return new HashMap<>(playerTribes); }
 
+    /**
+     * Returns the players.
+     *
+     * @return defensive copy of player snapshots by nickname
+     */
     public Map<String, PlayerSnapshot> getPlayers() {
         Map<String, PlayerSnapshot> copy = new HashMap<>();
         for (Map.Entry<String, PlayerSnapshot> entry : players.entrySet()) {
@@ -69,6 +109,11 @@ public class RosterSnapshot {
         return copy;
     }
 
+    /**
+     * Returns the tribes.
+     *
+     * @return defensive copy of tribe card identifiers by nickname
+     */
     public Map<String, List<Integer>> getTribes() {
         Map<String, List<Integer>> copy = new HashMap<>();
         for (Map.Entry<String, List<Integer>> entry : playerTribes.entrySet()) {
@@ -77,6 +122,15 @@ public class RosterSnapshot {
         return copy;
     }
 
+    /**
+     * Updates the player resources.
+     *
+     * @param nickname player nickname
+     * @param food food value
+     * @param prestige prestige value
+     * @param foodDiscount food discount value
+     * @param sustenanceDiscount sustenance discount value
+     */
     public void updatePlayerResources(String nickname, int food, int prestige, int foodDiscount, int sustenanceDiscount) {
     PlayerSnapshot player = players.get(nickname);
     if (player != null) {

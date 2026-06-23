@@ -40,6 +40,14 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
     private GameController gameController;
     private ExecutorService gameExecutor;
 
+    /**
+     * Creates a new {@code GameRoom} instance.
+     *
+     * @param gameId game identifier
+     * @param maxPlayers maximum number of players
+     * @param gameManager game manager
+     * @param leaderboardService leaderboard service
+     */
     public GameRoom(String gameId, int maxPlayers, GameManagerInterface gameManager, LeaderboardService leaderboardService) {
         this.gameId = gameId;
         this.maxPlayers = maxPlayers;
@@ -177,6 +185,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void closeCompletedRoom(CompletedGameResult completedGame, List<LeaderboardEntryDto> personalBestEntries) {
         if (isRoomAlreadyClosedOrMarkClosed()) {
@@ -187,6 +196,7 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         closeRoomResources();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void closeAbortedRoom(String reason, String excludedNickname) {
         if (isRoomAlreadyClosedOrMarkClosed()) {
@@ -267,38 +277,74 @@ public class GameRoom implements GameLifecycleCallback, RoomConnectionHandler {
         }
     }
 
+    /**
+     * Returns whether full.
+     *
+     * @return true if the room is full; false otherwise
+     */
     public boolean isFull() {
         synchronized (roomLock) {
             return players.size() >= maxPlayers;
         }
     }
 
+    /**
+     * Returns whether game started.
+     *
+     * @return true if the game has started; false otherwise
+     */
     public boolean isGameStarted() {
         synchronized (roomLock) {
             return gameStarted;
         }
     }
 
+    /**
+     * Returns whether nickname taken.
+     *
+     * @param nickname player nickname
+     * @return true if the nickname is already in use; false otherwise
+     */
     public boolean isNicknameTaken(String nickname) {
         synchronized (roomLock) {
             return players.containsKey(nickname);
         }
     }
 
+    /**
+     * Returns the game id.
+     *
+     * @return the game identifier
+     */
     public String getGameId() {
         return gameId;
     }
 
+    /**
+     * Returns the max players.
+     *
+     * @return the maximum number of players
+     */
     public int getMaxPlayers() {
         return maxPlayers;
     }
 
+    /**
+     * Returns the players.
+     *
+     * @return the current player nicknames
+     */
     public List<String> getPlayers() {
         synchronized (roomLock) {
             return new ArrayList<>(players.keySet());
         }
     }
 
+    /**
+     * Broadcasts the broadcast.
+     *
+     * @param messageText message text
+     */
     public void broadcast(String messageText) {
         List<ConnectionContext> currentConnections;
         List<String> currentPlayers;

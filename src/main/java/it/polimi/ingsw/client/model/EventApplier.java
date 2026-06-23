@@ -21,11 +21,13 @@ public class EventApplier implements EventVisitor {
         this.gameModel = gameModel;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(CardTakenDto event) {
         gameModel.removeCard(event.row(), event.col());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(BoardRefilledDto event) {
         gameModel.refillBoardRow(event.row(), event.newCardIds());
@@ -34,12 +36,14 @@ public class EventApplier implements EventVisitor {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(TotemPlacedDto event) {
         gameModel.executePendingDeltaReset();
         gameModel.updateTotemPosition(event.nickname(), event.positionIndex());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(PlayerResourcesChangedDto event) {
         gameModel.updatePlayerResources(event.nickname(), event.newFood(), event.newPrestige(), event.foodDiscount(), event.sustenanceDiscount());
@@ -48,16 +52,19 @@ public class EventApplier implements EventVisitor {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(CardAddedToTribeDto event) {
         gameModel.addCardToPlayerTribe(event.nickname(), event.cardId());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(EraTransitionDto event) {
         gameModel.updateEra(event.newEraNumber());
         gameModel.addGameLog("[!] THE ERA BEGINS " + event.newEraNumber() + "!");
     }
+    /** {@inheritDoc} */
     @Override
     public void visit(RoundAdvancedDto event) {
         gameModel.addGameLog("=== END OF ROUND " + (event.newRound() - 1) + " ===");
@@ -65,25 +72,30 @@ public class EventApplier implements EventVisitor {
         gameModel.scheduleDeltaReset();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(TribeDto tribe) {
         gameModel.updatePlayerTribe(tribe.nickname(), tribe.tribe());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(WinnersAnnouncedDto event) {
         gameModel.setWinners(event.winnersNicknames());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(PlayerLeftGameDto event) {
         gameModel.setGameAborted("The player " + event.nickname() + " disconnected. The match has been cancelled");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(GameOverDto event) {
         gameModel.setGameOver(event.leaderboard());
     }
+    /** {@inheritDoc} */
     @Override
     public void visit(TotemReturnedDto event) {
         gameModel.returnTotemToTrack(event.nickname(), event.returnIndex());

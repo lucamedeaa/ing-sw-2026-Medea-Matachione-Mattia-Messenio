@@ -4,6 +4,7 @@ import it.polimi.ingsw.server.network.state.ConnectionState;
 
 import java.io.Serializable;
 
+/** Defines the contract for client message. */
 public interface ClientMessage extends Serializable {
 
     default void dispatchTo(ConnectionState state) {

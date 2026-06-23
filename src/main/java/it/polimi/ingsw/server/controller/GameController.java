@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** Coordinates player commands, game execution, and game-completion callbacks. */
 public class GameController implements GameCompletionHandler {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
@@ -23,6 +24,14 @@ public class GameController implements GameCompletionHandler {
     private final GameLifecycleCallback lifecycleCallback;
     private final LeaderboardService leaderboardService;
 
+    /**
+     * Creates a new {@code GameController} instance.
+     *
+     * @param game model command interface
+     * @param gameExecutor game executor
+     * @param lifecycleCallback lifecycle callback
+     * @param leaderboardService leaderboard service
+     */
     public GameController(
             ModelControllerInterface game,
             ExecutorService gameExecutor,
@@ -35,12 +44,18 @@ public class GameController implements GameCompletionHandler {
         this.leaderboardService = leaderboardService;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onGameCompleted(CompletedGameResult result) {
         List<LeaderboardEntryDto> personalBestEntries = leaderboardService.recordCompletedGame(result);
         lifecycleCallback.closeCompletedRoom(result, personalBestEntries);
     }
 
+    /**
+     * Handles the player disconnection.
+     *
+     * @param nickname player nickname
+     */
     public void handlePlayerDisconnection(String nickname) {
         submitGameTask("player disconnection for " + nickname, () -> {
             if (!game.abort()) {
@@ -51,6 +66,14 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
+    /**
+     * Handles the take card.
+     *
+     * @param nickname player nickname
+     * @param row board row index
+     * @param col card column index
+     * @param onError on error
+     */
     public void handleTakeCard(String nickname, int row, int col, Consumer<String> onError) {
         submitGameTask("take card for " + nickname, () -> {
             try {
@@ -62,6 +85,13 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
+    /**
+     * Handles the place totem.
+     *
+     * @param nickname player nickname
+     * @param positionIndex offer tile position index
+     * @param onError on error
+     */
     public void handlePlaceTotem(String nickname, int positionIndex, Consumer<String> onError) {
         submitGameTask("place totem for " + nickname, () -> {
             try {
@@ -73,6 +103,12 @@ public class GameController implements GameCompletionHandler {
         });
     }
 
+    /**
+     * Handles the skip bonus.
+     *
+     * @param nickname player nickname
+     * @param onError on error
+     */
     public void handleSkipBonus(String nickname, Consumer<String> onError) {
         submitGameTask("skip bonus for " + nickname, () -> {
             try {

@@ -25,6 +25,11 @@ public abstract class GameState {
         this.game.changeState(newState);
     }
 
+    /**
+     * Returns whether ended.
+     *
+     * @return true if ended; false otherwise
+     */
     public boolean isEnded() {
         return false;
     }
@@ -44,7 +49,18 @@ public abstract class GameState {
         throw new InvalidGameActionException("You can't skip bonus in this phase!");
     }
 
+    /**
+     * Returns the available actions.
+     *
+     * @param nickName player nickname
+     * @return the available actions
+     */
     public abstract List<AvailableAction> getAvailableActions(String nickName);
 
+    /**
+     * Returns the active player nickname.
+     *
+     * @return the active player nickname
+     */
     public abstract String getActivePlayerNickname();
 }

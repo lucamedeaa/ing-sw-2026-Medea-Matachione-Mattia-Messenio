@@ -4,6 +4,7 @@ import it.polimi.ingsw.common.network.dto.event.ErrorDto;
 import it.polimi.ingsw.common.message.server.*;
 
 
+/** Defines the contract for client message visitor. */
 public interface ClientMessageVisitor {
     void visit(FullSyncMessage message);
     void visit(DeltaEventMessage message);

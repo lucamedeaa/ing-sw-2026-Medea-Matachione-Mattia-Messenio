@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+/** Represents the jdbc leaderboard service component. */
 public class JdbcLeaderboardService implements LeaderboardService {
     private static final String CREATE_TABLE_SQL = """
             CREATE TABLE IF NOT EXISTS leaderboard_results (
@@ -86,6 +87,13 @@ public class JdbcLeaderboardService implements LeaderboardService {
     private final String user;
     private final String password;
 
+    /**
+     * Creates a new {@code JdbcLeaderboardService} instance.
+     *
+     * @param url database URL
+     * @param user database user
+     * @param password database password
+     */
     public JdbcLeaderboardService(String url, String user, String password) {
         this.url = url;
         this.user = user;
@@ -93,6 +101,7 @@ public class JdbcLeaderboardService implements LeaderboardService {
         initializeSchema();
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<LeaderboardEntryDto> recordCompletedGame(CompletedGameResult result) {
         LocalDateTime playedAt = LocalDateTime.now();
@@ -119,6 +128,7 @@ public class JdbcLeaderboardService implements LeaderboardService {
                 .toList();
     }
 
+    /** {@inheritDoc} */
     @Override
     public LeaderboardSnapshotDto getLeaderboard(int playerCount) {
         return new LeaderboardSnapshotDto(playerCount, fullLeaderboardEntries(playerCount));

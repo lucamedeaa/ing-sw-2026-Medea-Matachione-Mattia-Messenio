@@ -71,71 +71,85 @@ public class ConnectionSession implements ConnectionContext, ConnectionState {
         this.connectionState = lobbyState;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void createGame(String nickname, int maxPlayers) {
         executeOnSession(() -> connectionState.createGame(nickname, maxPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void joinGame(String nickname, String gameId) {
         executeOnSession(() -> connectionState.joinGame(nickname, gameId));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getAvailableGames() {
         executeOnSession(() -> connectionState.getAvailableGames());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         executeOnSession(() -> connectionState.leaveGame());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void placeTotem(int positionIndex) {
         executeOnSession(() -> connectionState.placeTotem(positionIndex));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void takeCard(int row, int col) {
         executeOnSession(() -> connectionState.takeCard(row, col));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipAction() {
         executeOnSession(() -> connectionState.skipAction());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getLeaderboard() {
         executeOnSession(() -> connectionState.getLeaderboard());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleDisconnection() {
         handleClientDisconnection();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void setNickname(String nickname) {
         executeOnSession(() -> this.nickname = nickname);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getNickname() {
         return this.nickname;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void transitionToGameState(GameController gameController) {
         executeOnSession(() -> this.connectionState = new InGameConnectionState(this.nickname, this, gameController));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void transitionToAfterGameState(int playerCount, LeaderboardService leaderboardService) {
         executeOnSession(() -> this.connectionState = new PostGameConnectionState(this, playerCount, leaderboardService));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void transitionToLobby() {
         executeOnSession(() -> {
@@ -147,6 +161,7 @@ public class ConnectionSession implements ConnectionContext, ConnectionState {
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void clearNickname() {
         executeOnSession(() -> {
@@ -208,51 +223,61 @@ public class ConnectionSession implements ConnectionContext, ConnectionState {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
         enqueueOutbound(() -> client.fullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
         enqueueOutbound(() -> client.deltaEvent(events, nextActions, activePlayer));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void error(String error) {
         enqueueOutbound(() -> client.error(error));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void matchmakingSuccess(String text) {
         enqueueOutbound(() -> client.matchmakingSuccess(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void availableGames(List<GameInfoDto> games) {
         enqueueOutbound(() -> client.availableGames(games));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameAborted(String reason) {
         enqueueOutbound(() -> client.gameAborted(reason));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
         enqueueOutbound(() -> client.roomUpdate(notification, currentPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameLeftSuccess(String text) {
         enqueueOutbound(() -> client.gameLeftSuccess(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameCompleted(PlayerGameCompletedDto completedGame) {
         enqueueOutbound(() -> client.gameCompleted(completedGame));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaderboard(LeaderboardSnapshotDto leaderboard) {
         enqueueOutbound(() -> client.leaderboard(leaderboard));

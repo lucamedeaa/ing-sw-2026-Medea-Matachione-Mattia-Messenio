@@ -47,6 +47,7 @@ public class PlacementState extends GameState {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
 
@@ -69,6 +70,7 @@ public class PlacementState extends GameState {
         return List.of(new PlaceTotemAction(freeTiles));
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         Board  board = game.getBoard();

@@ -30,22 +30,43 @@ public class GameInfoDto implements Serializable {
         this.maxPlayers = maxPlayers;
     }
 
+    /**
+     * Returns the game id.
+     *
+     * @return the game identifier
+     */
     public String getGameId() {
         return gameId;
     }
 
+    /**
+     * Returns the creator nickname.
+     *
+     * @return the creator nickname
+     */
     public String getCreatorNickname() {
         return creatorNickname;
     }
 
+    /**
+     * Returns the current players.
+     *
+     * @return the current players
+     */
     public int getCurrentPlayers() {
         return currentPlayers;
     }
 
+    /**
+     * Returns the max players.
+     *
+     * @return the maximum number of players
+     */
     public int getMaxPlayers() {
         return maxPlayers;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Game [" + gameId + "] - Founder: " + creatorNickname + " (" + currentPlayers + "/" + maxPlayers + ")";

@@ -41,18 +41,33 @@ public class LobbyModel extends ObservableModel {
 
     }
 
+    /**
+     * Returns the available games.
+     *
+     * @return the currently joinable games
+     */
     public List<GameInfoDto> getAvailableGames() {
 
             return new ArrayList<>(availableGames);
 
     }
 
+    /**
+     * Returns the lobby players.
+     *
+     * @return the lobby players
+     */
     public List<String> getLobbyPlayers() {
 
             return new ArrayList<>(lobbyPlayers);
 
     }
 
+    /**
+     * Returns the lobby notification.
+     *
+     * @return the lobby notification
+     */
     public String getLobbyNotification() {
 
             return lobbyNotification;

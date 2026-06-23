@@ -14,12 +14,10 @@ import java.util.*;
  */
 public class GameModel extends ObservableModel {
 
-    // Composizione dei sotto-stati
     private BoardSnapshot board = new BoardSnapshot();
     private RosterSnapshot roster = new RosterSnapshot();
     private TurnSnapshot turn = new TurnSnapshot();
 
-    // End Game State (rimane qui perché è statico e terminale)
     private boolean isGameOver = false;
     private List<PlayerScoreDto> leaderboard = new ArrayList<>();
     private List<String> winners = new ArrayList<>();
@@ -49,6 +47,11 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Sets the available actions.
+     *
+     * @param actions available actions
+     */
     public void setAvailableActions(List<ActionDto> actions) {
 
             turn.setActions(actions);
@@ -57,6 +60,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Sets the active player.
+     *
+     * @param activePlayer active player nickname
+     */
     public void setActivePlayer(String activePlayer) {
 
             turn.setActivePlayerSnap(activePlayer);
@@ -85,6 +93,12 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Removes the card.
+     *
+     * @param row board row index
+     * @param col card column index
+     */
     public void removeCard(int row, int col) {
 
             board.removeCard(row, col);
@@ -92,6 +106,12 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Replaces one board row with freshly drawn card identifiers.
+     *
+     * @param row board row index
+     * @param newCardIds replacement card identifiers
+     */
     public void refillBoardRow(int row, List<Integer> newCardIds) {
 
             board.refillRow(row, newCardIds);
@@ -99,6 +119,12 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates the totem position.
+     *
+     * @param nickname player nickname
+     * @param positionIndex offer tile position index
+     */
     public void updateTotemPosition(String nickname, int positionIndex) {
 
             roster.updateTotemPosition(nickname, positionIndex);
@@ -106,6 +132,11 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Initializes totem return-track positions from the turn-order tile.
+     *
+     * @param turnOrderTile initial turn-order tile
+     */
     public void setInitTotemPosition(InitTurnOrderTileDto turnOrderTile) {
         List<String> players = turnOrderTile.nickPlayers();
         for(int i = 0; i < players.size(); i++) {
@@ -114,6 +145,12 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Moves a player's totem back to the return track.
+     *
+     * @param nickname player nickname
+     * @param returnIndex totem return-track index
+     */
     public void returnTotemToTrack(String nickname, int returnIndex) {
 
             roster.returnTotemToTrack(nickname, returnIndex);
@@ -121,6 +158,12 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Adds a card to a player's tribe.
+     *
+     * @param nickname player nickname
+     * @param cardId card identifier
+     */
     public void addCardToPlayerTribe(String nickname, Integer cardId) {
 
             roster.addCardToTribe(nickname, cardId);
@@ -128,6 +171,12 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates the player tribe.
+     *
+     * @param nickname player nickname
+     * @param newTribeCards replacement tribe card identifiers
+     */
     public void updatePlayerTribe(String nickname, List<Integer> newTribeCards) {
 
             roster.updateTribe(nickname, newTribeCards);
@@ -135,6 +184,11 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates the era.
+     *
+     * @param newEra new era
+     */
     public void updateEra(int newEra) {
 
             board.setEra(newEra);
@@ -142,6 +196,11 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Updates the round.
+     *
+     * @param newRound new round
+     */
     public void updateRound(int newRound) {
 
             board.setRound(newRound);
@@ -189,6 +248,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Adds the game log.
+     *
+     * @param log log message
+     */
     public void addGameLog(String log) {
 
             turn.addGameLog(log);
@@ -196,6 +260,11 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Consumes the game logs.
+     *
+     * @return pending log lines, cleared from the model
+     */
     public List<String> consumeGameLogs() {
 
             return turn.consumeGameLogs();
@@ -225,6 +294,11 @@ public class GameModel extends ObservableModel {
 
     //  END GAME SETTERS
 
+    /**
+     * Sets the game aborted.
+     *
+     * @param reason reason text
+     */
     public void setGameAborted(String reason) {
 
             this.abortReason = reason;
@@ -233,6 +307,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Sets the game over.
+     *
+     * @param leaderboard leaderboard snapshot
+     */
     public void setGameOver(List<PlayerScoreDto> leaderboard) {
 
             this.isGameOver = true;
@@ -242,6 +321,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Sets the winners.
+     *
+     * @param winners winners
+     */
     public void setWinners(List<String> winners) {
 
             this.winners = new ArrayList<>(winners);
@@ -255,6 +339,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Stores the local completed-game result.
+     *
+     * @param result completed game result for the local player
+     */
     public void setGameCompleted(PlayerGameCompletedDto result) {
 
             this.localResult = result;
@@ -263,6 +352,11 @@ public class GameModel extends ObservableModel {
 
     }
 
+    /**
+     * Stores the latest global leaderboard snapshot.
+     *
+     * @param snapshot leaderboard snapshot
+     */
     public void setGlobalLeaderboard(LeaderboardSnapshotDto snapshot) {
 
             this.globalLeaderboard = snapshot;
@@ -270,36 +364,66 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Returns the upper row cards.
+     *
+     * @return the upper row cards
+     */
     public List<Integer> getUpperRowCards() {
 
             return board.getUpperRowCards();
 
     }
 
+    /**
+     * Returns the lower row cards.
+     *
+     * @return the lower row cards
+     */
     public List<Integer> getLowerRowCards() {
 
             return board.getLowerRowCards();
 
     }
 
+    /**
+     * Returns the current era.
+     *
+     * @return the current era
+     */
     public int getCurrentEra() {
 
             return board.getCurrentEra();
 
     }
 
+    /**
+     * Returns the current round.
+     *
+     * @return the current round
+     */
     public int getCurrentRound() {
 
             return board.getCurrentRound();
 
     }
 
+    /**
+     * Returns the next deck era.
+     *
+     * @return the next deck era
+     */
     public Integer getNextDeckEra() {
 
             return board.getNextDeckEra();
 
     }
 
+    /**
+     * Sets the next deck era.
+     *
+     * @param era next deck era
+     */
     public void setNextDeckEra(Integer era) {
 
             board.setNextDeckEra(era);
@@ -307,60 +431,110 @@ public class GameModel extends ObservableModel {
         notifyUI();
     }
 
+    /**
+     * Returns the players.
+     *
+     * @return the current player nicknames
+     */
     public Map<String, PlayerSnapshot> getPlayers() {
 
             return roster.getPlayers();
 
     }
 
+    /**
+     * Returns the totem positions.
+     *
+     * @return the totem positions
+     */
     public Map<String, Integer> getTotemPositions() {
 
             return roster.getTotemPositions();
 
     }
 
+    /**
+     * Returns the return positions.
+     *
+     * @return the return positions
+     */
     public Map<String, Integer> getReturnPositions() {
 
             return roster.getReturnPositions();
 
     }
 
+    /**
+     * Returns the tribes.
+     *
+     * @return the tribes
+     */
     public Map<String, List<Integer>> getTribes() {
 
             return roster.getTribes();
 
     }
 
+    /**
+     * Returns the active player.
+     *
+     * @return the active player
+     */
     public String getActivePlayer() {
 
             return turn.getActivePlayer();
 
     }
 
+    /**
+     * Returns the my actions.
+     *
+     * @return the my actions
+     */
     public List<ActionDto> getMyActions() {
 
             return turn.getActions();
 
     }
 
+    /**
+     * Returns the local result.
+     *
+     * @return the local result
+     */
     public PlayerGameCompletedDto getLocalResult() {
 
             return localResult;
 
     }
 
+    /**
+     * Returns the global leaderboard.
+     *
+     * @return the global leaderboard
+     */
     public LeaderboardSnapshotDto getGlobalLeaderboard() {
 
             return globalLeaderboard;
 
     }
 
+    /**
+     * Returns whether game over.
+     *
+     * @return true if game over; false otherwise
+     */
     public boolean isGameOver() {
 
             return isGameOver;
 
     }
 
+    /**
+     * Returns the leaderboard.
+     *
+     * @return the leaderboard
+     */
     public List<PlayerScoreDto> getLeaderboard() {
 
             return new ArrayList<>(leaderboard);

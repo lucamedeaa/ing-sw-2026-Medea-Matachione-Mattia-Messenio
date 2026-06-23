@@ -6,14 +6,28 @@ import it.polimi.ingsw.server.lobby.RoomConnectionHandler;
 import it.polimi.ingsw.server.model.exception.LobbyActionException;
 import java.util.List;
 
+/** Coordinates lobby requests against the active game manager. */
 public class LobbyController {
 
     private final GameManagerInterface gameManager;
 
+    /**
+     * Creates a new {@code LobbyController} instance.
+     *
+     * @param gameManager game manager
+     */
     public LobbyController(GameManagerInterface gameManager) {
         this.gameManager = gameManager;
     }
 
+    /**
+     * Creates a game room for a nickname.
+     *
+     * @param nickname player nickname
+     * @param maxPlayers maximum number of players
+     * @return handler for the created room
+     * @throws LobbyActionException if the operation cannot be completed
+     */
     public RoomConnectionHandler createGame(String nickname, int maxPlayers) throws LobbyActionException {
         validateNickname(nickname);
         registerNickname(nickname);
@@ -33,6 +47,14 @@ public class LobbyController {
         }
     }
 
+    /**
+     * Resolves a joinable game room for a nickname.
+     *
+     * @param nickname player nickname
+     * @param gameId game identifier
+     * @return handler for the requested room
+     * @throws LobbyActionException if the operation cannot be completed
+     */
     public RoomConnectionHandler joinGame(String nickname, String gameId) throws LobbyActionException {
         validateNickname(nickname);
         RoomConnectionHandler room = gameManager.getRoom(gameId);
@@ -43,10 +65,21 @@ public class LobbyController {
         return room;
     }
 
+    /**
+     * Returns the available games.
+     *
+     * @return the currently joinable games
+     */
     public List<GameInfoDto> getAvailableGames() {
         return gameManager.getAvailableGames();
     }
 
+    /**
+     * Leaves the game.
+     *
+     * @param playerName player name
+     * @throws LobbyActionException if the operation cannot be completed
+     */
     public void leaveGame(String playerName) throws LobbyActionException {
         if (playerName == null) {
             throw new LobbyActionException("Error: You don't have a nickname set.");
@@ -58,6 +91,11 @@ public class LobbyController {
         room.removePlayer(playerName);
     }
 
+    /**
+     * Handles the disconnection.
+     *
+     * @param playerName player name
+     */
     public void handleDisconnection(String playerName) {
         if (playerName == null) {
             return;
@@ -70,6 +108,11 @@ public class LobbyController {
         }
     }
 
+    /**
+     * Releases the nickname.
+     *
+     * @param nickname player nickname
+     */
     public void releaseNickname(String nickname) {
         if (nickname != null) {
             gameManager.unregisterNickname(nickname);

@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.visitor;
 import it.polimi.ingsw.common.network.dto.TribeDto;
 import it.polimi.ingsw.common.network.dto.event.*;
 
+/** Defines the contract for event visitor. */
 public interface EventVisitor {
     void visit(CardTakenDto event);
     void visit(BoardRefilledDto event);

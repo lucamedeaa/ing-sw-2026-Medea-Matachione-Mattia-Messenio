@@ -20,6 +20,7 @@ public class RoundEndState extends GameState {
         super(game);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
 
@@ -70,11 +71,13 @@ public class RoundEndState extends GameState {
         return game.getCurrentRound() >= 10;
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         return null;

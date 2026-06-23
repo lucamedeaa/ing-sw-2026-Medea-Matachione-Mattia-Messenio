@@ -26,6 +26,7 @@ public class InGameConnectionState extends UnsupportedConnectionCommands {
         this.gameController = gameController;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         connection.transitionToLobby();
@@ -33,21 +34,25 @@ public class InGameConnectionState extends UnsupportedConnectionCommands {
         gameController.handlePlayerDisconnection(nickname);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void placeTotem(int positionIndex) {
         gameController.handlePlaceTotem(nickname, positionIndex, this::sendMoveError);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void takeCard(int row, int col) {
         gameController.handleTakeCard(nickname, row, col, this::sendMoveError);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipAction() {
         gameController.handleSkipBonus(nickname, this::sendMoveError);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleDisconnection() {
         connection.clearNickname();

@@ -323,6 +323,11 @@ public class Board {
         return this.nextTotemOrder.size();
     }
 
+    /**
+     * Returns the current players.
+     *
+     * @return the current players
+     */
     public List<Player> getCurrentPlayers() {
         return this.currentTotemOrder;
     }

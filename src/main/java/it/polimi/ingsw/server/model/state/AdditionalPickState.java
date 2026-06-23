@@ -152,6 +152,7 @@ public class AdditionalPickState extends GameState {
         this.transition(new RoundEndState(this.game));
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         if (playerNickname.equals(getActivePlayerNickname())) {
@@ -160,6 +161,7 @@ public class AdditionalPickState extends GameState {
         return List.of();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         return this.currentPlayer != null ? this.currentPlayer.getNickname() : null;

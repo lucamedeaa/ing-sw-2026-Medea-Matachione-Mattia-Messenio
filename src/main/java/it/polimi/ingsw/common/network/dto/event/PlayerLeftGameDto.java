@@ -13,6 +13,7 @@ public record PlayerLeftGameDto(String nickname) implements GameEventDto {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

@@ -30,6 +30,7 @@ public class VirtualView implements ModelObserver {
         this.session = session;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onModelUpdate(ModelUpdate modelUpdate) {
         ModelUpdateDto update = modelUpdate.toDTO();
@@ -44,6 +45,7 @@ public class VirtualView implements ModelObserver {
         session.deltaEvent(update.events(), myActions, update.activePlayerNickname());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onFullSync(BoardUpdate boardUpdate, List<PlayerUpdate> playersUpdates, String activePlayer, List<AvailableAction> actionsUpdates, InitTurnOrderTileUpdate initTurnOrderTile) {
         BoardDto board = boardUpdate.toDTO();

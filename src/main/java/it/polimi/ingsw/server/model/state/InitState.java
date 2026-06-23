@@ -24,11 +24,13 @@ public class InitState extends GameState {
 
     }
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         return null;

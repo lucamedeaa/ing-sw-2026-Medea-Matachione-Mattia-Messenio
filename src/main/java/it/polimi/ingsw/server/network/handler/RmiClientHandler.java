@@ -33,6 +33,14 @@ public class RmiClientHandler extends UnicastRemoteObject implements ClientProxy
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final AtomicLong lastPingTime = new AtomicLong();
 
+    /**
+     * Creates a new {@code RmiClientHandler} instance.
+     *
+     * @param gameManager game manager
+     * @param lobbyController lobby controller
+     * @param callback remote client callback
+     * @throws RemoteException if the operation cannot be completed
+     */
     public RmiClientHandler(
             GameManagerInterface gameManager,
             LobbyController lobbyController,
@@ -59,11 +67,13 @@ public class RmiClientHandler extends UnicastRemoteObject implements ClientProxy
         }, 5, 5, TimeUnit.SECONDS);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void ping() {
         handleClientAction(this::touch);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void disconnect() {
         handleClientAction(() -> {
@@ -72,91 +82,109 @@ public class RmiClientHandler extends UnicastRemoteObject implements ClientProxy
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void createGame(String nickname, int maxPlayers) {
         handleClientAction(() -> session.createGame(nickname, maxPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void joinGame(String nickname, String gameId) {
         handleClientAction(() -> session.joinGame(nickname, gameId));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getAvailableGames() {
         handleClientAction(session::getAvailableGames);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         handleClientAction(session::leaveGame);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void placeTotem(int positionIndex) {
         handleClientAction(() -> session.placeTotem(positionIndex));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void takeCard(int row, int col) {
         handleClientAction(() -> session.takeCard(row, col));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipAction() {
         handleClientAction(session::skipAction);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getLeaderboard() {
         handleClientAction(session::getLeaderboard);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
         deliver(() -> callback.onFullSync(board, players, activePlayer, actions, turnOrderTile));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
         deliver(() -> callback.onDeltaEvent(events, nextActions, activePlayer));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void error(String error) {
         deliver(() -> callback.onError(error));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void matchmakingSuccess(String text) {
         deliver(() -> callback.onMatchmakingSuccess(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void availableGames(List<GameInfoDto> games) {
         deliver(() -> callback.onAvailableGames(games));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameAborted(String reason) {
         deliver(() -> callback.onGameAborted(reason));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
         deliver(() -> callback.onRoomUpdate(notification, currentPlayers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameLeftSuccess(String text) {
         deliver(() -> callback.onGameLeftSuccess(text));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameCompleted(PlayerGameCompletedDto completedGame) {
         deliver(() -> callback.onGameCompleted(completedGame));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaderboard(LeaderboardSnapshotDto leaderboard) {
         deliver(() -> callback.onLeaderboard(leaderboard));

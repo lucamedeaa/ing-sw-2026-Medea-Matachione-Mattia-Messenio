@@ -14,11 +14,13 @@ import java.io.IOException;
  */
 public class SocketConnectionFactory implements NetworkConnectionFactory {
 
+    /** {@inheritDoc} */
     @Override
     public NetworkClientFactory.NetworkType type() {
         return NetworkClientFactory.NetworkType.SOCKET;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws IOException {
         SocketServerMessageVisitor socketVisitor = new SocketServerMessageVisitor(receiver);

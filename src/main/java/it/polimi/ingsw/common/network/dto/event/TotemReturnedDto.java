@@ -14,6 +14,7 @@ public record TotemReturnedDto(String nickname, int returnIndex) implements Game
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

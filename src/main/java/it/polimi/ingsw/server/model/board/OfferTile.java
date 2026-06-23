@@ -44,9 +44,34 @@ public class OfferTile {
         this.occupyingPlayer = Optional.empty();
     }
 
+    /**
+     * Returns the occupying player.
+     *
+     * @return the occupying player
+     */
     public Optional<Player> getOccupyingPlayer() { return occupyingPlayer; }
+    /**
+     * Returns the upper row picks.
+     *
+     * @return the upper row picks
+     */
     public int getUpperRowPicks() { return upperRowPicks; }
+    /**
+     * Returns the lower row picks.
+     *
+     * @return the lower row picks
+     */
     public int getLowerRowPicks() { return lowerRowPicks; }
+    /**
+     * Returns the letter id.
+     *
+     * @return the letter id
+     */
     public char getLetterId() { return letterId; }
+    /**
+     * Returns the food bonus.
+     *
+     * @return the food bonus
+     */
     public int getFoodBonus() { return foodBonus; }
 }

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Collections;
 
+/** Represents the card registry component. */
 public class CardRegistry {
     private static final Map<Integer, CardInfo> CARDS;
 
@@ -21,6 +22,12 @@ public class CardRegistry {
         }
     }
 
+    /**
+     * Returns the card.
+     *
+     * @param id card identifier
+     * @return the card
+     */
     public static CardInfo getCard(int id) {
         CardInfo def = CARDS.get(id);
         if (def == null) throw new IllegalArgumentException("Card not found: " + id);

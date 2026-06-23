@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.message.client;
 import java.io.Serial;
 import java.io.Serializable;
 
+/** Immutable data transfer object for ping message. */
 public record PingMessage() implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

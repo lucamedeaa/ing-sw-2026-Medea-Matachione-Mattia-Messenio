@@ -14,14 +14,30 @@ public class GameManager implements GameManagerInterface {
     private final Set<String> activeNicknames = ConcurrentHashMap.newKeySet();
     private final LeaderboardService leaderboardService;
 
+    /**
+     * Creates a new {@code GameManager} instance.
+     *
+     * @param leaderboardService leaderboard service
+     */
     public GameManager(LeaderboardService leaderboardService) {
         this.leaderboardService = leaderboardService;
     }
 
+    /**
+     * Registers the nickname.
+     *
+     * @param nickname player nickname
+     * @return true if the condition is satisfied; false otherwise
+     */
     public boolean registerNickname(String nickname) {
         return activeNicknames.add(nickname.toLowerCase());
     }
 
+    /**
+     * Unregisters the nickname.
+     *
+     * @param nickname player nickname
+     */
     public void unregisterNickname(String nickname) {
         if (nickname != null) {
             activeNicknames.remove(nickname.toLowerCase());
@@ -44,6 +60,12 @@ public class GameManager implements GameManagerInterface {
         return activeGames.get(gameId);
     }
 
+    /**
+     * Returns the room by player.
+     *
+     * @param nickname player nickname
+     * @return the room by player
+     */
     public RoomConnectionHandler getRoomByPlayer(String nickname) {
         for (GameRoom room : activeGames.values()) {
             if (room.isNicknameTaken(nickname)) {

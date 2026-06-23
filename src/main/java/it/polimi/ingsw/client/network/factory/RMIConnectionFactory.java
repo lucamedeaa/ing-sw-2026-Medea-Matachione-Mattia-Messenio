@@ -18,11 +18,13 @@ import java.rmi.registry.Registry;
  */
 public class RMIConnectionFactory implements NetworkConnectionFactory {
 
+    /** {@inheritDoc} */
     @Override
     public NetworkClientFactory.NetworkType type() {
         return NetworkClientFactory.NetworkType.RMI;
     }
 
+    /** {@inheritDoc} */
     @Override
     public ServerProxy create(String ip, int port, ServerNotificationReceiver receiver) throws IOException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(ip, port);

@@ -29,61 +29,73 @@ public class SocketServerMessageVisitor implements ClientMessageVisitor {
         this.receiver = receiver;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(FullSyncMessage message) {
         receiver.fullSync(message.board(), message.players(), message.activePlayer(), message.actions(), message.turnOrderTileDto());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(DeltaEventMessage message) {
         receiver.deltaEvent(message.events(), message.nextActions(), message.activePlayer());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(ErrorMessage message) {
         receiver.error(message.error());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(ErrorDto message) {
         receiver.error(message.error());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(MatchmakingSuccessMessage message) {
         receiver.matchmakingSuccess(message.text());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(AvailableGamesResponseMessage message) {
         receiver.availableGames(message.games());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(GameAbortedMessage message) {
         receiver.gameAborted(message.reason());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(GameCompletedMessage message) {
         receiver.gameCompleted(message.completedGame());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(LeaderboardResponseMessage message) {
         receiver.leaderboard(message.leaderboard());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(RoomUpdateMessage message) {
         receiver.roomUpdate(message.notification(), message.currentPlayers());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(GameLeftSuccessMessage message) {
         receiver.gameLeftSuccess(message.text());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(ServerDisconnectedMessage message) {
         receiver.serverDisconnected(message.reason());

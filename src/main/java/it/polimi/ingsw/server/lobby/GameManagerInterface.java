@@ -5,6 +5,7 @@ import it.polimi.ingsw.server.model.exception.LobbyActionException;
 
 import java.util.List;
 
+/** Defines the contract for game manager interface. */
 public interface GameManagerInterface {
 
     boolean registerNickname(String nickname);

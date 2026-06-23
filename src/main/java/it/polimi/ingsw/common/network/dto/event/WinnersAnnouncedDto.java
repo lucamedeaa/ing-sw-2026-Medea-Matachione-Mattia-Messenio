@@ -15,6 +15,7 @@ public record WinnersAnnouncedDto(List<String> winnersNicknames) implements Game
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

@@ -29,17 +29,20 @@ public class PostGameConnectionState extends UnsupportedConnectionCommands {
         this.leaderboardService = leaderboardService;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         connection.transitionToLobby();
         connection.gameLeftSuccess("Returned to lobby.");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getLeaderboard() {
         connection.leaderboard(leaderboardService.getLeaderboard(playerCount));
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleDisconnection() {
         connection.clearNickname();

@@ -29,23 +29,52 @@ public class ClientNotificationController implements ServerNotificationReceiver 
     private InGameView inGameView;
     private GameEndedView gameEndedView;
 
+    /**
+     * Creates a new {@code ClientNotificationController} instance.
+     *
+     * @param lobbyModel lobby model
+     * @param gameModel game model
+     * @param applier event applier
+     */
     public ClientNotificationController(LobbyModel lobbyModel, GameModel gameModel, EventApplier applier) {
         this.lobbyModel = lobbyModel;
         this.gameModel = gameModel;
         this.applier = applier;
     }
 
+    /**
+     * Sets the matchmaking view.
+     *
+     * @param v matchmaking view instance
+     */
     public void setMatchmakingView(MatchmakingView v) { this.matchmakingView = v; }
+    /**
+     * Sets the lobby view.
+     *
+     * @param v lobby view instance
+     */
     public void setLobbyView(LobbyView v) { this.lobbyView = v; }
+    /**
+     * Sets the in game view.
+     *
+     * @param v in-game view instance
+     */
     public void setInGameView(InGameView v) { this.inGameView = v; }
+    /**
+     * Sets the game ended view.
+     *
+     * @param v game-ended view instance
+     */
     public void setGameEndedView(GameEndedView v) { this.gameEndedView = v; }
 
+    /** {@inheritDoc} */
     @Override
     public void availableGames(List<GameInfoDto> games) {
         lobbyModel.setAvailableGames(games);
         if (matchmakingView != null) matchmakingView.onAvailableGames(games);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void matchmakingSuccess(String text) {
         if (matchmakingView != null) matchmakingView.onMatchmakingSuccess(text);
@@ -55,6 +84,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         );
     }
 
+    /** {@inheritDoc} */
     @Override
     public void roomUpdate(String notification, List<String> currentPlayers) {
         lobbyModel.executeBatch(() -> {
@@ -63,6 +93,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void fullSync(BoardDto board, List<PlayerDto> players, String activePlayer, List<ActionDto> actions, InitTurnOrderTileDto turnOrderTile) {
         if (lobbyView != null) {
@@ -78,6 +109,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void deltaEvent(List<GameEventDto> events, List<ActionDto> nextActions, String activePlayer) {
         gameModel.executeBatch(() -> {
@@ -89,6 +121,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void error(String error) {
         if (inGameView != null) {
@@ -101,6 +134,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameAborted(String reason) {
         gameModel.reset();
@@ -110,6 +144,7 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(reason);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameLeftSuccess(String text) {
         gameModel.reset();
@@ -120,16 +155,19 @@ public class ClientNotificationController implements ServerNotificationReceiver 
         if (lobbyView != null) lobbyView.onReturnToMatchmaking(text);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void gameCompleted(PlayerGameCompletedDto completedGame) {
         gameModel.setGameCompleted(completedGame);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaderboard(LeaderboardSnapshotDto leaderboard) {
         gameModel.setGlobalLeaderboard(leaderboard);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void serverDisconnected(String reason) {
         if (matchmakingView != null) matchmakingView.onServerDisconnected(reason);

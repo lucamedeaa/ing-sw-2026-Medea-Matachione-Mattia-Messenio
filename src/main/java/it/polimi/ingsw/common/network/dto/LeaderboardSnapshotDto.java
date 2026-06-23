@@ -14,6 +14,12 @@ public record LeaderboardSnapshotDto(int playerCount, List<LeaderboardEntryDto> 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates an immutable leaderboard snapshot.
+     *
+     * @param playerCount number of players of the leaderboard category
+     * @param entries ranked leaderboard entries
+     */
     public LeaderboardSnapshotDto {
         entries = List.copyOf(entries);
     }

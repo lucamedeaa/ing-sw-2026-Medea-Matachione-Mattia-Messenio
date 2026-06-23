@@ -6,6 +6,7 @@ import it.polimi.ingsw.common.network.dto.LeaderboardSnapshotDto;
 
 import java.util.List;
 
+/** Defines the contract for leaderboard service. */
 public interface LeaderboardService {
     List<LeaderboardEntryDto> recordCompletedGame(CompletedGameResult result);
 

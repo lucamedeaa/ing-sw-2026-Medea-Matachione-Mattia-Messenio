@@ -23,7 +23,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** Client application entry point. */
 public class ClientMain {
+    /**
+     * Application entry point.
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         final Logger LOGGER = Logger.getLogger(ClientMain.class.getName());

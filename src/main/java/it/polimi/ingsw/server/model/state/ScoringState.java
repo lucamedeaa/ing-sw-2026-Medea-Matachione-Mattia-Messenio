@@ -20,6 +20,7 @@ public class ScoringState extends GameState {
         super(game);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void start() {
         List<PlayerGameResult> leaderboard = calculateFinalScores();
@@ -60,11 +61,13 @@ public class ScoringState extends GameState {
     }
 
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         return List.of();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         return null;

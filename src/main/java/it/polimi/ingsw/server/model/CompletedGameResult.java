@@ -8,6 +8,11 @@ import java.util.List;
  * @param playerResults final results ordered by ranking position
  */
 public record CompletedGameResult(List<PlayerGameResult> playerResults) {
+    /**
+     * Creates an immutable completed-game result.
+     *
+     * @param playerResults final results ordered by ranking position
+     */
     public CompletedGameResult {
         playerResults = List.copyOf(playerResults);
     }

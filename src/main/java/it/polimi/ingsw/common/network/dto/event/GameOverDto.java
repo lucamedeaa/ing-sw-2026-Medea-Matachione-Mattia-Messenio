@@ -15,6 +15,7 @@ public record GameOverDto(List<PlayerScoreDto> leaderboard) implements GameEvent
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     @Override
     public void accept(EventVisitor visitor) {
         visitor.visit(this);

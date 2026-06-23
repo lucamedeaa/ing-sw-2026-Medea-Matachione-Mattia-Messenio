@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.network.dto.action.PlaceTotemActionDto;
 import it.polimi.ingsw.common.network.dto.action.SkipActionDto;
 import it.polimi.ingsw.common.network.dto.action.TakeCardActionDto;
 
+/** Defines the contract for action visitor. */
 public interface ActionVisitor {
     void visit(PlaceTotemActionDto action);
     void visit(TakeCardActionDto action);

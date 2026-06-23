@@ -26,6 +26,7 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
         this.lobbyController = lobbyController;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void createGame(String nickname, int maxPlayers) {
         try {
@@ -39,6 +40,7 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void joinGame(String nickname, String gameId) {
         try {
@@ -52,11 +54,13 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void getAvailableGames() {
         connection.availableGames(lobbyController.getAvailableGames());
     }
 
+    /** {@inheritDoc} */
     @Override
     public void leaveGame() {
         try {
@@ -67,6 +71,7 @@ public class LobbyConnectionState extends UnsupportedConnectionCommands {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void handleDisconnection() {
         lobbyController.handleDisconnection(connection.getNickname());

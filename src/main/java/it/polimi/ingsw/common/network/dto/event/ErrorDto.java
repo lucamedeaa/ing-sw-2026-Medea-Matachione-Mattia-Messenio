@@ -14,6 +14,7 @@ public record ErrorDto(String error) implements ServerMessage {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** {@inheritDoc} */
     @Override
     public void accept(ClientMessageVisitor visitor) {
         visitor.visit(this);

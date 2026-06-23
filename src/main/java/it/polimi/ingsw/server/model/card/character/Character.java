@@ -27,6 +27,7 @@ public abstract class Character extends Card {
         board.addBottomRow(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int getFoodCost() {
         return this.foodCost;

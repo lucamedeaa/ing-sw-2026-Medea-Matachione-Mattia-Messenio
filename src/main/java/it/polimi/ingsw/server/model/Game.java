@@ -153,16 +153,19 @@ public class Game implements ModelControllerInterface {
         this.currentState.start();
     }
 
+    /** {@inheritDoc} */
     @Override
     public void placeTotem(String nickname, int tileIndex) {
         this.currentState.placeTotem(getPlayerByNickname(nickname), tileIndex);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void takeCard(String nickname, int rowIdx, int cardIdx) {
         this.currentState.takeCard(getPlayerByNickname(nickname), rowIdx, cardIdx);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipBonus(String nickname) {
         this.currentState.skipBonus(getPlayerByNickname(nickname));

@@ -164,6 +164,7 @@ public class ActionState extends GameState {
 
 
 
+    /** {@inheritDoc} */
     @Override
     public String getActivePlayerNickname() {
         return this.currentPlayer != null ? this.currentPlayer.getNickname() : null;
@@ -220,6 +221,7 @@ public class ActionState extends GameState {
 
 
 
+    /** {@inheritDoc} */
     @Override
     public List<AvailableAction> getAvailableActions(String playerNickname) {
         if (!playerNickname.equals(getActivePlayerNickname())) return List.of();
@@ -236,6 +238,7 @@ public class ActionState extends GameState {
         return actions;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void skipBonus(Player player) {
         if (!player.equals(this.currentPlayer)) {
