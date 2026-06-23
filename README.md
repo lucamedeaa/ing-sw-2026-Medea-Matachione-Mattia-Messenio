@@ -39,6 +39,8 @@ The project implements:
 | Persistence                  | Not implemented |
 | Resilience to disconnections | Not implemented |
 
+---
+
 # Database
 
 The PostgreSQL database is mandatory for server startup.
@@ -105,6 +107,44 @@ If startup fails, ensure that port `5432` is not already used by another local P
 * Java Development Kit: JDK 23
 * Apache Maven
 * Docker (required for PostgreSQL leaderboard support)
+* Git LFS (required to download executable JAR files)
+
+---
+
+# Git LFS
+
+Executable JAR files are stored using Git LFS because they exceed GitHub's standard file size limit.
+
+Before cloning or pulling the repository, make sure Git LFS is installed and enabled.
+
+## macOS
+
+Install Git LFS using Homebrew:
+
+```bash
+brew install git-lfs
+git lfs install
+```
+
+## Windows
+
+Install Git LFS from the official installer or through Git for Windows, then run:
+
+```bash
+git lfs install
+```
+
+After setup, clone or pull the repository normally:
+
+```bash
+git clone https://github.com/lucamedeaa/ing-sw-2026-Medea-Matachione-Mattia-Messenio.git
+```
+
+or:
+
+```bash
+git pull
+```
 
 ---
 

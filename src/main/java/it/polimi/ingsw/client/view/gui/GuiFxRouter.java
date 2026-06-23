@@ -85,7 +85,7 @@ public class GuiFxRouter implements UIObserver, GuiNavigator {
     /** {@inheritDoc} */
     @Override
     public void toDisconnected(String reason) {
-        this.disconnectReason = reason != null ? reason : "Connessione al server persa";
+        this.disconnectReason = reason != null ? reason : "Lost connection to server";
         navigateTo(Scenes.DISCONNECTED);
     }
 
