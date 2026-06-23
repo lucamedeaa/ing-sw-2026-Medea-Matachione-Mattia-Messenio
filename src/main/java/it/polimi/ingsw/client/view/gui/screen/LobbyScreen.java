@@ -28,6 +28,7 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
     @FXML private Slider volumeSlider;
 
     private final VideoBackground videoBackground = new VideoBackground();
+    private boolean screenActive;
 
     /**
      * Creates a lobby screen.
@@ -49,7 +50,6 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
         volumeSlider.setValue(VideoBackground.getGlobalVolume());
-        videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
         Platform.runLater(() -> {
             if (playersContainer != null && playersContainer.getScene() != null) {
                 Stage stage = (Stage) playersContainer.getScene().getWindow();
@@ -89,11 +89,20 @@ public class LobbyScreen implements RefreshableScreen, LobbyScreenPort {
 
     /** {@inheritDoc} */
     @Override
-    public void onEnter() { presenter.onScreenReady(this); }
+    public void onEnter() {
+        screenActive = true;
+        Platform.runLater(() -> {
+            if (screenActive && videoContainer != null) {
+                videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
+            }
+        });
+        presenter.onScreenReady(this);
+    }
 
     /** {@inheritDoc} */
     @Override
     public void onExit() {
+        screenActive = false;
         presenter.deregister();
         videoBackground.stop();
     }

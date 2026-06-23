@@ -30,6 +30,7 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
     @FXML private Slider volumeSlider;
 
     private final VideoBackground videoBackground = new VideoBackground();
+    private boolean screenActive;
 
     /**
      * Creates a matchmaking screen.
@@ -109,7 +110,6 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
         volumeSlider.setMin(0);
         volumeSlider.setMax(1);
         volumeSlider.setValue(VideoBackground.getGlobalVolume());
-        videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
         Platform.runLater(() -> {
             if (videoContainer != null && videoContainer.getScene() != null) {
                 Stage stage = (Stage) videoContainer.getScene().getWindow();
@@ -127,12 +127,19 @@ public class MatchmakingScreen  implements RefreshableScreen, MatchmakingScreenP
     /** {@inheritDoc} */
     @Override
     public void onEnter() {
+        screenActive = true;
+        Platform.runLater(() -> {
+            if (screenActive && videoContainer != null) {
+                videoBackground.start(videoContainer, GuiAssetPaths.VIDEO_BG, volumeSlider.valueProperty());
+            }
+        });
         presenter.onScreenReady(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onExit() {
+        screenActive = false;
         presenter.deregister();
         videoBackground.stop();
     }
